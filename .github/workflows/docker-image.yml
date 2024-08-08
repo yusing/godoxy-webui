@@ -1,0 +1,14 @@
+name: Docker Image CI
+
+on:
+  push:
+    tags:
+      - "*"
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build and Push Container to ghcr.io
+        uses: GlueOps/github-actions-build-push-containers@v0.3.7
+        with:
+          tags: latest,${{ github.ref_name }}
