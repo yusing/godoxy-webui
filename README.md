@@ -2,7 +2,11 @@
 
 This is the frontend for [go-proxy](https://github.com/yusing/go-proxy), created using Next.js 14 (app directory) and NextUI (v2).
 
-[Try it on CodeSandbox](https://githubbox.com/yusing/go-proxy-frontend)
+## Screenshots
+
+![dsahboard](screenshots/dashboard.png)
+![config_editor](screenshots/config_editor.png)
+![proxies](screenshots/proxies.png)
 
 ## Technologies Used
 
