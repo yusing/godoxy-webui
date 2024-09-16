@@ -2,7 +2,6 @@
 
 import { faRefresh } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button } from "@nextui-org/button";
 import { Spinner } from "@nextui-org/spinner";
 import {
   Table,
@@ -14,7 +13,7 @@ import {
 } from "@nextui-org/table";
 import { Tab, Tabs } from "@nextui-org/tabs";
 import { AsyncListData, useAsyncList } from "@react-stately/data";
-import { useState } from "react";
+import { Key, useState } from "react";
 
 import {
   Column,
@@ -43,14 +42,6 @@ async function sort({ items, sortDescriptor }: any) {
   };
 }
 
-function reloadButton(list: AsyncListData<Stream | ReverseProxy>) {
-  return (
-    <Button isIconOnly variant="light" onPress={list.reload}>
-      <FontAwesomeIcon icon={faRefresh} />
-    </Button>
-  );
-}
-
 export default function ProxiesPage() {
   const streams = useAsyncList({
     load: async ({ signal }) => ({ items: await getStreams(signal) }),
@@ -63,6 +54,7 @@ export default function ProxiesPage() {
   });
 
   const [activeList, setActiveList] = useState(rps);
+  const [selectedKey, setSelectedKey] = useState<Key>("reverse_proxies");
 
   function table(
     key_prefix: string,
@@ -90,7 +82,7 @@ export default function ProxiesPage() {
           loadingContent={<Spinner label="Loading..." />}
         >
           {(item) => (
-            <TableRow key={`${key_prefix}_${item.alias}`}>
+            <TableRow key={`${key_prefix}_${item.alias}_${item.path_pattern}`}>
               {(colKey) => <TableCell>{item[colKey]}</TableCell>}
             </TableRow>
           )}
@@ -103,10 +95,14 @@ export default function ProxiesPage() {
     <div>
       <Tabs
         aria-label="tabs"
+        selectedKey={selectedKey}
         variant="light"
-        onSelectionChange={(key) =>
-          setActiveList(key === "reverse_proxies" ? rps : streams)
-        }
+        onSelectionChange={(key) => {
+          if (key !== "reload") {
+            setActiveList(key === "reverse_proxies" ? rps : streams);
+            setSelectedKey(key);
+          }
+        }}
       >
         <Tab key="reverse_proxies" title="Reverse Proxies">
           {table("reverse_proxies", ReverseProxyColumns, rps)}
@@ -114,9 +110,12 @@ export default function ProxiesPage() {
         <Tab key="streams" title="Streams">
           {table("streams", StreamColumns, streams)}
         </Tab>
-        <Tab key="reload" title={reloadButton(activeList)}>
-          {" "}
-        </Tab>
+        <Tab
+          key="reload"
+          title={
+            <FontAwesomeIcon icon={faRefresh} onClick={activeList.reload} />
+          }
+        />
       </Tabs>
     </div>
   );

@@ -8,8 +8,8 @@ export type Column = { key: string; label: string };
 export const ReverseProxyColumns = [
   { key: "alias", label: "Alias" },
   { key: "provider", label: "Provider" },
-  { key: "path", label: "Path" },
-  { key: "target", label: "Target" },
+  { key: "path_pattern", label: "Path Pattern" },
+  { key: "target_url", label: "Target" },
 ];
 
 export const StreamColumns = [
@@ -29,14 +29,12 @@ export async function getReverseProxies(signal: AbortSignal) {
   const reverseProxies: ReverseProxy[] = [];
 
   for (const entry of Object.values(model)) {
-    for (const subroute of Object.values(
-      entry.subroutes as Record<string, any>,
-    )) {
+    for (const pattern of entry.path_patterns) {
       reverseProxies.push({
         alias: entry.alias,
         provider: entry.provider,
-        path: subroute.path,
-        target: subroute.targetURL,
+        path_pattern: pattern,
+        target_url: entry.target_url,
       });
     }
   }
