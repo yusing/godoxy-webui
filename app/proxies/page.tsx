@@ -13,7 +13,8 @@ import {
 } from "@nextui-org/table";
 import { Tab, Tabs } from "@nextui-org/tabs";
 import { AsyncListData, useAsyncList } from "@react-stately/data";
-import { Key, useState } from "react";
+import { Key } from "@react-types/shared";
+import { useState } from "react";
 
 import {
   Column,
