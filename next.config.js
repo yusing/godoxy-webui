@@ -3,9 +3,7 @@
 const apiBaseURL =
     process.env.NODE_ENV === "development"
         ? "http://10.0.3.1:8888/v1"
-        : "http://localhost:8888/v1";
-
-console.log(apiBaseURL);
+        : "http://127.0.0.1:8888/v1";
 
 const nextConfig = {
     output: "standalone",

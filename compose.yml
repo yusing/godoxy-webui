@@ -1,8 +1,0 @@
-services:
-  go-proxy-frontend:
-    image: ghcr.io/yusing/go-proxy-frontend:latest
-    container_name: go-proxy-frontend
-    restart: unless-stopped
-    network_mode: host
-    labels:
-      - proxy.*.aliases=gp
