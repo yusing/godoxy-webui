@@ -1,9 +1,9 @@
 /** @type {import('next').NextConfig} */
 
 const apiBaseURL =
-    process.env.NODE_ENV === "development"
-        ? "http://10.0.3.1:8888/v1"
-        : "http://127.0.0.1:8888/v1";
+    process.env.GOPROXY_API_ADDR === undefined
+        ? "http://127.0.0.1:8888/v1"
+        : "http://" + process.env.GOPROXY_API_ADDR;
 
 const nextConfig = {
     output: "standalone",
