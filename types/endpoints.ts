@@ -3,6 +3,8 @@ namespace Endpoints {
   export const LIST_CONFIG_FILES = "/list/config_files";
   export const LIST_PROXIES = "/list/routes";
   export const STATS = "/stats";
+  export const MATCH_DOMAINS = "/list/match_domains";
+  export const HOMEPAGE_CFG = "/list/homepage_config";
 }
 
 type FetchArguments = {
@@ -49,11 +51,13 @@ export async function fetchEndpoint(
 
 export async function checkResponse(resp: Response) {
   if (!resp.ok)
-    throw {
-      status: resp.status,
-      statusText: resp.statusText,
-      content: await resp.text(),
-    };
+    throw new Error(
+      JSON.stringify({
+        status: resp.status,
+        statusText: resp.statusText,
+        content: await resp.text(),
+      }),
+    );
 }
 
 export default Endpoints;

@@ -10,5 +10,8 @@
     "sonarlint.connectedMode.project": {
         "connectionId": "yusing",
         "projectKey": "yusing_go-proxy-frontend"
+    },
+    "[ignore]": {
+        "editor.defaultFormatter": "foxundermoon.shell-format"
     } // set as "true" to run 'prettier' last not first
 }

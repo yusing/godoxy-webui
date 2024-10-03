@@ -1,5 +1,7 @@
 Dockerfile
+Makefile
 .dockerignore
+.env
 node_modules
 npm-debug.log
 README.md
@@ -7,3 +9,7 @@ README.md
 !.next/static
 !.next/standalone
 .git
+.gitlab-ci.yml
+
+.vscode
+.github

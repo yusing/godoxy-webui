@@ -29,9 +29,9 @@ export const viewport: Viewport = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html suppressHydrationWarning lang="en">
       <head />
@@ -50,7 +50,7 @@ export default function RootLayout({
         >
           <div className="relative flex flex-col h-screen">
             <Navbar />
-            <main className="mx-auto px-6">{children}</main>
+            <main className="mx-auto px-32">{children}</main>
             <footer className="w-full flex items-center justify-center py-3">
               <Link
                 isExternal

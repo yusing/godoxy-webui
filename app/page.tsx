@@ -8,8 +8,10 @@ import { Spacer } from "@nextui-org/spacer";
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
+import AppGroups from "@/components/app_groups";
 import { NextToastContainer } from "@/components/toast_container";
 import Endpoints, { fetchEndpoint } from "@/types/endpoints";
+import { ProviderType } from "@/types/provider";
 
 export default function Dashboard() {
   const placeholderData = {
@@ -20,7 +22,7 @@ export default function Dashboard() {
         "Loading...": {
           num_reverse_proxies: 0,
           num_streams: 0,
-          type: "file",
+          type: ProviderType.file,
         },
       },
     },
@@ -60,9 +62,9 @@ export default function Dashboard() {
   const palette = generatePalette(Object.keys(stats.proxies.providers).length);
 
   return (
-    <div className="justify-center items-center flex">
+    <div className="flex flex-col items-center justify-center gap-4">
       <NextToastContainer />
-      <div className="gap-4 grid grid-cols-2">
+      <div className="gap-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <Card className="xl:max-w-sm bg-primary rounded-xl shadow-md px-4">
           <CardBody className="py-5 overflow-hidden">
             <div className="flex flex-col">
@@ -78,7 +80,7 @@ export default function Dashboard() {
             <div className="flex flex-col">
               <span className="font-bold">Running Services</span>
             </div>
-            <div className="flex gap-6 py-2 items-center text-right">
+            <div className="flex gap-6 py-2 items-start text-center">
               <div className="flex flex-col">
                 <span className="text-xl font-semibold">Total</span>
                 <span className="text-xl font-semibold">
@@ -110,7 +112,7 @@ export default function Dashboard() {
               </span>
             </div>
             <Spacer y={4} />
-            <div className="gap-2 grid grid-cols-2 items-center text-right">
+            <div className="gap-2 grid grid-cols-2 items-center text-left">
               {Object.entries(stats.proxies.providers).map(
                 ([name, props], index) => (
                   <div
@@ -120,9 +122,13 @@ export default function Dashboard() {
                     <FontAwesomeIcon
                       className="w-4"
                       color={
-                        props.type == "docker" ? "#46ffff" : palette[index]
+                        props.type == ProviderType.docker
+                          ? "#46ffff"
+                          : palette[index]
                       }
-                      icon={props.type == "docker" ? faDocker : faFile}
+                      icon={
+                        props.type == ProviderType.docker ? faDocker : faFile
+                      }
                     />
                     <span className="text-small">{name}</span>
                   </div>
@@ -132,6 +138,7 @@ export default function Dashboard() {
           </CardBody>
         </Card>
       </div>
+      <AppGroups />
     </div>
   );
 }

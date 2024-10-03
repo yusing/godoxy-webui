@@ -10,13 +10,13 @@ import { useEffect, useState } from "react";
 import ConfigFile from "@/types/config_file";
 import { formatError } from "@/types/endpoints";
 
-export default function ConfigEditor(args: { file: ConfigFile }) {
+export default function ConfigEditor({ file }: { readonly file: ConfigFile }) {
   const [editorValue, setEditorValue] = useState("");
   const extensions = [yaml()];
   const { theme } = useTheme();
 
   useEffect(() => {
-    args.file
+    file
       .getContent()
       .then(setEditorValue)
       .catch((e) => setEditorValue(formatError(e)));
@@ -29,7 +29,7 @@ export default function ConfigEditor(args: { file: ConfigFile }) {
       theme={theme === "light" ? githubLight : andromeda}
       value={editorValue}
       onChange={(value, _) => {
-        args.file.setContent(value);
+        file.setContent(value);
       }}
     />
   );
