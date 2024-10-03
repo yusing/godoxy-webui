@@ -1,6 +1,8 @@
 import { Card, CardBody, CardHeader } from "@nextui-org/card";
+import { ScrollShadow } from "@nextui-org/scroll-shadow";
 import { Spacer } from "@nextui-org/spacer";
 import { useEffect, useState } from "react";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { toast } from "react-toastify";
 
 import AppCard from "@/components/app_card";
@@ -21,7 +23,11 @@ export default function AppGroups() {
 
   return (
     <div className="w-full bg-default-50 rounded-xl shadow-md">
-      <div className="w-full">
+      <ScrollShadow
+        hideScrollBar
+        className="w-full"
+        style={{ height: "calc(100vh - 380px)" }}
+      >
         {Object.entries(homepageItems).map(([category, items]) => (
           <Card key={`app-category-${category}`} className="mb-4 p-3">
             <CardHeader>
@@ -29,15 +35,20 @@ export default function AppGroups() {
             </CardHeader>
             <CardBody>
               <Spacer y={1} />
-              <div className="grid gap-4 grid-cols-[repeat(auto-fit,minmax(200px,1fr))]">
-                {items.map((item) => (
-                  <AppCard key={item.name} item={item} />
-                ))}
-              </div>
+              <ResponsiveMasonry
+                className="flex gap-4"
+                columnsCountBreakPoints={{ 350: 2, 750: 3, 900: 4, 1200: 5 }}
+              >
+                <Masonry>
+                  {items.map((item) => (
+                    <AppCard key={item.name} item={item} />
+                  ))}
+                </Masonry>
+              </ResponsiveMasonry>
             </CardBody>
           </Card>
         ))}
-      </div>
+      </ScrollShadow>
     </div>
   );
 }

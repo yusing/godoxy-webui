@@ -37,11 +37,13 @@ export default function Dashboard() {
       setStats(await stats.json());
     };
 
-    const interval = setInterval(() => {
-      fetchStats().catch(toast.error);
-    }, 500);
+    // TODO: websocket / event
+    // const interval = setInterval(() => {
+    //   fetchStats().catch(toast.error);
+    // }, 500);
 
-    return () => clearInterval(interval);
+    // return () => clearInterval(interval);
+    fetchStats().catch(toast.error);
   }, []);
 
   function generatePalette(n: number): string[] {

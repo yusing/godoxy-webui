@@ -1,39 +1,28 @@
 import { Card, CardBody } from "@nextui-org/card";
-import Image from "next/image";
-import { useEffect, useState } from "react";
+
+import FavIcon from "./favico";
 
 import { HomepageItem } from "@/types/homepage_item";
 
-export default function AppCard({ item }: { readonly item: HomepageItem }) {
-  const [iconElement, setIconElement] = useState<JSX.Element | null>(null);
+type AppCardProps = {
+  style?: React.CSSProperties;
+  item: HomepageItem;
+};
 
-  useEffect(() => {
-    if (item.icon.startsWith("http")) {
-      setIconElement(
-        <Image
-          alt={item.name}
-          height={24}
-          layout="fixed"
-          src={item.icon}
-          width={24}
-        />,
-      );
-    } else {
-      setIconElement(<span className="text-xl shrink-0">{item.icon}</span>);
-    }
-  }, [item.icon]);
-
+export default function AppCard({ item, style }: AppCardProps) {
   return (
     <a
-      className="w-full bg-default-50 rounded-lg shadow-md transition-transform transform hover:scale-105"
+      key={item.name}
+      className="p-2 bg-default-50 rounded-lg shadow-md transition-transform transform hover:scale-105"
       href={item.url}
       rel="noopener noreferrer"
+      style={style}
       target="_blank"
     >
-      <Card className="p-1">
+      <Card className="p-2">
         <CardBody>
           <div className="flex items-center space-x-2">
-            <div>{iconElement}</div>
+            {<FavIcon alt={item.name} base={item.url} url={item.icon} />}
             <div className="flex flex-col">
               <span className="font-medium text-medium">{item.name}</span>
               {item.description && (

@@ -6,11 +6,13 @@ import { ProviderType } from "./provider";
 export type HomepageItem = {
   name: string;
   icon: string;
-  url: string;
   category: string;
-  source_type: ProviderType;
   description: string;
   widget_config: Record<string, any>;
+
+  url: string;
+  alt_url: string;
+  source_type: ProviderType;
 };
 
 export type HomepageItems = Record<string, HomepageItem[]>;
