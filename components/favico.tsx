@@ -5,7 +5,7 @@ import log from "@/types/log";
 
 type FavicoProps = {
   base: string;
-  url: string;
+  href: string;
   alt: string;
 };
 
@@ -19,27 +19,49 @@ const _fallbacks = [
   "/assets/img/favicon-default.png",
 ];
 
-export default function FavIcon({ base, url, alt }: FavicoProps) {
-  const [fallbackIndex, setFallbackIndex] = useState(url === "" ? 0 : -1);
+function isURL(str: string) {
+  try {
+    new URL(str);
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function targetHref(str: string) {
+  if (str.startsWith("@target")) {
+    return str.slice(8);
+  }
+
+  return str;
+}
+
+export default function FavIcon({ base, href, alt }: FavicoProps) {
+  const [fallbackIndex, setFallbackIndex] = useState(0);
 
   alt = alt.toLowerCase().replaceAll(" ", "-");
+  href = targetHref(href);
+
   const cacheKey = `favico-${alt}`;
   const cached = localStorage.getItem(cacheKey);
-  const iconPath = url.startsWith("icon:") ? url.slice(5) : `png/${alt}.png`;
-  const dashboardIcon = `https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/${iconPath}`;
+
+  const dashboardIcon = isURL(href)
+    ? href
+    : href
+      ? `https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/${href}`
+      : `https://cdn.jsdelivr.net/gh/walkxcode/dashboard-icons/png/${alt}.png`;
   const fallbacks = [dashboardIcon, ..._fallbacks];
 
-  const src = cached
-    ? cached
-    : fallbackIndex >= 0
-      ? fallbackIndex == 0
-        ? dashboardIcon
-        : base + fallbacks[fallbackIndex]
-      : url.startsWith("/")
-        ? base + url
-        : url;
+  let src: string;
 
-  let href: string;
+  if (cached) {
+    src = cached;
+  } else if (fallbackIndex == 0) {
+    src = dashboardIcon;
+  } else {
+    src = base + fallbacks[fallbackIndex];
+  }
 
   const fallback = () => {
     log.debug(`${alt} fallback: ${fallbacks[fallbackIndex]}`);
@@ -55,15 +77,12 @@ export default function FavIcon({ base, url, alt }: FavicoProps) {
       return;
     }
     try {
-      href = new URL(src).href;
-    } catch {
-      href = "";
-    }
-    if (fallbacks[fallbackIndex + 1] == href) {
-      setFallbackIndex(fallbackIndex + 2);
-    } else {
-      setFallbackIndex(fallbackIndex + 1);
-    }
+      if (fallbacks[fallbackIndex + 1] == new URL(src).href) {
+        setFallbackIndex(fallbackIndex + 2);
+      }
+    } catch {}
+
+    setFallbackIndex(fallbackIndex + 1);
   };
 
   const saveSrc = () => {
