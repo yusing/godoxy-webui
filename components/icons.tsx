@@ -186,6 +186,51 @@ export const SearchIcon = (props: IconSvgProps) => (
   </svg>
 );
 
+export const PinStatsIcon = (props: IconSvgProps) => (
+  <svg
+    aria-hidden="true"
+    fill="none"
+    focusable="false"
+    height="1em"
+    role="presentation"
+    viewBox="0 0 24 24"
+    width="1em"
+    {...props}
+  >
+    {/* From https://heroicons.com/ */}
+    <path
+      d="m4.5 18.75 7.5-7.5 7.5 7.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <path
+      d="m4.5 12.75 7.5-7.5 7.5 7.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const UnpinStatsIcon = (props: IconSvgProps) => (
+  <svg
+    aria-hidden="true"
+    fill="none"
+    focusable="false"
+    height="1em"
+    role="presentation"
+    viewBox="0 0 24 24"
+    width="1em"
+    {...props}
+  >
+    {/* From https://heroicons.com/ */}
+    <path
+      d="M8.25 15 12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
 export const NextUILogo: React.FC<IconSvgProps> = (props) => {
   const { width, height = 40 } = props;
 

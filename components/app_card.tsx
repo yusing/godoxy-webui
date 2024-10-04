@@ -1,4 +1,5 @@
 import { Card, CardBody } from "@nextui-org/card";
+import { Tooltip } from "@nextui-org/tooltip";
 
 import FavIcon from "./favico";
 
@@ -19,21 +20,23 @@ export default function AppCard({ item, style }: AppCardProps) {
       style={style}
       target="_blank"
     >
-      <Card className="p-2">
-        <CardBody>
-          <div className="flex items-center space-x-2">
-            {<FavIcon alt={item.name} base={item.url} href={item.icon} />}
-            <div className="flex flex-col">
-              <span className="font-medium text-medium">{item.name}</span>
-              {item.description && (
-                <span className="text-sm text-gray-600">
-                  {item.description}
-                </span>
-              )}
+      <Tooltip content={item.url}>
+        <Card className="p-2">
+          <CardBody>
+            <div className="flex items-center space-x-2">
+              {<FavIcon alt={item.name} base={item.url} href={item.icon} />}
+              <div className="flex flex-col">
+                <span className="font-medium text-medium">{item.name}</span>
+                {item.description && (
+                  <span className="text-sm text-gray-600">
+                    {item.description}
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
-        </CardBody>
-      </Card>
+          </CardBody>
+        </Card>
+      </Tooltip>
     </a>
   );
 }

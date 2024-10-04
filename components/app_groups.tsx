@@ -22,28 +22,34 @@ export default function AppGroups() {
   }, []);
 
   return (
-    <div className="w-full bg-transparent dark:bg-transparent ">
-
-      {Object.entries(homepageItems).map(([category, items]) => (
-        <Card key={`app-category-${category}`} className="mb-4 p-3">
-          <CardHeader>
-            <h2 className="text-2xl font-bold">{category}</h2>
-          </CardHeader>
-          <CardBody>
-            <Spacer y={1} />
-            <ResponsiveMasonry
-              className="flex gap-4"
-              columnsCountBreakPoints={{ 350: 2, 750: 3, 900: 4, 1200: 5 }}
-            >
-              <Masonry>
-                {items.map((item) => (
-                  <AppCard key={item.name} item={item} />
-                ))}
-              </Masonry>
-            </ResponsiveMasonry>
-          </CardBody>
-        </Card>
-      ))}
-    </div>
+    <Card className="w-full bg-transparent dark:bg-transparent">
+      <ScrollShadow
+        hideScrollBar
+        className="w-full"
+        size={0}
+        style={{ height: "calc(100vh - 380px)" }}
+      >
+        {Object.entries(homepageItems).map(([category, items]) => (
+          <Card key={`app-category-${category}`} className="mb-4 p-3">
+            <CardHeader>
+              <h2 className="text-2xl font-bold">{category}</h2>
+            </CardHeader>
+            <CardBody>
+              <Spacer y={1} />
+              <ResponsiveMasonry
+                className="flex gap-4"
+                columnsCountBreakPoints={{ 350: 2, 750: 3, 900: 4, 1200: 5 }}
+              >
+                <Masonry>
+                  {items.map((item) => (
+                    <AppCard key={item.name} item={item} />
+                  ))}
+                </Masonry>
+              </ResponsiveMasonry>
+            </CardBody>
+          </Card>
+        ))}
+      </ScrollShadow>
+    </Card>
   );
 }

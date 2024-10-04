@@ -2,9 +2,10 @@ namespace Endpoints {
   export const FileContent = (filename: string) => `/file/${filename}`;
   export const LIST_CONFIG_FILES = "/list/config_files";
   export const LIST_PROXIES = "/list/routes";
-  export const STATS = "/stats";
   export const MATCH_DOMAINS = "/list/match_domains";
   export const HOMEPAGE_CFG = "/list/homepage_config";
+
+  export const STATS = `/stats/ws`;
 }
 
 type FetchArguments = {
@@ -47,6 +48,10 @@ export async function fetchEndpoint(
     method: args.method,
     body: args.body,
   });
+}
+
+export function ws(endpoint: string) {
+  return new WebSocket(`/api${endpoint}`);
 }
 
 export async function checkResponse(resp: Response) {
