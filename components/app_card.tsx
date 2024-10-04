@@ -13,7 +13,7 @@ export default function AppCard({ item, style }: AppCardProps) {
   return (
     <a
       key={item.name}
-      className="p-2 bg-default-50 rounded-lg shadow-md transition-transform transform hover:scale-105"
+      className="p-2 transition-transform transform hover:scale-105"
       href={item.url}
       rel="noopener noreferrer"
       style={style}
