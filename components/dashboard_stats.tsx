@@ -3,6 +3,7 @@ import { faFile } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Card, CardBody } from "@nextui-org/card";
 import { Spacer } from "@nextui-org/spacer";
+import { useTheme } from "next-themes";
 
 import Stats from "./stats";
 
@@ -10,11 +11,12 @@ import { ProviderType } from "@/types/provider";
 
 export default function DashboardStats() {
   const { stats } = Stats();
+  const { theme } = useTheme();
 
   function generatePalette(n: number): string[] {
     const palette: string[] = [];
     const saturation = 55; // Fixed saturation for vibrancy
-    const lightness = 80; // Lower lightness for dark theme
+    const lightness = theme === "light" ? 50 : 80;
 
     for (let i = 0; i < n; i++) {
       const hue = (i * 360) / n; // Spread hue evenly around the color wheel
@@ -88,7 +90,9 @@ export default function DashboardStats() {
                     className="w-4"
                     color={
                       props.type == ProviderType.docker
-                        ? "#46ffff"
+                        ? theme === "dark"
+                          ? "#46ffff"
+                          : "#5491df"
                         : palette[index]
                     }
                     icon={props.type == ProviderType.docker ? faDocker : faFile}

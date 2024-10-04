@@ -22,15 +22,19 @@ export default function AppGroups() {
   }, []);
 
   return (
-    <Card className="w-full bg-transparent dark:bg-transparent" shadow="none">
+    <Card className="w-full bg-transparent" shadow="none">
       <ScrollShadow
         hideScrollBar
         className="w-full"
         size={0}
-        style={{ height: "calc(100vh - 380px)" }}
+        style={{ height: "calc(100vh - 305px)" }}
       >
         {Object.entries(homepageItems).map(([category, items]) => (
-          <Card key={`app-category-${category}`} className="mb-4 p-3">
+          <Card
+            key={`app-category-${category}`}
+            className="mb-4 p-3"
+            shadow="none"
+          >
             <CardHeader>
               <h2 className="text-2xl font-bold">{category}</h2>
             </CardHeader>
