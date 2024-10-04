@@ -22,7 +22,7 @@ export default function AppGroups() {
   }, []);
 
   return (
-    <Card className="w-full bg-transparent dark:bg-transparent">
+    <Card className="w-full bg-transparent dark:bg-transparent" shadow="none">
       <ScrollShadow
         hideScrollBar
         className="w-full"
