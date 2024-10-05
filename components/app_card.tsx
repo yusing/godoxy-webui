@@ -21,7 +21,7 @@ export default function AppCard({ item, style }: AppCardProps) {
       target="_blank"
     >
       <Tooltip content={item.url}>
-        <Card className="p-2">
+        <Card className="p-2" shadow="none">
           <CardBody>
             <div className="flex items-center space-x-2">
               {<FavIcon alt={item.name} base={item.url} href={item.icon} />}

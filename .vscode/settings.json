@@ -16,5 +16,14 @@
     },
     "[dotenv]": {
         "editor.defaultFormatter": "foxundermoon.shell-format"
+    },
+    "[properties]": {
+        "editor.defaultFormatter": "foxundermoon.shell-format"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
     } // set as "true" to run 'prettier' last not first
 }

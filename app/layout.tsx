@@ -50,13 +50,13 @@ export default function RootLayout({
         >
           <div className="relative flex flex-col h-screen">
             <Navbar />
-            <main className="mx-auto px-32">{children}</main>
+            <main className="mx-auto lg:px-32 md:px-24 sm:px-12">{children}</main>
             <footer className="w-full flex items-center justify-center py-3">
               <Link
                 isExternal
                 className="flex items-center gap-1 text-current"
                 href="https://github.com/yusing/go-proxy"
-                title="nextui.org homepage"
+                title="go-proxy homepage"
               >
                 <span className="text-default-600">Powered by</span>
                 <p className="text-primary">Go-Proxy</p>

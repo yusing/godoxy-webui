@@ -1,5 +1,4 @@
 import { Card, CardBody, CardHeader } from "@nextui-org/card";
-import { ScrollShadow } from "@nextui-org/scroll-shadow";
 import { Spacer } from "@nextui-org/spacer";
 import { useEffect, useState } from "react";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
@@ -22,38 +21,32 @@ export default function AppGroups() {
   }, []);
 
   return (
-    <Card className="w-full bg-transparent" shadow="none">
-      <ScrollShadow
-        hideScrollBar
-        className="w-full"
-        size={0}
-        style={{ height: "calc(100vh - 305px)" }}
-      >
-        {Object.entries(homepageItems).map(([category, items]) => (
-          <Card
-            key={`app-category-${category}`}
-            className="mb-4 p-3"
-            shadow="none"
-          >
-            <CardHeader>
-              <h2 className="text-2xl font-bold">{category}</h2>
-            </CardHeader>
-            <CardBody>
-              <Spacer y={1} />
-              <ResponsiveMasonry
-                className="flex gap-4"
-                columnsCountBreakPoints={{ 350: 2, 750: 3, 900: 4, 1200: 5 }}
-              >
-                <Masonry>
-                  {items.map((item) => (
-                    <AppCard key={item.name} item={item} />
-                  ))}
-                </Masonry>
-              </ResponsiveMasonry>
-            </CardBody>
-          </Card>
-        ))}
-      </ScrollShadow>
+    <Card className="w-full dark:bg-transparent light:bg-current" shadow="md">
+      {Object.entries(homepageItems).map(([category, items]) => (
+        <Card key={`app-category-${category}`} className="mb-4" shadow="none">
+          <CardHeader>
+            <h2
+              className="text-2xl font-bold"
+              style={{ paddingLeft: 16, paddingTop: 8 }}
+            >
+              {category}
+            </h2>
+          </CardHeader>
+          <CardBody className="p-0 m-0">
+            <Spacer y={1} />
+            <ResponsiveMasonry
+              className="flex gap-4"
+              columnsCountBreakPoints={{ 350: 2, 750: 3, 900: 4, 1200: 5 }}
+            >
+              <Masonry>
+                {items.map((item) => (
+                  <AppCard key={item.name} item={item} />
+                ))}
+              </Masonry>
+            </ResponsiveMasonry>
+          </CardBody>
+        </Card>
+      ))}
     </Card>
   );
 }

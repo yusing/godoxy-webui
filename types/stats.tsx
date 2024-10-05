@@ -5,18 +5,27 @@ import { toast } from "react-toastify";
 import Endpoints, { ws } from "@/types/endpoints";
 import { ProviderType } from "@/types/provider";
 
+type Stats = {
+  proxies: {
+    num_total_reverse_proxies: number;
+    num_total_streams: number;
+    providers: {
+      [key: string]: {
+        num_reverse_proxies: number;
+        num_streams: number;
+        type: ProviderType;
+      };
+    };
+  };
+  uptime: string;
+};
+
 export default function Stats() {
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<Stats>({
     proxies: {
       num_total_reverse_proxies: 0,
       num_total_streams: 0,
-      providers: {
-        "Loading...": {
-          num_reverse_proxies: 0,
-          num_streams: 0,
-          type: ProviderType.file,
-        },
-      },
+      providers: {},
     },
     uptime: "Loading...",
   });

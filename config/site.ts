@@ -28,7 +28,7 @@ export const siteConfig = {
   links: {
     github: "https://github.com/yusing/go-proxy",
     // docs: "https://nextui.org",
-    // discord: "https://discord.gg/9b6yyZKmH4",
+    discord: "https://discord.gg/umReR62nRd",
     // sponsor: "https://patreon.com/jrgarciadev",
   },
 };

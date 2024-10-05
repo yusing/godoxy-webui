@@ -15,10 +15,7 @@ import {
 import NextLink from "next/link";
 import { useEffect, useState } from "react";
 
-import {
-  GithubIcon,
-  Logo
-} from "@/components/icons";
+import { DiscordIcon, GithubIcon, Logo } from "@/components/icons";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { siteConfig } from "@/config/site";
 
@@ -62,7 +59,7 @@ export const Navbar = () => {
       onMenuOpenChange={setIsMenuOpen}
     >
       <NavbarContent className="basis-1/5 sm:basis-full" justify="start">
-        <NavbarBrand as="li" className="gap-3 max-w-fit">
+        <NavbarBrand as="li" className="gap-3">
           <NextLink className="flex justify-start items-center gap-1" href="/">
             <Logo />
             <p className="font-bold text-inherit">Go Proxy</p>
@@ -91,9 +88,9 @@ export const Navbar = () => {
           {/* <Link isExternal aria-label="Twitter" href={siteConfig.links.twitter}>
             <TwitterIcon className="text-default-500" />
           </Link> */}
-          {/* <Link isExternal aria-label="Discord" href={siteConfig.links.discord}>
+          <Link isExternal aria-label="Discord" href={siteConfig.links.discord}>
             <DiscordIcon className="text-default-500" />
-          </Link> */}
+          </Link>
           <Link isExternal aria-label="Github" href={siteConfig.links.github}>
             <GithubIcon className="text-default-500" />
           </Link>

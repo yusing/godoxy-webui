@@ -1,11 +1,11 @@
 import { faDocker } from "@fortawesome/free-brands-svg-icons";
-import { faFile } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsis, faFile } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Card, CardBody } from "@nextui-org/card";
-import { Spacer } from "@nextui-org/spacer";
+import { Tooltip } from "@nextui-org/tooltip";
 import { useTheme } from "next-themes";
 
-import Stats from "./stats";
+import Stats from "../types/stats";
 
 import { ProviderType } from "@/types/provider";
 
@@ -30,8 +30,52 @@ export default function DashboardStats() {
 
   const palette = generatePalette(Object.keys(stats.proxies.providers).length);
 
+  function providersGrid() {
+    let providers = Object.entries(stats.proxies.providers);
+    const nMore = providers.length - 5;
+    const nMoreClass = nMore > 0 ? "" : "hidden";
+
+    providers.sort((a, b) => b[1].num_streams - a[1].num_streams);
+    providers = providers.slice(0, 5);
+
+    return (
+      <div className="gap-2 grid grid-cols-2 items-center text-left">
+        {providers.map(([name, props], index) => (
+          <div key={`provider_${name}`} className="flex gap-2 items-center">
+            <FontAwesomeIcon
+              className="w-4"
+              color={
+                props.type == ProviderType.docker
+                  ? theme === "dark"
+                    ? "#46ffff"
+                    : "#5491df"
+                  : palette[index]
+              }
+              icon={props.type == ProviderType.docker ? faDocker : faFile}
+            />
+
+            <Tooltip
+              content={
+                <span className="text-medium">{`${props.num_reverse_proxies} reverse proxies, ${props.num_streams} streams`}</span>
+              }
+            >
+              <span className="text-medium">{name}</span>
+            </Tooltip>
+          </div>
+        ))}
+        <div
+          key={`provider_nmore`}
+          className={`flex gap-2 items-center ${nMoreClass}`}
+        >
+          <FontAwesomeIcon className="w-4" icon={faEllipsis} />
+          <span className="text-medium">{`and ${nMore} more`}</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="gap-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="gap-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 top-0 sticky">
       <Card className="xl:max-w-sm bg-primary rounded-xl shadow-md px-4">
         <CardBody className="py-5 overflow-hidden">
           <div className="flex flex-col">
@@ -74,33 +118,7 @@ export default function DashboardStats() {
         <CardBody className="py-5">
           <div className="flex flex-col">
             <span className="font-bold">Providers</span>
-            <span className="text-xs">
-              {Object.keys(stats.proxies.providers).length} Providers
-            </span>
-          </div>
-          <Spacer y={4} />
-          <div className="gap-2 grid grid-cols-2 items-center text-left">
-            {Object.entries(stats.proxies.providers).map(
-              ([name, props], index) => (
-                <div
-                  key={`provider_${name}`}
-                  className="flex gap-2 items-center"
-                >
-                  <FontAwesomeIcon
-                    className="w-4"
-                    color={
-                      props.type == ProviderType.docker
-                        ? theme === "dark"
-                          ? "#46ffff"
-                          : "#5491df"
-                        : palette[index]
-                    }
-                    icon={props.type == ProviderType.docker ? faDocker : faFile}
-                  />
-                  <span className="text-small">{name}</span>
-                </div>
-              ),
-            )}
+            {providersGrid()}
           </div>
         </CardBody>
       </Card>
