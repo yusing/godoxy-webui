@@ -59,7 +59,7 @@ export default function RootLayout({
                 title="go-proxy homepage"
               >
                 <span className="text-default-600">Powered by</span>
-                <p className="text-primary">Go-Proxy</p>
+                <p className="text-primary-500">Go-Proxy</p>
               </Link>
             </footer>
           </div>
