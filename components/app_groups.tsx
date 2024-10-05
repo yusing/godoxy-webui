@@ -21,7 +21,7 @@ export default function AppGroups() {
   }, []);
 
   return (
-    <Card className="w-full dark:bg-transparent light:bg-current" shadow="md">
+    <Card className="w-full dark:bg-transparent light:bg-current dark:shadow-none light:shadow-md">
       {Object.entries(homepageItems).map(([category, items]) => (
         <Card key={`app-category-${category}`} className="mb-4" shadow="none">
           <CardHeader>
@@ -32,7 +32,7 @@ export default function AppGroups() {
               {category}
             </h2>
           </CardHeader>
-          <CardBody className="p-0 m-0">
+          <CardBody className="p-0 m-0 w-full">
             <Spacer y={1} />
             <ResponsiveMasonry
               className="flex gap-4"
