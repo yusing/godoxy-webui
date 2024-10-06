@@ -15,6 +15,8 @@ import {
 import NextLink from "next/link";
 import { useEffect, useState } from "react";
 
+import VersionText from "./version_text";
+
 import { DiscordIcon, GithubIcon, Logo } from "@/components/icons";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { siteConfig } from "@/config/site";
@@ -62,7 +64,9 @@ export const Navbar = () => {
         <NavbarBrand as="li" className="gap-3">
           <NextLink className="flex justify-start items-center gap-1" href="/">
             <Logo />
-            <p className="font-bold text-inherit">Go Proxy</p>
+            <p className="font-bold text-inherit flex">
+              Go Proxy <VersionText />
+            </p>
           </NextLink>
         </NavbarBrand>
         <NavbarMenuToggle
