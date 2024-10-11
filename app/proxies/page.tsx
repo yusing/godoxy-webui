@@ -1,6 +1,10 @@
 "use client";
 
-import { faRefresh } from "@fortawesome/free-solid-svg-icons";
+import {
+  faRefresh,
+  faServer,
+  faStream,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Spinner } from "@nextui-org/spinner";
 import {
@@ -65,13 +69,17 @@ export default function ProxiesPage() {
     return (
       <Table
         aria-label="reverse proxies"
-        className="w-full"
+        className="w-full border rounded-md shadow-sm"
         sortDescriptor={list.sortDescriptor}
         onSortChange={list.sort}
       >
         <TableHeader columns={columns}>
           {(col) => (
-            <TableColumn key={col.key} allowsSorting>
+            <TableColumn
+              key={col.key}
+              allowsSorting
+              className="hover:bg-gray-100"
+            >
               {col.label}
             </TableColumn>
           )}
@@ -83,8 +91,13 @@ export default function ProxiesPage() {
           loadingContent={<Spinner label="Loading..." />}
         >
           {(item) => (
-            <TableRow key={`${key_prefix}_${item.alias}_${item.path_pattern}`}>
-              {(colKey) => <TableCell>{item[colKey]}</TableCell>}
+            <TableRow
+              key={`${key_prefix}_${item.alias}_${item.path_pattern}`}
+              className="hover:bg-gray-700"
+            >
+              {(colKey) => (
+                <TableCell className="font-medium">{item[colKey]}</TableCell>
+              )}
             </TableRow>
           )}
         </TableBody>
@@ -93,9 +106,10 @@ export default function ProxiesPage() {
   }
 
   return (
-    <div>
+    <div className="p-4">
       <Tabs
         aria-label="tabs"
+        className="space-y-4"
         selectedKey={selectedKey}
         variant="light"
         onSelectionChange={(key) => {
@@ -105,16 +119,37 @@ export default function ProxiesPage() {
           }
         }}
       >
-        <Tab key="reverse_proxies" title="Reverse Proxies">
+        <Tab
+          key="reverse_proxies"
+          title={
+            <span className="flex items-center gap-2">
+              <FontAwesomeIcon icon={faServer} />
+              Reverse Proxies
+            </span>
+          }
+        >
           {table("reverse_proxies", ReverseProxyColumns, rps)}
         </Tab>
-        <Tab key="streams" title="Streams">
+        <Tab
+          key="streams"
+          title={
+            <span className="flex items-center gap-2">
+              <FontAwesomeIcon icon={faStream} />
+              Streams
+            </span>
+          }
+        >
           {table("streams", StreamColumns, streams)}
         </Tab>
         <Tab
           key="reload"
           title={
-            <FontAwesomeIcon icon={faRefresh} onClick={activeList.reload} />
+            <button
+              className="p-2 text-blue-500 hover:text-blue-700 transition"
+              onClick={activeList.reload}
+            >
+              <FontAwesomeIcon icon={faRefresh} />
+            </button>
           }
         />
       </Tabs>

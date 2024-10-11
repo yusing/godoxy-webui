@@ -10,7 +10,7 @@ export const ReverseProxyColumns = [
   { key: "alias", label: "Alias" },
   { key: "provider", label: "Provider" },
   { key: "path_pattern", label: "Path Pattern" },
-  { key: "target_url", label: "Target" },
+  { key: "url", label: "Target" },
 ];
 
 export const StreamColumns = [
@@ -31,14 +31,21 @@ export async function getReverseProxies(signal: AbortSignal) {
   for (const entry of Object.values(model)) {
     for (const pattern of entry.path_patterns) {
       reverseProxies.push({
-        container: entry.raw.proxy_properties.container_name,
+        container: entry.container_name,
         alias: entry.alias,
         provider: entry.provider,
         path_pattern: pattern,
-        target_url: entry.target_url,
+        url: entry.url,
       });
     }
   }
+
+  reverseProxies.sort((a, b) => {
+    return (
+      a.provider.localeCompare(b.provider) ||
+      a.container.localeCompare(b.container)
+    );
+  });
 
   return reverseProxies;
 }
@@ -53,12 +60,16 @@ export async function getStreams(signal: AbortSignal) {
 
   for (const entry of Object.values(model)) {
     streams.push({
-      container: entry.raw.proxy_properties.container_name,
+      container: entry.raw.container.container_name,
       alias: entry.alias,
       provider: entry.provider,
       target: `${entry.scheme.listening}://${entry.host}:${entry.port.listening} => ${entry.scheme.proxy}://${entry.host}:${entry.port.proxy}`,
     });
   }
+
+  streams.sort((a, b) => {
+    return a.provider.localeCompare(b.provider);
+  });
 
   return streams;
 }

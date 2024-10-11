@@ -32,7 +32,7 @@ export default function AppGroups() {
               {category}
             </h2>
           </CardHeader>
-          <CardBody className="p-0 m-0 w-full overflow-x-clip">
+          <CardBody className="p-0 m-0 w-full overflow-x-auto overflow-y-auto">
             <Spacer y={1} />
             <ResponsiveMasonry
               className="flex gap-4"
