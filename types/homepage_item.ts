@@ -27,6 +27,13 @@ export async function getHomepageItems() {
       category.sort((a: HomepageItem, b: HomepageItem) => {
         return a.name.length - b.name.length || a.name.localeCompare(b.name);
       });
+      for (const item of category) {
+        if (item.url.startsWith("https://")) {
+          item.url = item.url.replace(":443", "");
+        } else if (item.url.startsWith("http://")) {
+          item.url = item.url.replace(":80", "");
+        }
+      }
     }
 
     return data;
