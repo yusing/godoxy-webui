@@ -92,7 +92,7 @@ export default function ProxiesPage() {
         >
           {(item) => (
             <TableRow
-              key={`${key_prefix}_${item.alias}_${item.path_pattern}`}
+              key={`${key_prefix}_${item.alias}`}
               className="hover:bg-gray-700"
             >
               {(colKey) => (
