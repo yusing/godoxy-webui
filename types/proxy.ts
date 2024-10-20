@@ -31,15 +31,6 @@ export async function getReverseProxies(signal: AbortSignal) {
   const reverseProxies: any[] = [];
 
   for (const route of Object.values(model)) {
-    reverseProxies.push({
-      container: route.idlewatcher?.container_name ?? "",
-      alias: route.alias,
-      load_balancer: "",
-      url: route.health?.url ?? route.url ?? "",
-      status: route.health?.status ?? "unknown",
-      uptime: route.health?.uptimeStr ?? "",
-    });
-
     if (route.health && route.health.extra) {
       for (const v of Object.values(route.health.extra.pool)) {
         reverseProxies.push({
@@ -51,6 +42,15 @@ export async function getReverseProxies(signal: AbortSignal) {
           uptime: v.uptimeStr,
         });
       }
+    } else {
+      reverseProxies.push({
+        container: route.idlewatcher?.container_name ?? "",
+        alias: route.alias,
+        load_balancer: "",
+        url: route.health?.url ?? route.url ?? "",
+        status: route.health?.status ?? "unknown",
+        uptime: route.health?.uptimeStr ?? "",
+      });
     }
   }
 
