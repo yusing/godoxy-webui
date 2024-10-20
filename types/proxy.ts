@@ -1,9 +1,7 @@
 import Endpoints, { fetchEndpoint } from "./endpoints";
+import { HTTPRoute } from "./route/http";
+import { StreamRoute } from "./route/stream";
 
-type ProxyEntriesObject = Record<string, ReverseProxy>;
-export type ReverseProxy = Record<string, any>;
-export type Stream = Record<string, any>;
-export type LoadBalancedRoute = Record<string, any>;
 export type Column = { key: string; label: string };
 
 export const ReverseProxyColumns = [
@@ -29,25 +27,21 @@ export async function getReverseProxies(signal: AbortSignal) {
     query: { type: "reverse_proxy" },
     signal: signal,
   });
-  const model = (await results.json()) as ProxyEntriesObject;
-  const reverseProxies: ReverseProxy[] = [];
+  const model = (await results.json()) as Record<string, HTTPRoute>;
+  const reverseProxies: any[] = [];
 
   for (const route of Object.values(model)) {
-    let entry = route.raw;
-
     reverseProxies.push({
-      container: entry.container ? entry.container.container_name : "",
+      container: route.idlewatcher?.container_name ?? "",
       alias: route.alias,
       load_balancer: "",
-      url: route.health ? route.health.url : entry.url ? entry.url : "",
-      status: route.health ? route.health.status : "unknown",
-      uptime: route.health ? route.health.uptimeStr : "",
+      url: route.health?.url ?? route.url ?? "",
+      status: route.health?.status ?? "unknown",
+      uptime: route.health?.uptimeStr ?? "",
     });
 
     if (route.health && route.health.extra) {
-      for (const v of Object.values(
-        route.health.extra.pool as LoadBalancedRoute,
-      )) {
+      for (const v of Object.values(route.health.extra.pool)) {
         reverseProxies.push({
           container: "",
           alias: v.name,
@@ -76,21 +70,19 @@ export async function getStreams(signal: AbortSignal) {
     query: { type: "stream" },
     signal: signal,
   });
-  const model = (await results.json()) as ProxyEntriesObject;
-  const streams: Stream[] = [];
+  const model = (await results.json()) as Record<string, StreamRoute>;
+  const streams: any[] = [];
 
   for (const route of Object.values(model)) {
-    let entry = route.raw;
-
     streams.push({
-      container: entry.container ? entry.container.container_name : "",
+      container: route.idlewatcher?.container_name ?? "",
       alias: route.alias,
       listening: `${route.scheme.listening}://:${route.port.listening}`,
-      target: route.health
-        ? route.health.url
-        : `${route.scheme.proxy}://${route.host}:${route.port.proxy}`,
-      status: route.health ? route.health.status : "unknown",
-      uptime: route.health ? route.health.uptimeStr : "",
+      target:
+        route.health?.url ??
+        `${route.scheme.proxy}://${route.host}:${route.port.proxy}`,
+      status: route.health?.status ?? "unknown",
+      uptime: route.health?.uptimeStr ?? "",
     });
   }
 
