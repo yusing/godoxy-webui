@@ -1,5 +1,6 @@
 import { Card, CardBody, CardHeader } from "@nextui-org/card";
 import { Spacer } from "@nextui-org/spacer";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { toast } from "react-toastify";
@@ -9,12 +10,17 @@ import { getHomepageItems, HomepageItems } from "@/types/homepage_item";
 
 export default function AppGroups() {
   const [homepageItems, setHomepageItems] = useState<HomepageItems>({});
+  const router = useRouter();
 
   useEffect(() => {
     const fetchHomepageItems = async () => {
-      const items = await getHomepageItems();
+      try {
+        const items = await getHomepageItems();
 
-      setHomepageItems(items);
+        setHomepageItems(items);
+      } catch {
+        router.push("/login");
+      }
     };
 
     fetchHomepageItems().catch((error) => toast.error(error));

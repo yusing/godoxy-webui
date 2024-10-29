@@ -18,8 +18,13 @@ export type HomepageItem = {
 export type HomepageItems = Record<string, HomepageItem[]>;
 
 export async function getHomepageItems() {
+  const response = await fetchEndpoint(Endpoints.HOMEPAGE_CFG);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch homepage items: ${response.statusText}`);
+  }
+
   try {
-    const response = await fetchEndpoint(Endpoints.HOMEPAGE_CFG);
     const data = (await response.json()) as HomepageItems;
 
     // sort by length of name and then alphabetically
@@ -38,7 +43,7 @@ export async function getHomepageItems() {
 
     return data;
   } catch (error) {
-    toast.error("Failed to fetch homepage items " + error);
+    toast.error(`${error}`);
 
     return {};
   }

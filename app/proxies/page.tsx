@@ -24,9 +24,7 @@ import {
   Column,
   getReverseProxies,
   getStreams,
-  ReverseProxy,
   ReverseProxyColumns,
-  Stream,
   StreamColumns,
 } from "@/types/proxy";
 
@@ -64,7 +62,7 @@ export default function ProxiesPage() {
   function table(
     key_prefix: string,
     columns: Column[],
-    list: AsyncListData<Stream | ReverseProxy>,
+    list: AsyncListData<any>,
   ) {
     return (
       <Table

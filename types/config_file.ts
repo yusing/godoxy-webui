@@ -21,6 +21,7 @@ export default class ConfigFile {
     return await response.text();
   }
 
+
   setContent(content: string) {
     this.content = content;
   }

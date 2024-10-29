@@ -1,6 +1,9 @@
+import { Router } from "next/router";
+
 namespace Endpoints {
   export const FileContent = (filename: string) => `/file/${filename}`;
   export const VERSION = "/version";
+  export const LOGIN = "/login";
   export const LIST_CONFIG_FILES = "/list/config_files";
   export const LIST_PROXIES = "/list/routes";
   export const MATCH_DOMAINS = "/list/match_domains";
@@ -64,6 +67,16 @@ export async function checkResponse(resp: Response) {
         content: await resp.text(),
       }),
     );
+}
+
+export function checkAuth(resp: Response, router: Router) {
+  if (resp.status === 401 || resp.status === 403) {
+    router.push("/login");
+
+    return false;
+  }
+
+  return true;
 }
 
 export default Endpoints;
