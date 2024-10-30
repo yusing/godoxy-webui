@@ -2,6 +2,8 @@
 
 // import { Input } from "@nextui-org/input";
 // import { Kbd } from "@nextui-org/kbd";
+import { faSignOut } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "@nextui-org/link";
 import {
   NavbarBrand,
@@ -13,6 +15,7 @@ import {
   Navbar as NextUINavbar,
 } from "@nextui-org/navbar";
 import NextLink from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import VersionText from "./version_text";
@@ -24,6 +27,7 @@ import { siteConfig } from "@/config/site";
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState("/");
+  const pathname = usePathname();
 
   // const searchInput = (
   //   <Input
@@ -49,6 +53,10 @@ export const Navbar = () => {
   useEffect(() => {
     setSelectedItem(window.location.pathname);
   }, []);
+
+  if (pathname === "/login") {
+    return null;
+  }
 
   return (
     <NextUINavbar
@@ -99,17 +107,9 @@ export const Navbar = () => {
             <GithubIcon className="text-default-500" />
           </Link>
           <ThemeSwitch />
-          {/* TODO: complete this */}
-          {/* <Switch
-            defaultSelected
-            thumbIcon={({ isSelected, className }) =>
-              isSelected ? (
-                <PinStatsIcon className={className} />
-              ) : (
-                <UnpinStatsIcon className={className} />
-              )
-            }
-          /> */}
+          <Link aria-label="Logout" href="/api/logout">
+            <FontAwesomeIcon className="text-default-500" icon={faSignOut} />
+          </Link>
         </NavbarItem>
         {/* <NavbarItem className="hidden lg:flex">{searchInput}</NavbarItem> */}
         {/* <NavbarItem className="hidden md:flex">

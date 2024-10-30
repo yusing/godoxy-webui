@@ -4,6 +4,7 @@ namespace Endpoints {
   export const FileContent = (filename: string) => `/file/${filename}`;
   export const VERSION = "/version";
   export const LOGIN = "/login";
+  export const LOGOUT = "/logout";
   export const LIST_CONFIG_FILES = "/list/config_files";
   export const LIST_PROXIES = "/list/routes";
   export const MATCH_DOMAINS = "/list/match_domains";
