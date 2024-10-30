@@ -12,10 +12,8 @@ import { login } from "@/types/auth"; // Import the login function
 
 export default function LoginPage() {
   const [isVisible, setIsVisible] = useState(false);
-  const [credentials, setCredentials] = useState({
-    username: "",
-    password: "",
-  });
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
 
@@ -23,15 +21,9 @@ export default function LoginPage() {
     setIsVisible(!isVisible);
   }
 
-  function handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = event.target;
-
-    setCredentials((prev) => ({ ...prev, [name]: value }));
-  }
-
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    const response = await login(credentials);
+    const response = await login({ username, password });
 
     if (response.ok) {
       router.push("/");
@@ -57,7 +49,7 @@ export default function LoginPage() {
             radius="sm"
             type="text"
             variant="bordered"
-            onChange={handleChange}
+            onValueChange={setUsername}
           />
           <Input
             isRequired
@@ -85,7 +77,7 @@ export default function LoginPage() {
             radius="sm"
             type={isVisible ? "text" : "password"}
             variant="bordered"
-            onChange={handleChange}
+            onValueChange={setPassword}
           />
           <Button className="w-full" radius="sm" type="submit" variant="flat">
             Login
