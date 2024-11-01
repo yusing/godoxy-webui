@@ -2,15 +2,12 @@
 
 import { nextui } from "@nextui-org/theme";
 
-module.exports = {
-  content: [
-    "./node_modules/@nextui-org/theme/dist/components/(button|card|image|input|kbd|link|listbox|navbar|popover|scroll-shadow|spacer|spinner|toggle|table|tabs|ripple|divider|checkbox).js"
-],
+export default {
   content: {
     files: [
       "./components/**/*.{js,ts,jsx,tsx,mdx}",
       "./app/**/*.{js,ts,jsx,tsx,mdx}",
-      "./node_modules/@nextui-org/theme/dist/components/*.js",
+      "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
     ],
   },
   theme: {
