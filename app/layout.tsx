@@ -50,7 +50,7 @@ export default function RootLayout({
         >
           <div className="flex flex-col h-screen">
             <Navbar />
-            <main className="mx-auto lg:px-32 md:px-24 sm:px-12">
+            <main className="flex-1 mx-auto lg:px-32 md:px-24 sm:px-12 flex items-center justify-center">
               {children}
             </main>
             <footer className="w-full flex items-center justify-center py-3">
@@ -58,10 +58,10 @@ export default function RootLayout({
                 isExternal
                 className="flex items-center gap-1 text-current"
                 href="https://github.com/yusing/go-proxy"
-                title="go-proxy homepage"
+                title="godoxy homepage"
               >
                 <span className="text-default-600">Powered by</span>
-                <p className="text-primary-500">Go-Proxy</p>
+                <p className="text-primary-500">GoDoxy</p>
               </Link>
             </footer>
           </div>
