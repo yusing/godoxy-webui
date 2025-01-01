@@ -21,9 +21,12 @@
         "editor.defaultFormatter": "foxundermoon.shell-format"
     },
     "[javascript]": {
-        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+        "editor.defaultFormatter": "vscode.typescript-language-features"
     },
     "[jsonc]": {
         "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
     } // set as "true" to run 'prettier' last not first
 }

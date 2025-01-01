@@ -10,10 +10,7 @@ for (const prefix of envPrefixes) {
   }
 }
 
-const apiBaseURL =
-  apiAddr === undefined
-    ? "http://127.0.0.1:8888/v1"
-    : `http://${apiAddr}/v1`;
+apiAddr ??= "127.0.0.1:8888";
 
 const nextConfig = {
   output: "standalone",
@@ -22,7 +19,7 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: `${apiBaseURL}/:path*`, // Proxy to Backend apiBaseURL,
+        destination: `http://${apiAddr}/v1/:path*`, // Proxy to Backend apiBaseURL,
       },
     ];
   },
