@@ -6,7 +6,7 @@ import { NextToastContainer } from "@/components/toast_container";
 
 export default function Dashboard() {
   return (
-    <div className="flex flex-col items-center justify-center gap-4">
+    <div className="flex flex-col gap-4">
       <NextToastContainer />
       <div className="sticky top-[50px]">
         <DashboardStats />
