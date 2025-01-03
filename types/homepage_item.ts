@@ -5,6 +5,7 @@ import { ProviderType } from "./provider";
 
 export type HomepageItem = {
   name: string;
+  alias: string;
   icon: string;
   category: string;
   description: string;
@@ -18,6 +19,7 @@ export type HomepageItem = {
 export type HomepageItems = Record<string, HomepageItem[]>;
 
 export async function getHomepageItems() {
+  const currentHostname = window.location.hostname.split('.').slice(1).join('.');
   const response = await fetchEndpoint(Endpoints.HOMEPAGE_CFG);
 
   if (!response.ok) {
@@ -33,10 +35,9 @@ export async function getHomepageItems() {
         return a.name.length - b.name.length || a.name.localeCompare(b.name);
       });
       for (const item of category) {
-        if (item.url.startsWith("https://")) {
-          item.url = item.url.replace(":443", "");
-        } else if (item.url.startsWith("http://")) {
-          item.url = item.url.replace(":80", "");
+        // if an override url is not set, use the default
+        if (item.url == "") {
+          item.url = `${window.location.protocol}//${item.alias}.${currentHostname}/`;
         }
       }
     }
