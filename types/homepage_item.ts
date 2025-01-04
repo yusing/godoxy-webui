@@ -19,7 +19,10 @@ export type HomepageItem = {
 export type HomepageItems = Record<string, HomepageItem[]>;
 
 export async function getHomepageItems() {
-  const currentHostname = window.location.hostname.split('.').slice(1).join('.');
+  const currentHostname = window.location.hostname
+    .split(".")
+    .slice(1)
+    .join(".");
   const response = await fetchEndpoint(Endpoints.HOMEPAGE_CFG);
 
   if (!response.ok) {

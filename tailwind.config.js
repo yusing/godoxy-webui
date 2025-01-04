@@ -3,6 +3,9 @@
 import { nextui } from "@nextui-org/theme";
 
 export default {
+  content: [
+    "./node_modules/@nextui-org/theme/dist/components/(button|card|image|input|kbd|link|listbox|modal|navbar|popover|scroll-shadow|spacer|spinner|toggle|table|tabs|ripple|form|divider|checkbox).js"
+],
   content: {
     files: [
       "./components/**/*.{js,ts,jsx,tsx,mdx}",

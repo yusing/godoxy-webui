@@ -28,5 +28,8 @@
     },
     "[typescript]": {
         "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "[typescriptreact]": {
+        "editor.defaultFormatter": "trunk.io"
     } // set as "true" to run 'prettier' last not first
 }

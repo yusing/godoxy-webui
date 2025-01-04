@@ -43,7 +43,7 @@ export default function Stats() {
     };
 
     socket.onerror = (event) => {
-      toast.error(`Failed to fetch stats:`);
+      toast.error(`Failed to fetch stats: ${event}`);
       log.error(event);
     };
 

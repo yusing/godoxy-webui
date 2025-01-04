@@ -21,11 +21,17 @@ type FetchArguments = {
   method?: "GET" | "POST" | "PUT" | "DELETE";
 };
 
-export type FetchError = {
+export class FetchError {
   status: number;
   statusText: string;
   content: string;
-};
+
+  constructor(args: { status: number; statusText: string; content: string }) {
+    this.status = args.status;
+    this.statusText = args.statusText;
+    this.content = args.content;
+  }
+}
 
 export function formatError(error: string | Error | FetchError) {
   if (typeof error === "string") {
@@ -60,14 +66,13 @@ export function ws(endpoint: string) {
 }
 
 export async function checkResponse(resp: Response) {
-  if (!resp.ok)
-    throw new Error(
-      JSON.stringify({
-        status: resp.status,
-        statusText: resp.statusText,
-        content: await resp.text(),
-      }),
-    );
+  if (!resp.ok) {
+    throw new FetchError({
+      status: resp.status,
+      statusText: resp.statusText,
+      content: await resp.text(),
+    });
+  }
 }
 
 export function checkAuth(resp: Response, router: Router) {

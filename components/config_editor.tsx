@@ -12,7 +12,6 @@ import { formatError } from "@/types/endpoints";
 
 export default function ConfigEditor({ file }: { readonly file: ConfigFile }) {
   const [editorValue, setEditorValue] = useState("");
-  const extensions = [yaml()];
   const { theme } = useTheme();
 
   useEffect(() => {
@@ -24,7 +23,7 @@ export default function ConfigEditor({ file }: { readonly file: ConfigFile }) {
 
   return (
     <CodeMirror
-      extensions={extensions}
+      extensions={[yaml()]}
       style={{ minWidth: "55vw" }}
       theme={theme === "light" ? githubLight : andromeda}
       value={editorValue}

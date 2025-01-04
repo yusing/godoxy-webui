@@ -8,18 +8,18 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import ConfigEditor from "@/components/config_editor";
+import ErrorPopup from "@/components/error_popup";
 import { NewFileButton } from "@/components/new_file_button";
 import { NextToastContainer } from "@/components/toast_container";
 import ConfigFile from "@/types/config_file";
-import Endpoints, {
-  fetchEndpoint,
-  FetchError,
-  formatError,
-} from "@/types/endpoints";
+import Endpoints, { fetchEndpoint, FetchError } from "@/types/endpoints";
 
 export default function ConfigEditorPage() {
   const [fileList, setFileList] = useState<ConfigFile[]>([]);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
+
+  const [error, setError] = useState<FetchError | null>(null);
+  const [isErrOpen, setIsErrOpen] = useState(false);
 
   useEffect(() => {
     const loadFiles = async () => {
@@ -66,7 +66,10 @@ export default function ConfigEditorPage() {
     fileList[fileIndex]
       .updateRemote()
       .then(() => toast.success("Saved"))
-      .catch((e: FetchError) => toast.error(formatError(e)));
+      .catch((e) => {
+        setError(e);
+        setIsErrOpen(true);
+      });
   };
 
   return (
@@ -85,6 +88,7 @@ export default function ConfigEditorPage() {
           </Button>
         </div>
       </div>
+      <ErrorPopup error={error} isOpen={isErrOpen} setIsOpen={setIsErrOpen} />
       <Tabs
         isVertical
         aria-label="Config Files"
