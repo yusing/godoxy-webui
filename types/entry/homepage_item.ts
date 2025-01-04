@@ -1,6 +1,7 @@
 export interface HomepageItem {
   show: boolean;
   name: string;
+  alias: string;
   icon: string;
   url: string;
   category: string;

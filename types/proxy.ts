@@ -36,7 +36,7 @@ export async function getReverseProxies(signal: AbortSignal) {
         reverseProxies.push({
           container: "",
           alias: v.name,
-          load_balancer: route.alias,
+          load_balancer: route.raw.alias,
           url: v.url,
           status: v.status,
           uptime: v.uptimeStr,
@@ -45,7 +45,7 @@ export async function getReverseProxies(signal: AbortSignal) {
     } else {
       reverseProxies.push({
         container: route.idlewatcher?.container_name ?? "",
-        alias: route.alias,
+        alias: route.raw.alias,
         load_balancer: "",
         url: route.health?.url ?? route.url ?? "",
         status: route.health?.status ?? "unknown",
@@ -76,11 +76,9 @@ export async function getStreams(signal: AbortSignal) {
   for (const route of Object.values(model)) {
     streams.push({
       container: route.idlewatcher?.container_name ?? "",
-      alias: route.alias,
+      alias: route.raw.alias,
       listening: `${route.scheme.listening}://:${route.port.listening}`,
-      target:
-        route.health?.url ??
-        `${route.scheme.proxy}://${route.host}:${route.port.proxy}`,
+      target: route.health?.url ?? route.url,
       status: route.health?.status ?? "unknown",
       uptime: route.health?.uptimeStr ?? "",
     });

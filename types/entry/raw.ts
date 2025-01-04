@@ -3,6 +3,7 @@ import { HomepageItem } from "./homepage_item";
 import { LoadBalanceConfig } from "./loadbalance_config";
 
 export interface Raw {
+  alias: string;
   scheme: string;
   host: string;
   port: string;

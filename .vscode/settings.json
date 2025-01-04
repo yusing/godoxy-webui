@@ -27,7 +27,7 @@
         "editor.defaultFormatter": "rvest.vs-code-prettier-eslint"
     },
     "[typescript]": {
-        "editor.defaultFormatter": "vscode.typescript-language-features"
+        "editor.defaultFormatter": "trunk.io"
     },
     "[typescriptreact]": {
         "editor.defaultFormatter": "trunk.io"

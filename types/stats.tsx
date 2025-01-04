@@ -38,7 +38,6 @@ export default function Stats() {
     };
 
     socket.onmessage = (event) => {
-      // log.debug("stats ws message", event);
       setStats(JSON.parse(event.data.toString()));
     };
 
