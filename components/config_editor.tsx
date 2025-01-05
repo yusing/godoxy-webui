@@ -24,7 +24,7 @@ export default function ConfigEditor({ file }: { readonly file: ConfigFile }) {
   return (
     <CodeMirror
       extensions={[yaml()]}
-      style={{ minWidth: "55vw" }}
+      style={{ maxWidth: "55vw", maxHeight: "80vh", overflowY: "scroll" }}
       theme={theme === "light" ? githubLight : andromeda}
       value={editorValue}
       onChange={(value, _) => {
