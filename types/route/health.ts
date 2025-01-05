@@ -7,8 +7,13 @@ export interface Health {
   started: number;
   startedStr: string;
   status: string;
-  uptime: number;
+  // uptime: number;
   uptimeStr: string;
+  // latency: number;
+  latencyStr: string;
+  // lastSeen: number;
+  lastSeenStr: string;
+  detail: string;
   url?: string;
   extra?: LoadBalanceHealthExtra;
 }

@@ -11,6 +11,7 @@ export const ReverseProxyColumns = [
   { key: "url", label: "Target" },
   { key: "status", label: "Status" },
   { key: "uptime", label: "Uptime" },
+  { key: "latency", label: "Latency" },
 ];
 
 export const StreamColumns = [
@@ -20,6 +21,7 @@ export const StreamColumns = [
   { key: "target", label: "Target" },
   { key: "status", label: "Status" },
   { key: "uptime", label: "Uptime" },
+  { key: "latency", label: "Latency" },
 ];
 
 export async function getReverseProxies(signal: AbortSignal) {
@@ -40,6 +42,7 @@ export async function getReverseProxies(signal: AbortSignal) {
           url: v.url,
           status: v.status,
           uptime: v.uptimeStr,
+          latency: v.latencyStr,
         });
       }
     } else {
@@ -50,6 +53,7 @@ export async function getReverseProxies(signal: AbortSignal) {
         url: route.health?.url ?? route.url ?? "",
         status: route.health?.status ?? "unknown",
         uptime: route.health?.uptimeStr ?? "",
+        latency: route.health?.latencyStr ?? "",
       });
     }
   }
@@ -81,6 +85,7 @@ export async function getStreams(signal: AbortSignal) {
       target: route.health?.url ?? route.url,
       status: route.health?.status ?? "unknown",
       uptime: route.health?.uptimeStr ?? "",
+      latency: route.health?.latencyStr ?? "",
     });
   }
 
