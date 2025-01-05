@@ -4,7 +4,7 @@ import { faFile, faSave } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Button } from "@nextui-org/button";
 import { Tab, Tabs } from "@nextui-org/tabs";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import ConfigEditor from "@/components/config_editor";
@@ -12,7 +12,7 @@ import ErrorPopup from "@/components/error_popup";
 import { NewFileButton } from "@/components/new_file_button";
 import { NextToastContainer } from "@/components/toast_container";
 import ConfigFile from "@/types/config_file";
-import Endpoints, { fetchEndpoint, FetchError } from "@/types/endpoints";
+import Endpoints, { checkResponse, fetchEndpoint, FetchError } from "@/types/endpoints";
 
 export default function ConfigEditorPage() {
   const [fileList, setFileList] = useState<ConfigFile[]>([]);
@@ -21,23 +21,32 @@ export default function ConfigEditorPage() {
   const [error, setError] = useState<FetchError | null>(null);
   const [isErrOpen, setIsErrOpen] = useState(false);
 
-  useEffect(() => {
-    const loadFiles = async () => {
-      const response = await fetchEndpoint(Endpoints.LIST_CONFIG_FILES);
+  const loadFiles = async () => {
+    const response = await fetchEndpoint(Endpoints.LIST_CONFIG_FILES);
+    await checkResponse(response).catch((e) => {
+      setError(e);
+      setIsErrOpen(true);
+    });
 
-      setFileList(
-        ((await response.json()) as string[]).map(
-          (fname: string) => new ConfigFile(fname),
-        ),
-      );
-    };
+    setFileList(
+      ((await response.json()) as string[]).map(
+        (fname: string) => new ConfigFile(fname),
+      ),
+    );
+  };
 
-    loadFiles()
+  const loadFilesCallback = useCallback(async () => {
+    return await loadFiles()
       .catch(toast)
       .then(() => {
         if (fileList.length > 0) setSelectedKey(fileList[0].getFilename());
+        return fileList;
       });
   }, []);
+
+  useEffect(() => {
+    loadFilesCallback();
+  }, [loadFilesCallback]);
 
   const createNewFile = (filename: string) => {
     setFileList([...fileList, ConfigFile.Create(filename)]);
@@ -55,6 +64,7 @@ export default function ConfigEditorPage() {
   const onSelectTab = (key: React.Key) => {
     // skip if filelist not yet loaded
     if (fileList.length === 0) return;
+    if (key.toString() === selectedKey) return;
     setSelectedKey(key.toString());
   };
 

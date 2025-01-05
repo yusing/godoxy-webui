@@ -1,7 +1,7 @@
-import { Router } from "next/router";
 
 namespace Endpoints {
   export const FileContent = (filename: string) => `/file/${filename}`;
+  export const Schema = (filename: string) => `/schema/${filename}`;
   export const VERSION = "/version";
   export const LOGIN = "/login";
   export const LOGOUT = "/logout";
@@ -74,15 +74,4 @@ export async function checkResponse(resp: Response) {
     });
   }
 }
-
-export function checkAuth(resp: Response, router: Router) {
-  if (resp.status === 401 || resp.status === 403) {
-    router.push("/login");
-
-    return false;
-  }
-
-  return true;
-}
-
 export default Endpoints;

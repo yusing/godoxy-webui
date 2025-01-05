@@ -1,7 +1,6 @@
-import { andromeda } from "@uiw/codemirror-theme-andromeda";
-import { githubLight } from "@uiw/codemirror-theme-github";
 import CodeMirror, { Extension } from "@uiw/react-codemirror";
 import { useTheme } from "next-themes";
+import { dracula, noctisLilac } from "thememirror";
 
 export function CodeViewer({
   value,
@@ -22,7 +21,7 @@ export function CodeViewer({
       }}
       editable={false}
       extensions={extensions}
-      theme={theme === "light" ? githubLight : andromeda}
+      theme={theme === "light" ? noctisLilac : dracula}
       value={value}
     />
   );

@@ -5,7 +5,7 @@
     "editor.formatOnPaste": true, // optional
     "editor.formatOnSave": true, // optional
     "editor.formatOnSaveMode": "file", // required to format on save
-    "files.autoSave": "onFocusChange", // optional but recommended
+    "files.autoSave": "off", // optional but recommended
     "vs-code-prettier-eslint.prettierLast": false,
     "sonarlint.connectedMode.project": {
         "connectionId": "yusing",
@@ -30,6 +30,6 @@
         "editor.defaultFormatter": "trunk.io"
     },
     "[typescriptreact]": {
-        "editor.defaultFormatter": "trunk.io"
+        "editor.defaultFormatter": "vscode.typescript-language-features"
     } // set as "true" to run 'prettier' last not first
 }
