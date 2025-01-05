@@ -1,4 +1,4 @@
-FROM node:18-alpine AS base
+FROM node:lts-alpine AS base
 
 HEALTHCHECK NONE
 

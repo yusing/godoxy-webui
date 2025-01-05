@@ -1,0 +1,24 @@
+# this docker compose file is for development only
+services:
+  frontend:
+    container_name: godoxy-frontend
+    restart: no
+    network_mode: host
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
+    volumes: # for hot reloading
+      - ./app:/app/app:ro
+      - ./components:/app/components:ro
+      - ./config:/app/config:ro
+      - ./public:/app/public:ro
+      - ./styles:/app/styles:ro
+      - ./types:/app/types:ro
+    labels:
+      proxy.aliases: godoxy
+      proxy.godoxy: |
+        port: 3000
+        healthcheck:
+          disabled: true
+        homepage:
+          show: false
