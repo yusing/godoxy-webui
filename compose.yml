@@ -4,6 +4,7 @@ services:
     container_name: godoxy-frontend
     restart: no
     network_mode: host
+    image: godoxy-frontend
     build:
       context: .
       dockerfile: dev.Dockerfile
@@ -14,6 +15,8 @@ services:
       - ./public:/app/public:ro
       - ./styles:/app/styles:ro
       - ./types:/app/types:ro
+      - ./schema:/app/schema:ro
+      - ./.next:/app/.next
     labels:
       proxy.aliases: godoxy
       proxy.godoxy: |
