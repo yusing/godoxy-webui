@@ -1,4 +1,4 @@
-import Endpoints, { checkResponse, fetchEndpoint } from "./endpoints";
+import Endpoints, { checkResponse, fetchEndpoint, FetchError } from "./endpoints";
 
 export default class ConfigFile {
   constructor(filename: string, isNewFile: boolean = false) {
@@ -47,3 +47,17 @@ export default class ConfigFile {
   private isNewFile: boolean;
   private content: string | undefined = undefined;
 }
+
+export async function getConfigFiles(onError: (e: FetchError) => void) {
+  const response = await fetchEndpoint(Endpoints.LIST_CONFIG_FILES);
+  await checkResponse(response).catch(onError);
+  const list = (await response.json()) as string[];
+
+  return list.reduce(
+    (acc, filename) => {
+      acc[filename] = new ConfigFile(filename);
+      return acc;
+    },
+    {} as Record<string, ConfigFile>
+  );
+};

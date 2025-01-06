@@ -15,7 +15,6 @@ services:
       - ./public:/app/public:ro
       - ./styles:/app/styles:ro
       - ./types:/app/types:ro
-      - ./schema:/app/schema:ro
       - ./.next:/app/.next
     labels:
       proxy.aliases: godoxy

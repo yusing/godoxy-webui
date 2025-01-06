@@ -62,7 +62,7 @@ export default function ProxiesPage() {
   function table(
     key_prefix: string,
     columns: Column[],
-    list: AsyncListData<any>,
+    list: AsyncListData<any>
   ) {
     return (
       <Table
@@ -142,12 +142,11 @@ export default function ProxiesPage() {
         <Tab
           key="reload"
           title={
-            <button
+            <FontAwesomeIcon
               className="p-2 text-blue-500 hover:text-blue-700 transition"
+              icon={faRefresh}
               onClick={activeList.reload}
-            >
-              <FontAwesomeIcon icon={faRefresh} />
-            </button>
+            />
           }
         />
       </Tabs>

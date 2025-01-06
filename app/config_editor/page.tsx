@@ -1,129 +1,113 @@
 "use client";
 
-import { faFile, faSave } from "@fortawesome/free-solid-svg-icons";
+import { faAdd, faFile, faSave } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button } from "@nextui-org/button";
-import { Tab, Tabs } from "@nextui-org/tabs";
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import ConfigEditor from "@/components/config_editor";
 import ErrorPopup from "@/components/error_popup";
 import { NewFileButton } from "@/components/new_file_button";
 import { NextToastContainer } from "@/components/toast_container";
-import ConfigFile from "@/types/config_file";
-import Endpoints, { checkResponse, fetchEndpoint, FetchError } from "@/types/endpoints";
+import ConfigFile, { getConfigFiles } from "@/types/config_file";
+import { FetchError } from "@/types/endpoints";
+import { Listbox, ListboxItem, ListboxSection } from "@nextui-org/listbox";
+
+const filenameValidators = [
+  (name: string) => (name.length > 0 ? null : "File name cannot be empty"),
+  (name: string) =>
+    name.endsWith(".yml") || name.endsWith(".yaml")
+      ? null
+      : "File name must end with .yml or .yaml",
+];
 
 export default function ConfigEditorPage() {
-  const [fileList, setFileList] = useState<ConfigFile[]>([]);
-  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const [fileList, setFileList] = useState<Record<string, ConfigFile>>({});
+  const [curFile, setCurFile] = useState<ConfigFile>();
 
   const [error, setError] = useState<FetchError | null>(null);
   const [isErrOpen, setIsErrOpen] = useState(false);
 
-  const loadFiles = async () => {
-    const response = await fetchEndpoint(Endpoints.LIST_CONFIG_FILES);
-    await checkResponse(response).catch((e) => {
-      setError(e);
-      setIsErrOpen(true);
-    });
-
-    setFileList(
-      ((await response.json()) as string[]).map(
-        (fname: string) => new ConfigFile(fname),
-      ),
-    );
-  };
-
-  const loadFilesCallback = useCallback(async () => {
-    return await loadFiles()
-      .catch(toast)
-      .then(() => {
-        if (fileList.length > 0) setSelectedKey(fileList[0].getFilename());
-        return fileList;
-      });
+  const onError = useCallback((e: FetchError) => {
+    setError(e);
+    setIsErrOpen(true);
   }, []);
 
-  useEffect(() => {
-    loadFilesCallback();
-  }, [loadFilesCallback]);
+  const loadFilesCallback = useCallback(() => {
+    getConfigFiles(onError)
+      .then((files) => {
+        setFileList(files);
+        for (const file of Object.values(files)) {
+          setCurFile(file);
+          break;
+        }
+      })
+      .catch(onError);
+  }, []);
 
-  const createNewFile = (filename: string) => {
-    setFileList([...fileList, ConfigFile.Create(filename)]);
-    setSelectedKey(filename);
-  };
+  useEffect(loadFilesCallback, [loadFilesCallback]);
 
-  const filenameValidators = [
-    (name: string) => (name.length > 0 ? null : "File name cannot be empty"),
-    (name: string) =>
-      name.endsWith(".yml") || name.endsWith(".yaml")
-        ? null
-        : "File name must end with .yml or .yaml",
-  ];
+  const createNewFile = useCallback(
+    (filename: string) => {
+      const newFile = ConfigFile.Create(filename);
+      fileList[filename] = newFile;
+      setCurFile(newFile);
+    },
+    [fileList]
+  );
 
-  const onSelectTab = (key: React.Key) => {
-    // skip if filelist not yet loaded
-    if (fileList.length === 0) return;
-    if (key.toString() === selectedKey) return;
-    setSelectedKey(key.toString());
-  };
+  const saveFile = useCallback(() => {
+    if (!curFile) return;
 
-  const saveFile = () => {
-    const fileIndex = fileList.findIndex(
-      (f) => f.getFilename() === selectedKey,
-    );
-
-    fileList[fileIndex]
+    curFile
       .updateRemote()
       .then(() => toast.success("Saved"))
-      .catch((e) => {
-        setError(e);
-        setIsErrOpen(true);
-      });
-  };
+      .catch(onError);
+  }, [curFile]);
 
   return (
-    <div>
+    <>
       <NextToastContainer />
-      <div className="flex flex-row justify-between pb-4 px-4">
-        <p className="text-2xl font-medium align-middle">Config Editor</p>
-
-        <div className="flex justify-end gap-4">
-          <NewFileButton
-            validators={filenameValidators}
-            onValid={createNewFile}
-          />
-          <Button variant="ghost" onPress={saveFile}>
-            <FontAwesomeIcon icon={faSave} />
-          </Button>
-        </div>
-      </div>
       <ErrorPopup error={error} isOpen={isErrOpen} setIsOpen={setIsErrOpen} />
-      <Tabs
-        isVertical
-        aria-label="Config Files"
-        classNames={{
-          tab: ["justify-start", "items-center"],
-        }}
-        items={fileList}
-        selectedKey={selectedKey}
-        variant="light"
-        onSelectionChange={onSelectTab}
-      >
-        {(file) => (
-          <Tab
-            key={file.getFilename()}
-            title={
-              <div className="flex space-x-2 justify-center items-center">
-                <FontAwesomeIcon icon={faFile} size="lg" />
-                <span>{file.getFilename()}</span>
-              </div>
-            }
-          >
-            <ConfigEditor file={file} />
-          </Tab>
-        )}
-      </Tabs>
-    </div>
+      <div className="flex flex-row gap-4">
+        <Listbox
+          classNames={{ base: "w-1/4 max-w-[250px]" }}
+          aria-label="Config Files"
+          variant="faded"
+          selectionMode="none"
+        >
+          <ListboxSection title="Files" items={Object.entries(fileList)}>
+            {([filename, f]) => (
+              <ListboxItem
+                key={filename}
+                startContent={<FontAwesomeIcon icon={faFile} />}
+                onPress={() => setCurFile(f)}
+                style={{
+                  color: f === curFile ? "#ffcc00" : "",
+                  background: f === curFile ? "#444444" : "",
+                }}
+              >
+                {filename}
+              </ListboxItem>
+            )}
+          </ListboxSection>
+          <ListboxSection title="Actions">
+            <ListboxItem startContent={<FontAwesomeIcon icon={faAdd} />}>
+              <NewFileButton
+                validators={filenameValidators}
+                onValid={createNewFile}
+              />
+            </ListboxItem>
+            <ListboxItem
+              startContent={<FontAwesomeIcon icon={faSave} />}
+              onPress={saveFile}
+            >
+              Save
+            </ListboxItem>
+          </ListboxSection>
+        </Listbox>
+        {curFile && <ConfigEditor file={curFile} onError={onError} />}
+      </div>
+    </>
   );
 }

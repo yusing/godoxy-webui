@@ -1,6 +1,3 @@
-import { faAdd } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Button } from "@nextui-org/button";
 import { Input } from "@nextui-org/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@nextui-org/popover";
 import { useState } from "react";
@@ -9,7 +6,7 @@ function _onChange(
   filename: string,
   validators: FormValidator[],
   setValue: (value: string) => void,
-  setError: (error: string | null) => void,
+  setError: (error: string | null) => void
 ) {
   setValue(filename);
   for (const validator of validators) {
@@ -42,40 +39,31 @@ export const NewFileButton = (props: FormProps) => {
       showArrow={true}
       onOpenChange={setIsOpen}
     >
-      <PopoverTrigger>
-        <Button variant="ghost">
-          <FontAwesomeIcon icon={faAdd} />
-        </Button>
-      </PopoverTrigger>
+      <PopoverTrigger>New File</PopoverTrigger>
       <PopoverContent className="w-[240px]">
-        {(titleProps) => (
+        {(_) => (
           <div className="px-1 py-2 w-full">
-            <p className="text-small font-bold text-foreground" {...titleProps}>
-              New File
-            </p>
-            <div className="mt-2 flex flex-col gap-2 w-full">
-              <Input
-                isRequired
-                errorMessage={error}
-                isInvalid={error !== null}
-                label="File Name"
-                size="sm"
-                value={value}
-                variant="bordered"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && error === null) {
-                    props.onValid(value);
-                    setIsOpen(false);
-                  }
-                  if (e.key === "Escape") {
-                    setIsOpen(false);
-                  }
-                }}
-                onValueChange={(v) =>
-                  _onChange(v, props.validators ?? [], setValue, setError)
+            <Input
+              isRequired
+              errorMessage={error}
+              isInvalid={error !== null}
+              label="File Name"
+              size="sm"
+              value={value}
+              variant="bordered"
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && error === null) {
+                  props.onValid(value);
+                  setIsOpen(false);
                 }
-              />
-            </div>
+                if (e.key === "Escape") {
+                  setIsOpen(false);
+                }
+              }}
+              onValueChange={(v) =>
+                _onChange(v, props.validators ?? [], setValue, setError)
+              }
+            />
           </div>
         )}
       </PopoverContent>
