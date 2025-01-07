@@ -1,0 +1,5 @@
+/* highlight selected file */
+li[data-selected="true"] {
+  color: var(--selected-text) !important;
+  background: var(--selected-bg) !important;
+}

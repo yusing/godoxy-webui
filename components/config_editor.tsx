@@ -4,12 +4,12 @@ import { yaml } from "@codemirror/lang-yaml";
 import { Diagnostic, linter, lintGutter } from "@codemirror/lint";
 import CodeMirror, { EditorView } from "@uiw/react-codemirror";
 import { useTheme } from "next-themes";
-import { useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useMemo, useState } from "react";
 import { dracula, noctisLilac } from "thememirror";
 import * as yamlParser from "yaml";
 
-import ConfigFile from "@/types/config_file";
 import { FetchError } from "@/types/endpoints";
+import File from "@/types/file";
 import { loadSchema } from "@/types/schema";
 import { ErrorObject } from "ajv";
 import log from "loglevel";
@@ -18,15 +18,13 @@ export default function ConfigEditor({
   file,
   onError,
 }: Readonly<{
-  file: ConfigFile;
+  file: File;
   onError: (e: FetchError) => void;
 }>) {
   log.debug("ConfigEditor", file.getFilename());
   const [initialValue, setInitialValue] = useState("");
+  const deferedValue = useDeferredValue(initialValue);
   const { theme } = useTheme();
-  const schemaFile = file.getFilename().startsWith("config.")
-    ? "config.schema.json"
-    : "providers.schema.json";
 
   useEffect(() => {
     file.getContent().then(setInitialValue).catch(onError);
@@ -38,12 +36,12 @@ export default function ConfigEditor({
       linter(
         async (view) => {
           const diagnostics: Diagnostic[] = [];
-          if (file.getFilename().startsWith("middlewares/")) {
+          if (file.getType() === "middleware") {
             return diagnostics;
           }
           try {
             const doc = yamlParser.parse(view.state.doc.toString());
-            const validate = await loadSchema(schemaFile);
+            const validate = await loadSchema(file.getType());
             const valid = validate(doc);
             if (valid) {
               return diagnostics;
@@ -119,18 +117,17 @@ export default function ConfigEditor({
   return (
     <CodeMirror
       extensions={[panelTheme, yaml(), yamlLinter, lintGutter()]}
-      style={{
-        width: "60vw",
-        height: "60vh",
-        fontSize: "14px",
-        overflow: "auto",
-      }}
       theme={cmTheme}
-      value={initialValue}
+      value={deferedValue}
       onChange={(value, _) => {
         file.setContent(value);
       }}
       basicSetup={true}
+      style={{
+        width: "60vw",
+        fontSize: "14px",
+        overflow: "auto",
+      }}
     />
   );
 }

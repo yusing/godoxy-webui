@@ -1,29 +1,27 @@
 "use client";
 
-import { faAdd, faFile, faSave } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 import ConfigEditor from "@/components/config_editor";
+import ConfigFileActions from "@/components/config_file_actions";
 import ErrorPopup from "@/components/error_popup";
-import { NewFileButton } from "@/components/new_file_button";
 import { NextToastContainer } from "@/components/toast_container";
-import ConfigFile, { getConfigFiles } from "@/types/config_file";
-import { FetchError } from "@/types/endpoints";
+import { FetchError, FileType } from "@/types/endpoints";
+import File, {
+  configFile,
+  getConfigFiles,
+  placeholderFiles,
+} from "@/types/file";
+import { faFile } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Listbox, ListboxItem, ListboxSection } from "@nextui-org/listbox";
-
-const filenameValidators = [
-  (name: string) => (name.length > 0 ? null : "File name cannot be empty"),
-  (name: string) =>
-    name.endsWith(".yml") || name.endsWith(".yaml")
-      ? null
-      : "File name must end with .yml or .yaml",
-];
+import log from "loglevel";
+import "./styles.css";
 
 export default function ConfigEditorPage() {
-  const [fileList, setFileList] = useState<Record<string, ConfigFile>>({});
-  const [curFile, setCurFile] = useState<ConfigFile>();
+  const [files, setFiles] = useState(placeholderFiles);
+  const [curFile, setCurFile] = useState(configFile);
 
   const [error, setError] = useState<FetchError | null>(null);
   const [isErrOpen, setIsErrOpen] = useState(false);
@@ -34,31 +32,28 @@ export default function ConfigEditorPage() {
   }, []);
 
   const loadFilesCallback = useCallback(() => {
-    getConfigFiles(onError)
+    getConfigFiles()
       .then((files) => {
-        setFileList(files);
-        for (const file of Object.values(files)) {
-          setCurFile(file);
-          break;
-        }
+        log.debug("Files", files);
+        setFiles(files);
       })
       .catch(onError);
   }, []);
 
   useEffect(loadFilesCallback, [loadFilesCallback]);
 
-  const createNewFile = useCallback(
-    (filename: string) => {
-      const newFile = ConfigFile.Create(filename);
-      fileList[filename] = newFile;
+  const createFile = useCallback(
+    (type: FileType, filename: string) => {
+      const newFile = File.Create(type, filename);
+      files[type].reverse();
+      files[type].push(newFile);
+      files[type].reverse();
       setCurFile(newFile);
     },
-    [fileList]
+    [files]
   );
 
   const saveFile = useCallback(() => {
-    if (!curFile) return;
-
     curFile
       .updateRemote()
       .then(() => toast.success("Saved"))
@@ -69,44 +64,58 @@ export default function ConfigEditorPage() {
     <>
       <NextToastContainer />
       <ErrorPopup error={error} isOpen={isErrOpen} setIsOpen={setIsErrOpen} />
-      <div className="flex flex-row gap-4">
-        <Listbox
-          classNames={{ base: "w-1/4 max-w-[250px]" }}
-          aria-label="Config Files"
-          variant="faded"
-          selectionMode="none"
-        >
-          <ListboxSection title="Files" items={Object.entries(fileList)}>
-            {([filename, f]) => (
-              <ListboxItem
-                key={filename}
-                startContent={<FontAwesomeIcon icon={faFile} />}
-                onPress={() => setCurFile(f)}
-                style={{
-                  color: f === curFile ? "#ffcc00" : "",
-                  background: f === curFile ? "#444444" : "",
-                }}
-              >
-                {filename}
-              </ListboxItem>
-            )}
-          </ListboxSection>
-          <ListboxSection title="Actions">
-            <ListboxItem startContent={<FontAwesomeIcon icon={faAdd} />}>
-              <NewFileButton
-                validators={filenameValidators}
-                onValid={createNewFile}
-              />
-            </ListboxItem>
-            <ListboxItem
-              startContent={<FontAwesomeIcon icon={faSave} />}
-              onPress={saveFile}
+
+      <div className="flex flex-row gap-4 max-h-[80vh]">
+        <div className="flex flex-col max-w-1/4 max-w-[250px]">
+          <div className="flex-1 overflow-y-auto scrollbar-hide">
+            <Listbox
+              className="py-0 mt-0"
+              aria-label="Files"
+              variant="faded"
+              selectionMode="single"
+              selectedKeys={[`${curFile.getType()}:${curFile.getFilename()}`]}
+              disableAnimation
+              hideSelectedIcon
+              items={Object.entries(files)}
             >
-              Save
-            </ListboxItem>
-          </ListboxSection>
-        </Listbox>
-        {curFile && <ConfigEditor file={curFile} onError={onError} />}
+              {([fileType, filenames]) =>
+                filenames.length == 0 ? null : (
+                  <ListboxSection
+                    key={fileType}
+                    title={`${fileType[0].toUpperCase()}${fileType.slice(1)} files`}
+                    items={filenames}
+                  >
+                    {(f) => (
+                      <ListboxItem
+                        key={`${fileType}:${f.getFilename()}`}
+                        aria-label={f.getFilename()}
+                        startContent={<FontAwesomeIcon icon={faFile} />}
+                        onPress={() => setCurFile(f)}
+                      >
+                        {f.getFilename()}
+                      </ListboxItem>
+                    )}
+                  </ListboxSection>
+                )
+              }
+            </Listbox>
+          </div>
+          <Listbox
+            className="py-0 mb-0 mt-1"
+            aria-label="File Actions"
+            variant="faded"
+            selectionMode="none"
+            items={Object.entries(files)}
+          >
+            {ConfigFileActions({
+              checkExists: (t, name) =>
+                files[t].some((f) => f.getFilename() === name),
+              createFile,
+              saveFile,
+            })}
+          </Listbox>
+        </div>
+        <ConfigEditor file={curFile} onError={onError} />
       </div>
     </>
   );

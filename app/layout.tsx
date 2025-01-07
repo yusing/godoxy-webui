@@ -43,7 +43,7 @@ export default function RootLayout({
       >
         <Providers
           themeProps={{
-            attribute: "class",
+            attribute: ["class", "data-theme"],
             defaultTheme: "dark",
             enableSystem: true,
           }}
@@ -53,7 +53,7 @@ export default function RootLayout({
             <main className="flex-1 mx-auto lg:px-32 md:px-24 sm:px-12">
               {children}
             </main>
-            <footer className="w-full flex items-center justify-center py-3">
+            <footer className="w-full flex items-center justify-center py-4">
               <Link
                 isExternal
                 className="flex items-center gap-1 text-current"

@@ -51,10 +51,3 @@ export const subtitle = tv({
     fullWidth: true,
   },
 });
-
-export const __DEBUG = process.env.NODE_ENV === "development";
-export function debug_element(ele: () => JSX.Element) {
-  if (__DEBUG) return ele();
-
-  return <div />;
-}
