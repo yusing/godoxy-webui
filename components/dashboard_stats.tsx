@@ -8,10 +8,15 @@ import { useTheme } from "next-themes";
 import Stats from "../types/stats";
 
 import { ProviderType } from "@/types/provider";
+import { useLocalStorage } from "@uidotdev/usehooks";
 
 export default function DashboardStats() {
   const { stats } = Stats();
   const { theme } = useTheme();
+  const [showAllProviders, setShowAllProviders] = useLocalStorage(
+    "dashboard_showAllProviders",
+    false
+  );
 
   function generatePalette(n: number): string[] {
     const palette: string[] = [];
@@ -33,13 +38,19 @@ export default function DashboardStats() {
   function providersGrid() {
     let providers = Object.entries(stats.proxies.providers);
     const nMore = providers.length - 5;
-    const nMoreClass = nMore > 0 ? "" : "hidden";
+    const nMoreClass = nMore > 0 && !showAllProviders ? "" : "hidden";
 
     providers.sort((a, b) => b[1].num_streams - a[1].num_streams);
-    providers = providers.slice(0, 5);
+    if (!showAllProviders) {
+      providers = providers.slice(0, 5);
+    }
 
     return (
-      <div className="gap-2 grid grid-cols-2 items-center text-left">
+      <div
+        className="gap-2 grid grid-cols-2 items-center text-left"
+        onClick={() => setShowAllProviders(!showAllProviders)}
+        tabIndex={0}
+      >
         {providers.map(([name, props], index) => (
           <div key={`provider_${name}`} className="flex gap-2 items-center">
             <FontAwesomeIcon
@@ -59,7 +70,9 @@ export default function DashboardStats() {
                 <span className="text-medium">{`${props.num_reverse_proxies} reverse proxies, ${props.num_streams} streams`}</span>
               }
             >
-              <span className="text-medium">{name}</span>
+              <span className="text-medium">
+                {name.endsWith("!") ? name.slice(0, -1) : name}
+              </span>
             </Tooltip>
           </div>
         ))}
