@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import Endpoints, { ws } from "@/types/endpoints";
 import { ProviderType } from "@/types/provider";
 
-type Stats = {
+export type Stats = {
   proxies: {
     num_total_reverse_proxies: number;
     num_total_streams: number;
