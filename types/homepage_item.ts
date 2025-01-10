@@ -40,7 +40,13 @@ export async function getHomepageItems() {
       for (const item of category) {
         // if an override url is not set, use the default
         if (item.url == "") {
-          item.url = `${window.location.protocol}//${item.alias}.${currentHostname}/`;
+          let fqdn: string;
+          if (item.alias.includes(".")) {
+            fqdn = item.alias;
+          } else {
+            fqdn = `${item.alias}.${currentHostname}`;
+          }
+          item.url = `${window.location.protocol}//${fqdn}/`;
         }
       }
     }
