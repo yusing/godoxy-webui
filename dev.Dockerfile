@@ -14,6 +14,4 @@ RUN corepack enable pnpm
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=development
 
-EXPOSE 3000
-
 CMD ["pnpm", "run", "dev_docker"]

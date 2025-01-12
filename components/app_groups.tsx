@@ -13,17 +13,11 @@ export default function AppGroups() {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchHomepageItems = async () => {
-      try {
-        const items = await getHomepageItems();
-
+    getHomepageItems()
+      .then((items) => {
         setHomepageItems(items);
-      } catch {
-        router.push("/login");
-      }
-    };
-
-    fetchHomepageItems().catch((error) => toast.error(error));
+      })
+      .catch((error) => toast.error(error));
   }, []);
 
   return (

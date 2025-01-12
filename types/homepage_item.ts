@@ -26,13 +26,9 @@ export async function getHomepageItems() {
     .split(".")
     .slice(1)
     .join(".");
-  const response = await fetchEndpoint(Endpoints.HOMEPAGE_CFG);
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch homepage items: ${response.statusText}`);
-  }
 
   try {
+    const response = await fetchEndpoint(Endpoints.HOMEPAGE_CFG);
     const data = (await response.json()) as HomepageItems;
 
     // sort by length of name and then alphabetically

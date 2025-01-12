@@ -23,6 +23,7 @@ import VersionText from "./version_text";
 import { DiscordIcon, GithubIcon, Logo } from "@/components/icons";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { siteConfig } from "@/config/site";
+import Endpoints from "@/types/endpoints";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -107,7 +108,7 @@ export const Navbar = () => {
             <GithubIcon className="text-default-500" />
           </Link>
           <ThemeSwitch />
-          <Link aria-label="Logout" href="/api/logout">
+          <Link aria-label="Logout" href={Endpoints.LOGOUT}>
             <FontAwesomeIcon className="text-default-500" icon={faSignOut} />
           </Link>
         </NavbarItem>

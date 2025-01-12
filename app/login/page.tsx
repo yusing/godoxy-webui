@@ -8,8 +8,8 @@ import { useState } from "react";
 
 import { EyeFilledIcon } from "@/components/eye_filled_icon";
 import { EyeSlashFilledIcon } from "@/components/eye_slash_filled_icon";
-import { login } from "@/types/auth"; // Import the login function
 import { Logo } from "@/components/icons";
+import { login } from "@/types/auth"; // Import the login function
 
 export default function LoginPage() {
   const [isVisible, setIsVisible] = useState(false);
@@ -27,7 +27,7 @@ export default function LoginPage() {
     const response = await login({ username, password });
 
     if (response.ok) {
-      router.push("/");
+      router.back();
     } else {
       setErrorMessage(await response.text());
     }
@@ -35,7 +35,10 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-1 items-center justify-center px-4">
-      <Card className="w-full max-w-xs sm:max-w-md lg:min-w-[400px] p-4" radius="sm">
+      <Card
+        className="w-full max-w-xs sm:max-w-md lg:min-w-[400px] p-4"
+        radius="sm"
+      >
         <CardHeader className="pb-0 pt-2 px-4 flex-col items-center text-center">
           <Logo />
           <span className="font-bold text-inherit flex">GoDoxy</span>

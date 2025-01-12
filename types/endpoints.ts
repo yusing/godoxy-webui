@@ -1,3 +1,6 @@
+import { StatusCodes } from "http-status-codes";
+import log from "loglevel";
+
 namespace Endpoints {
   export const FileContent = (fileType: FileType, filename: string) =>
     `/api/file/${fileType}/${filename}`;
@@ -7,6 +10,7 @@ namespace Endpoints {
   export const VERSION = "/api/version";
   export const LOGIN = "/api/login";
   export const LOGOUT = "/api/logout";
+  export const AUTH_REDIRECT = "/api/auth/redirect";
   export const LIST_FILES = "/api/list/files";
   export const LIST_PROXIES = "/api/list/routes";
   export const MATCH_DOMAINS = "/api/list/match_domains";
@@ -61,8 +65,15 @@ export async function fetchEndpoint(
     method: args.method,
     body: args.body,
   });
-
   if (!resp.ok) {
+    if (
+      resp.status === StatusCodes.FORBIDDEN ||
+      resp.status === StatusCodes.UNAUTHORIZED
+    ) {
+      log.info("Unauthorized, redirecting to auth page");
+
+      window.location.href = Endpoints.AUTH_REDIRECT;
+    }
     throw new FetchError({
       status: resp.status,
       statusText: resp.statusText,
