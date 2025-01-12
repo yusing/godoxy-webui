@@ -1,16 +1,18 @@
 namespace Endpoints {
   export const FileContent = (fileType: FileType, filename: string) =>
     `/file/${fileType}/${filename}`;
-  export const Schema = (filename: string) => `/schema/${filename}`;
-  export const VERSION = "/version";
-  export const LOGIN = "/login";
-  export const LOGOUT = "/logout";
-  export const LIST_FILES = "/list/files";
-  export const LIST_PROXIES = "/list/routes";
-  export const MATCH_DOMAINS = "/list/match_domains";
-  export const HOMEPAGE_CFG = "/list/homepage_config";
+  export const Schema = (filename: string) => `/api/schema/${filename}`;
+  export const FavIcon = (alias: string) => `/api/favicon/${alias}`;
 
-  export const STATS = `/stats/ws`;
+  export const VERSION = "/api/version";
+  export const LOGIN = "/api/login";
+  export const LOGOUT = "/api/logout";
+  export const LIST_FILES = "/api/list/files";
+  export const LIST_PROXIES = "/api/list/routes";
+  export const MATCH_DOMAINS = "/api/list/match_domains";
+  export const HOMEPAGE_CFG = "/api/list/homepage_config";
+
+  export const STATS = "/api/stats/ws";
 }
 
 export type FileType = "config" | "provider" | "middleware";
@@ -49,7 +51,6 @@ export async function fetchEndpoint(
   endpoint: string,
   args: FetchArguments = {}
 ) {
-  endpoint = `/api${endpoint}`;
   if (args.query) {
     endpoint += `?${new URLSearchParams(args.query)}`;
   }
@@ -73,7 +74,7 @@ export async function fetchEndpoint(
 }
 
 export function ws(endpoint: string) {
-  return new WebSocket(`/api${endpoint}`);
+  return new WebSocket(`${endpoint}`);
 }
 
 export default Endpoints;

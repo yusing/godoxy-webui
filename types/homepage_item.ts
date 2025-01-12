@@ -6,7 +6,10 @@ import { ProviderType } from "./provider";
 export type HomepageItem = {
   name: string;
   alias: string;
-  icon: string;
+  icon?: {
+    value: string;
+    is_relative: boolean;
+  };
   category: string;
   description: string;
   widget_config: Record<string, any>;

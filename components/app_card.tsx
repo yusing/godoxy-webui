@@ -24,7 +24,7 @@ export default function AppCard({ item, style }: AppCardProps) {
         <Card className="p-2" shadow="none">
           <CardBody>
             <div className="flex items-center space-x-2">
-              {<FavIcon alt={item.name} base={item.url} href={item.icon} />}
+              {<FavIcon item={item} />}
               <div className="flex flex-col">
                 <span className="font-medium text-medium">{item.name}</span>
                 {item.description && (
