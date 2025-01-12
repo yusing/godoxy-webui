@@ -19,5 +19,5 @@ async function _loadSchema(uri: string) {
 export function loadSchema(fileType: FileType) {
   const filename =
     fileType == "config" ? "config.schema.json" : "providers.schema.json";
-  return ajv.compileAsync({ $ref: `/${Endpoints.Schema(filename)}` });
+  return ajv.compileAsync({ $ref: Endpoints.Schema(filename) });
 }

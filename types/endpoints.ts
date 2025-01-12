@@ -1,6 +1,6 @@
 namespace Endpoints {
   export const FileContent = (fileType: FileType, filename: string) =>
-    `/file/${fileType}/${filename}`;
+    `/api/file/${fileType}/${filename}`;
   export const Schema = (filename: string) => `/api/schema/${filename}`;
   export const FavIcon = (alias: string) => `/api/favicon/${alias}`;
 
