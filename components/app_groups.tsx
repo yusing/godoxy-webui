@@ -1,16 +1,12 @@
-import { Card, CardBody, CardHeader } from "@nextui-org/card";
-import { Spacer } from "@nextui-org/spacer";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
-import { toast } from "react-toastify";
-
 import AppCard from "@/components/app_card";
 import { getHomepageItems, HomepageItems } from "@/types/homepage_item";
+import { Grid2 as Grid } from "@mui/material";
+import { Card, CardBody, CardHeader } from "@nextui-org/card";
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 export default function AppGroups() {
   const [homepageItems, setHomepageItems] = useState<HomepageItems>({});
-  const router = useRouter();
 
   useEffect(() => {
     getHomepageItems()
@@ -23,7 +19,11 @@ export default function AppGroups() {
   return (
     <Card className="w-full dark:bg-transparent light:bg-current dark:shadow-none light:shadow-md">
       {Object.entries(homepageItems).map(([category, items]) => (
-        <Card key={`app-category-${category}`} className="mb-4" shadow="none">
+        <Card
+          key={`app-category-${category}`}
+          className="mb-4 overflow-hidden"
+          shadow="none"
+        >
           <CardHeader>
             <h2
               className="text-2xl font-bold"
@@ -32,18 +32,23 @@ export default function AppGroups() {
               {category}
             </h2>
           </CardHeader>
-          <CardBody className="p-0 m-0 w-full overflow-x-auto overflow-y-auto">
-            <Spacer y={1} />
-            <ResponsiveMasonry
-              className="flex gap-4"
-              columnsCountBreakPoints={{ 350: 2, 750: 3, 900: 4, 1200: 5 }}
-            >
-              <Masonry>
-                {items.map((item) => (
-                  <AppCard key={item.name} item={item} />
-                ))}
-              </Masonry>
-            </ResponsiveMasonry>
+          <CardBody className="p-0 mx-2 my-0 overflow-hidden">
+            <Grid container columnSpacing={4} rowSpacing={3}>
+              {items.map((data) => (
+                <Grid
+                  key={data.alias}
+                  size={{
+                    xs: 8,
+                    sm: 5,
+                    md: 4,
+                    lg: 3,
+                    xl: 3,
+                  }}
+                >
+                  <AppCard item={data} />
+                </Grid>
+              ))}
+            </Grid>
           </CardBody>
         </Card>
       ))}

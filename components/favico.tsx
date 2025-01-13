@@ -9,6 +9,7 @@ export default function FavIcon({ item }: Readonly<{ item: HomepageItem }>) {
       alt={item.name}
       height={24}
       width={24}
+      radius="none"
       src={Endpoints.FavIcon(item.alias)}
       fallbackSrc={<span className="text-default-400 text-lg">⚠️</span>}
     />

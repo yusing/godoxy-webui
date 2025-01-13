@@ -38,10 +38,7 @@ export default function ProvidersGrid({ stats }: Readonly<{ stats: Stats }>) {
     providers = providers.slice(0, 5);
   }
 
-  const palette = generatePalette(
-    theme,
-    Object.keys(stats.proxies.providers).length
-  );
+  const palette = generatePalette(theme, providers.length);
 
   return (
     <div
@@ -65,12 +62,12 @@ export default function ProvidersGrid({ stats }: Readonly<{ stats: Stats }>) {
 
           <Tooltip
             content={
-              <span className="text-medium">{`${props.num_reverse_proxies} reverse proxies, ${props.num_streams} streams`}</span>
+              <p className="text-medium">{`${props.num_reverse_proxies} reverse proxies, ${props.num_streams} streams`}</p>
             }
           >
-            <span className="text-medium">
+            <p className="text-medium overflow-auto">
               {name.endsWith("!") ? name.slice(0, -1) : name}
-            </span>
+            </p>
           </Tooltip>
         </div>
       ))}
@@ -79,7 +76,7 @@ export default function ProvidersGrid({ stats }: Readonly<{ stats: Stats }>) {
         className={`flex gap-2 items-center ${nMoreClass}`}
       >
         <FontAwesomeIcon className="w-4" icon={faEllipsis} />
-        <span className="text-medium">{`and ${nMore} more`}</span>
+        <p className="text-medium">{`and ${nMore} more`}</p>
       </div>
     </div>
   );

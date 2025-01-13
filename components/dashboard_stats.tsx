@@ -13,37 +13,37 @@ export default function DashboardStats() {
       <Card className="xl:max-w-sm bg-primary rounded-xl shadow-md px-4">
         <CardBody className="py-5 overflow-hidden">
           <div className="flex flex-col">
-            <span className="font-bold">Uptime</span>
+            <p className="font-bold">Uptime</p>
           </div>
           <div className="flex gap-2.5 py-2 items-center">
-            <span className="text-xl font-semibold">{stats.uptime}</span>
+            <p className="text-xl font-semibold">{stats.uptime}</p>
           </div>
         </CardBody>
       </Card>
       <Card className="xl:max-w-sm bg-default-50 rounded-xl shadow-md px-4">
-        <CardBody className="py-5">
+        <CardBody className="py-5 overflow-hidden">
           <div className="flex flex-col">
-            <span className="font-bold">Running Services</span>
+            <p className="font-bold">Running Services</p>
           </div>
           <div className="flex gap-6 py-2 items-start text-center">
             <div className="flex flex-col">
-              <span className="text-xl font-semibold">Total</span>
-              <span className="text-xl font-semibold">
+              <p className="text-xl font-semibold">Total</p>
+              <p className="text-xl font-semibold">
                 {stats.proxies.num_total_reverse_proxies +
                   stats.proxies.num_total_streams}
-              </span>
+              </p>
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-semibold">Reverse Proxies</span>
-              <span className="text-xl font-semibold">
+              <p className="text-xl font-semibold">Reverse Proxies</p>
+              <p className="text-xl font-semibold">
                 {stats.proxies.num_total_reverse_proxies}
-              </span>
+              </p>
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-semibold">Streams</span>
-              <span className="text-xl font-semibold">
+              <p className="text-xl font-semibold">Streams</p>
+              <p className="text-xl font-semibold">
                 {stats.proxies.num_total_streams}
-              </span>
+              </p>
             </div>
           </div>
         </CardBody>
@@ -51,7 +51,7 @@ export default function DashboardStats() {
       <Card className="xl:max-w-sm bg-default-50 rounded-xl shadow-md px-4">
         <CardBody className="py-5">
           <div className="flex flex-col">
-            <span className="font-bold">Providers</span>
+            <p className="font-bold">Providers</p>
             <ClientOnly>
               <ProvidersGrid stats={stats} />
             </ClientOnly>
