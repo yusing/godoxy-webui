@@ -6,7 +6,7 @@ type Credentials = {
 };
 
 export function login(credentials: Credentials) {
-  return fetchEndpoint(Endpoints.LOGIN, {
+  return fetchEndpoint(Endpoints.AUTH, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),

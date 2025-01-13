@@ -8,8 +8,8 @@ namespace Endpoints {
   export const FavIcon = (alias: string) => `/api/favicon/${alias}`;
 
   export const VERSION = "/api/version";
-  export const LOGIN = "/api/login";
-  export const LOGOUT = "/api/logout";
+  export const AUTH = "/api/auth/callback";
+  export const AUTH_LOGOUT = "/api/auth/logout";
   export const AUTH_REDIRECT = "/api/auth/redirect";
   export const LIST_FILES = "/api/list/files";
   export const LIST_PROXIES = "/api/list/routes";

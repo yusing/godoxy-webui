@@ -108,7 +108,7 @@ export const Navbar = () => {
             <GithubIcon className="text-default-500" />
           </Link>
           <ThemeSwitch />
-          <Link aria-label="Logout" href={Endpoints.LOGOUT}>
+          <Link aria-label="Logout" href={Endpoints.AUTH_LOGOUT}>
             <FontAwesomeIcon className="text-default-500" icon={faSignOut} />
           </Link>
         </NavbarItem>
