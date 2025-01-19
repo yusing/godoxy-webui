@@ -1,7 +1,7 @@
 "use client";
 
 import { Prose } from "@/components/ui/prose";
-import { toaster } from "@/components/ui/toaster";
+import { Switch } from "@/components/ui/switch";
 import Endpoints, { ws } from "@/types/api/endpoints";
 import { Card, Stack } from "@chakra-ui/react";
 import Convert from "ansi-to-html";
@@ -13,6 +13,7 @@ const convertANSI = new Convert();
 export default function Logs() {
   const [isConnecting, setIsConnecting] = React.useState(true);
   const [logs, setLogs] = React.useState<string[]>([]);
+  const [autoScroll, setAutoScroll] = React.useState(true);
   const logRef = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
@@ -22,13 +23,14 @@ export default function Logs() {
       logRef.current?.scrollTo(0, logRef.current.scrollHeight);
     };
     socket.onmessage = (event) => {
-      setLogs((prev) => prev.concat((event.data as string).split("\n")));
-      logRef.current?.scrollTo(0, logRef.current.scrollHeight);
+      setLogs((prev) =>
+        prev.concat((event.data as string).split("\n")).slice(-100),
+      );
+      if (autoScroll) {
+        logRef.current?.scrollTo(0, logRef.current.scrollHeight);
+      }
     };
-    socket.onerror = (event) => {
-      toaster.error(event);
-      log.error(event);
-    };
+    socket.onerror = log.error;
     return () => {
       socket.close();
     };
@@ -55,6 +57,13 @@ export default function Logs() {
             />
           ))}
         </Stack>
+        <Switch
+          key="auto-scroll"
+          checked={autoScroll}
+          onCheckedChange={({ checked }) => setAutoScroll(checked)}
+        >
+          Auto-scroll
+        </Switch>
       </Card.Body>
     </Card.Root>
   );

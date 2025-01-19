@@ -10,7 +10,7 @@ export type HomepageItem = {
   };
   category: string;
   description: string;
-  widget_config: Record<string, any>;
+  widget_config?: {};
 
   url: string;
   alt_url: string;
@@ -57,6 +57,9 @@ export async function getHomepageItems() {
 
   try {
     const response = await fetchEndpoint(Endpoints.HOMEPAGE_CFG);
+    if (response === null) {
+      return {};
+    }
     const data = (await response.json()) as HomepageItems;
 
     // sort by length of name and then alphabetically
@@ -79,7 +82,7 @@ export async function getHomepageItems() {
     }
 
     return data;
-  } catch (error: any) {
+  } catch (error) {
     toastError(error);
     return {};
   }

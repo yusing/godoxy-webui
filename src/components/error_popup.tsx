@@ -37,7 +37,7 @@ export function ErrorPopup({
           </Heading>
         </DialogHeader>
         <DialogBody>
-          <Text>{error?.content ?? "No content"}</Text>
+          <Text>{error?.message ?? "No content"}</Text>
         </DialogBody>
         <DialogFooter>
           <CloseButton onClick={() => setError(null)} />

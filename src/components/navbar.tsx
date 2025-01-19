@@ -1,5 +1,8 @@
+"use client";
+
 import { siteConfig } from "@/site_config";
 import { For, Group, Link, Stack } from "@chakra-ui/react";
+import useCheckAuth from "./auth";
 import { DiscordIcon, GithubIcon } from "./icons";
 import LogoutButton from "./logout_button";
 import NavItemText from "./navItem_text";
@@ -14,6 +17,10 @@ export const HrefLabelMapping = siteConfig.navItems.reduce(
 );
 
 export default function Navbar() {
+  const authed = useCheckAuth();
+  if (!authed) {
+    return null;
+  }
   return <DesktopNav />;
 }
 

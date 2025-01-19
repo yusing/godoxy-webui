@@ -1,6 +1,6 @@
 import Ajv from "ajv";
 import addFormats from "ajv-formats";
-import Endpoints, { ConfigFileType } from "./api/endpoints";
+import Endpoints, { type ConfigFileType } from "./api/endpoints";
 
 export const ajv = new Ajv({
   allErrors: true,

@@ -26,6 +26,7 @@ export const AppCard: React.FC<AppCardProps> = ({ item, health, ...rest }) => {
     <Link
       className="transform transition-transform hover:scale-110"
       href={item.url}
+      target="_blank"
       variant="plain"
     >
       <HStack gap="2">

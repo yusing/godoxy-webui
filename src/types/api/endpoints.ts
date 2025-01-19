@@ -1,6 +1,6 @@
-import { useAuth } from "@/components/auth";
 import { toaster } from "@/components/ui/toaster";
 import { StatusCodes } from "http-status-codes";
+import log from "loglevel";
 
 namespace Endpoints {
   export const FileContent = (fileType: ConfigFileType, filename: string) =>
@@ -10,6 +10,7 @@ namespace Endpoints {
 
   export const VERSION = "/api/version";
   export const AUTH = "/api/auth/callback";
+  export const AUTH_CHECK = "/api/auth/check";
   export const AUTH_LOGOUT = "/api/auth/logout";
   export const AUTH_REDIRECT = "/api/auth/redirect";
   export const LIST_FILES = "/api/list/files";
@@ -30,45 +31,41 @@ type FetchArguments = {
   body?: BodyInit;
   signal?: AbortSignal;
   method?: "GET" | "POST" | "PUT" | "DELETE";
+  noRedirectAuth?: boolean;
+  toastAuthError?: boolean;
 };
 
-export class FetchError {
+export class FetchError extends Error {
   status: number;
   statusText: string;
-  content: string;
 
-  constructor(status: number, statusText: string, content: string) {
+  constructor(status: number, statusText: string, message: string) {
+    super(message);
     this.status = status;
     this.statusText = statusText;
-    this.content = content;
   }
 }
 
-export function toastError(error: Error | FetchError) {
+export function toastError<T>(error: T) {
   if (error instanceof FetchError) {
     toaster.error({
       title: `Fetch error ${error.status} - ${error.statusText}`,
-      description: error.content,
+      description: error.message,
     });
-    return;
-  }
-  if (error.cause instanceof FetchError) {
-    toaster.error({
-      title: `Fetch error ${error.cause.status} - ${error.cause.statusText}`,
-      description: error.cause.content,
-    });
-  } else {
+  } else if (error instanceof Error) {
     toaster.error({
       title: "Fetch error",
       description: error.message,
     });
+  } else {
+    log.error(error, `unknown error type ${typeof error}`);
   }
 }
 
 export async function fetchEndpoint(
   endpoint: string,
   args: FetchArguments = {},
-) {
+): Promise<Response | null> {
   if (args.query) {
     endpoint += `?${new URLSearchParams(args.query)}`;
   }
@@ -84,18 +81,19 @@ export async function fetchEndpoint(
       resp.status === StatusCodes.FORBIDDEN ||
       resp.status === StatusCodes.UNAUTHORIZED
     ) {
-      toaster.error({
-        title: "Unauthorized",
-        description: "You are not logged in",
-      });
-      const [, setAuthed] = useAuth();
-      setAuthed(false);
-      window.location.href = Endpoints.AUTH_REDIRECT;
+      if (args.toastAuthError) {
+        toaster.error({
+          title: "Unauthorized",
+          description: await resp.text(),
+        });
+      }
+      if (!args.noRedirectAuth) {
+        window.location.href = Endpoints.AUTH_REDIRECT;
+        return null;
+      }
     }
     return Promise.reject(
-      new Error("Fetch error", {
-        cause: new FetchError(resp.status, resp.statusText, await resp.text()),
-      }),
+      new FetchError(resp.status, resp.statusText, await resp.text()),
     );
   }
   return resp;
@@ -103,6 +101,30 @@ export async function fetchEndpoint(
 
 export function ws(endpoint: string) {
   return new WebSocket(`${endpoint}`);
+}
+
+type loginProps = {
+  username: string;
+  password: string;
+  toastAuthError?: boolean;
+};
+
+export async function login(credentials: loginProps) {
+  const resp = await fetch(Endpoints.AUTH, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(credentials),
+  });
+  if (!resp.ok) {
+    const err = await resp.text();
+    if (credentials.toastAuthError) {
+      toaster.error({
+        title: "Unauthorized",
+        description: err,
+      });
+    }
+    return Promise.reject(new FetchError(resp.status, resp.statusText, err));
+  }
 }
 
 export default Endpoints;

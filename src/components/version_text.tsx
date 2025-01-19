@@ -15,11 +15,5 @@ export default function VersionText() {
       .catch((error) => toastError(error));
   }, []);
 
-  return (
-    version && (
-      <Text>
-        {version}
-      </Text>
-    )
-  );
+  return version && <Text>{version}</Text>;
 }

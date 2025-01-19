@@ -1,29 +1,43 @@
 "use client";
 
 import { For, Table, Tabs, useTabs } from "@chakra-ui/react";
-import { AsyncListData, useAsyncList } from "@react-stately/data";
+import { type AsyncListData, useAsyncList } from "@react-stately/data";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import {
-  Column,
+  type Column,
   getReverseProxies,
   getStreams,
+  type ReverseProxy,
   ReverseProxyColumns,
+  type Stream,
   StreamColumns,
 } from "@/types/api/proxy";
 import { FaStream } from "react-icons/fa";
 import { FaServer } from "react-icons/fa6";
 import { MdRefresh } from "react-icons/md";
 
-async function sort({ items, sortDescriptor }: any) {
+async function sort<T = Stream | ReverseProxy>({
+  items,
+  sortDescriptor,
+}: {
+  items: T[];
+  sortDescriptor: {
+    column: string | number;
+    direction: "ascending" | "descending";
+  };
+}) {
   return {
-    items: (items as Record<string, any>[]).sort((a, b) => {
-      let first = a[sortDescriptor.column!];
-      let second = b[sortDescriptor.column!];
+    items: items.toSorted((a, b) => {
+      let first = a[sortDescriptor.column as keyof T];
+      let second = b[sortDescriptor.column as keyof T];
       let cmp =
-        (parseInt(first) || first) < (parseInt(second) || second) ? -1 : 1;
+        ((typeof first === "string" && parseInt(first)) || first) <
+        ((typeof second === "string" && parseInt(second)) || second)
+          ? -1
+          : 1;
 
       if (sortDescriptor.direction === "descending") {
         cmp *= -1;
@@ -90,12 +104,12 @@ function RenderTable({
 }
 
 export default function ProxiesPage() {
-  const streams = useAsyncList({
+  const streams = useAsyncList<Stream>({
     load: async ({ signal }) => ({ items: await getStreams(signal) }),
     sort,
   });
 
-  const rps = useAsyncList({
+  const rps = useAsyncList<ReverseProxy>({
     load: async ({ signal }) => ({ items: await getReverseProxies(signal) }),
     sort,
   });

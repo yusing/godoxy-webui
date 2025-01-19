@@ -30,7 +30,6 @@
     }
   },
   "include": [
-    ".eslintrc.cjs",
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
@@ -38,5 +37,5 @@
     "**/*.js",
     ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "components/ui"]
+  "exclude": ["node_modules", "src/components/ui"] // Chakra snippets
 }

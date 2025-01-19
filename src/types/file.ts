@@ -1,6 +1,6 @@
 import { ValidateFunction } from "ajv";
 import React from "react";
-import Endpoints, { ConfigFileType, fetchEndpoint } from "./api/endpoints";
+import Endpoints, { type ConfigFileType, fetchEndpoint } from "./api/endpoints";
 
 export type ConfigFile = {
   type: ConfigFileType;
@@ -22,7 +22,7 @@ export const placeholderFiles: ConfigFiles = {
 
 export async function getConfigFiles() {
   return await fetchEndpoint(Endpoints.LIST_FILES)
-    .then((r) => r.json())
+    .then((r) => r?.json() ?? {})
     .then((files: Record<string, string[]>) => {
       return Object.entries(files).reduce((acc, [fileType, filenames]) => {
         const t = fileType as ConfigFileType;
@@ -34,7 +34,7 @@ export async function getConfigFiles() {
 
 export type Schema = {
   type: ConfigFileType;
-  schema?: any;
+  schema?: JSON;
   validate?: ValidateFunction;
 };
 

@@ -1,7 +1,6 @@
 import log from "loglevel";
 import { useEffect, useState } from "react";
 
-import { toaster } from "@/components/ui/toaster";
 import Endpoints, { ws } from "@/types/api/endpoints";
 import { ProviderType } from "@/types/api/provider";
 
@@ -85,10 +84,7 @@ export default function useStats() {
     socket.onmessage = (event) => {
       setStats(JSON.parse(event.data as string));
     };
-    socket.onerror = (event) => {
-      toaster.error(event);
-      log.error(event);
-    };
+    socket.onerror = log.error;
     return () => {
       socket.close();
     };

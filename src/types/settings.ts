@@ -14,4 +14,3 @@ export interface SettingsItem<T> {
   val: T;
   set: React.Dispatch<React.SetStateAction<T>>;
 }
-

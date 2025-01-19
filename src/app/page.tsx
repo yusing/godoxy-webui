@@ -19,7 +19,7 @@ export default function HomePage() {
       }
     };
 
-    checkWrap();
+    window.addEventListener("load", checkWrap);
     window.addEventListener("resize", checkWrap);
     return () => window.removeEventListener("resize", checkWrap);
   }, []);

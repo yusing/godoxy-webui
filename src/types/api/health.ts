@@ -1,4 +1,3 @@
-import { toaster } from "@/components/ui/toaster";
 import log from "loglevel";
 import { useEffect, useState } from "react";
 import Endpoints, { ws } from "./endpoints";
@@ -42,10 +41,7 @@ export default function useHealthMap() {
     socket.onmessage = (event) => {
       setHealthMap(JSON.parse(event.data as string));
     };
-    socket.onerror = (event) => {
-      toaster.error(event);
-      log.error(event);
-    };
+    socket.onerror = log.error;
     return () => {
       socket.close();
     };

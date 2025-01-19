@@ -11,5 +11,5 @@ export interface LoadBalanceConfig {
   link: string;
   mode: "roundrobin" | "leastconn" | "iphash";
   weight: number;
-  options?: Record<string, any>;
+  options?: Record<string, unknown>;
 }

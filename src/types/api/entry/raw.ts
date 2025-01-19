@@ -11,6 +11,6 @@ export interface Raw {
   path_patterns?: string[];
   healthcheck?: HealthCheckConfig;
   load_balance?: LoadBalanceConfig;
-  middlewares?: Record<string, Record<string, any>>;
+  middlewares?: Record<string, Record<string, unknown>>;
   homepage?: HomepageItem;
 }

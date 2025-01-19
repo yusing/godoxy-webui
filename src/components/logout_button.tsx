@@ -3,12 +3,12 @@
 import Endpoints from "@/types/api/endpoints";
 import { Link, Show } from "@chakra-ui/react";
 import { FaSignOutAlt } from "react-icons/fa";
-import { useAuth } from "./auth";
+import { useCheckAuth } from "./auth";
 
 export default function LogoutButton() {
-  const [loggedIn] = useAuth();
+  const authed = useCheckAuth();
   return (
-    <Show when={loggedIn}>
+    <Show when={authed}>
       <Link aria-label="Logout" href={Endpoints.AUTH_LOGOUT}>
         <FaSignOutAlt size="22" />
       </Link>

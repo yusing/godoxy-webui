@@ -1,106 +1,98 @@
 "use client";
 
-import { useAuth } from "@/components/auth";
+import useCheckAuth from "@/components/auth";
 import { EyeFilledIcon, EyeSlashFilledIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
-import { login } from "@/types/auth"; // Import the login function
-import { Box, Card, Group, Input, Stack } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
+import { Toaster } from "@/components/ui/toaster";
+import { type FetchError, login } from "@/types/api/endpoints"; // Import the login function
+import { Card, Fieldset, Group, Input } from "@chakra-ui/react";
 import React from "react";
+import { useForm } from "react-hook-form";
+
+interface FormValues {
+  username: string;
+  password: string;
+}
 
 // TODO: make a logo
 export default function LoginPage() {
   const [isVisible, setIsVisible] = React.useState(false);
-  const [username, setUsername] = React.useState("");
-  const [password, setPassword] = React.useState("");
   const [errorMessage, setErrorMessage] = React.useState("");
-  const [authed, setAuthed] = useAuth();
-  const router = useRouter();
+  const authed = useCheckAuth();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormValues>();
 
   React.useEffect(() => {
     if (authed) {
-      router.back();
+      window.location.href = "/";
     }
-  }, [authed, router]);
+  }, [authed]);
 
   function toggleVisibility() {
     setIsVisible(!isVisible);
   }
 
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    const response = await login({ username, password });
-
-    if (response.ok) {
-      setAuthed(true);
-      router.back();
-    } else {
-      setErrorMessage(await response.text());
-    }
-  }
+  const onSubmit = handleSubmit(async (data) => {
+    await login({
+      username: data.username,
+      password: data.password,
+      toastAuthError: false,
+    })
+      .then(() => (window.location.href = "/"))
+      .catch((e: FetchError) => {
+        setErrorMessage(e.message);
+      });
+  });
 
   return (
-    <Box
-      w="100vw"
-      h="100vh"
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-    >
-      <Card.Root width={"500px"}>
-        <Card.Header>
-          {/* <Logo />  */}
-          <Card.Title fontWeight={"bold"} fontSize={"xl"}>
-            GoDoxy Login
-          </Card.Title>
-        </Card.Header>
-        <Card.Body gap="4">
-          <Stack gap="4" w="full">
-            <Field label="Username">
-              <Input
-                required
-                fontSize={"medium"}
-                name="username"
-                placeholder="Username"
-                type="text"
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </Field>
-            <Field
-              label="Password"
-              errorText={errorMessage}
-              invalid={errorMessage !== ""}
-            >
-              <Group attached w="full">
+    <form onSubmit={onSubmit}>
+      <Toaster />
+      <Card.Root>
+        <Card.Body>
+          <Fieldset.Root size="lg" minW={"sm"} maxW={"md"}>
+            <Fieldset.Legend>GoDoxy Login</Fieldset.Legend>
+            <Fieldset.Content>
+              <Field
+                label="Username"
+                invalid={!!errors.username}
+                errorText={errors.username?.message}
+              >
                 <Input
-                  required
+                  p="1"
                   fontSize={"medium"}
-                  name="password"
-                  placeholder="Password"
-                  type={isVisible ? "text" : "password"}
-                  onChange={(e) => setPassword(e.target.value)}
+                  {...register("username", {
+                    required: "Username is required",
+                  })}
                 />
-                <Button
-                  aria-label="toggle password visibility"
-                  className="focus:outline-none"
-                  type="button"
-                  onClick={toggleVisibility}
-                >
-                  {isVisible ? (
-                    <EyeSlashFilledIcon className="text-default-400 pointer-events-none text-2xl" />
-                  ) : (
-                    <EyeFilledIcon className="text-default-400 pointer-events-none text-2xl" />
-                  )}
-                </Button>
-              </Group>
-            </Field>
-            <Button w="full" type="submit" onSubmit={handleSubmit}>
-              Login
-            </Button>
-          </Stack>
+              </Field>
+              <Field
+                label="Password"
+                invalid={!!errors.password || !!errorMessage}
+                errorText={errors.password?.message ?? errorMessage}
+              >
+                <Group attached w="full">
+                  <Input
+                    p="1"
+                    fontSize={"medium"}
+                    type={isVisible ? "text" : "password"}
+                    {...register("password", {
+                      required: "Password is required",
+                    })}
+                  />
+                  <Button aria-hidden type="button" onClick={toggleVisibility}>
+                    {isVisible ? <EyeSlashFilledIcon /> : <EyeFilledIcon />}
+                  </Button>
+                </Group>
+              </Field>
+            </Fieldset.Content>
+            <Button type="submit">Login</Button>
+          </Fieldset.Root>
         </Card.Body>
       </Card.Root>
-    </Box>
+    </form>
   );
 }
