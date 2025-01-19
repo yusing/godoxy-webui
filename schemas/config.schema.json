@@ -1,0 +1,589 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false,
+    "definitions": {
+        "AccessLogFieldMode": {
+            "enum": [
+                "drop",
+                "keep",
+                "redact"
+            ],
+            "type": "string"
+        },
+        "AccessLogFormat": {
+            "enum": [
+                "combined",
+                "common",
+                "json"
+            ],
+            "type": "string"
+        },
+        "AutocertProvider": {
+            "enum": [
+                "clouddns",
+                "cloudflare",
+                "duckdns",
+                "local",
+                "ovh"
+            ],
+            "type": "string"
+        },
+        "CIDR": {
+            "anyOf": [
+                {
+                    "pattern": "^[0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*$",
+                    "type": "string"
+                },
+                {
+                    "pattern": "^[0-9]*\\.[0-9]*\\.[0-9]*\\.[0-9]*/[0-9]*$",
+                    "type": "string"
+                }
+            ]
+        },
+        "GotifyConfig": {
+            "additionalProperties": false,
+            "allOf": [
+                {
+                    "properties": {
+                        "name": {
+                            "description": "Name of the notification provider",
+                            "type": "string"
+                        },
+                        "provider": {
+                            "$ref": "#/definitions/NotificationProvider",
+                            "description": "Type of the notification provider"
+                        },
+                        "url": {
+                            "description": "URL of the notification provider",
+                            "format": "uri",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "properties": {
+                        "token": {
+                            "description": "Gotify token",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            ]
+        },
+        "MiddlewareConfig": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/Record<string,any>"
+                },
+                {
+                    "items": {
+                        "properties": {
+                            "use": {
+                                "type": "string"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "type": "array"
+                }
+            ],
+            "items": {
+                "additionalProperties": true,
+                "properties": {
+                    "use": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "use"
+                ],
+                "type": "object"
+            }
+        },
+        "NotificationProvider": {
+            "enum": [
+                "gotify",
+                "webhook"
+            ],
+            "type": "string"
+        },
+        "OVHEndpoint": {
+            "enum": [
+                "kimsufi-ca",
+                "kimsufi-eu",
+                "ovh-ca",
+                "ovh-eu",
+                "ovh-us",
+                "soyoustart-ca",
+                "soyoustart-eu"
+            ],
+            "type": "string"
+        },
+        "OVHOptionsWithAppKey": {
+            "additionalProperties": false,
+            "allOf": [
+                {
+                    "properties": {
+                        "api_endpoint": {
+                            "$ref": "#/definitions/OVHEndpoint"
+                        },
+                        "application_secret": {
+                            "type": "string"
+                        },
+                        "consumer_key": {
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "properties": {
+                        "application_key": {
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            ]
+        },
+        "OVHOptionsWithOAuth2Config": {
+            "additionalProperties": false,
+            "allOf": [
+                {
+                    "properties": {
+                        "api_endpoint": {
+                            "$ref": "#/definitions/OVHEndpoint"
+                        },
+                        "application_secret": {
+                            "type": "string"
+                        },
+                        "consumer_key": {
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "properties": {
+                        "oauth2_config": {
+                            "properties": {
+                                "client_id": {
+                                    "type": "string"
+                                },
+                                "client_secret": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "type": "object"
+                }
+            ]
+        },
+        "Record<string,URL>": {
+            "type": "object"
+        },
+        "Record<string,any>": {
+            "type": "object"
+        },
+        "StatusCodeRange": {
+            "anyOf": [
+                {
+                    "pattern": "^[0-9]*$",
+                    "type": "string"
+                },
+                {
+                    "pattern": "^[0-9]*-[0-9]*$",
+                    "type": "string"
+                },
+                {
+                    "type": "number"
+                }
+            ]
+        },
+        "WebhookColorMode": {
+            "enum": [
+                "dec",
+                "hex"
+            ],
+            "type": "string"
+        },
+        "WebhookConfig": {
+            "additionalProperties": false,
+            "allOf": [
+                {
+                    "properties": {
+                        "name": {
+                            "description": "Name of the notification provider",
+                            "type": "string"
+                        },
+                        "provider": {
+                            "$ref": "#/definitions/NotificationProvider",
+                            "description": "Type of the notification provider"
+                        },
+                        "url": {
+                            "description": "URL of the notification provider",
+                            "format": "uri",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "properties": {
+                        "color_mode": {
+                            "$ref": "#/definitions/WebhookColorMode",
+                            "default": "hex",
+                            "description": "Webhook color mode"
+                        },
+                        "method": {
+                            "$ref": "#/definitions/WebhookMethod",
+                            "default": "POST",
+                            "description": "Webhook method"
+                        },
+                        "mime_type": {
+                            "$ref": "#/definitions/WebhookMimeType",
+                            "default": "application/json",
+                            "description": "Webhook mime type"
+                        },
+                        "payload": {
+                            "description": "Webhook message (usally JSON),\nrequired when template is not defined",
+                            "type": "string"
+                        },
+                        "template": {
+                            "const": "discord",
+                            "default": "discord",
+                            "description": "Webhook template",
+                            "type": "string"
+                        },
+                        "token": {
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                }
+            ]
+        },
+        "WebhookMethod": {
+            "enum": [
+                "GET",
+                "POST",
+                "PUT"
+            ],
+            "type": "string"
+        },
+        "WebhookMimeType": {
+            "enum": [
+                "application/json",
+                "application/x-www-form-urlencoded",
+                "text/plain"
+            ],
+            "type": "string"
+        }
+    },
+    "properties": {
+        "autocert": {
+            "additionalProperties": false,
+            "properties": {
+                "cert_path": {
+                    "type": "string"
+                },
+                "domains": {
+                    "items": {
+                        "pattern": "^(\\*\\.)?(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$"
+                    },
+                    "type": "array"
+                },
+                "email": {
+                    "format": "email",
+                    "type": "string"
+                },
+                "key_path": {
+                    "type": "string"
+                },
+                "options": {
+                    "anyOf": [
+                        {
+                            "additionalProperties": false,
+                            "properties": {
+                                "auth_token": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        {
+                            "additionalProperties": false,
+                            "properties": {
+                                "client_id": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "format": "email",
+                                    "type": "string"
+                                },
+                                "password": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        {
+                            "additionalProperties": false,
+                            "properties": {
+                                "token": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        {
+                            "$ref": "#/definitions/OVHOptionsWithAppKey"
+                        },
+                        {
+                            "$ref": "#/definitions/OVHOptionsWithOAuth2Config"
+                        }
+                    ]
+                },
+                "provider": {
+                    "$ref": "#/definitions/AutocertProvider"
+                }
+            },
+            "type": "object"
+        },
+        "entrypoint": {
+            "additionalProperties": false,
+            "properties": {
+                "access_log": {
+                    "additionalProperties": false,
+                    "properties": {
+                        "buffer_size": {
+                            "description": "The size of the buffer.",
+                            "minimum": 0,
+                            "type": "integer"
+                        },
+                        "fields": {
+                            "properties": {
+                                "cookie": {
+                                    "properties": {
+                                        "config": {
+                                            "additionalProperties": {
+                                                "enum": [
+                                                    "drop",
+                                                    "keep",
+                                                    "redact"
+                                                ],
+                                                "type": "string"
+                                            },
+                                            "type": "object"
+                                        },
+                                        "default": {
+                                            "$ref": "#/definitions/AccessLogFieldMode"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "header": {
+                                    "properties": {
+                                        "config": {
+                                            "additionalProperties": {
+                                                "enum": [
+                                                    "drop",
+                                                    "keep",
+                                                    "redact"
+                                                ],
+                                                "type": "string"
+                                            },
+                                            "type": "object"
+                                        },
+                                        "default": {
+                                            "$ref": "#/definitions/AccessLogFieldMode"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "query": {
+                                    "properties": {
+                                        "config": {
+                                            "additionalProperties": {
+                                                "enum": [
+                                                    "drop",
+                                                    "keep",
+                                                    "redact"
+                                                ],
+                                                "type": "string"
+                                            },
+                                            "type": "object"
+                                        },
+                                        "default": {
+                                            "$ref": "#/definitions/AccessLogFieldMode"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "filters": {
+                            "properties": {
+                                "cidr": {
+                                    "properties": {
+                                        "negative": {
+                                            "type": "boolean"
+                                        },
+                                        "values": {
+                                            "items": {
+                                                "$ref": "#/definitions/CIDR"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "headers": {
+                                    "properties": {
+                                        "negative": {
+                                            "type": "boolean"
+                                        },
+                                        "values": {
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "host": {
+                                    "properties": {
+                                        "negative": {
+                                            "type": "boolean"
+                                        },
+                                        "values": {
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "method": {
+                                    "properties": {
+                                        "negative": {
+                                            "type": "boolean"
+                                        },
+                                        "values": {
+                                            "items": {
+                                                "enum": [
+                                                    "CONNECT",
+                                                    "DELETE",
+                                                    "GET",
+                                                    "HEAD",
+                                                    "OPTIONS",
+                                                    "PATCH",
+                                                    "POST",
+                                                    "PUT",
+                                                    "TRACE"
+                                                ],
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "status_code": {
+                                    "properties": {
+                                        "negative": {
+                                            "type": "boolean"
+                                        },
+                                        "values": {
+                                            "items": {
+                                                "$ref": "#/definitions/StatusCodeRange"
+                                            },
+                                            "type": "array"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "format": {
+                            "$ref": "#/definitions/AccessLogFormat"
+                        },
+                        "path": {
+                            "format": "uri-reference",
+                            "type": "string"
+                        }
+                    },
+                    "type": "object"
+                },
+                "middlewares": {
+                    "$ref": "#/definitions/MiddlewareConfig"
+                }
+            },
+            "type": "object"
+        },
+        "homepage": {
+            "additionalProperties": false,
+            "properties": {
+                "use_default_categories": {
+                    "default": true,
+                    "description": "Use default app categories (uses docker image name)",
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
+        "match_domains": {
+            "items": {
+                "pattern": "^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$"
+            },
+            "type": "array"
+        },
+        "providers": {
+            "additionalProperties": false,
+            "properties": {
+                "docker": {
+                    "$ref": "#/definitions/Record<string,URL>",
+                    "description": "Name-value mapping of docker hosts to retrieve routes from"
+                },
+                "include": {
+                    "description": "List of route definition files to include",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "notification": {
+                    "description": "List of notification providers",
+                    "items": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/definitions/GotifyConfig"
+                            },
+                            {
+                                "$ref": "#/definitions/WebhookConfig"
+                            }
+                        ]
+                    },
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "timeout_shutdown": {
+            "default": 3,
+            "description": "Optional timeout before shutdown",
+            "minimum": 1,
+            "type": "number"
+        }
+    },
+    "type": "object"
+}
+

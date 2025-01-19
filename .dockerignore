@@ -1,0 +1,17 @@
+Dockerfile
+dev.Dockerfile
+Makefile
+.dockerignore
+.env
+next-env.d.ts
+node_modules
+npm-debug.log
+README.md
+.next
+.git
+.gitlab-ci.yml
+compose.yml
+
+.vscode
+.github
+.trunk
