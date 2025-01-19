@@ -15,14 +15,13 @@ import {
   SimpleGrid,
   Stack,
 } from "@chakra-ui/react";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 
 import useHealthMap, { healthInfoUnknown, HealthMap } from "@/types/api/health";
 import Conditional from "../conditional";
-import { EmptyState } from "../ui/empty-state";
 import { toaster } from "../ui/toaster";
 import { AppCard } from "./app_card";
-import { allSettings, DashboardSettingsButton } from "./settings";
+import { DashboardSettingsButton, useAllSettings } from "./settings";
 
 function dummyItems(): HomepageItems {
   const items = [];
@@ -43,7 +42,8 @@ function Category_({
   healthMap: HealthMap;
   isMobile: boolean;
 }>) {
-  const { gridMode, itemGap, categoryFontSize, cardPadding } = allSettings();
+  const { gridMode, itemGap, categoryFontSize, cardPadding } = useAllSettings();
+
   return (
     <Card.Root borderRadius="lg" p={cardPadding.val}>
       <Card.Header>
@@ -103,16 +103,20 @@ export default function AppGroups({
   isMobile,
 }: Readonly<{ isMobile: boolean }>) {
   const [homepageItems, setHomepageItems] =
-    useState<HomepageItems>(dummyItems());
+    React.useState<HomepageItems>(dummyItems());
   const healthMap = useHealthMap();
+  const { categoryFilter, providerFilter } = useAllSettings();
 
-  useEffect(() => {
-    getHomepageItems()
+  React.useEffect(() => {
+    getHomepageItems({
+      category: categoryFilter.val,
+      provider: providerFilter.val,
+    })
       .then((items) => {
         setHomepageItems(items);
       })
       .catch((error) => toaster.error(error));
-  }, []);
+  }, [categoryFilter.val, providerFilter.val]);
 
   const lessThanTwo = useCallback(
     () =>
@@ -124,15 +128,6 @@ export default function AppGroups({
       Object.entries(homepageItems).filter(([_, items]) => items.length > 2),
     [homepageItems],
   );
-
-  if (Object.keys(homepageItems).length === 0) {
-    return (
-      <EmptyState
-        title="No apps found"
-        description="Create some routes in the GoDoxy dashboard to get started"
-      />
-    );
-  }
 
   return (
     <Stack gap={4}>

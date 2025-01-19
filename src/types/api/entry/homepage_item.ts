@@ -4,6 +4,7 @@ import { ProviderType } from "../provider";
 export type HomepageItem = {
   name: string;
   alias: string;
+  provider: string;
   icon?: {
     value: string;
     is_relative: boolean;
@@ -33,6 +34,7 @@ export const DummyHomepageItem = (): HomepageItem => {
   return {
     name: randName(10),
     alias: randName(10),
+    provider: randName(10),
     icon: {
       value: "",
       is_relative: false,
@@ -49,19 +51,31 @@ export const DummyHomepageItem = (): HomepageItem => {
 
 export type HomepageItems = Record<string, HomepageItem[]>;
 
-export async function getHomepageItems() {
+type HomepageItemsFilter = {
+  category: string;
+  provider: string;
+};
+
+export async function getHomepageItems({
+  category,
+  provider,
+}: HomepageItemsFilter): Promise<HomepageItems> {
   const currentHostname = window.location.hostname
     .split(".")
     .slice(1)
     .join(".");
 
   try {
-    const response = await fetchEndpoint(Endpoints.HOMEPAGE_CFG);
+    const response = await fetchEndpoint(Endpoints.HOMEPAGE_CFG, {
+      query: {
+        category,
+        provider,
+      },
+    });
     if (response === null) {
       return {};
     }
     const data = (await response.json()) as HomepageItems;
-
     // sort by length of name and then alphabetically
     for (const category of Object.values(data)) {
       category.sort((a: HomepageItem, b: HomepageItem) => {

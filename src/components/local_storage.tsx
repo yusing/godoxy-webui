@@ -1,7 +1,22 @@
 "use client";
 
+import {
+  SelectContent,
+  SelectItem,
+  SelectLabel,
+  SelectRoot,
+  SelectTrigger,
+  SelectValueText,
+} from "@/components/ui/select";
 import { SettingsItem } from "@/types/settings";
-import { HStack, Text, TextProps } from "@chakra-ui/react";
+import {
+  createListCollection,
+  HStack,
+  ListCollection,
+  Select,
+  Text,
+  TextProps,
+} from "@chakra-ui/react";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import React from "react";
 import { Slider, SliderProps } from "./ui/slider";
@@ -18,8 +33,7 @@ export const Sizes: Record<SizeKeys, number> = {
 };
 
 interface LocalStorageSliderProps extends Omit<SliderProps, "value"> {
-  valueKey: string;
-  initialValue: string | number | symbol;
+  item: SettingsItem<string>;
   values: Record<string | number | symbol, number>;
   label: string;
 }
@@ -28,8 +42,8 @@ export const LocalStorageSlider = React.forwardRef<
   HTMLDivElement,
   LocalStorageSliderProps
 >(function LocalStorageSlider(props, ref) {
-  const { valueKey, initialValue, values, label, ...rest } = props;
-  const [value, setValue] = useLocalStorage(valueKey, initialValue);
+  const { item, values, label, ...rest } = props;
+  const [value, setValue] = useLocalStorage(item.key, item.val);
   return (
     <Slider
       min={0}
@@ -48,9 +62,61 @@ export const LocalStorageSlider = React.forwardRef<
   );
 });
 
+interface LocalStorageSelectProps<T = string>
+  extends Omit<Select.ControlProps, "value"> {
+  item: SettingsItem<T>;
+  collection: ListCollection<T>;
+  label: string;
+}
+
+export const LocalStorageSelectShowAll = "Show All";
+
+export function createSelectCollection(items: string[]) {
+  return createListCollection({
+    items: [LocalStorageSelectShowAll, ...items],
+    itemToString: (item) => item,
+    itemToValue: (item) => {
+      if (item === LocalStorageSelectShowAll) return "";
+      return item;
+    },
+  });
+}
+
+export const LocalStorageSelect = React.forwardRef<
+  HTMLDivElement,
+  LocalStorageSelectProps
+>(function LocalStorageSelect(props, ref) {
+  const { item, collection, label, ...rest } = props;
+  return (
+    <SelectRoot
+      ref={ref}
+      collection={collection}
+      defaultValue={[collection.firstValue ?? item.val]}
+      value={[item.val]}
+      onValueChange={({ value }) => {
+        if (value[0] === LocalStorageSelectShowAll) {
+          return item.set("");
+        }
+        return item.set(value[0]!);
+      }}
+    >
+      <SelectLabel>{label}</SelectLabel>
+      <SelectTrigger {...rest}>
+        <SelectValueText />
+      </SelectTrigger>
+      <SelectContent>
+        {collection.items.map((e) => (
+          <SelectItem key={e} item={e}>
+            {e === "" ? LocalStorageSelectShowAll : e}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </SelectRoot>
+  );
+});
+
 interface LocalStorageNumberSliderProps extends Omit<SliderProps, "value"> {
-  valueKey: string;
-  initialValue: number;
+  item: SettingsItem<number>;
   values: {
     label: string;
     value: number;
@@ -62,15 +128,14 @@ export const LocalStorageNumberSlider = React.forwardRef<
   HTMLDivElement,
   LocalStorageNumberSliderProps
 >(function LocalStorageSlider(props, ref) {
-  const { valueKey, initialValue, values, label, ...rest } = props;
-  const [value, setValue] = useLocalStorage(valueKey, initialValue);
+  const { item, values, label, ...rest } = props;
   return (
     <Slider
       min={0}
       max={values[values.length - 1]!.value}
       step={1}
-      value={[value]}
-      onValueChange={(e) => setValue(e.value[0]!)}
+      value={[item.val]}
+      onValueChange={(e) => item.set(e.value[0]!)}
       label={label}
       marks={values}
       {...rest}

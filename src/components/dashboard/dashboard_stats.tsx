@@ -7,6 +7,7 @@ import { Box, For, SimpleGrid, Stack } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 import Conditional from "../conditional";
 import { Skeleton, SkeletonText } from "../ui/skeleton";
+import { DashboardFilters } from "./settings";
 import { RouteStats } from "./stats";
 
 const ProvidersGrid = dynamic(() => import("./providers_grid"), {
@@ -78,6 +79,7 @@ export default function DashboardStats({
           falseProps={{ stats: stats }}
         />
       </StatRoot>
+      <DashboardFilters />
     </Conditional>
   );
 }

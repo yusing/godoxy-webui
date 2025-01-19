@@ -16,7 +16,7 @@ export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
       return;
     }
     fetchEndpoint(Endpoints.FileContent(curFile.type, curFile.filename))
-      .then((r) => r.text())
+      .then((r) => r?.text() ?? undefined)
       .then((content) => setContent(content))
       .catch((e: Error) => {
         setContent(undefined);

@@ -10,7 +10,7 @@ export default function VersionText() {
 
   useEffect(() => {
     fetchEndpoint(Endpoints.VERSION)
-      .then((response) => response.text())
+      .then((response) => response?.text() ?? "unknown")
       .then((text) => setVersion(text))
       .catch((error) => toastError(error));
   }, []);

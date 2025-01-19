@@ -15,6 +15,8 @@ namespace Endpoints {
   export const AUTH_REDIRECT = "/api/auth/redirect";
   export const LIST_FILES = "/api/list/files";
   export const LIST_PROXIES = "/api/list/routes";
+  export const LIST_HOMEPAGE_CATEGORIES = "/api/list/homepage_categories";
+  export const LIST_ROUTE_PROVIDERS = "/api/list/route_providers";
   export const MATCH_DOMAINS = "/api/list/match_domains";
   export const HOMEPAGE_CFG = "/api/list/homepage_config";
 
