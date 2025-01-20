@@ -10,7 +10,6 @@ import {
   createSelectCollection,
   LocalStorageNumberSlider,
   LocalStorageSelect,
-  LocalStorageSelectShowAll,
   LocalStorageSlider,
   LocalStorageToggle,
   Sizes,
@@ -39,14 +38,8 @@ export const useAllSettings = () => ({
   cardPadding: useSetting("dashboard_card_padding", "2"),
   categoryFontSize: useSetting("dashboard_category_font_size", "lg"),
 
-  categoryFilter: useSetting(
-    "dashboard_category_filter",
-    LocalStorageSelectShowAll,
-  ),
-  providerFilter: useSetting(
-    "dashboard_provider_filter",
-    LocalStorageSelectShowAll,
-  ),
+  categoryFilter: useSetting("dashboard_category_filter", ""),
+  providerFilter: useSetting("dashboard_provider_filter", ""),
 });
 
 function ViewToggle() {
@@ -122,7 +115,7 @@ function ProviderFilterSelect({
   );
 }
 
-export function DashboardFilters() {
+export default function DashboardFilters() {
   const providers = useAsync(
     async () =>
       (await fetch(Endpoints.LIST_ROUTE_PROVIDERS)
