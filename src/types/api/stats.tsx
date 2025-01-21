@@ -1,7 +1,5 @@
-import log from "loglevel";
-import { useEffect, useState } from "react";
+"use client";
 
-import Endpoints, { ws } from "@/types/api/endpoints";
 import { ProviderType } from "@/types/api/provider";
 
 export type RouteStats = {
@@ -45,50 +43,35 @@ function emptyRouteStats(): RouteStats {
   };
 }
 
-export default function useStats() {
-  const [stats, setStats] = useState<Stats>({
-    proxies: {
-      total: 0,
-      reverse_proxies: emptyRouteStats(),
-      streams: emptyRouteStats(),
-      providers: {
-        a: {
-          total: 0,
-          reverse_proxies: emptyRouteStats(),
-          streams: emptyRouteStats(),
-          type: ProviderType.file,
-          skeleton: true,
-        },
-        b: {
-          total: 0,
-          reverse_proxies: emptyRouteStats(),
-          streams: emptyRouteStats(),
-          type: ProviderType.docker,
-          skeleton: true,
-        },
-        c: {
-          total: 0,
-          reverse_proxies: emptyRouteStats(),
-          streams: emptyRouteStats(),
-          type: ProviderType.file,
-          skeleton: true,
-        },
+export const skeletonStats: Stats = {
+  proxies: {
+    total: 0,
+    reverse_proxies: emptyRouteStats(),
+    streams: emptyRouteStats(),
+    providers: {
+      a: {
+        total: 0,
+        reverse_proxies: emptyRouteStats(),
+        streams: emptyRouteStats(),
+        type: ProviderType.file,
+        skeleton: true,
+      },
+      b: {
+        total: 0,
+        reverse_proxies: emptyRouteStats(),
+        streams: emptyRouteStats(),
+        type: ProviderType.docker,
+        skeleton: true,
+      },
+      c: {
+        total: 0,
+        reverse_proxies: emptyRouteStats(),
+        streams: emptyRouteStats(),
+        type: ProviderType.file,
+        skeleton: true,
       },
     },
-    uptime: "3 Days and 1 Hour",
-    skeleton: true,
-  });
-
-  useEffect(() => {
-    const socket = ws(Endpoints.STATS);
-    socket.onmessage = (event) => {
-      setStats(JSON.parse(event.data as string));
-    };
-    socket.onerror = log.error;
-    return () => {
-      socket.close();
-    };
-  }, []);
-
-  return stats;
-}
+  },
+  uptime: "3 Days and 1 Hour",
+  skeleton: true,
+};

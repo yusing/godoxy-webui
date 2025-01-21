@@ -1,7 +1,3 @@
-import log from "loglevel";
-import { useEffect, useState } from "react";
-import Endpoints, { ws } from "./endpoints";
-
 export const healthStatuses = [
   "healthy",
   "error",
@@ -31,21 +27,4 @@ export function formatHealthInfo(info: HealthInfo) {
     return info.status;
   }
   return `${info.status} (for ${info.uptime}, latency: ${info.latency})`;
-}
-
-export default function useHealthMap() {
-  const [healthMap, setHealthMap] = useState<HealthMap>({});
-
-  useEffect(() => {
-    const socket = ws(Endpoints.HEALTH);
-    socket.onmessage = (event) => {
-      setHealthMap(JSON.parse(event.data as string));
-    };
-    socket.onerror = log.error;
-    return () => {
-      socket.close();
-    };
-  }, []);
-
-  return healthMap;
 }

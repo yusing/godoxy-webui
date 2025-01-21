@@ -1,40 +1,33 @@
 "use client";
 
 import { Prose } from "@/components/ui/prose";
+import { StepperInput } from "@/components/ui/stepper-input";
 import { Switch } from "@/components/ui/switch";
-import Endpoints, { ws } from "@/types/api/endpoints";
-import { Card, Stack } from "@chakra-ui/react";
+import Endpoints, { useWS } from "@/types/api/endpoints";
+import { useSetting } from "@/types/settings";
+import { Card, Group, HStack, Stack, Text } from "@chakra-ui/react";
 import Convert from "ansi-to-html";
-import log from "loglevel";
 import React from "react";
-
+import { ReadyState } from "react-use-websocket";
 const convertANSI = new Convert();
-
 export default function Logs() {
-  const [isConnecting, setIsConnecting] = React.useState(true);
   const [logs, setLogs] = React.useState<string[]>([]);
-  const [autoScroll, setAutoScroll] = React.useState(true);
+  const autoScroll = useSetting("logs_auto_scroll", true);
+  const maxLines = useSetting("logs_max_lines", 100);
   const logRef = React.useRef<HTMLDivElement>(null);
+  const { data, readyState } = useWS<string>(Endpoints.LOGS);
 
   React.useEffect(() => {
-    const socket = ws(Endpoints.LOGS);
-    socket.onopen = () => {
-      setIsConnecting(false);
+    if (data) {
+      setLogs((prev) => prev.concat(data.split("\n")).slice(-maxLines.val));
+    }
+  }, [data]);
+
+  React.useEffect(() => {
+    if (autoScroll.val) {
       logRef.current?.scrollTo(0, logRef.current.scrollHeight);
-    };
-    socket.onmessage = (event) => {
-      setLogs((prev) =>
-        prev.concat((event.data as string).split("\n")).slice(-100),
-      );
-      if (autoScroll) {
-        logRef.current?.scrollTo(0, logRef.current.scrollHeight);
-      }
-    };
-    socket.onerror = log.error;
-    return () => {
-      socket.close();
-    };
-  }, []);
+    }
+  }, [autoScroll.val, data]);
 
   return (
     <Card.Root w="full" h="full">
@@ -49,7 +42,9 @@ export default function Logs() {
           scrollBehavior="smooth"
           scrollbar={"hidden"}
         >
-          {isConnecting ? <Prose>Loading...</Prose> : null}
+          {readyState === ReadyState.CONNECTING ? (
+            <Prose>Loading...</Prose>
+          ) : null}
           {logs.map((l) => (
             <Prose
               fontSize={"md"}
@@ -57,13 +52,27 @@ export default function Logs() {
             />
           ))}
         </Stack>
-        <Switch
-          key="auto-scroll"
-          checked={autoScroll}
-          onCheckedChange={({ checked }) => setAutoScroll(checked)}
-        >
-          Auto-scroll
-        </Switch>
+        <HStack gap="6">
+          <Switch
+            key="auto-scroll"
+            checked={autoScroll.val}
+            onCheckedChange={({ checked }) => autoScroll.set(checked)}
+          >
+            Auto Scroll
+          </Switch>
+          <Group attached>
+            <Text fontSize={"sm"} fontWeight={"medium"}>
+              Max Lines
+            </Text>
+            <StepperInput
+              value={maxLines.val.toString()}
+              min={10}
+              max={5000}
+              step={10}
+              onValueChange={({ valueAsNumber }) => maxLines.set(valueAsNumber)}
+            ></StepperInput>
+          </Group>
+        </HStack>
       </Card.Body>
     </Card.Root>
   );

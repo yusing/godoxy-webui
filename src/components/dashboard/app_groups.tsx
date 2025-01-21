@@ -17,7 +17,8 @@ import {
 } from "@chakra-ui/react";
 import React, { useCallback } from "react";
 
-import useHealthMap, { healthInfoUnknown, HealthMap } from "@/types/api/health";
+import Endpoints, { useWSJSON } from "@/types/api/endpoints";
+import { healthInfoUnknown, HealthMap } from "@/types/api/health";
 import Conditional from "../conditional";
 import { toaster } from "../ui/toaster";
 import { AppCard } from "./app_card";
@@ -104,7 +105,9 @@ export default function AppGroups({
 }: Readonly<{ isMobile: boolean }>) {
   const [homepageItems, setHomepageItems] =
     React.useState<HomepageItems>(dummyItems());
-  const healthMap = useHealthMap();
+  const { data: healthMap, readyState } = useWSJSON<HealthMap>(
+    Endpoints.HEALTH,
+  );
   const { categoryFilter, providerFilter } = useAllSettings();
 
   React.useEffect(() => {
@@ -138,7 +141,7 @@ export default function AppGroups({
             key={category}
             isMobile={isMobile}
             category={category}
-            healthMap={healthMap}
+            healthMap={healthMap ?? {}}
             items={items}
           />
         )}
@@ -153,7 +156,7 @@ export default function AppGroups({
                 key={category}
                 isMobile={isMobile}
                 category={category}
-                healthMap={healthMap}
+                healthMap={healthMap ?? {}}
                 items={items}
               />
             )}

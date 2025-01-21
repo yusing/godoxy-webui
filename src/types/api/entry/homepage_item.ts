@@ -3,22 +3,30 @@ import { ProviderType } from "../provider";
 
 export type HomepageItem = {
   name: string;
-  alias: string;
-  provider: string;
-  icon?: {
-    value: string;
-    is_relative: boolean;
-  };
+  icon: string;
   category: string;
   description: string;
   widget_config?: {};
+} & HomepageItemMetadata;
 
+type HomepageItemMetadata = {
+  alias: string;
+  provider: string;
   url: string;
   alt_url: string;
   source_type: ProviderType;
-
   skeleton?: boolean;
 };
+
+export function MarshalItem(item: HomepageItem) {
+  return JSON.stringify({
+    name: item.name,
+    icon: item.icon,
+    category: item.category,
+    description: item.description,
+    widget_config: item.widget_config,
+  });
+}
 
 const randName = (length: number) => {
   let result = "";
@@ -35,10 +43,7 @@ export const DummyHomepageItem = (): HomepageItem => {
     name: randName(10),
     alias: randName(10),
     provider: randName(10),
-    icon: {
-      value: "",
-      is_relative: false,
-    },
+    icon: "",
     category: randName(10),
     description: "",
     widget_config: {},

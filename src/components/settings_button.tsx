@@ -15,7 +15,7 @@ export function SettingsButton({
   [key: string]: any;
 }>): React.JSX.Element {
   return (
-    <MenuRoot {...props}>
+    <MenuRoot {...props} lazyMount unmountOnExit>
       <MenuTrigger asChild>
         <IconButton aria-label={title} {...iconProps}>
           <MdSettings />

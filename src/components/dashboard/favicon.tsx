@@ -6,15 +6,18 @@ import { Avatar, AvatarProps } from "../ui/avatar";
 
 interface FavIconProps {
   size?: number | string;
-  item: HomepageItem;
+  item?: HomepageItem;
+  url?: string;
 }
 
 export const FavIcon: React.FC<FavIconProps & Omit<AvatarProps, "size">> = ({
   size,
   item,
+  url,
   ...props
 }) => {
   const [loading, setLoading] = useState(true);
+  if (!item && !url) throw new Error("Missing item or url");
   return (
     <Skeleton
       asChild
@@ -23,12 +26,20 @@ export const FavIcon: React.FC<FavIconProps & Omit<AvatarProps, "size">> = ({
       loading={loading}
     >
       <Avatar
-        name={item.name}
+        name={item?.name ?? url ?? ""}
         shape={props.shape || "rounded"}
         height={props.height || size}
         width={props.width || size}
         borderless
-        src={Endpoints.FavIcon(item.alias)}
+        src={Endpoints.FavIcon(item?.alias, url)}
+        // fallback={
+        //   <Image
+        //     rounded="md"
+        //     src={Endpoints.FavIcon(item?.alias, url)}
+        //     border="none"
+        //     sizes={`${size}`}
+        //   ></Image>
+        // } // likely svg
         onStatusChange={() => setLoading(false)}
         {...props}
       />

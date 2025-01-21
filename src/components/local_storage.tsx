@@ -11,7 +11,6 @@ import {
 import { SettingsItem } from "@/types/settings";
 import {
   createListCollection,
-  HStack,
   ListCollection,
   Select,
   Text,
@@ -90,6 +89,7 @@ export const LocalStorageSelect = React.forwardRef<
   return (
     <SelectRoot
       ref={ref}
+      minW={"150px"}
       collection={collection}
       defaultValue={[collection.firstValue ?? item.val]}
       value={[item.val]}
@@ -154,18 +154,16 @@ interface LocalStorageToggleProps extends Omit<SwitchProps, "value"> {
 export const LocalStorageToggle = React.forwardRef<
   HTMLDivElement,
   LocalStorageToggleProps
->(function LocalStorageToggle(props, ref) {
+>(function LocalStorageToggle(props) {
   const { item, label, labelPlacement, labelProps, ...rest } = props;
   return (
-    <HStack ref={ref}>
-      <Switch
-        checked={item.val}
-        onCheckedChange={(e) => item.set(e.checked)}
-        labelPlacement={labelPlacement}
-        {...rest}
-      >
-        <Text {...labelProps}>{label}</Text>
-      </Switch>
-    </HStack>
+    <Switch
+      checked={item.val}
+      onCheckedChange={(e) => item.set(e.checked)}
+      labelPlacement={labelPlacement}
+      {...rest}
+    >
+      <Text {...labelProps}>{label}</Text>
+    </Switch>
   );
 });

@@ -1,12 +1,18 @@
 import { toaster } from "@/components/ui/toaster";
 import { StatusCodes } from "http-status-codes";
 import log from "loglevel";
+import useWebSocket, { type Options } from "react-use-websocket";
 
 namespace Endpoints {
   export const FileContent = (fileType: ConfigFileType, filename: string) =>
-    `/api/file/${fileType}/${filename}`;
+    `/api/file/${fileType}/${encodeURIComponent(filename)}`;
   export const Schema = (filename: string) => `/api/schema/${filename}`;
-  export const FavIcon = (alias: string) => `/api/favicon/${alias}`;
+  export const FavIcon = (alias?: string, url?: string) =>
+    `/api/favicon?alias=${encodeURIComponent(alias ?? "")}&url=${encodeURIComponent(
+      url ?? "",
+    )}`;
+  export const SearchIcons = (keyword: string, limit: number) =>
+    `/api/list/icons?keyword=${encodeURIComponent(keyword)}&limit=${limit}`;
 
   export const VERSION = "/api/version";
   export const AUTH = "/api/auth/callback";
@@ -17,12 +23,14 @@ namespace Endpoints {
   export const LIST_PROXIES = "/api/list/routes";
   export const LIST_HOMEPAGE_CATEGORIES = "/api/list/homepage_categories";
   export const LIST_ROUTE_PROVIDERS = "/api/list/route_providers";
+  export const SEARCH_ICONS = "/api/list/icons";
   export const MATCH_DOMAINS = "/api/list/match_domains";
   export const HOMEPAGE_CFG = "/api/list/homepage_config";
 
   export const STATS = "/api/stats/ws";
   export const HEALTH = "/api/health/ws";
   export const LOGS = "/api/logs/ws";
+  export const SET_HOMEPAGE = "/api/homepage/set";
 }
 
 export type ConfigFileType = "config" | "provider" | "middleware";
@@ -59,6 +67,8 @@ export function toastError<T>(error: T) {
       title: "Fetch error",
       description: error.message,
     });
+  } else if (error instanceof Event) {
+    toaster.error({ title: "Websocket error" });
   } else {
     log.error(error, `unknown error type ${typeof error}`);
   }
@@ -101,8 +111,26 @@ export async function fetchEndpoint(
   return resp;
 }
 
-export function ws(endpoint: string) {
-  return new WebSocket(`${endpoint}`);
+export function useWS<T = string>(endpoint: string, options?: Options) {
+  const { lastMessage, readyState } = useWebSocket<MessageEvent<T | undefined>>(
+    endpoint,
+    { onError: toastError, ...options },
+  );
+  return { data: lastMessage?.data, readyState } as const;
+}
+
+export function useWSJSON<T>(endpoint: string, options?: Options) {
+  const { lastMessage, readyState } = useWebSocket<MessageEvent<T | undefined>>(
+    endpoint,
+    { onError: toastError, ...options },
+  );
+  if (lastMessage?.data) {
+    return {
+      data: JSON.parse(lastMessage.data) as T,
+      readyState,
+    } as const;
+  }
+  return { data: null, readyState } as const;
 }
 
 type loginProps = {
