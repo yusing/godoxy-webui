@@ -138,15 +138,6 @@ function EditItemButton({
   item: HomepageItem;
   onUpdate: (newItem: HomepageItem) => void;
 }>) {
-  const [keyword, setKeyword] = React.useState("");
-  const url = React.useMemo(
-    () => Endpoints.SearchIcons(keyword, 10),
-    [keyword],
-  );
-  const icons = useAsync<() => Promise<Icon[]>>(
-    () => fetch(url).then((r) => r.json()),
-    [keyword],
-  );
   const [open, setOpen] = React.useState(false);
 
   const {
@@ -162,6 +153,15 @@ function EditItemButton({
     control,
     name: "icon",
   });
+
+  const url = React.useMemo(
+    () => Endpoints.SearchIcons(iconField.value, 10),
+    [iconField.value],
+  );
+  const icons = useAsync<() => Promise<Icon[]>>(
+    () => fetch(url).then((r) => r.json()),
+    [iconField.value],
+  );
 
   const onSubmit = (data: HomepageItem) => {
     overrideHomepage("item", data.alias, MarshalItem(data))
@@ -225,10 +225,10 @@ function EditItemButton({
                     <Input
                       p="2"
                       placeholder="Start typing to find an icon, or paste a URL"
-                      value={keyword}
-                      onChange={(e) => setKeyword(e.target.value)}
+                      value={iconField.value}
+                      onChange={(e) => iconField.onChange(e.target.value)}
                     />
-                    <CloseButton onClick={() => setKeyword("")} />
+                    <CloseButton onClick={() => iconField.onChange("")} />
                   </Group>
                 </Field>
                 <Stack overflow={"scroll"} maxH="250px" minW={"full"}>
@@ -244,10 +244,7 @@ function EditItemButton({
                       <Button
                         key={e}
                         asChild
-                        onClick={() => {
-                          iconField.onChange(e);
-                          setKeyword(iconField.value);
-                        }}
+                        onClick={() => iconField.onChange(e)}
                       >
                         <HStack
                           bg="bg.panel"
