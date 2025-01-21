@@ -5,12 +5,22 @@ import { StepperInput } from "@/components/ui/stepper-input";
 import { Switch } from "@/components/ui/switch";
 import Endpoints, { useWS } from "@/types/api/endpoints";
 import { useSetting } from "@/types/settings";
-import { Card, Group, HStack, Stack, Text } from "@chakra-ui/react";
+import { Card, ClientOnly, Group, HStack, Stack, Text } from "@chakra-ui/react";
 import Convert from "ansi-to-html";
 import React from "react";
 import { ReadyState } from "react-use-websocket";
+
 const convertANSI = new Convert();
-export default function Logs() {
+
+export default function Page() {
+  return (
+    <ClientOnly>
+      <Logs />
+    </ClientOnly>
+  );
+}
+
+function Logs() {
   const [logs, setLogs] = React.useState<string[]>([]);
   const autoScroll = useSetting("logs_auto_scroll", true);
   const maxLines = useSetting("logs_max_lines", 100);
