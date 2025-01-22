@@ -1,7 +1,8 @@
 "use client";
 
 import { siteConfig } from "@/site_config";
-import { Box, For, Group, Link, Stack } from "@chakra-ui/react";
+import { Box, For, Group, Link, Stack, StackProps } from "@chakra-ui/react";
+import React from "react";
 import useCheckAuth from "./auth";
 import { DiscordIcon, GithubIcon } from "./icons";
 import LogoutButton from "./logout_button";
@@ -16,29 +17,24 @@ export const HrefLabelMapping = siteConfig.navItems.reduce(
   {} as Record<string, string>,
 );
 
-export default function Navbar() {
+const Navbar: React.FC<StackProps> = (props) => {
   const authed = useCheckAuth();
   if (!authed) {
     return null;
   }
-  return <DesktopNav />;
-}
+  return <DesktopNav {...props} />;
+};
+
+export default Navbar;
 
 //TODO: implement mobile nav
 // function MobileNav() {
 //   return <DesktopNav />;
 // }
 
-function DesktopNav() {
+const DesktopNav: React.FC<StackProps> = (props) => {
   return (
-    <Stack
-      w="100vw"
-      position={"static"}
-      direction={"row"}
-      justify={"space-between"}
-      px={20}
-      pt={4}
-    >
+    <Stack {...props} w="100vw" direction={"row"} justify={"space-between"}>
       <Box />
       <Group>
         <For each={siteConfig.navItems}>
@@ -67,4 +63,4 @@ function DesktopNav() {
       </Group>
     </Stack>
   );
-}
+};

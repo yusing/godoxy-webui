@@ -36,12 +36,17 @@ export default function RootLayout(
         <Provider
           defaultTheme="dark"
           enableSystem
+          storageKey={"__theme"}
           attribute={["class", "data-theme"]}
         >
           <VStack>
-            <Box as="nav" h={navBarHeight} position={"fixed"} top={0}>
-              <Navbar />
-            </Box>
+            <Navbar
+              h={navBarHeight}
+              position={"fixed"}
+              top={0}
+              pt="0"
+              px="20"
+            />
             <Box
               as="main"
               position={"fixed"}
@@ -60,7 +65,7 @@ export default function RootLayout(
               bottom={0}
               h={footerHeight}
               as={"footer"}
-              href="https://github.com/yusing/go-proxy"
+              href={siteConfig.links.github}
               title="GoDoxy Homepage"
             >
               <Text>Powered by</Text>

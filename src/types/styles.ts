@@ -1,4 +1,4 @@
-export const navBarHeight = "3.8rem";
+export const navBarHeight = "3.5rem";
 export const footerHeight = "2rem";
 export const bodyPaddingX = "2rem";
 export const bodyHeight = `calc(100vh - ${navBarHeight} - ${footerHeight})`;
