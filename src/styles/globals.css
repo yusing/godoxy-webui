@@ -1,13 +1,3 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-:root {
-  --selected-text: #b37400;
-  --selected-bg: #fff3cc;
-}
-
-[data-theme="dark"] {
-  --selected-text: #ffcc00;
-  --selected-bg: #444444;
-}

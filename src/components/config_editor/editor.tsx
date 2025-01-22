@@ -9,6 +9,7 @@ import { coolGlow, noctisLilac } from "thememirror";
 import * as yamlParser from "yaml";
 
 import { useConfigFileContext, useConfigSchemaContext } from "@/types/file";
+import { bodyHeight, bodyWidth } from "@/types/styles";
 import { ErrorObject } from "ajv";
 import log from "loglevel";
 
@@ -106,8 +107,8 @@ export default function ConfigEditor() {
       theme={cmTheme}
       value={content}
       onChange={(value, _) => setContent(value)}
-      height="80vh"
-      width="65vw"
+      height={bodyHeight}
+      width={bodyWidth}
       basicSetup={true}
       style={{
         fontSize: "14px",

@@ -17,7 +17,6 @@ export const FavIcon: React.FC<FavIconProps & Omit<AvatarProps, "size">> = ({
   ...props
 }) => {
   const [loading, setLoading] = useState(true);
-  if (!item && !url) throw new Error("Missing item or url");
   return (
     <Skeleton
       asChild

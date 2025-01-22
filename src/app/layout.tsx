@@ -5,6 +5,13 @@ import { Box, Link, Text, VStack } from "@chakra-ui/react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { siteConfig } from "@/site_config";
+import {
+  bodyHeight,
+  bodyPaddingX,
+  bodyWidth,
+  footerHeight,
+  navBarHeight,
+} from "@/types/styles";
 import { GeistSans } from "geist/font/sans";
 import dynamic from "next/dynamic";
 
@@ -31,18 +38,27 @@ export default function RootLayout(
           enableSystem
           attribute={["class", "data-theme"]}
         >
-          <VStack
-            px={{
-              sm: "4",
-              md: "6",
-              lg: "8",
-            }}
-          >
-            <Navbar />
-            <Box pt="16px" as="main">
+          <VStack>
+            <Box as="nav" h={navBarHeight} position={"fixed"} top={0}>
+              <Navbar />
+            </Box>
+            <Box
+              as="main"
+              position={"fixed"}
+              top={navBarHeight}
+              px={bodyPaddingX}
+              height={bodyHeight}
+              width={bodyWidth}
+              overflowY={"auto"}
+              scrollBehavior={"smooth"}
+              scrollbar={"auto"}
+            >
               {children}
             </Box>
             <Link
+              position={"fixed"}
+              bottom={0}
+              h={footerHeight}
               as={"footer"}
               href="https://github.com/yusing/go-proxy"
               title="GoDoxy Homepage"

@@ -1,7 +1,7 @@
 "use client";
 
 import { siteConfig } from "@/site_config";
-import { For, Group, Link, Stack } from "@chakra-ui/react";
+import { Box, For, Group, Link, Stack } from "@chakra-ui/react";
 import useCheckAuth from "./auth";
 import { DiscordIcon, GithubIcon } from "./icons";
 import LogoutButton from "./logout_button";
@@ -39,7 +39,7 @@ function DesktopNav() {
       px={20}
       pt={4}
     >
-      <div />
+      <Box />
       <Group>
         <For each={siteConfig.navItems}>
           {(navItem) => (

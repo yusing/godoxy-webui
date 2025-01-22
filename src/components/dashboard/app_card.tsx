@@ -39,6 +39,7 @@ import { Field } from "../ui/field";
 import { SkeletonCircle, SkeletonText } from "../ui/skeleton";
 import { FavIcon } from "./favicon";
 
+import { useTheme } from "next-themes";
 import {
   FieldErrors,
   useController,
@@ -77,7 +78,11 @@ export const AppCard: React.FC<AppCardProps> = ({ health, ...rest }) => {
           aria-label={curItem.name}
         >
           <HStack gap="2">
-            <FavIcon item={curItem} size={"24px"} />
+            {curItem.icon ? (
+              <FavIcon url={curItem.icon} size={"24px"} />
+            ) : (
+              <FavIcon item={curItem} size={"24px"} />
+            )}
             <Tooltip content={curItem.url}>
               <Stack gap={0}>
                 <Text fontWeight="medium">{curItem.name}</Text>
@@ -125,7 +130,6 @@ const FieldInput = ({
     errorText={errors[field]?.message}
   >
     <Input
-      p="2"
       {...register(field, { required: required && `${label} is required` })}
     />
   </Field>
@@ -138,7 +142,16 @@ function EditItemButton({
   item: HomepageItem;
   onUpdate: (newItem: HomepageItem) => void;
 }>) {
+  if (!item.icon) {
+    item.icon = item.name
+      .toLowerCase()
+      .replaceAll(" ", "-")
+      .replaceAll("_", "-");
+  }
+
   const [open, setOpen] = React.useState(false);
+  const { resolvedTheme } = useTheme();
+  const oppositeTheme = resolvedTheme === "light" ? "dark" : "light";
 
   const {
     control,
@@ -159,11 +172,21 @@ function EditItemButton({
     [iconField.value],
   );
   const icons = useAsync<() => Promise<Icon[]>>(
-    () => fetch(url).then((r) => r.json()),
+    () =>
+      fetch(url)
+        .then((r) => r.json() as Promise<Icon[]>)
+        .then((r) =>
+          r.toSorted(
+            (a, b) => b.includes(oppositeTheme) - a.includes(oppositeTheme),
+          ),
+        ),
     [iconField.value],
   );
 
   const onSubmit = (data: HomepageItem) => {
+    if (data.icon == "") {
+      data.icon = item.icon;
+    }
     overrideHomepage("item", data.alias, MarshalItem(data))
       .then(() => {
         onUpdate(data);
@@ -196,34 +219,36 @@ function EditItemButton({
         <DialogCloseTrigger />
         <DialogBody>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <Stack gap="4">
-              <Group gap="4">
-                <FieldInput
-                  required
-                  label="App name"
-                  field="name"
-                  errors={errors}
-                  register={register}
-                />
-                <FieldInput
-                  label="Category"
-                  field="category"
-                  errors={errors}
-                  register={register}
-                />
-              </Group>
+            <Stack gap="6" p="2">
+              <HStack gap="6">
+                <FavIcon url={iconField.value || item.icon} size="36px" />
+                <Group gap="4" w="full">
+                  <FieldInput
+                    required
+                    label="App name"
+                    field="name"
+                    errors={errors}
+                    register={register}
+                  />
+
+                  <FieldInput
+                    label="Category"
+                    field="category"
+                    errors={errors}
+                    register={register}
+                  />
+                </Group>
+              </HStack>
               <FieldInput
                 label="Description"
                 field="description"
                 errors={errors}
                 register={register}
               />
-
               <Stack>
                 <Field label="Icon">
                   <Group attached w="full">
                     <Input
-                      p="2"
                       placeholder="Start typing to find an icon, or paste a URL"
                       value={iconField.value}
                       onChange={(e) => iconField.onChange(e.target.value)}
@@ -242,6 +267,7 @@ function EditItemButton({
                   ) : (
                     icons.value.map((e) => (
                       <Button
+                        p="0"
                         key={e}
                         asChild
                         onClick={() => iconField.onChange(e)}
@@ -253,7 +279,7 @@ function EditItemButton({
                           textAlign={"left"}
                           justify={"left"}
                         >
-                          <FavIcon url={e} size="24px" />
+                          <FavIcon url={e} size="28px" />
                           <Text>{e}</Text>
                         </HStack>
                       </Button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { For, Table, Tabs, useTabs } from "@chakra-ui/react";
+import { For, Table, Tabs } from "@chakra-ui/react";
 import { type AsyncListData, useAsyncList } from "@react-stately/data";
 import { useState } from "react";
 
@@ -115,18 +115,20 @@ export default function ProxiesPage() {
   });
 
   const [activeList, setActiveList] = useState(rps);
-  const tabs = useTabs({
-    defaultValue: "reverse_proxies",
-    onValueChange: (e) => {
-      if (e.value === "reload") {
-        return;
-      }
-      setActiveList(e.value === "reverse_proxies" ? rps : streams);
-    },
-  });
+  const [tab, setTab] = useState("reverse_proxies");
 
   return (
-    <Tabs.RootProvider value={tabs} px="4">
+    <Tabs.Root
+      value={tab}
+      onValueChange={(e) => {
+        if (e.value === "reload") {
+          return;
+        }
+        setTab(e.value);
+        setActiveList(e.value === "reverse_proxies" ? rps : streams);
+      }}
+      px="4"
+    >
       <Tabs.List gap={6}>
         <Tabs.Trigger value="reverse_proxies">
           <FaServer />
@@ -177,6 +179,6 @@ export default function ProxiesPage() {
           list={streams}
         />
       </Tabs.Content>
-    </Tabs.RootProvider>
+    </Tabs.Root>
   );
 }

@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { SettingsItem } from "@/types/settings";
 import {
+  Box,
   createListCollection,
   ListCollection,
   Select,
@@ -154,16 +155,18 @@ interface LocalStorageToggleProps extends Omit<SwitchProps, "value"> {
 export const LocalStorageToggle = React.forwardRef<
   HTMLDivElement,
   LocalStorageToggleProps
->(function LocalStorageToggle(props) {
+>(function LocalStorageToggle(props, ref) {
   const { item, label, labelPlacement, labelProps, ...rest } = props;
   return (
-    <Switch
-      checked={item.val}
-      onCheckedChange={(e) => item.set(e.checked)}
-      labelPlacement={labelPlacement}
-      {...rest}
-    >
-      <Text {...labelProps}>{label}</Text>
-    </Switch>
+    <Box ref={ref}>
+      <Switch
+        checked={item.val}
+        onCheckedChange={(e) => item.set(e.checked)}
+        labelPlacement={labelPlacement}
+        {...rest}
+      >
+        <Text {...labelProps}>{label}</Text>
+      </Switch>
+    </Box>
   );
 });

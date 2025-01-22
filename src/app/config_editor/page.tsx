@@ -13,7 +13,7 @@ import {
   useConfigFileContext,
   useConfigSchemaContext,
 } from "@/types/file";
-import { Box, Flex, For, HStack } from "@chakra-ui/react";
+import { Box, For, Stack, VStack } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 import { FaFile } from "react-icons/fa6";
 
@@ -47,26 +47,17 @@ export default function ConfigEditorPage() {
   );
 
   return (
-    <Box>
-      <HStack gap="6">
-        <ErrorPopup error={error} setError={setError} />
-        <Flex
-          align="flex-start"
-          flexDirection={"column"}
-          justify="space-between"
-          position="sticky"
-          top={16}
-          h="screen"
-          minW="200"
-          maxW="200"
-          gap={6}
-        >
+    <Stack gap="6" direction="row">
+      <ErrorPopup error={error} setError={setError} />
+      <VStack justify="space-between" align={"flex-start"}>
+        <Box gap="4">
           <For each={Object.entries(files)}>
             {([fileType, files]) => (
               <ListboxSection
                 key={fileType}
                 title={`${fileType[0]!.toUpperCase()}${fileType.slice(1)} files`}
                 items={files}
+                py="2"
               >
                 {(f: ConfigFile) => ({
                   key: `${fileType}:${f.filename}`,
@@ -82,14 +73,15 @@ export default function ConfigEditorPage() {
               </ListboxSection>
             )}
           </For>
-          <ConfigFileActions
-            checkExists={(t, name) => files[t].some((f) => f.filename === name)}
-            createFile={createFile}
-          />
-        </Flex>
-        <ConfigEditor />
+        </Box>
+        <ConfigFileActions
+          checkExists={(t, name) => files[t].some((f) => f.filename === name)}
+          createFile={createFile}
+        />
+      </VStack>
+      <ConfigEditor />
 
-        {/* <Tabs.RootProvider value={tabs}>
+      {/* <Tabs.RootProvider value={tabs}>
           <Tabs.List gap="6">
             <Tabs.Trigger value="yaml">YAML</Tabs.Trigger>
             <Tabs.Trigger value="ui">UI</Tabs.Trigger>
@@ -101,7 +93,6 @@ export default function ConfigEditorPage() {
             <UIEditor />
           </Tabs.Content>
         </Tabs.RootProvider> */}
-      </HStack>
-    </Box>
+    </Stack>
   );
 }

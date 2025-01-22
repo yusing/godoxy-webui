@@ -5,7 +5,8 @@ import { StepperInput } from "@/components/ui/stepper-input";
 import { Switch } from "@/components/ui/switch";
 import Endpoints, { useWS } from "@/types/api/endpoints";
 import { useSetting } from "@/types/settings";
-import { Card, ClientOnly, Group, HStack, Stack, Text } from "@chakra-ui/react";
+import { bodyHeight } from "@/types/styles";
+import { ClientOnly, Group, HStack, Stack, Text } from "@chakra-ui/react";
 import Convert from "ansi-to-html";
 import React from "react";
 import { ReadyState } from "react-use-websocket";
@@ -40,50 +41,56 @@ function Logs() {
   }, [autoScroll.val, data]);
 
   return (
-    <Card.Root w="full" h="full">
-      <Card.Body>
-        <Stack
-          ref={logRef}
-          m="4"
-          w="50vw"
-          h="80vh"
-          overflowY="scroll"
-          gap="0"
-          scrollBehavior="smooth"
-          scrollbar={"hidden"}
+    <Stack align={"center"} height={bodyHeight}>
+      <Stack
+        ref={logRef}
+        overflow="auto"
+        maxW="100%"
+        gap="0"
+        bg="bg.subtle"
+        border={"1px solid"}
+        borderColor="border.emphasized"
+        borderRadius={"md"}
+        my="10"
+      >
+        {readyState === ReadyState.CONNECTING ? (
+          <Prose>Loading...</Prose>
+        ) : null}
+        {logs.map((l) => (
+          <Prose
+            fontFamily={"monospace"}
+            fontSize={"md"}
+            px="10"
+            lineHeight="1.5em"
+            dangerouslySetInnerHTML={{
+              __html: convertANSI.toHtml(
+                l.replaceAll(" ", "&nbsp;").replaceAll("\t", "&emsp;"),
+              ),
+            }}
+          />
+        ))}
+      </Stack>
+      <HStack gap="6">
+        <Switch
+          key="auto-scroll"
+          checked={autoScroll.val}
+          onCheckedChange={({ checked }) => autoScroll.set(checked)}
         >
-          {readyState === ReadyState.CONNECTING ? (
-            <Prose>Loading...</Prose>
-          ) : null}
-          {logs.map((l) => (
-            <Prose
-              fontSize={"md"}
-              dangerouslySetInnerHTML={{ __html: convertANSI.toHtml(l) }}
-            />
-          ))}
-        </Stack>
-        <HStack gap="6">
-          <Switch
-            key="auto-scroll"
-            checked={autoScroll.val}
-            onCheckedChange={({ checked }) => autoScroll.set(checked)}
-          >
-            Auto Scroll
-          </Switch>
-          <Group attached>
-            <Text fontSize={"sm"} fontWeight={"medium"}>
-              Max Lines
-            </Text>
-            <StepperInput
-              value={maxLines.val.toString()}
-              min={10}
-              max={5000}
-              step={10}
-              onValueChange={({ valueAsNumber }) => maxLines.set(valueAsNumber)}
-            ></StepperInput>
-          </Group>
-        </HStack>
-      </Card.Body>
-    </Card.Root>
+          Auto Scroll
+        </Switch>
+        <Group attached>
+          <Text fontSize={"sm"} fontWeight={"medium"}>
+            Max Lines
+          </Text>
+          <StepperInput
+            value={maxLines.val.toString()}
+            min={10}
+            max={5000}
+            step={10}
+            onValueChange={({ valueAsNumber }) => maxLines.set(valueAsNumber)}
+          ></StepperInput>
+        </Group>
+      </HStack>
+    </Stack>
   );
 }
