@@ -7,7 +7,7 @@ import "@/styles/logs.css";
 import Endpoints, { useWS } from "@/types/api/endpoints";
 import { useSetting } from "@/types/settings";
 import { bodyHeight } from "@/types/styles";
-import { ClientOnly, Group, HStack, Stack, Text } from "@chakra-ui/react";
+import { ClientOnly, Group, Stack, Text } from "@chakra-ui/react";
 import Convert from "ansi-to-html";
 import React from "react";
 import { ReadyState } from "react-use-websocket";
@@ -42,17 +42,20 @@ function Logs() {
   }, [autoScroll.val, data]);
 
   return (
-    <Stack align={"center"} height={bodyHeight}>
+    <Stack direction={"row"} align={"center"} h={bodyHeight} gap="16">
       <Stack
         ref={logRef}
         overflow="auto"
-        maxW="100%"
+        textWrap="pretty"
+        w="100%"
+        maxH={"100%"}
         gap="0"
         bg="bg.subtle"
         border={"1px solid"}
         borderColor="border.emphasized"
         borderRadius={"md"}
-        my="2"
+        py="2"
+        px="6"
       >
         {readyState === ReadyState.CONNECTING ? (
           <Prose>Loading...</Prose>
@@ -62,7 +65,6 @@ function Logs() {
             fontFamily={"monospace"}
             fontSize={"md"}
             maxW="100%"
-            px="10"
             lineHeight="1.5em"
             dangerouslySetInnerHTML={{
               __html: convertANSI.toHtml(
@@ -72,7 +74,7 @@ function Logs() {
           />
         ))}
       </Stack>
-      <HStack gap="6">
+      <Stack gap="6">
         <Switch
           key="auto-scroll"
           checked={autoScroll.val}
@@ -92,7 +94,7 @@ function Logs() {
             onValueChange={({ valueAsNumber }) => maxLines.set(valueAsNumber)}
           ></StepperInput>
         </Group>
-      </HStack>
+      </Stack>
     </Stack>
   );
 }

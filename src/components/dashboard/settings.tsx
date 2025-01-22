@@ -152,7 +152,7 @@ function CategoryFilterSelect({
     <LocalStorageSelect
       item={categoryFilter}
       collection={collection}
-      label="Category Filter"
+      label="Category"
     />
   );
 }
@@ -165,7 +165,7 @@ function ProviderFilterSelect({
     <LocalStorageSelect
       item={providerFilter}
       collection={collection}
-      label="Provider Filter"
+      label="Provider"
     />
   );
 }
@@ -185,7 +185,7 @@ export default function DashboardFilters() {
   );
 
   return (
-    <Stack gap={4}>
+    <Stack gap={2}>
       <CategoryFilterSelect
         collection={React.useMemo(
           () => createSelectCollection(categories.value ?? []),

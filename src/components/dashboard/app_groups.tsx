@@ -32,7 +32,7 @@ function dummyItems(): HomepageItems {
   return { Docker: items, Others: items };
 }
 
-function Category_({
+function Category({
   category,
   items,
   healthMap,
@@ -54,12 +54,12 @@ function Category_({
   return (
     <Card.Root borderRadius="lg" size="sm">
       <Card.Header pt={categoryPaddingY.val} px={categoryPaddingX.val}>
-        <Stack direction={"row"}>
+        <HStack>
           <Heading fontWeight="medium" fontSize={categoryFontSize.val}>
             {category}
           </Heading>
           <DashboardSettingsButton size="md" />
-        </Stack>
+        </HStack>
       </Card.Header>
       <Card.Body pb={categoryPaddingY.val} px={categoryPaddingX.val}>
         <Conditional
@@ -103,8 +103,6 @@ function Category_({
     </Card.Root>
   );
 }
-
-const Category = React.memo(Category_);
 
 export default function AppGroups({
   isMobile,

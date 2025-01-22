@@ -50,7 +50,7 @@ export default function ConfigEditorPage() {
     <Stack gap="6" direction="row" h="full">
       <ErrorPopup error={error} setError={setError} />
       <VStack justify="space-between" align={"flex-start"}>
-        <Box gap="4">
+        <Box gap="4" overflowY="auto" scrollbar={"hidden"}>
           <For each={Object.entries(files)}>
             {([fileType, files]) => (
               <ListboxSection

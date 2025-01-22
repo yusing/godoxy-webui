@@ -32,7 +32,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useMemo } from "react";
 import { HealthStatus } from "../health_status";
 import { Button } from "../ui/button";
 import { Field } from "../ui/field";
@@ -155,16 +155,17 @@ function EditItemButton({
   item: HomepageItem;
   onUpdate: (newItem: HomepageItem) => void;
 }>) {
-  if (!item.icon) {
-    item.icon = item.name
+  const [open, setOpen] = React.useState(false);
+  const { resolvedTheme } = useTheme();
+  const oppositeTheme = resolvedTheme === "light" ? "dark" : "light";
+  const item_ = useMemo(() => structuredClone(item), [item]);
+
+  if (!item_.icon) {
+    item_.icon = item_.name
       .toLowerCase()
       .replaceAll(" ", "-")
       .replaceAll("_", "-");
   }
-
-  const [open, setOpen] = React.useState(false);
-  const { resolvedTheme } = useTheme();
-  const oppositeTheme = resolvedTheme === "light" ? "dark" : "light";
 
   const {
     control,
@@ -172,7 +173,7 @@ function EditItemButton({
     handleSubmit,
     formState: { errors },
   } = useForm<HomepageItem>({
-    defaultValues: item,
+    defaultValues: item_,
   });
 
   const { field: iconField } = useController({

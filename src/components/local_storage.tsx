@@ -92,6 +92,7 @@ export const LocalStorageSelect = React.forwardRef<
       ref={ref}
       minW={"150px"}
       collection={collection}
+      gap="0"
       defaultValue={[collection.firstValue ?? item.val]}
       value={[item.val]}
       onValueChange={({ value }) => {

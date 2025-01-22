@@ -21,7 +21,7 @@ export default function HomePage() {
     >
       <Toaster />
 
-      <Box position={isMobile ? "" : "sticky"}>
+      <Box position={isMobile ? "" : "sticky"} top={isMobile ? "" : "0"}>
         <DashboardStats isMobile={isMobile} />
       </Box>
       <ClientOnly>
