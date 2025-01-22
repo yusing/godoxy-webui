@@ -27,6 +27,9 @@ export function DashboardSettingsButton({
         <ViewToggle />
         <ItemGapSlider />
         <CategoryFontSizeSlider />
+        <CategoryGroupGapSlider />
+        <CategoryGroupPaddingXSlider />
+        <CategoryGroupPaddingYSlider />
       </Stack>
     </SettingsButton>
   );
@@ -35,7 +38,9 @@ export function DashboardSettingsButton({
 export const useAllSettings = () => ({
   gridMode: useSetting("dashboard_grid_mode", true),
   itemGap: useSetting("dashboard_item_gap", 10),
-  cardPadding: useSetting("dashboard_card_padding", "2"),
+  categoryGroupGap: useSetting("dashboard_category_group_gap", 3),
+  categoryPaddingX: useSetting("dashboard_category_padding_x", 6),
+  categoryPaddingY: useSetting("dashboard_category_padding_y", 6),
   categoryFontSize: useSetting("dashboard_category_font_size", "lg"),
 
   categoryFilter: useSetting("dashboard_category_filter", ""),
@@ -73,6 +78,56 @@ function ItemGapSlider() {
         { value: 20, label: "xl" },
       ]}
       label="Item Gap"
+    />
+  );
+}
+
+function CategoryGroupGapSlider() {
+  const { categoryGroupGap } = useAllSettings();
+  return (
+    <LocalStorageNumberSlider
+      item={categoryGroupGap}
+      values={[
+        { value: 0, label: "none" },
+        { value: 2, label: "sm" },
+        { value: 4, label: "md" },
+        { value: 6, label: "lg" },
+        { value: 8, label: "xl" },
+      ]}
+      label="Category Group Gap"
+    />
+  );
+}
+
+function CategoryGroupPaddingXSlider() {
+  const { categoryPaddingX: cardPadding } = useAllSettings();
+  return (
+    <LocalStorageNumberSlider
+      item={cardPadding}
+      values={[
+        { value: 2, label: "sm" },
+        { value: 6, label: "md" },
+        { value: 10, label: "lg" },
+        { value: 14, label: "xl" },
+      ]}
+      label="Category Group Padding X"
+    />
+  );
+}
+
+function CategoryGroupPaddingYSlider() {
+  const { categoryPaddingY: cardPadding } = useAllSettings();
+  return (
+    <LocalStorageNumberSlider
+      item={cardPadding}
+      values={[
+        { value: 0, label: "none" },
+        { value: 2, label: "sm" },
+        { value: 4, label: "md" },
+        { value: 6, label: "lg" },
+        { value: 8, label: "xl" },
+      ]}
+      label="Category Group Padding Y"
     />
   );
 }

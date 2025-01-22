@@ -132,7 +132,7 @@ export const LocalStorageNumberSlider = React.forwardRef<
   const { item, values, label, ...rest } = props;
   return (
     <Slider
-      min={0}
+      min={values[0]!.value}
       max={values[values.length - 1]!.value}
       step={1}
       value={[item.val]}

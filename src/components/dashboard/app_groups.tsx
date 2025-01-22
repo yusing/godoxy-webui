@@ -43,19 +43,25 @@ function Category_({
   healthMap: HealthMap;
   isMobile: boolean;
 }>) {
-  const { gridMode, itemGap, categoryFontSize, cardPadding } = useAllSettings();
+  const {
+    gridMode,
+    itemGap,
+    categoryFontSize,
+    categoryPaddingX,
+    categoryPaddingY,
+  } = useAllSettings();
 
   return (
-    <Card.Root borderRadius="lg" p={cardPadding.val}>
-      <Card.Header>
-        <HStack>
+    <Card.Root borderRadius="lg" size="sm">
+      <Card.Header pt={categoryPaddingY.val} px={categoryPaddingX.val}>
+        <Stack direction={"row"}>
           <Heading fontWeight="medium" fontSize={categoryFontSize.val}>
             {category}
           </Heading>
           <DashboardSettingsButton size="md" />
-        </HStack>
+        </Stack>
       </Card.Header>
-      <Card.Body pt="8">
+      <Card.Body pb={categoryPaddingY.val} px={categoryPaddingX.val}>
         <Conditional
           condition={gridMode.val}
           whenTrue={SimpleGrid}
@@ -108,7 +114,7 @@ export default function AppGroups({
   const { data: healthMap, readyState } = useWSJSON<HealthMap>(
     Endpoints.HEALTH,
   );
-  const { categoryFilter, providerFilter } = useAllSettings();
+  const { categoryGroupGap, categoryFilter, providerFilter } = useAllSettings();
 
   React.useEffect(() => {
     getHomepageItems({
@@ -133,7 +139,7 @@ export default function AppGroups({
   );
 
   return (
-    <Stack gap={4}>
+    <Stack gap={categoryGroupGap.val}>
       {/* Categories with two or more items */}
       <For each={others()}>
         {([category, items]) => (
