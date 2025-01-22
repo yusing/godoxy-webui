@@ -1,0 +1,49 @@
+/* this is for log streaming in SSR mode (not yet available) */
+
+.log-trace,
+.log-debug {
+  color: var(--chakra-colors-gray-400);
+}
+
+.log-info {
+  color: var(--chakra-colors-fg-success);
+}
+
+.log-warn {
+  color: var(--chakra-colors-yellow-500);
+}
+
+.log-error,
+.log-fatal,
+.log-panic,
+.log-red  {
+  color: var(--chakra-colors-red-500);
+}
+
+.log-green {
+  color: var(--chakra-colors-green-500);
+}
+
+.log-yellow {
+  color: var(--chakra-colors-yellow-500);
+}
+
+.log-cyan {
+  color: var(--chakra-colors-cyan-500);
+}
+
+.log-white {
+  color: var(--chakra-colors-white);
+}
+
+.log-bold {
+  font-weight: bold;
+}
+
+.log-message {
+  color: var(--chakra-colors-fg);
+}
+
+.log-entry {
+  text-wrap: nowrap;
+}

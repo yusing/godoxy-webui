@@ -3,6 +3,7 @@
 import { Prose } from "@/components/ui/prose";
 import { StepperInput } from "@/components/ui/stepper-input";
 import { Switch } from "@/components/ui/switch";
+import "@/styles/logs.css";
 import Endpoints, { useWS } from "@/types/api/endpoints";
 import { useSetting } from "@/types/settings";
 import { bodyHeight } from "@/types/styles";
@@ -51,7 +52,7 @@ function Logs() {
         border={"1px solid"}
         borderColor="border.emphasized"
         borderRadius={"md"}
-        my="10"
+        my="2"
       >
         {readyState === ReadyState.CONNECTING ? (
           <Prose>Loading...</Prose>
@@ -60,6 +61,7 @@ function Logs() {
           <Prose
             fontFamily={"monospace"}
             fontSize={"md"}
+            maxW="100%"
             px="10"
             lineHeight="1.5em"
             dangerouslySetInnerHTML={{

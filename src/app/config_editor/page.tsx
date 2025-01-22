@@ -47,7 +47,7 @@ export default function ConfigEditorPage() {
   );
 
   return (
-    <Stack gap="6" direction="row">
+    <Stack gap="6" direction="row" h="full">
       <ErrorPopup error={error} setError={setError} />
       <VStack justify="space-between" align={"flex-start"}>
         <Box gap="4">

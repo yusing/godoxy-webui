@@ -58,6 +58,7 @@ type AppCardProps = {
 
 export const AppCard: React.FC<AppCardProps> = ({ health, ...rest }) => {
   const [curItem, setCurItem] = React.useState(rest.item);
+  const [menuOpen, setMenuOpen] = React.useState(false);
 
   if (curItem.skeleton) {
     return (
@@ -68,7 +69,13 @@ export const AppCard: React.FC<AppCardProps> = ({ health, ...rest }) => {
     );
   }
   return (
-    <MenuRoot lazyMount unmountOnExit closeOnSelect={false}>
+    <MenuRoot
+      open={menuOpen}
+      onOpenChange={({ open }) => setMenuOpen(open)}
+      lazyMount
+      unmountOnExit
+      closeOnSelect={false}
+    >
       <MenuContextTrigger asChild>
         <Link
           className="transform transition-transform hover:scale-110"
@@ -104,7 +111,13 @@ export const AppCard: React.FC<AppCardProps> = ({ health, ...rest }) => {
       </MenuContextTrigger>
       <MenuContent>
         <MenuItem value="edit" aria-label="Edit app">
-          <EditItemButton item={curItem} onUpdate={(e) => setCurItem(e)} />
+          <EditItemButton
+            item={curItem}
+            onUpdate={(e) => {
+              setCurItem(e);
+              setMenuOpen(false);
+            }}
+          />
         </MenuItem>
       </MenuContent>
     </MenuRoot>
