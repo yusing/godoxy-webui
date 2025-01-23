@@ -8,8 +8,8 @@ import {
 } from "@/types/api/entry/homepage_item";
 import {
   Card,
+  Editable,
   For,
-  Heading,
   HStack,
   Show,
   SimpleGrid,
@@ -19,6 +19,7 @@ import React, { useCallback } from "react";
 
 import Endpoints, { useWSJSON } from "@/types/api/endpoints";
 import { healthInfoUnknown, HealthMap } from "@/types/api/health";
+import { overrideHomepage } from "@/types/api/homepage";
 import Conditional from "../conditional";
 import { toaster } from "../ui/toaster";
 import { AppCard } from "./app_card";
@@ -51,13 +52,32 @@ function Category({
     categoryPaddingY,
   } = useAllSettings();
 
+  const [categoryName, setCategoryName] = React.useState(category);
+
   return (
     <Card.Root borderRadius="lg" size="sm">
       <Card.Header pt={categoryPaddingY.val} px={categoryPaddingX.val}>
         <HStack>
-          <Heading fontWeight="medium" fontSize={categoryFontSize.val}>
-            {category}
-          </Heading>
+          <Editable.Root
+            w="fit-content"
+            mx="-1"
+            value={categoryName}
+            fontWeight="medium"
+            fontSize={categoryFontSize.val}
+            activationMode="dblclick"
+            onValueChange={({ value }) => {
+              setCategoryName(value);
+            }}
+            onValueCommit={({ value }) => {
+              overrideHomepage("category_name", category, value).catch((e) => {
+                toaster.error(e);
+                setCategoryName(category);
+              });
+            }}
+          >
+            <Editable.Preview />
+            <Editable.Input />
+          </Editable.Root>
           <DashboardSettingsButton size="md" />
         </HStack>
       </Card.Header>

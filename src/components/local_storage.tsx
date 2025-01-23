@@ -17,24 +17,19 @@ import {
   Text,
   TextProps,
 } from "@chakra-ui/react";
-import { useLocalStorage } from "@uidotdev/usehooks";
 import React from "react";
 import { Slider, SliderProps } from "./ui/slider";
 import { Switch, SwitchProps } from "./ui/switch";
 
-export type SizeKeys = "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
-export const Sizes: Record<SizeKeys, number> = {
-  xs: 0,
-  sm: 1,
-  md: 2,
-  lg: 3,
-  xl: 4,
-  "2xl": 5,
-};
+export const sizeKeys = ["xs", "sm", "md", "lg", "xl", "2xl"] as const;
+export type SizeKeys = (typeof sizeKeys)[number];
 
 interface LocalStorageSliderProps extends Omit<SliderProps, "value"> {
-  item: SettingsItem<string>;
-  values: Record<string | number | symbol, number>;
+  item: SettingsItem<number>;
+  min: number;
+  max: number;
+  step?: number;
+  labels?: string[];
   label: string;
 }
 
@@ -42,25 +37,53 @@ export const LocalStorageSlider = React.forwardRef<
   HTMLDivElement,
   LocalStorageSliderProps
 >(function LocalStorageSlider(props, ref) {
-  const { item, values, label, ...rest } = props;
-  const [value, setValue] = useLocalStorage(item.key, item.val);
+  const { item, min, max, step, labels, label, ...rest } = props;
   return (
     <Slider
-      min={0}
-      max={Object.keys(values).length - 1}
-      step={1}
-      value={[values[value]!]}
-      onValueChange={(e) => setValue(Object.keys(values)[e.value[0]!]!)}
+      min={min}
+      max={max}
+      step={step ?? 1}
+      value={[item.val]}
+      onValueChange={(e) => item.set(e.value[0]!)}
       label={label}
-      marks={Object.entries(values).map((v) => ({
-        value: values[v[0]]!,
-        label: v[0],
-      }))}
+      marks={
+        labels
+          ? labels.map((label, index) => ({ value: index, label }))
+          : [
+              { value: min, label: String(min) },
+              { value: max, label: String(max) },
+            ]
+      }
       {...rest}
       ref={ref}
     />
   );
 });
+
+interface LocalStorageStringSliderProps<T extends string>
+  extends Omit<SliderProps, "value"> {
+  item: SettingsItem<T>;
+  labels: T[];
+  label: string;
+}
+
+export function LocalStorageStringSlider<T extends string>(
+  props: Readonly<LocalStorageStringSliderProps<T>>,
+) {
+  const { item, labels, label, ...rest } = props;
+  return (
+    <Slider
+      min={0}
+      max={labels.length - 1}
+      step={1}
+      value={[labels.indexOf(item.val)]}
+      onValueChange={(e) => item.set(labels[e.value[0]!]!)}
+      label={label}
+      marks={labels.map((label, index) => ({ value: index, label }))}
+      {...rest}
+    />
+  );
+}
 
 interface LocalStorageSelectProps<T = string>
   extends Omit<Select.ControlProps, "value"> {
@@ -114,35 +137,6 @@ export const LocalStorageSelect = React.forwardRef<
         ))}
       </SelectContent>
     </SelectRoot>
-  );
-});
-
-interface LocalStorageNumberSliderProps extends Omit<SliderProps, "value"> {
-  item: SettingsItem<number>;
-  values: {
-    label: string;
-    value: number;
-  }[];
-  label: string;
-}
-
-export const LocalStorageNumberSlider = React.forwardRef<
-  HTMLDivElement,
-  LocalStorageNumberSliderProps
->(function LocalStorageSlider(props, ref) {
-  const { item, values, label, ...rest } = props;
-  return (
-    <Slider
-      min={values[0]!.value}
-      max={values[values.length - 1]!.value}
-      step={1}
-      value={[item.val]}
-      onValueChange={(e) => item.set(e.value[0]!)}
-      label={label}
-      marks={values}
-      {...rest}
-      ref={ref}
-    />
   );
 });
 

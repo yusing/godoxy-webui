@@ -56,6 +56,40 @@ type AppCardProps = {
   health: HealthInfo;
 } & React.ComponentProps<typeof HStack>;
 
+export const AppCardInner: React.FC<AppCardProps> = ({
+  item,
+  health,
+  ...rest
+}) => {
+  return (
+    <HStack gap="2" {...rest}>
+      {item.icon ? (
+        <FavIcon url={item.icon} size={"24px"} />
+      ) : (
+        <FavIcon item={item} size={"24px"} />
+      )}
+      <Tooltip content={item.url}>
+        <Stack gap={0}>
+          <Text fontWeight="medium">{item.name}</Text>
+          <Show when={item.description}>
+            <Text fontSize="sm" fontWeight="light" color="fg.muted">
+              {item.description}
+            </Text>
+          </Show>
+        </Stack>
+      </Tooltip>
+      {health.status !== "unknown" && (
+        <>
+          <Spacer />
+          <Tooltip content={formatHealthInfo(health)}>
+            <HealthStatus value={health.status} />
+          </Tooltip>
+        </>
+      )}
+    </HStack>
+  );
+};
+
 export const AppCard: React.FC<AppCardProps> = ({ health, ...rest }) => {
   const [curItem, setCurItem] = React.useState(rest.item);
   const [menuOpen, setMenuOpen] = React.useState(false);
@@ -68,6 +102,11 @@ export const AppCard: React.FC<AppCardProps> = ({ health, ...rest }) => {
       </HStack>
     );
   }
+
+  if (!curItem.show) {
+    return null;
+  }
+
   return (
     <MenuRoot
       open={menuOpen}
@@ -84,29 +123,7 @@ export const AppCard: React.FC<AppCardProps> = ({ health, ...rest }) => {
           variant="plain"
           aria-label={curItem.name}
         >
-          <HStack gap="2">
-            {curItem.icon ? (
-              <FavIcon url={curItem.icon} size={"24px"} />
-            ) : (
-              <FavIcon item={curItem} size={"24px"} />
-            )}
-            <Tooltip content={curItem.url}>
-              <Stack gap={0}>
-                <Text fontWeight="medium">{curItem.name}</Text>
-                <Show when={curItem.description}>
-                  <Text fontSize="sm" fontWeight="light" color="fg.muted">
-                    {curItem.description}
-                  </Text>
-                </Show>
-              </Stack>
-            </Tooltip>
-            <Spacer />
-            {health.status !== "unknown" && (
-              <Tooltip content={formatHealthInfo(health)}>
-                <HealthStatus value={health.status} />
-              </Tooltip>
-            )}
-          </HStack>
+          <AppCardInner item={curItem} health={health} />
         </Link>
       </MenuContextTrigger>
       <MenuContent>
@@ -118,6 +135,21 @@ export const AppCard: React.FC<AppCardProps> = ({ health, ...rest }) => {
               setMenuOpen(false);
             }}
           />
+        </MenuItem>
+        <MenuItem value="hide" aria-label="Hide app">
+          <Button
+            onClick={() => {
+              curItem.show = false;
+              overrideHomepage("item", curItem.alias, MarshalItem(curItem))
+                .then(() => {
+                  setCurItem({ ...curItem, show: false });
+                  setMenuOpen(false);
+                })
+                .catch(toastError);
+            }}
+          >
+            Hide App
+          </Button>
         </MenuItem>
       </MenuContent>
     </MenuRoot>
@@ -191,6 +223,7 @@ function EditItemButton({
         .then((r) => r.json() as Promise<Icon[]>)
         .then((r) =>
           r.toSorted(
+            // @ts-ignore
             (a, b) => b.includes(oppositeTheme) - a.includes(oppositeTheme),
           ),
         ),

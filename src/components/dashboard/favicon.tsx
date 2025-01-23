@@ -20,25 +20,17 @@ export const FavIcon: React.FC<FavIconProps & Omit<AvatarProps, "size">> = ({
   return (
     <Skeleton
       asChild
-      height={props.height || size}
-      width={props.width || size}
+      height={props.height ?? size}
+      width={props.width ?? size}
       loading={loading}
     >
       <Avatar
         name={item?.name ?? url ?? ""}
-        shape={props.shape || "rounded"}
-        height={props.height || size}
-        width={props.width || size}
+        shape={props.shape ?? "rounded"}
+        height={props.height ?? size}
+        width={props.width ?? size}
         borderless
         src={Endpoints.FavIcon(item?.alias, url)}
-        // fallback={
-        //   <Image
-        //     rounded="md"
-        //     src={Endpoints.FavIcon(item?.alias, url)}
-        //     border="none"
-        //     sizes={`${size}`}
-        //   ></Image>
-        // } // likely svg
         onStatusChange={() => setLoading(false)}
         {...props}
       />

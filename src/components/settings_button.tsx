@@ -1,7 +1,16 @@
-import { MenuContent, MenuRoot, MenuTrigger } from "@/components/ui/menu";
-import { Box, Heading, IconButton } from "@chakra-ui/react";
+import { IconButton } from "@chakra-ui/react";
 import React from "react";
 import { MdSettings } from "react-icons/md";
+
+import {
+  DialogBody,
+  DialogCloseTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogRoot,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export function SettingsButton({
   title,
@@ -15,20 +24,22 @@ export function SettingsButton({
   [key: string]: any;
 }>): React.JSX.Element {
   return (
-    <MenuRoot {...props} lazyMount unmountOnExit>
-      <MenuTrigger asChild>
+    <DialogRoot {...props} lazyMount unmountOnExit placement={"top"}>
+      <DialogTrigger asChild>
         <IconButton aria-label={title} {...iconProps}>
           <MdSettings />
         </IconButton>
-      </MenuTrigger>
-      <MenuContent minW={"250px"}>
-        <Box p={4} gap={1}>
-          <Heading as="h3" size="sm" fontWeight={"medium"}>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle fontSize={"md"} fontWeight={"medium"}>
             {title}
-          </Heading>
-          <Box mt={4}>{children}</Box>
-        </Box>
-      </MenuContent>
-    </MenuRoot>
+          </DialogTitle>
+          <DialogCloseTrigger />
+        </DialogHeader>
+        <DialogBody>{children}</DialogBody>
+        <DialogCloseTrigger />
+      </DialogContent>
+    </DialogRoot>
   );
 }

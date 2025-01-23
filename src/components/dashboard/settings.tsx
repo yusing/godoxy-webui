@@ -1,20 +1,35 @@
 "use client";
-
+import { Checkbox } from "@/components/ui/checkbox";
 import Endpoints from "@/types/api/endpoints";
+import { getHiddenHomepageItems } from "@/types/api/entry/homepage_item";
+import { healthInfoUnknown } from "@/types/api/health";
 import { useSetting } from "@/types/settings";
-import { Icon, ListCollection, Stack } from "@chakra-ui/react";
+import {
+  HStack,
+  Icon,
+  ListCollection,
+  Spinner,
+  Stack,
+  Tabs,
+} from "@chakra-ui/react";
 import React from "react";
-import { MdViewComfy, MdViewCompact } from "react-icons/md";
-import { useAsync } from "react-use";
+import { AiOutlineLayout } from "react-icons/ai";
+import { IoMdApps } from "react-icons/io";
+import { MdError, MdViewComfy, MdViewCompact } from "react-icons/md";
+import { useAsync, useList } from "react-use";
 import {
   createSelectCollection,
-  LocalStorageNumberSlider,
   LocalStorageSelect,
   LocalStorageSlider,
+  LocalStorageStringSlider,
   LocalStorageToggle,
-  Sizes,
+  SizeKeys,
+  sizeKeys,
 } from "../local_storage";
 import { SettingsButton } from "../settings_button";
+import { Button } from "../ui/button";
+import { EmptyState } from "../ui/empty-state";
+import { AppCardInner } from "./app_card";
 
 export function DashboardSettingsButton({
   size,
@@ -22,15 +37,33 @@ export function DashboardSettingsButton({
   size?: "sm" | "md" | "lg";
 }>) {
   return (
-    <SettingsButton title="Layout Settings" iconProps={{ size: size ?? "sm" }}>
-      <Stack gap={4}>
-        <ViewToggle />
-        <ItemGapSlider />
-        <CategoryFontSizeSlider />
-        <CategoryGroupGapSlider />
-        <CategoryGroupPaddingXSlider />
-        <CategoryGroupPaddingYSlider />
-      </Stack>
+    <SettingsButton title="Settings" iconProps={{ size: size ?? "sm" }}>
+      <Tabs.Root lazyMount unmountOnExit defaultValue="layout">
+        <Tabs.List gap="6">
+          <Tabs.Trigger value="layout">
+            <AiOutlineLayout />
+            Layout
+          </Tabs.Trigger>
+          <Tabs.Trigger value="hidden_apps">
+            <IoMdApps />
+            Hidden Apps
+          </Tabs.Trigger>
+          <Tabs.Indicator rounded="l2" />
+        </Tabs.List>
+        <Tabs.Content value="layout">
+          <Stack gap={4}>
+            <ViewToggle />
+            <ItemGapSlider />
+            <CategoryFontSizeSlider />
+            <CategoryGroupGapSlider />
+            <CategoryGroupPaddingXSlider />
+            <CategoryGroupPaddingYSlider />
+          </Stack>
+        </Tabs.Content>
+        <Tabs.Content value="hidden_apps">
+          <HiddenApps />
+        </Tabs.Content>
+      </Tabs.Root>
     </SettingsButton>
   );
 }
@@ -41,11 +74,51 @@ export const useAllSettings = () => ({
   categoryGroupGap: useSetting("dashboard_category_group_gap", 3),
   categoryPaddingX: useSetting("dashboard_category_padding_x", 6),
   categoryPaddingY: useSetting("dashboard_category_padding_y", 6),
-  categoryFontSize: useSetting("dashboard_category_font_size", "lg"),
+  categoryFontSize: useSetting<SizeKeys>("dashboard_category_font_size", "lg"),
 
   categoryFilter: useSetting("dashboard_category_filter", ""),
   providerFilter: useSetting("dashboard_provider_filter", ""),
 });
+
+function HiddenApps() {
+  const apps = useAsync(getHiddenHomepageItems);
+  const [selected, { push, removeAt, clear }] = useList<string>();
+
+  if (apps.error) {
+    return <EmptyState icon={<MdError />} title="Failed to load apps" />;
+  }
+  if (apps.loading) {
+    return <EmptyState icon={<Spinner />} title="Loading apps" />;
+  }
+  if (apps.value && apps.value.length === 0) {
+    return <EmptyState icon={<MdViewComfy />} title="No apps" />;
+  }
+  return (
+    <Stack gap={4}>
+      <Stack maxH="500px" overflow="auto">
+        {apps.value?.map((app) => (
+          <Checkbox
+            key={app.alias}
+            checked={selected.includes(app.alias)}
+            onCheckedChange={({ checked }) => {
+              if (checked) {
+                push(app.alias);
+              } else {
+                removeAt(selected.indexOf(app.alias));
+              }
+            }}
+          >
+            <AppCardInner item={app} health={healthInfoUnknown} />
+          </Checkbox>
+        ))}
+      </Stack>
+      <HStack mx="3" justify={"space-between"}>
+        <Button onClick={clear}>Clear</Button>
+        <Button>Unhide</Button>
+      </HStack>
+    </Stack>
+  );
+}
 
 function ViewToggle() {
   const { gridMode } = useAllSettings();
@@ -68,32 +141,18 @@ function ViewToggle() {
 function ItemGapSlider() {
   const { itemGap } = useAllSettings();
   return (
-    <LocalStorageNumberSlider
-      item={itemGap}
-      values={[
-        { value: 0, label: "none" },
-        { value: 5, label: "sm" },
-        { value: 10, label: "md" },
-        { value: 15, label: "lg" },
-        { value: 20, label: "xl" },
-      ]}
-      label="Item Gap"
-    />
+    <LocalStorageSlider item={itemGap} min={0} max={20} label="Item Gap" />
   );
 }
 
 function CategoryGroupGapSlider() {
   const { categoryGroupGap } = useAllSettings();
   return (
-    <LocalStorageNumberSlider
+    <LocalStorageSlider
       item={categoryGroupGap}
-      values={[
-        { value: 0, label: "none" },
-        { value: 2, label: "sm" },
-        { value: 4, label: "md" },
-        { value: 6, label: "lg" },
-        { value: 8, label: "xl" },
-      ]}
+      min={0}
+      max={10}
+      step={2}
       label="Category Group Gap"
     />
   );
@@ -102,14 +161,10 @@ function CategoryGroupGapSlider() {
 function CategoryGroupPaddingXSlider() {
   const { categoryPaddingX: cardPadding } = useAllSettings();
   return (
-    <LocalStorageNumberSlider
+    <LocalStorageSlider
       item={cardPadding}
-      values={[
-        { value: 2, label: "sm" },
-        { value: 6, label: "md" },
-        { value: 10, label: "lg" },
-        { value: 14, label: "xl" },
-      ]}
+      min={0}
+      max={12}
       label="Category Group Padding X"
     />
   );
@@ -118,27 +173,21 @@ function CategoryGroupPaddingXSlider() {
 function CategoryGroupPaddingYSlider() {
   const { categoryPaddingY: cardPadding } = useAllSettings();
   return (
-    <LocalStorageNumberSlider
+    <LocalStorageSlider
       item={cardPadding}
-      values={[
-        { value: 0, label: "none" },
-        { value: 2, label: "sm" },
-        { value: 4, label: "md" },
-        { value: 6, label: "lg" },
-        { value: 8, label: "xl" },
-      ]}
+      min={0}
+      max={12}
       label="Category Group Padding Y"
     />
   );
 }
-
 function CategoryFontSizeSlider() {
   const { categoryFontSize } = useAllSettings();
 
   return (
-    <LocalStorageSlider
+    <LocalStorageStringSlider
       item={categoryFontSize}
-      values={Sizes}
+      labels={sizeKeys}
       label="Category Title Size"
     />
   );

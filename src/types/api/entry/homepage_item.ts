@@ -2,6 +2,7 @@ import Endpoints, { fetchEndpoint, toastError } from "../endpoints";
 import { ProviderType } from "../provider";
 
 export type HomepageItem = {
+  show: boolean;
   name: string;
   icon: string;
   category: string;
@@ -40,6 +41,7 @@ const randName = (length: number) => {
 
 export const DummyHomepageItem = (): HomepageItem => {
   return {
+    show: true,
     name: randName(10),
     alias: randName(10),
     provider: randName(10),
@@ -105,4 +107,17 @@ export async function getHomepageItems({
     toastError(error);
     return {};
   }
+}
+
+export async function getHiddenHomepageItems(): Promise<HomepageItem[]> {
+  return await getHomepageItems({ category: "", provider: "" }).then(
+    (data) => {
+      return Object.entries(data).flatMap(([_, items]) =>
+        items.filter((item) => !item.show).map((item) => {
+          item.show = true;
+          return item;
+        }),
+      );
+    },
+  );
 }
