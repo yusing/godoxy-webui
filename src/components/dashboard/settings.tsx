@@ -54,7 +54,7 @@ export function DashboardSettingsButton({
           </Tabs.Trigger>
         </Tabs.List>
         <Tabs.Content value="layout" ref={contentRef}>
-          <Stack gap={4}>
+          <Stack gap={3}>
             {/* @ts-ignore */}
             <DashboardFilters portalRef={contentRef} />
             <ViewToggle />
@@ -161,19 +161,7 @@ function HealthBubbleGapToggle() {
   return (
     <LocalStorageToggle
       item={healthBubbleAlignEnd}
-      label={
-        healthBubbleAlignEnd.val
-          ? "Health bubble align to the end"
-          : "Health bubble next to app name"
-      }
-      trackLabel={{
-        on: (
-          <Icon asChild color="fg.inverted">
-            <MdViewComfy />
-          </Icon>
-        ),
-        off: <MdViewCompact />,
-      }}
+      label="Align Health bubble to the end"
     />
   );
 }

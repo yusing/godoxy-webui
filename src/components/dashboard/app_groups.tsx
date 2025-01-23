@@ -64,11 +64,11 @@ function Category({
       py={categoryPaddingY.val}
       px={categoryPaddingX.val}
     >
-      <Card.Header pt={0}>
+      <Card.Header pt={0} mx={-1}>
         <Editable.Root
-          w="fit-content"
-          mx="-1"
           value={categoryName}
+          required
+          autoCapitalize="words"
           fontWeight="medium"
           fontSize={categoryFontSize.val}
           activationMode="dblclick"
@@ -82,8 +82,8 @@ function Category({
             });
           }}
         >
-          <Editable.Preview />
-          <Editable.Input />
+          <Editable.Preview alignItems="flex-start" width="full" />
+          <Editable.Input mt="-1" />
         </Editable.Root>
       </Card.Header>
       <Card.Body>

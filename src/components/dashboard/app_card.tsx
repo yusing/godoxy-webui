@@ -29,6 +29,7 @@ import {
   Link,
   Show,
   Spacer,
+  Span,
   Stack,
   Text,
 } from "@chakra-ui/react";
@@ -63,14 +64,29 @@ export const AppCardInner: React.FC<AppCardProps> = ({
   ...rest
 }) => {
   const { healthBubbleAlignEnd } = useAllSettings();
+
   return (
-    <HStack gap="2" {...rest}>
+    <HStack gap="2" w="full" {...rest}>
       {item.icon ? (
         <FavIcon url={item.icon} size={"24px"} />
       ) : (
         <FavIcon item={item} size={"24px"} />
       )}
-      <Tooltip content={item.url}>
+      <Tooltip
+        content={
+          <Text>
+            {formatHealthInfo(health)}
+            <Span> {item.url}</Span>
+          </Text>
+        }
+        contentProps={{
+          zIndex: 100,
+          fontWeight: "medium",
+          bg: "bg.subtle",
+          opacity: 1,
+        }}
+        openDelay={100}
+      >
         <Stack gap={0}>
           <Text fontWeight="medium">{item.name}</Text>
           <Show when={item.description}>
@@ -83,9 +99,7 @@ export const AppCardInner: React.FC<AppCardProps> = ({
       {health.status !== "unknown" && (
         <>
           {healthBubbleAlignEnd.val ? <Spacer /> : null}
-          <Tooltip content={formatHealthInfo(health)}>
-            <HealthStatus value={health.status} />
-          </Tooltip>
+          <HealthStatus value={health.status} />
         </>
       )}
     </HStack>
@@ -119,7 +133,7 @@ export const AppCard: React.FC<AppCardProps> = ({ health, ...rest }) => {
     >
       <MenuContextTrigger asChild>
         <Link
-          className="transform transition-transform hover:scale-110"
+          className="transform transition-transform hover:scale-105"
           href={curItem.url}
           target="_blank"
           variant={"plain"}

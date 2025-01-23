@@ -22,7 +22,7 @@ export function SettingsButton({
   iconProps?: React.ComponentProps<typeof IconButton>;
 }>): React.JSX.Element {
   return (
-    <DialogRoot lazyMount unmountOnExit placement={"top"}>
+    <DialogRoot lazyMount unmountOnExit placement={"center"}>
       <DialogTrigger asChild>
         <IconButton variant={"ghost"} aria-label={title} {...iconProps}>
           <MdSettings />
