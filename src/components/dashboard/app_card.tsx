@@ -26,7 +26,7 @@ import {
   Group,
   HStack,
   Input,
-  LinkOverlay,
+  Link,
   Show,
   Spacer,
   Stack,
@@ -118,15 +118,15 @@ export const AppCard: React.FC<AppCardProps> = ({ health, ...rest }) => {
       closeOnSelect={false}
     >
       <MenuContextTrigger asChild>
-        <LinkOverlay
-          asChild
+        <Link
           className="transform transition-transform hover:scale-110"
           href={curItem.url}
           target="_blank"
+          variant={"plain"}
           aria-label={curItem.name}
         >
           <AppCardInner item={curItem} health={health} />
-        </LinkOverlay>
+        </Link>
       </MenuContextTrigger>
       <MenuContent>
         <MenuItem value="edit" aria-label="Edit app">
