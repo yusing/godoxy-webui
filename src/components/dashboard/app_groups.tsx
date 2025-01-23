@@ -2,6 +2,7 @@
 
 import {
   DummyHomepageItem,
+  getHiddenHomepageItems,
   getHomepageItems,
   HomepageItem,
   HomepageItems,
@@ -55,33 +56,37 @@ function Category({
   const [categoryName, setCategoryName] = React.useState(category);
 
   return (
-    <Card.Root borderRadius="lg" size="sm">
-      <Card.Header pt={categoryPaddingY.val} px={categoryPaddingX.val}>
-        <HStack>
-          <Editable.Root
-            w="fit-content"
-            mx="-1"
-            value={categoryName}
-            fontWeight="medium"
-            fontSize={categoryFontSize.val}
-            activationMode="dblclick"
-            onValueChange={({ value }) => {
-              setCategoryName(value);
-            }}
-            onValueCommit={({ value }) => {
-              overrideHomepage("category_name", category, value).catch((e) => {
-                toaster.error(e);
-                setCategoryName(category);
-              });
-            }}
-          >
-            <Editable.Preview />
-            <Editable.Input />
-          </Editable.Root>
-          <DashboardSettingsButton size="md" />
-        </HStack>
+    <Card.Root
+      size="sm"
+      borderRadius="lg"
+      variant={"subtle"}
+      bg="bg.subtle"
+      py={categoryPaddingY.val}
+      px={categoryPaddingX.val}
+    >
+      <Card.Header pt={0}>
+        <Editable.Root
+          w="fit-content"
+          mx="-1"
+          value={categoryName}
+          fontWeight="medium"
+          fontSize={categoryFontSize.val}
+          activationMode="dblclick"
+          onValueChange={({ value }) => {
+            setCategoryName(value);
+          }}
+          onValueCommit={({ value }) => {
+            overrideHomepage("category_name", category, value).catch((e) => {
+              toaster.error(e);
+              setCategoryName(category);
+            });
+          }}
+        >
+          <Editable.Preview />
+          <Editable.Input />
+        </Editable.Root>
       </Card.Header>
-      <Card.Body pb={categoryPaddingY.val} px={categoryPaddingX.val}>
+      <Card.Body>
         <Conditional
           condition={gridMode.val}
           whenTrue={SimpleGrid}
@@ -94,7 +99,7 @@ function Category({
                     lgDown: 1,
                   }
                 : {
-                    "2xl": 5,
+                    "2xl": 6,
                     xl: 5,
                     lg: 4,
                     md: 3,
@@ -157,36 +162,42 @@ export default function AppGroups({
   );
 
   return (
-    <Stack gap={categoryGroupGap.val}>
-      {/* Categories with two or more items */}
-      <For each={others()}>
-        {([category, items]) => (
-          <Category
-            key={category}
-            isMobile={isMobile}
-            category={category}
-            healthMap={healthMap ?? {}}
-            items={items}
-          />
-        )}
-      </For>
+    <Stack direction={isMobile ? "column" : "row"}>
+      <DashboardSettingsButton
+        size="md"
+        hiddenApps={getHiddenHomepageItems(homepageItems)}
+      />
+      <Stack gap={categoryGroupGap.val}>
+        {/* Categories with two or more items */}
+        <For each={others()}>
+          {([category, items]) => (
+            <Category
+              key={category}
+              isMobile={isMobile}
+              category={category}
+              healthMap={healthMap ?? {}}
+              items={items}
+            />
+          )}
+        </For>
 
-      {/* Categories with <= 2 items */}
-      <Show when={lessThanTwo().length > 0}>
-        <SimpleGrid columns={{ mdDown: 2, base: 2 }} gap={4}>
-          <For each={lessThanTwo()}>
-            {([category, items]) => (
-              <Category
-                key={category}
-                isMobile={isMobile}
-                category={category}
-                healthMap={healthMap ?? {}}
-                items={items}
-              />
-            )}
-          </For>
-        </SimpleGrid>
-      </Show>
+        {/* Categories with <= 2 items */}
+        <Show when={lessThanTwo().length > 0}>
+          <SimpleGrid columns={{ mdDown: 2, base: 2 }} gap={4}>
+            <For each={lessThanTwo()}>
+              {([category, items]) => (
+                <Category
+                  key={category}
+                  isMobile={isMobile}
+                  category={category}
+                  healthMap={healthMap ?? {}}
+                  items={items}
+                />
+              )}
+            </For>
+          </SimpleGrid>
+        </Show>
+      </Stack>
     </Stack>
   );
 }

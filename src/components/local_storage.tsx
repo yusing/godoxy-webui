@@ -90,6 +90,7 @@ interface LocalStorageSelectProps<T = string>
   item: SettingsItem<T>;
   collection: ListCollection<T>;
   label: string;
+  portalRef?: React.RefObject<HTMLElement>;
 }
 
 export const LocalStorageSelectShowAll = "Show All";
@@ -105,20 +106,19 @@ export function createSelectCollection(items: string[]) {
   });
 }
 
-export const LocalStorageSelect = React.forwardRef<
-  HTMLDivElement,
-  LocalStorageSelectProps
->(function LocalStorageSelect(props, ref) {
-  const { item, collection, label, ...rest } = props;
+export const LocalStorageSelect: React.FC<LocalStorageSelectProps> = (
+  props,
+) => {
+  const { item, collection, label, portalRef, ...rest } = props;
   return (
     <SelectRoot
-      ref={ref}
-      minW={"150px"}
+      positioning={{ sameWidth: true }}
       collection={collection}
       gap="0"
       defaultValue={[collection.firstValue ?? item.val]}
       value={[item.val]}
       onValueChange={({ value }) => {
+        console.log(value);
         if (value[0] === LocalStorageSelectShowAll) {
           return item.set("");
         }
@@ -129,7 +129,7 @@ export const LocalStorageSelect = React.forwardRef<
       <SelectTrigger {...rest}>
         <SelectValueText />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent w="full" portalRef={portalRef}>
         {collection.items.map((e) => (
           <SelectItem key={e} item={e}>
             {e === "" ? LocalStorageSelectShowAll : e}
@@ -138,7 +138,7 @@ export const LocalStorageSelect = React.forwardRef<
       </SelectContent>
     </SelectRoot>
   );
-});
+};
 
 interface LocalStorageToggleProps extends Omit<SwitchProps, "value"> {
   item: SettingsItem<boolean>;

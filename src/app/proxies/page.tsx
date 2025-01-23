@@ -138,10 +138,9 @@ export default function ProxiesPage() {
           <FaStream />
           Streams
         </Tabs.Trigger>
-        <Button onClick={activeList.reload}>
+        <Button onClick={activeList.reload} variant={"ghost"}>
           <MdRefresh />
         </Button>
-        <Tabs.Indicator rounded="l2" />
       </Tabs.List>
       <Tabs.Content
         key="reverse_proxies"

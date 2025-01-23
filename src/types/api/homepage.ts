@@ -1,6 +1,10 @@
 import Endpoints, { fetchEndpoint } from "./endpoints";
 
-type OverrideHomepageKey = "item" | "category_order" | "category_name";
+type OverrideHomepageKey =
+  | "item"
+  | "category_order"
+  | "category_name"
+  | "item_visible";
 
 export function overrideHomepage(
   what: OverrideHomepageKey,

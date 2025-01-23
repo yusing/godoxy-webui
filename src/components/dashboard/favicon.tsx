@@ -26,9 +26,7 @@ export const FavIcon: React.FC<FavIconProps & Omit<AvatarProps, "size">> = ({
     >
       <Avatar
         name={item?.name ?? url ?? ""}
-        shape={props.shape ?? "rounded"}
-        height={props.height ?? size}
-        width={props.width ?? size}
+        shape={props.shape ?? "full"}
         borderless
         src={Endpoints.FavIcon(item?.alias, url)}
         onStatusChange={() => setLoading(false)}

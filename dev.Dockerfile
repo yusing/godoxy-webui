@@ -7,7 +7,7 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-COPY next.config.js tailwind.config.ts postcss.config.js tsconfig.json .eslintrc.cjs ./
+COPY next.config.js postcss.config.js tsconfig.json .eslintrc.cjs ./
 
 COPY package.json pnpm-lock.yaml ./
 RUN corepack enable pnpm

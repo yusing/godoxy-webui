@@ -67,6 +67,7 @@ export default function RootLayout(
               as={"footer"}
               href={siteConfig.links.github}
               title="GoDoxy Homepage"
+              colorPalette={"teal"}
             >
               <Text>Powered by</Text>
               <Text color="fg.success">GoDoxy</Text>

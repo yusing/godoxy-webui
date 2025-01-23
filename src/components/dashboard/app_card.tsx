@@ -26,7 +26,7 @@ import {
   Group,
   HStack,
   Input,
-  Link,
+  LinkOverlay,
   Show,
   Spacer,
   Stack,
@@ -50,6 +50,7 @@ import { MdError } from "react-icons/md";
 import { useAsync } from "react-use";
 import { CloseButton } from "../ui/close-button";
 import { EmptyState } from "../ui/empty-state";
+import { useAllSettings } from "./settings";
 
 type AppCardProps = {
   item: HomepageItem;
@@ -61,6 +62,7 @@ export const AppCardInner: React.FC<AppCardProps> = ({
   health,
   ...rest
 }) => {
+  const { healthBubbleAlignEnd } = useAllSettings();
   return (
     <HStack gap="2" {...rest}>
       {item.icon ? (
@@ -80,7 +82,7 @@ export const AppCardInner: React.FC<AppCardProps> = ({
       </Tooltip>
       {health.status !== "unknown" && (
         <>
-          <Spacer />
+          {healthBubbleAlignEnd.val ? <Spacer /> : null}
           <Tooltip content={formatHealthInfo(health)}>
             <HealthStatus value={health.status} />
           </Tooltip>
@@ -116,40 +118,41 @@ export const AppCard: React.FC<AppCardProps> = ({ health, ...rest }) => {
       closeOnSelect={false}
     >
       <MenuContextTrigger asChild>
-        <Link
+        <LinkOverlay
+          asChild
           className="transform transition-transform hover:scale-110"
           href={curItem.url}
           target="_blank"
-          variant="plain"
           aria-label={curItem.name}
         >
           <AppCardInner item={curItem} health={health} />
-        </Link>
+        </LinkOverlay>
       </MenuContextTrigger>
       <MenuContent>
         <MenuItem value="edit" aria-label="Edit app">
           <EditItemButton
             item={curItem}
             onUpdate={(e) => {
+              // rest.item.category = e.category;
               setCurItem(e);
               setMenuOpen(false);
             }}
           />
         </MenuItem>
-        <MenuItem value="hide" aria-label="Hide app">
-          <Button
-            onClick={() => {
-              curItem.show = false;
-              overrideHomepage("item", curItem.alias, MarshalItem(curItem))
-                .then(() => {
-                  setCurItem({ ...curItem, show: false });
-                  setMenuOpen(false);
-                })
-                .catch(toastError);
-            }}
-          >
-            Hide App
-          </Button>
+        <MenuItem
+          value="hide"
+          aria-label="Hide app"
+          onClick={() => {
+            curItem.show = false;
+            overrideHomepage("item_visible", curItem.alias, "false")
+              .then(() => {
+                setCurItem({ ...curItem, show: false });
+                setMenuOpen(false);
+              })
+              .catch(toastError);
+          }}
+        >
+          Hide App
         </MenuItem>
       </MenuContent>
     </MenuRoot>
@@ -235,6 +238,7 @@ function EditItemButton({
       data.icon = item.icon;
     }
     overrideHomepage("item", data.alias, MarshalItem(data))
+      .then(() => overrideHomepage("item_visible", data.alias, "true"))
       .then(() => {
         onUpdate(data);
         setOpen(false);
@@ -252,11 +256,7 @@ function EditItemButton({
       lazyMount
       unmountOnExit
     >
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          Edit App
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger>Edit App</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle fontSize={"md"} fontWeight={"medium"}>

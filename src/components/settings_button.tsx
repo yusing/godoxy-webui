@@ -16,17 +16,15 @@ export function SettingsButton({
   title,
   children,
   iconProps,
-  ...props
 }: Readonly<{
   title: string;
   children: React.ReactNode;
   iconProps?: React.ComponentProps<typeof IconButton>;
-  [key: string]: any;
 }>): React.JSX.Element {
   return (
-    <DialogRoot {...props} lazyMount unmountOnExit placement={"top"}>
+    <DialogRoot lazyMount unmountOnExit placement={"top"}>
       <DialogTrigger asChild>
-        <IconButton aria-label={title} {...iconProps}>
+        <IconButton variant={"ghost"} aria-label={title} {...iconProps}>
           <MdSettings />
         </IconButton>
       </DialogTrigger>

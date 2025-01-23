@@ -14,7 +14,6 @@ export default function HomePage() {
   return (
     <Stack
       direction={isMobile ? "column" : "row"}
-      gap="16"
       align={"flex-start"}
       justifyContent={isMobile ? "center" : "unset"}
       wrap={isMobile ? "wrap" : "nowrap"}

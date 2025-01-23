@@ -109,15 +109,8 @@ export async function getHomepageItems({
   }
 }
 
-export async function getHiddenHomepageItems(): Promise<HomepageItem[]> {
-  return await getHomepageItems({ category: "", provider: "" }).then(
-    (data) => {
-      return Object.entries(data).flatMap(([_, items]) =>
-        items.filter((item) => !item.show).map((item) => {
-          item.show = true;
-          return item;
-        }),
-      );
-    },
+export function getHiddenHomepageItems(items: HomepageItems): HomepageItem[] {
+  return Object.entries(items).flatMap(([_, items]) =>
+    items.filter((item) => !item.show),
   );
 }
