@@ -63,7 +63,7 @@ export const LocalStorageSlider = React.forwardRef<
 interface LocalStorageStringSliderProps<T extends string>
   extends Omit<SliderProps, "value"> {
   item: SettingsItem<T>;
-  labels: T[];
+  labels: Readonly<Array<T>>;
   label: string;
 }
 

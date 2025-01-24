@@ -14,8 +14,6 @@ const ProvidersGrid = dynamic(() => import("./providers_grid"), {
   ssr: false,
 });
 
-const DashboardFilters = dynamic(() => import("./settings"), { ssr: false });
-
 export default function DashboardStats({
   isMobile,
 }: Readonly<{ isMobile: boolean }>) {

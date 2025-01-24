@@ -1,23 +1,35 @@
 import Endpoints, { fetchEndpoint } from "./endpoints";
+import { HomepageItem } from "./entry/homepage_item";
 
-type OverrideHomepageKey =
-  | "item"
-  | "category_order"
-  | "category_name"
-  | "item_visible";
+type OverrideHomepageParams = {
+  item: {
+    which: HomepageItem["alias"];
+    value: HomepageItem;
+  };
+  items_batch: {
+    which?: null;
+    value: Record<HomepageItem["alias"], HomepageItem>;
+  };
+  category_order: {
+    which?: null;
+    value: number;
+  };
+  item_visible: {
+    which: HomepageItem["alias"][];
+    value: boolean;
+  };
+};
 
-export function overrideHomepage(
-  what: OverrideHomepageKey,
-  which: string,
-  value: string | number,
+export function overrideHomepage<T extends keyof OverrideHomepageParams>(
+  what: T,
+  which: OverrideHomepageParams[T]["which"],
+  value: OverrideHomepageParams[T]["value"],
 ) {
   return fetchEndpoint(Endpoints.SET_HOMEPAGE, {
     method: "POST",
-    query: {
-      what,
-      which,
-      value,
-    },
+    query: { what },
+    body: JSON.stringify({ which, value }),
+    headers: { "Content-Type": "application/json" },
   });
 }
 

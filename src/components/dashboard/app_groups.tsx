@@ -18,11 +18,10 @@ import {
 } from "@chakra-ui/react";
 import React, { useCallback } from "react";
 
-import Endpoints, { useWSJSON } from "@/types/api/endpoints";
+import Endpoints, { toastError, useWSJSON } from "@/types/api/endpoints";
 import { healthInfoUnknown, HealthMap } from "@/types/api/health";
 import { overrideHomepage } from "@/types/api/homepage";
 import Conditional from "../conditional";
-import { toaster } from "../ui/toaster";
 import { AppCard } from "./app_card";
 import { DashboardSettingsButton, useAllSettings } from "./settings";
 
@@ -76,8 +75,19 @@ function Category({
             setCategoryName(value);
           }}
           onValueCommit={({ value }) => {
-            overrideHomepage("category_name", category, value).catch((e) => {
-              toaster.error(e);
+            items.forEach((item) => (item.category = value));
+            overrideHomepage(
+              "items_batch",
+              null,
+              items.reduce(
+                (acc, item) => {
+                  acc[item.alias] = item;
+                  return acc;
+                },
+                {} as Record<string, HomepageItem>,
+              ),
+            ).catch((e) => {
+              toastError(e);
               setCategoryName(category);
             });
           }}
@@ -147,7 +157,7 @@ export default function AppGroups({
       .then((items) => {
         setHomepageItems(items);
       })
-      .catch((error) => toaster.error(error));
+      .catch((error) => toastError(error));
   }, [categoryFilter.val, providerFilter.val]);
 
   const lessThanTwo = useCallback(

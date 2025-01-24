@@ -16,10 +16,7 @@ import {
   MenuRoot,
 } from "@/components/ui/menu";
 import Endpoints, { toastError } from "@/types/api/endpoints";
-import {
-  MarshalItem,
-  type HomepageItem,
-} from "@/types/api/entry/homepage_item";
+import { type HomepageItem } from "@/types/api/entry/homepage_item";
 import { formatHealthInfo, type HealthInfo } from "@/types/api/health";
 import { overrideHomepage, type Icon } from "@/types/api/homepage";
 import {
@@ -158,7 +155,7 @@ export const AppCard: React.FC<AppCardProps> = ({ health, ...rest }) => {
           aria-label="Hide app"
           onClick={() => {
             curItem.show = false;
-            overrideHomepage("item_visible", curItem.alias, "false")
+            overrideHomepage("item_visible", [curItem.alias], false)
               .then(() => {
                 setCurItem({ ...curItem, show: false });
                 setMenuOpen(false);
@@ -251,8 +248,8 @@ function EditItemButton({
     if (data.icon == "") {
       data.icon = item.icon;
     }
-    overrideHomepage("item", data.alias, MarshalItem(data))
-      .then(() => overrideHomepage("item_visible", data.alias, "true"))
+    overrideHomepage("item", data.alias, data)
+      .then(() => overrideHomepage("item_visible", [data.alias], true))
       .then(() => {
         onUpdate(data);
         setOpen(false);

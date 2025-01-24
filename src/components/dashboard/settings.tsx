@@ -117,16 +117,16 @@ function HiddenApps({ hiddenApps }: Readonly<{ hiddenApps: HomepageItem[] }>) {
       </Stack>
       <HStack mx="3" justify={"space-between"}>
         <Button
-          onClick={() => {
-            overrideHomepage("item_visible", selected.join(","), "true")
+          onClick={() =>
+            overrideHomepage("item_visible", selected, true)
               .then(() => {
                 selected.forEach((alias) => {
-                  hiddenApps.find((a) => a.alias === alias)!.show = true;
+                  hiddenApps.find((item) => item.alias === alias)!.show = true;
                 });
                 clear();
               })
-              .catch(toastError);
-          }}
+              .catch(toastError)
+          }
         >
           Unhide
         </Button>
