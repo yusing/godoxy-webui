@@ -71,18 +71,24 @@ export const AppCardInner: React.FC<AppCardProps> = ({
       )}
       <Tooltip
         content={
-          <Text>
-            {formatHealthInfo(health)}
-            <Span> {item.url}</Span>
-          </Text>
+          health.status === "unknown" ? (
+            <Text>{item.url}</Text>
+          ) : (
+            <Text>
+              {formatHealthInfo(health)}
+              <Span>
+                <br />
+                {item.url}
+              </Span>
+            </Text>
+          )
         }
         contentProps={{
-          zIndex: 100,
           fontWeight: "medium",
           bg: "bg.subtle",
-          opacity: 1,
         }}
         openDelay={100}
+        portalled
       >
         <Stack gap={0}>
           <Text fontWeight="medium">{item.name}</Text>
