@@ -8,13 +8,8 @@ services:
     build:
       context: .
       dockerfile: dev.Dockerfile
-    volumes: # for hot reloading
-      - ./src:/app/src:ro
-      - ./public:/app/public:ro
-      - ./node_modules:/app/node_modules:ro
-      - ./next.config.js:/app/next.config.js:ro
-      - ./package.json:/app/package.json:ro
-      - ./tsconfig.json:/app/tsconfig.json:ro
+    volumes:
+      - .:/app
     labels:
       proxy.aliases: godoxy-dev
       proxy.*: |
