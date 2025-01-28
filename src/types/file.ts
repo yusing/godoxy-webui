@@ -32,51 +32,24 @@ export async function getConfigFiles() {
     });
 }
 
-export type Schema = {
-  type: ConfigFileType;
-  schema?: JSON;
-  validate?: ValidateFunction;
-};
-
 export interface ConfigFileContextType {
-  curFile: ConfigFile;
-  setCurFile: React.Dispatch<React.SetStateAction<ConfigFile>>;
+  current: ConfigFile;
+  setCurrent: React.Dispatch<React.SetStateAction<ConfigFile>>;
   content: string | undefined;
   setContent: React.Dispatch<React.SetStateAction<string | undefined>>;
+  validate: ValidateFunction;
   updateRemote: () => void;
-}
-
-export interface ConfigSchemaContextType {
-  schema: Schema;
-  setType: (type: ConfigFile["type"]) => void;
 }
 
 export const ConfigFileContext = React.createContext<
   ConfigFileContextType | undefined
 >(undefined);
 
-export const ConfigSchemaContext = React.createContext<ConfigSchemaContextType>(
-  {
-    schema: { type: "config" },
-    setType: () => {},
-  },
-);
-
 export const useConfigFileContext = () => {
   const context = React.useContext(ConfigFileContext);
   if (!context) {
     throw new Error(
       "useConfigFileContext must be used within a ConfigFileProvider",
-    );
-  }
-  return context;
-};
-
-export const useConfigSchemaContext = () => {
-  const context = React.useContext(ConfigSchemaContext);
-  if (!context) {
-    throw new Error(
-      "useConfigSchemaContext must be used within a ConfigSchemaProvider",
     );
   }
   return context;
