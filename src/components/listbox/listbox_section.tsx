@@ -1,13 +1,11 @@
 import { For, Stack, StackProps, Text } from "@chakra-ui/react";
 import React from "react";
-import { ListboxItem } from "./listbox_item";
+import { ListboxItem, ListboxItemProps } from "./listbox_item";
 
 export type ListboxSectionProps = Readonly<{
-  title: string;
+  title: React.ReactNode;
   items?: any[];
-  children?:
-    | React.ReactNode
-    | ((item: any) => React.ComponentProps<typeof ListboxItem>);
+  children?: React.ReactNode | ((item: any) => ListboxItemProps);
 }>;
 
 export const ListboxSection = React.forwardRef<
@@ -20,17 +18,19 @@ export const ListboxSection = React.forwardRef<
     throw new Error("items is required when children is a function");
   }
   return (
-    <Stack gap="3" ref={ref} {...rest}>
-      <Text fontSize={"xs"} color="fg.muted">
+    <Stack gap="0" ref={ref} {...rest}>
+      <Text fontSize={"xs"} fontWeight={"medium"} color="fg.muted">
         {title}
       </Text>
       {isFunction ? (
-        <For each={items}>
-          {(item) => {
-            const { key, ...restProps } = children(item);
-            return <ListboxItem {...restProps} key={key} />;
-          }}
-        </For>
+        <Stack gap="0">
+          <For each={items}>
+            {(item) => {
+              const { key, ...restProps } = children(item);
+              return <ListboxItem {...restProps} key={key} />;
+            }}
+          </For>
+        </Stack>
       ) : (
         children
       )}

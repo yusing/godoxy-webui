@@ -17,6 +17,7 @@ export default function HomePage() {
       align={"flex-start"}
       justifyContent={isMobile ? "center" : "unset"}
       wrap={isMobile ? "wrap" : "nowrap"}
+      px="8"
     >
       <Toaster />
 

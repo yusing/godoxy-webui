@@ -17,7 +17,7 @@ import {
 } from "@/types/api/proxy";
 import { FaStream } from "react-icons/fa";
 import { FaServer } from "react-icons/fa6";
-import { MdRefresh } from "react-icons/md";
+import { MdError, MdRefresh } from "react-icons/md";
 
 async function sort<T = Stream | ReverseProxy>({
   items,
@@ -57,6 +57,27 @@ function RenderTable({
   columns: Column[];
   list: AsyncListData<any>;
 }>) {
+  if (list.error) {
+    return (
+      <EmptyState
+        placeSelf={"center"}
+        icon={<MdError />}
+        title="Error"
+        description={list.error.message}
+      />
+    );
+  }
+
+  if (list.items?.length === 0) {
+    return (
+      <EmptyState
+        placeSelf={"center"}
+        title="No routes"
+        description="start some docker containers or add some routes in include files."
+      />
+    );
+  }
+
   return (
     <Table.Root
       interactive
@@ -65,7 +86,7 @@ function RenderTable({
       // onSortChange={list.sort}
     >
       <Table.Header>
-        <Table.Row>
+        <Table.Row bg="bg.emphasized">
           <For each={columns}>
             {(col) => (
               <Table.ColumnHeader key={`${key_prefix}_${col.key}`}>
@@ -76,18 +97,9 @@ function RenderTable({
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        <For
-          each={list.items}
-          fallback={
-            <EmptyState
-              placeSelf={"center"}
-              title="No routes"
-              description="start some docker containers or add some routes in include files."
-            />
-          }
-        >
+        <For each={list.items}>
           {(item) => (
-            <Table.Row key={`${key_prefix}_${item.alias}`}>
+            <Table.Row key={`${key_prefix}_${item.alias}`} bg={"transparent"}>
               <For each={columns}>
                 {(col) => (
                   <Table.Cell key={`${key_prefix}_${item.alias}_${col.key}`}>

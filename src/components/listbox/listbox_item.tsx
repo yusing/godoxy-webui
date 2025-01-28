@@ -1,35 +1,35 @@
-import { HStack, Icon, StackProps, Text } from "@chakra-ui/react";
+import { Icon } from "@chakra-ui/react";
 import React from "react";
+import { Button, ButtonProps } from "../ui/button";
 
-type ListboxItemProps = Readonly<{
+export type ListboxItemProps = Readonly<{
   icon: React.ReactNode;
   text?: string;
-  children?: React.ReactNode;
   isSelected?: boolean;
-  onPress?: () => void;
-  textProps?: React.ComponentProps<typeof Text>;
-}>;
+}> &
+  Omit<ButtonProps, "background">;
 
-export const ListboxItem = React.forwardRef<
-  HTMLDivElement,
-  ListboxItemProps & StackProps
->((props, ref) => {
-  const { icon, text, children, isSelected, onPress, textProps, ...rest } =
-    props;
-  const fontSize = textProps?.fontSize ?? "sm";
-  const color = isSelected ? "primary" : textProps?.color;
-  const bg = isSelected ? "bg.mutex" : textProps?.bg;
-
-  const ele = (
-    <HStack as="button" ref={ref} background={bg} onClick={onPress} {...rest}>
-      <Icon color={color}>{icon}</Icon>
-      {text && (
-        <Text color={color} fontSize={fontSize} {...textProps}>
-          {text}
-        </Text>
-      )}
+export const ListboxItem: React.FC<ListboxItemProps> = ({
+  icon,
+  text,
+  children,
+  isSelected,
+  ...rest
+}) => {
+  return (
+    <Button
+      justifyContent={"left"}
+      size={rest.size ?? "sm"}
+      variant={rest.variant ?? "ghost"}
+      fontSize={rest.fontSize ?? "sm"}
+      color={isSelected ? "fg.info" : rest.color}
+      p={(rest.p || rest.padding) ?? 0}
+      bg={rest.bg}
+      {...rest}
+    >
+      <Icon color={"inherit"}>{icon}</Icon>
+      {text}
       {children}
-    </HStack>
+    </Button>
   );
-  return ele;
-});
+};

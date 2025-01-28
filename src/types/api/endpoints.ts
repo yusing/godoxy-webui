@@ -1,11 +1,12 @@
 import { toaster } from "@/components/ui/toaster";
 import { StatusCodes } from "http-status-codes";
-import log from "loglevel";
 import useWebSocket, { type Options } from "react-use-websocket";
 
 namespace Endpoints {
   export const FileContent = (fileType: ConfigFileType, filename: string) =>
     `/api/file/${fileType}/${encodeURIComponent(filename)}`;
+  export const FileValidate = (fileType: ConfigFileType) =>
+    `/api/file/validate/${fileType}`;
   export const Schema = (filename: string) => `/api/schema/${filename}`;
   export const FavIcon = (alias?: string, url?: string) =>
     `/api/favicon?alias=${encodeURIComponent(alias ?? "")}&url=${encodeURIComponent(
@@ -70,7 +71,7 @@ export function toastError<T>(error: T) {
   } else if (error instanceof Event) {
     toaster.error({ title: "Websocket error" });
   } else {
-    log.error(error, `unknown error type ${typeof error}`);
+    console.error(error, `unknown error type ${typeof error}`);
   }
 }
 

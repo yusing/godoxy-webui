@@ -16,7 +16,7 @@
 .log-error,
 .log-fatal,
 .log-panic,
-.log-red  {
+.log-red {
   color: var(--chakra-colors-red-500);
 }
 
@@ -40,10 +40,10 @@
   font-weight: bold;
 }
 
-.log-message {
-  color: var(--chakra-colors-fg);
+.log-italic {
+  font-style: italic;
 }
 
-.log-entry {
-  text-wrap: nowrap;
+.log-message {
+  color: var(--chakra-colors-fg);
 }

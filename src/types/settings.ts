@@ -1,3 +1,5 @@
+"use client";
+
 import { useLocalStorage } from "@uidotdev/usehooks";
 
 export function useSetting<T>(key: string, initialValue: T): SettingsItem<T> {

@@ -1,54 +1,55 @@
 import Endpoints, { fetchEndpoint, toastError } from "@/types/api/endpoints";
 import { ConfigFile, ConfigFileContext, godoxyConfig } from "@/types/file";
+import { getValidator } from "@/types/schema";
 import React from "react";
 import { Toaster } from "../ui/toaster";
-import { ConfigSchemaProvider } from "./schema_provider";
 
 export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [content, setContent] = React.useState<string | undefined>(undefined);
-  const [curFile, setCurFile] = React.useState<ConfigFile>(godoxyConfig);
+  const [current, setCurrent] = React.useState<ConfigFile>(godoxyConfig);
 
   React.useEffect(() => {
-    if (curFile.isNewFile) {
+    if (current.isNewFile) {
       setContent("");
       return;
     }
-    fetchEndpoint(Endpoints.FileContent(curFile.type, curFile.filename))
+    fetchEndpoint(Endpoints.FileContent(current.type, current.filename))
       .then((r) => r?.text() ?? undefined)
       .then((content) => setContent(content))
       .catch((e: Error) => {
         setContent(undefined);
         toastError(e);
       });
-  }, [curFile]);
+  }, [current.filename]);
 
   const updateRemote = React.useCallback(() => {
-    fetchEndpoint(Endpoints.FileContent(curFile.type, curFile.filename), {
+    fetchEndpoint(Endpoints.FileContent(current.type, current.filename), {
       method: "PUT",
       body: content,
       headers: {
         "Content-Type": "application/yaml",
       },
     }).catch(toastError);
-  }, [curFile, content]);
+  }, [current.filename, content]);
 
   return (
     <ConfigFileContext.Provider
       value={React.useMemo(
         () => ({
-          curFile,
-          setCurFile,
+          current,
+          setCurrent,
           content,
           setContent,
+          validate: getValidator(current.type),
           updateRemote,
         }),
-        [curFile, content, updateRemote],
+        [current, content, updateRemote],
       )}
     >
       <Toaster />
-      <ConfigSchemaProvider>{children}</ConfigSchemaProvider>
+      {children}
     </ConfigFileContext.Provider>
   );
 };

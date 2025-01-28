@@ -1,0 +1,4 @@
+.cm-gutters,
+.cm-editor {
+  background-color: var(--bg-color) !important;
+}

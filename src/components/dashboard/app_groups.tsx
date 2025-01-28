@@ -12,15 +12,15 @@ import {
   Editable,
   For,
   HStack,
-  Show,
   SimpleGrid,
   Stack,
 } from "@chakra-ui/react";
-import React, { useCallback } from "react";
+import React from "react";
 
 import Endpoints, { toastError, useWSJSON } from "@/types/api/endpoints";
 import { healthInfoUnknown, HealthMap } from "@/types/api/health";
 import { overrideHomepage } from "@/types/api/homepage";
+import { useAsync } from "react-use";
 import Conditional from "../conditional";
 import { AppCard } from "./app_card";
 import { DashboardSettingsButton, useAllSettings } from "./settings";
@@ -54,12 +54,14 @@ function Category({
 
   const [categoryName, setCategoryName] = React.useState(category);
 
+  if (items.length === 0) return null;
+
   return (
     <Card.Root
       size="sm"
       borderRadius="lg"
       variant={"subtle"}
-      bg="bg.subtle"
+      filter={"brightness(115%)"}
       py={categoryPaddingY.val}
       px={categoryPaddingX.val}
     >
@@ -92,8 +94,8 @@ function Category({
             });
           }}
         >
-          <Editable.Preview alignItems="flex-start" width="full" />
-          <Editable.Input mt="-1" />
+          <Editable.Preview placeSelf="flex-start" w="fit" />
+          <Editable.Input mt="-1" w="fit" />
         </Editable.Root>
       </Card.Header>
       <Card.Body>
@@ -142,40 +144,45 @@ function Category({
 export default function AppGroups({
   isMobile,
 }: Readonly<{ isMobile: boolean }>) {
-  const [homepageItems, setHomepageItems] =
-    React.useState<HomepageItems>(dummyItems());
+  const { categoryGroupGap, categoryFilter, providerFilter } = useAllSettings();
+
+  const homepageItems = useAsync(
+    async () =>
+      await getHomepageItems({
+        category: categoryFilter.val,
+        provider: providerFilter.val,
+      }).catch((error) => {
+        toastError(error);
+        return dummyItems();
+      }),
+    [categoryFilter.val, providerFilter.val],
+  );
+
   const { data: healthMap, readyState } = useWSJSON<HealthMap>(
     Endpoints.HEALTH,
   );
-  const { categoryGroupGap, categoryFilter, providerFilter } = useAllSettings();
 
-  React.useEffect(() => {
-    getHomepageItems({
-      category: categoryFilter.val,
-      provider: providerFilter.val,
-    })
-      .then((items) => {
-        setHomepageItems(items);
-      })
-      .catch((error) => toastError(error));
-  }, [categoryFilter.val, providerFilter.val]);
-
-  const lessThanTwo = useCallback(
+  const lessThanTwo = React.useCallback(
     () =>
-      Object.entries(homepageItems).filter(([_, items]) => items.length <= 2),
-    [homepageItems],
+      Object.entries(homepageItems.value ?? {}).filter(
+        ([_, items]) => items.length <= 2,
+      ),
+    [homepageItems.value],
   );
-  const others = useCallback(
+
+  const others = React.useCallback(
     () =>
-      Object.entries(homepageItems).filter(([_, items]) => items.length > 2),
-    [homepageItems],
+      Object.entries(homepageItems.value ?? dummyItems()).filter(
+        ([_, items]) => items.length > 2,
+      ),
+    [homepageItems.value],
   );
 
   return (
     <Stack direction={isMobile ? "column" : "row"}>
       <DashboardSettingsButton
         size="md"
-        hiddenApps={getHiddenHomepageItems(homepageItems)}
+        hiddenApps={getHiddenHomepageItems(homepageItems.value ?? {})}
       />
       <Stack gap={categoryGroupGap.val}>
         {/* Categories with two or more items */}
@@ -192,21 +199,19 @@ export default function AppGroups({
         </For>
 
         {/* Categories with <= 2 items */}
-        <Show when={lessThanTwo().length > 0}>
-          <SimpleGrid columns={{ mdDown: 2, base: 2 }} gap={4}>
-            <For each={lessThanTwo()}>
-              {([category, items]) => (
-                <Category
-                  key={category}
-                  isMobile={isMobile}
-                  category={category}
-                  healthMap={healthMap ?? {}}
-                  items={items}
-                />
-              )}
-            </For>
-          </SimpleGrid>
-        </Show>
+        <SimpleGrid columns={{ mdDown: 2, base: 2 }} gap={4}>
+          <For each={lessThanTwo()}>
+            {([category, items]) => (
+              <Category
+                key={category}
+                isMobile={isMobile}
+                category={category}
+                healthMap={healthMap ?? {}}
+                items={items}
+              />
+            )}
+          </For>
+        </SimpleGrid>
       </Stack>
     </Stack>
   );

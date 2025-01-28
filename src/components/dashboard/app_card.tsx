@@ -4,6 +4,7 @@ import {
   DialogBody,
   DialogCloseTrigger,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogRoot,
   DialogTitle,
@@ -15,10 +16,10 @@ import {
   MenuItem,
   MenuRoot,
 } from "@/components/ui/menu";
-import Endpoints, { toastError } from "@/types/api/endpoints";
+import { toastError } from "@/types/api/endpoints";
 import { type HomepageItem } from "@/types/api/entry/homepage_item";
 import { formatHealthInfo, type HealthInfo } from "@/types/api/health";
-import { overrideHomepage, type Icon } from "@/types/api/homepage";
+import { overrideHomepage } from "@/types/api/homepage";
 import {
   Group,
   HStack,
@@ -37,17 +38,13 @@ import { Field } from "../ui/field";
 import { SkeletonCircle, SkeletonText } from "../ui/skeleton";
 import { FavIcon } from "./favicon";
 
-import { useTheme } from "next-themes";
 import {
   FieldErrors,
   useController,
   useForm,
   UseFormRegister,
 } from "react-hook-form";
-import { MdError } from "react-icons/md";
-import { useAsync } from "react-use";
-import { CloseButton } from "../ui/close-button";
-import { EmptyState } from "../ui/empty-state";
+import { IconSearcher } from "../config_editor/icon_searcher";
 import { useAllSettings } from "./settings";
 
 type AppCardProps = {
@@ -208,8 +205,7 @@ function EditItemButton({
   onUpdate: (newItem: HomepageItem) => void;
 }>) {
   const [open, setOpen] = React.useState(false);
-  const { resolvedTheme } = useTheme();
-  const oppositeTheme = resolvedTheme === "light" ? "dark" : "light";
+
   const item_ = useMemo(() => structuredClone(item), [item]);
 
   if (!item_.icon) {
@@ -232,23 +228,6 @@ function EditItemButton({
     control,
     name: "icon",
   });
-
-  const url = React.useMemo(
-    () => Endpoints.SearchIcons(iconField.value, 10),
-    [iconField.value],
-  );
-  const icons = useAsync<() => Promise<Icon[]>>(
-    () =>
-      fetch(url)
-        .then((r) => r.json() as Promise<Icon[]>)
-        .then((r) =>
-          r.toSorted(
-            // @ts-ignore
-            (a, b) => b.includes(oppositeTheme) - a.includes(oppositeTheme),
-          ),
-        ),
-    [iconField.value],
-  );
 
   const onSubmit = (data: HomepageItem) => {
     if (data.icon == "") {
@@ -309,49 +288,13 @@ function EditItemButton({
                 errors={errors}
                 register={register}
               />
-              <Stack>
-                <Field label="Icon">
-                  <Group attached w="full">
-                    <Input
-                      placeholder="Start typing to find an icon, or paste a URL"
-                      value={iconField.value}
-                      onChange={(e) => iconField.onChange(e.target.value)}
-                    />
-                    <CloseButton onClick={() => iconField.onChange("")} />
-                  </Group>
-                </Field>
-                <Stack overflow={"scroll"} maxH="250px" minW={"full"}>
-                  {icons.error ? (
-                    <EmptyState
-                      icon={<MdError />}
-                      title={"Error loading icons"}
-                    />
-                  ) : !icons.value ? (
-                    <EmptyState title={"No icons found"} />
-                  ) : (
-                    icons.value.map((e) => (
-                      <Button
-                        p="0"
-                        key={e}
-                        asChild
-                        onClick={() => iconField.onChange(e)}
-                      >
-                        <HStack
-                          bg="bg.panel"
-                          color="fg.info"
-                          gap="2"
-                          textAlign={"left"}
-                          justify={"left"}
-                        >
-                          <FavIcon url={e} size="28px" />
-                          <Text>{e}</Text>
-                        </HStack>
-                      </Button>
-                    ))
-                  )}
-                </Stack>
-              </Stack>
-              <Button type="submit">Save</Button>
+              <IconSearcher
+                value={iconField.value}
+                onChange={iconField.onChange}
+              />
+              <DialogFooter>
+                <Button type="submit">Save</Button>
+              </DialogFooter>
             </Stack>
           </form>
         </DialogBody>

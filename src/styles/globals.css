@@ -1,8 +1,8 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @theme {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
-    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 /*
@@ -20,5 +20,16 @@
   ::backdrop,
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
+  }
+
+  :root {
+    --bg-color: var(--chakra-colors-bg);
+  }
+
+  [data-theme="dark"] {
+    --bg-color: var(--chakra-colors-bg-muted);
+    body {
+      background-color: var(--bg-color);
+    }
   }
 }

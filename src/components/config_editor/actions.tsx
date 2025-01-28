@@ -2,11 +2,10 @@ import { ConfigFileType as FileType } from "@/types/api/endpoints";
 import path from "path";
 import { MdAdd, MdSave } from "react-icons/md";
 import { ListboxItem } from "../listbox/listbox_item";
-import { ListboxSection } from "../listbox/listbox_section";
 
 import { useConfigFileContext } from "@/types/file";
-import { Group, Input, InputAddon } from "@chakra-ui/react";
-import { useCallback, useState } from "react";
+import { Group, Input, InputAddon, Stack } from "@chakra-ui/react";
+import React, { useCallback, useState } from "react";
 import { GrCloudSoftware, GrDocumentConfig } from "react-icons/gr";
 import { Field } from "../ui/field";
 import {
@@ -28,7 +27,7 @@ export default function ConfigFileActions({
   const { updateRemote } = useConfigFileContext();
 
   return (
-    <ListboxSection title="Actions">
+    <Stack gap="0">
       <NewFileButton
         fileExtension=".yml"
         checkExists={checkExists}
@@ -38,9 +37,9 @@ export default function ConfigFileActions({
         aria-label="Save File"
         icon={<MdSave />}
         text="Save File"
-        onPress={updateRemote}
+        onClick={updateRemote}
       />
-    </ListboxSection>
+    </Stack>
   );
 }
 

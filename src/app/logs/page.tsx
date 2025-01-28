@@ -42,7 +42,7 @@ function Logs() {
   }, [autoScroll.val, data]);
 
   return (
-    <Stack direction={"row"} align={"center"} h={bodyHeight} gap="16">
+    <Stack direction={"row"} align={"center"} h={bodyHeight} gap="4">
       <Stack
         ref={logRef}
         overflow="auto"
