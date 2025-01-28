@@ -39,7 +39,7 @@ export default function RootLayout(
           storageKey={"__theme"}
           attribute={["class", "data-theme"]}
         >
-          <VStack>
+          <VStack w="100vw" h="100vh">
             <Navbar
               h={navBarHeight}
               position={"fixed"}
@@ -51,7 +51,7 @@ export default function RootLayout(
               as="main"
               position={"fixed"}
               top={navBarHeight}
-              px={bodyPaddingX}
+              mx={bodyPaddingX}
               height={bodyHeight}
               width={bodyWidth}
               overflowY={"auto"}
@@ -68,6 +68,8 @@ export default function RootLayout(
               href={siteConfig.links.github}
               title="GoDoxy Homepage"
               colorPalette={"teal"}
+              w="full"
+              justifyContent={"center"}
             >
               <Text>Powered by</Text>
               <Text color="fg.success">GoDoxy</Text>
