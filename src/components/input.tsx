@@ -69,6 +69,7 @@ export const ListInput: React.FC<
           }}
         >
           <FaPlus />
+          {label}
         </Button>
       </Stack>
     </Field>
@@ -212,10 +213,14 @@ export const MapInput: React.FC<
   const allowedKeysCollection = React.useMemo(
     () =>
       createListCollection({
-        items: (allowedKeys ?? []).filter((k) => !value[k]),
+        items: (allowedKeys ?? []).filter((k) => value[k] === undefined),
       }),
     [allowedKeys, value],
   );
+
+  if (allowedKeysCollection.size == 1) {
+    value[allowedKeysCollection.at(0)!] = "";
+  }
 
   return (
     <Box>
@@ -229,99 +234,119 @@ export const MapInput: React.FC<
             return 0;
           })}
         >
-          {([k, v], index) => (
-            <Group
-              attached
-              key={`${label}_${index}_map`}
-              color={
-                allowedKeys && !allowedKeys.includes(k) ? "red.500" : undefined
-              }
-            >
-              {allowedKeys && k == "" ? (
-                <SelectRoot
-                  collection={allowedKeysCollection}
-                  value={[k]}
-                  onValueChange={(e) => {
-                    value[e.value[0]!] = v;
-                    delete value[k];
-                    onChange(value);
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValueText placeholder={placeholder?.key ?? "Key"} />
-                  </SelectTrigger>
-                  <SelectContent w="full">
-                    {allowedKeysCollection.items.map((name) => (
-                      <SelectItem item={name} key={`${label}_${k}_${name}`}>
-                        {name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </SelectRoot>
-              ) : (
-                <Input
-                  maxW={"1/3"}
-                  value={k}
-                  readOnly={allowedKeys !== undefined || k === nameField}
-                  placeholder={placeholder?.key ?? "Key"}
-                  onChange={(e) => {
-                    value[e.target.value] = v;
-                    delete value[k];
-                    onChange(value);
-                  }}
-                  {...rest}
-                ></Input>
-              )}
-              {valuesCollection[k] ? (
-                <SelectRoot
-                  collection={valuesCollection[k]}
-                  value={[v]}
-                  onValueChange={(e) => {
-                    value[k] = e.value[0]!;
-                    onChange(value);
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValueText
-                      placeholder={placeholder?.value ?? "Value"}
-                    />
-                  </SelectTrigger>
-                  <SelectContent w="full">
-                    {valuesCollection[k].items.map((name) => (
-                      <SelectItem item={name} key={`${label}_${k}_${name}`}>
-                        {name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </SelectRoot>
-              ) : (
-                <Input
-                  maxW={"2/3"}
-                  value={v}
-                  readOnly={typeof v !== "string"}
-                  placeholder={placeholder?.value ?? "Value"}
-                  onChange={(e) => {
-                    value[k] = e.target.value;
-                    onChange(value);
-                  }}
-                  {...rest}
-                />
-              )}
-              <IconButton
-                visibility={
-                  !allowDelete || k === nameField ? "hidden" : "visible"
-                }
-                size={"xs"}
-                variant={"ghost"}
-                onClick={() => {
-                  delete value[k];
+          {([k, v], index) =>
+            Array.isArray(v) ? (
+              <ListInput
+                key={`${label}_${index}_list`}
+                label={`${label}.${k}`}
+                value={v}
+                onChange={(e) => {
+                  value[k] = e;
                   onChange(value);
                 }}
+              />
+            ) : (
+              <Group
+                attached
+                key={`${label}_${index}_map`}
+                color={
+                  allowedKeys && !allowedKeys.includes(k)
+                    ? "red.500"
+                    : undefined
+                }
               >
-                <FaTrash />
-              </IconButton>
-            </Group>
-          )}
+                {allowedKeysCollection.size > 0 && k == "" ? (
+                  <SelectRoot
+                    collection={allowedKeysCollection}
+                    value={[k]}
+                    onValueChange={(e) => {
+                      value[e.value[0]!] = v;
+                      delete value[k];
+                      onChange(value);
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValueText
+                        placeholder={placeholder?.key ?? "Key"}
+                      />
+                    </SelectTrigger>
+                    <SelectContent w="full">
+                      {allowedKeysCollection.items.map((name) => (
+                        <SelectItem item={name} key={`${label}_${k}_${name}`}>
+                          {name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </SelectRoot>
+                ) : (
+                  <Input
+                    maxW={"1/3"}
+                    value={k}
+                    readOnly={allowedKeys !== undefined || k === nameField}
+                    placeholder={placeholder?.key ?? "Key"}
+                    onChange={(e) => {
+                      value[e.target.value] = v;
+                      delete value[k];
+                      onChange(value);
+                    }}
+                    {...rest}
+                  ></Input>
+                )}
+                {valuesCollection[k] ? (
+                  <SelectRoot
+                    collection={valuesCollection[k]}
+                    value={[v]}
+                    onValueChange={(e) => {
+                      value[k] = e.value[0]!;
+                      onChange(value);
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValueText
+                        placeholder={placeholder?.value ?? "Value"}
+                      />
+                    </SelectTrigger>
+                    <SelectContent w="full">
+                      {valuesCollection[k].items.map((name) => (
+                        <SelectItem item={name} key={`${label}_${k}_${name}`}>
+                          {name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </SelectRoot>
+                ) : (
+                  <Input
+                    maxW={"2/3"}
+                    value={typeof v === "string" ? v : ""}
+                    readOnly={typeof v !== "string"}
+                    placeholder={
+                      typeof v === "string"
+                        ? (placeholder?.value ?? "Value")
+                        : "use yaml editor"
+                    }
+                    onChange={(e) => {
+                      value[k] = e.target.value;
+                      onChange(value);
+                    }}
+                    {...rest}
+                  />
+                )}
+                <IconButton
+                  visibility={
+                    !allowDelete || k === nameField ? "hidden" : "visible"
+                  }
+                  size={"xs"}
+                  variant={"ghost"}
+                  onClick={() => {
+                    delete value[k];
+                    onChange(value);
+                  }}
+                >
+                  <FaTrash />
+                </IconButton>
+              </Group>
+            )
+          }
         </For>
         {allowAdd && (!allowedKeys || allowedKeysCollection.size > 0) && (
           <Button
@@ -334,6 +359,7 @@ export const MapInput: React.FC<
             }}
           >
             <FaPlus />
+            {label}
           </Button>
         )}
       </Stack>

@@ -1,4 +1,8 @@
 .cm-gutters,
-.cm-editor {
+.cm-editor,
+.cm-scroller {
   background-color: var(--bg-color) !important;
+  max-height: full !important;
+  width: auto !important;
+  overflow-y: auto !important;
 }

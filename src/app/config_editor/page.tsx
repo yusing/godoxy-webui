@@ -6,7 +6,7 @@ import ConfigFileActions from "@/components/config_editor/actions";
 import UIEditor from "@/components/config_editor/ui_editor";
 import YAMLConfigEditor from "@/components/config_editor/yaml_editor";
 import { ErrorPopup, useFetchError } from "@/components/error_popup";
-import { GoDoxyErrorText } from "@/components/godoxy_error";
+import { type GoDoxyError, GoDoxyErrorText } from "@/components/godoxy_error";
 import { ListboxSection } from "@/components/listbox/listbox_section";
 import type { ConfigFileType } from "@/types/api/endpoints";
 import Endpoints from "@/types/api/endpoints";
@@ -45,7 +45,7 @@ export default function ConfigEditorPage() {
     if (resp.ok) {
       return undefined;
     } else {
-      return await resp.text();
+      return (await resp.json()) as GoDoxyError;
     }
   }, [cfgFile.content]);
 
@@ -95,19 +95,23 @@ export default function ConfigEditorPage() {
       >
         <UIEditor ctx={cfgFile} />
       </Box>
-      <Box w="55%" overflow="auto">
+      <Stack w="55%" overflow="auto" fontSize="sm">
         <YAMLConfigEditor ctx={cfgFile} />
-        <GoDoxyErrorText
-          as="div"
-          position={"sticky"}
-          bottom={0}
-          overflow="auto"
-          p="2"
-          bg="bg.subtle"
-          w="full"
-          err={validationErr.value ?? "<div class='log-entry'>No error</div>"}
-        />
-      </Box>
+        {validationErr.value && (
+          <Box
+            as="pre"
+            p="2"
+            overflow="auto"
+            w="full"
+            minH="30%"
+            filter={"brightness(120%)"}
+            border={"1px solid"}
+            borderColor="border.error"
+          >
+            <GoDoxyErrorText err={validationErr.value} />
+          </Box>
+        )}
+      </Stack>
     </Stack>
   );
 }

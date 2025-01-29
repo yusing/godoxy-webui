@@ -291,7 +291,7 @@ const ReverseProxyRouteForm: React.FC<{
         </Collapsible.Trigger>
         <Collapsible.Content py="4">
           <Stack gap="4" ref={advConfigRef}>
-            <Field label="Loadbalancer">
+            <Field label="Load Balancer">
               <Input {...register("load_balance.link")} />
             </Field>
             <SelectRoot
@@ -299,7 +299,7 @@ const ReverseProxyRouteForm: React.FC<{
               {...register("load_balance.mode")}
             >
               <SelectTrigger clearable>
-                <SelectValueText placeholder="Load balance mode" />
+                <SelectValueText placeholder="Load Balance Mode" />
               </SelectTrigger>
               <SelectContent portalRef={advConfigRef}>
                 {loadbalanceModes.items.map((item) => (

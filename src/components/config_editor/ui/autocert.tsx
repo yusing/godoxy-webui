@@ -33,38 +33,42 @@ export const AutocertUIEditor: React.FC<{
       }),
     [],
   );
-  const { register } = useHookForm({ value: cfg, onChange: onChange });
-  const [value, setValue] = React.useState(cfg.provider);
+  const { control, register } = useHookForm({ value: cfg, onChange: onChange });
 
   return (
     <Stack gap="3">
-      <SelectRoot
-        collection={collection}
-        value={[value]}
-        onValueChange={({ value }) => {
-          cfg.provider = value[0]! as Autocert.AutocertProvider;
-          setValue(value[0]! as Autocert.AutocertProvider);
-          if (cfg.provider === "local") {
-            cfg = { provider: "local" } as Autocert.LocalOptions;
-          } else {
-            // @ts-ignore
-            delete cfg.options;
-          }
-          onChange(cfg);
-        }}
-      >
-        <SelectLabel>Certificate provider</SelectLabel>
-        <SelectTrigger>
-          <SelectValueText />
-        </SelectTrigger>
-        <SelectContent>
-          {Autocert.AUTOCERT_PROVIDERS.map((provider) => (
-            <SelectItem key={provider} item={provider}>
-              {provider}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </SelectRoot>
+      <Controller
+        control={control}
+        name="provider"
+        render={({ field }) => (
+          <SelectRoot
+            collection={collection}
+            value={[field.value]}
+            onValueChange={({ value }) => {
+              cfg.provider = value[0]! as Autocert.AutocertProvider;
+              field.onChange(value[0]! as Autocert.AutocertProvider);
+              if (field.value === "local") {
+                cfg = { provider: "local" } as Autocert.LocalOptions;
+              } else {
+                delete cfg.options;
+              }
+              onChange(cfg);
+            }}
+          >
+            <SelectLabel>Certificate provider</SelectLabel>
+            <SelectTrigger>
+              <SelectValueText />
+            </SelectTrigger>
+            <SelectContent>
+              {Autocert.AUTOCERT_PROVIDERS.map((provider) => (
+                <SelectItem key={provider} item={provider}>
+                  {provider}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </SelectRoot>
+        )}
+      ></Controller>
       {cfg.provider !== "local" && (
         <>
           <Field required label="Email">

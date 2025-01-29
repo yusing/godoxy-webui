@@ -122,19 +122,19 @@ export function ConfigUIEditor({
               nameField="provider"
               allowedNames={Notification.NOTIFICATION_PROVIDERS}
               allowedKeys={{
-                webhook: [
-                  "name",
-                  ...Object.keys(
-                    ConfigSchema.definitions.WebhookConfig.properties,
-                  ),
-                ],
+                webhook: Object.keys(
+                  ConfigSchema.definitions.WebhookConfig.properties,
+                ),
                 gotify: Object.keys(
                   ConfigSchema.definitions.GotifyConfig.properties,
                 ),
               }}
               allowedValues={{
-                discord: {
+                webhook: {
                   template: Notification.WEBHOOK_TEMPLATES,
+                  method: Notification.WEBHOOK_METHODS,
+                  mime_type: Notification.WEBHOOK_MIME_TYPES,
+                  color_mode: Notification.WEBHOOK_COLOR_MODES,
                 },
               }}
               //@ts-ignore
