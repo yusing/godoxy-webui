@@ -1,4 +1,3 @@
-import { ValidateFunction } from "ajv";
 import React from "react";
 import Endpoints, { type ConfigFileType, fetchEndpoint } from "./api/endpoints";
 
@@ -37,7 +36,6 @@ export interface ConfigFileContextType {
   setCurrent: React.Dispatch<React.SetStateAction<ConfigFile>>;
   content: string | undefined;
   setContent: React.Dispatch<React.SetStateAction<string | undefined>>;
-  validate: ValidateFunction;
   updateRemote: () => void;
 }
 

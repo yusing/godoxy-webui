@@ -1,6 +1,5 @@
 import Endpoints, { fetchEndpoint, toastError } from "@/types/api/endpoints";
 import { ConfigFile, ConfigFileContext, godoxyConfig } from "@/types/file";
-import { getValidator } from "@/types/schema";
 import React from "react";
 import { Toaster } from "../ui/toaster";
 
@@ -42,7 +41,6 @@ export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
           setCurrent,
           content,
           setContent,
-          validate: getValidator(current.type),
           updateRemote,
         }),
         [current, content, updateRemote],
