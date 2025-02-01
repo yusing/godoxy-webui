@@ -54,7 +54,7 @@ function Category({
 
   const [categoryName, setCategoryName] = React.useState(category);
 
-  if (items.length === 0) return null;
+  if (items.filter((item) => item.show).length === 0) return null;
 
   return (
     <Card.Root
