@@ -128,6 +128,9 @@ export function ConfigUIEditor({
                 gotify: Object.keys(
                   ConfigSchema.definitions.GotifyConfig.properties,
                 ),
+                ntfy: Object.keys(
+                  ConfigSchema.definitions.NtfyConfig.properties,
+                ),
               }}
               allowedValues={{
                 webhook: {
@@ -135,6 +138,9 @@ export function ConfigUIEditor({
                   method: Notification.WEBHOOK_METHODS,
                   mime_type: Notification.WEBHOOK_MIME_TYPES,
                   color_mode: Notification.WEBHOOK_COLOR_MODES,
+                },
+                ntfy: {
+                  style: Notification.NTFY_MSG_STYLES,
                 },
               }}
               //@ts-ignore
