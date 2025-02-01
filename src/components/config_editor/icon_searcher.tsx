@@ -61,8 +61,8 @@ export const IconSearcher: React.FC<
             title={"Error loading icons"}
             description={icons.error.message}
           />
-        ) : !icons.value ? (
-          <EmptyState title={"No icons found"} />
+        ) : !icons.value || icons.value.length === 0 ? (
+          <EmptyState title={"No result"} />
         ) : (
           icons.value.map((e) => (
             <Button p="0" key={e} asChild onClick={() => onChange(e)}>
