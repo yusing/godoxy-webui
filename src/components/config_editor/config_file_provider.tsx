@@ -1,7 +1,7 @@
 import Endpoints, { fetchEndpoint, toastError } from "@/types/api/endpoints";
 import { ConfigFile, ConfigFileContext, godoxyConfig } from "@/types/file";
 import React from "react";
-import { Toaster } from "../ui/toaster";
+import { toaster, Toaster } from "../ui/toaster";
 
 export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -30,7 +30,14 @@ export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
       headers: {
         "Content-Type": "application/yaml",
       },
-    }).catch(toastError);
+    })
+      .then(() =>
+        toaster.success({
+          title: "File saved",
+          description: current.filename,
+        }),
+      )
+      .catch(toastError);
   }, [current.filename, content]);
 
   return (
