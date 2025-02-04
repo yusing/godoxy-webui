@@ -10,13 +10,16 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json pnpm-lock.yaml ./
-RUN corepack enable pnpm && \
+# check issue on https://github.com/pnpm/pnpm/issues/9014
+RUN npm install --global corepack@latest && \
+    corepack install -g pnpm@10.2.0+sha1.$(npm view pnpm@10.2.0 dist.shasum) && \
     pnpm i --frozen-lockfile --ignore-scripts
 
 # Rebuild the source code only when needed
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+FROM deps AS builder
+# FROM base AS builder
+# WORKDIR /app
+# COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN sed -i 's/config = {/config = { typescript: { ignoreBuildErrors: true }, eslint: { ignoreDuringBuilds: true },/' next.config.js
 
@@ -25,7 +28,7 @@ RUN sed -i 's/config = {/config = { typescript: { ignoreBuildErrors: true }, esl
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN corepack enable pnpm && pnpm run build
+RUN pnpm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
