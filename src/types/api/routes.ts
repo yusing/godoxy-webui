@@ -77,10 +77,10 @@ export async function getHTTPRoutes(signal: AbortSignal) {
       }
     } else {
       httpRoutes.push({
-        container: route.container?.container_name ?? "",
+        container: route.idlewatcher?.container_name ?? "",
         alias: route.alias!,
         load_balancer: "",
-        url: route.health?.url ?? route.url ?? "",
+        url: route.purl ?? (route as FileserverRoute).root,
         status: (route.health?.status as HealthStatusType) ?? "unknown",
         uptime: route.health?.uptimeStr ?? "",
         latency: route.health?.latencyStr ?? "",
@@ -111,10 +111,10 @@ export async function getStreamRoutes(signal: AbortSignal) {
 
   for (const route of Object.values(model)) {
     streams.push({
-      container: route.container?.container_name ?? "",
+      container: route.idlewatcher?.container_name ?? "",
       alias: route.alias!,
       listening: `${route.scheme}://:${route.port.listening}`,
-      target: route.health?.url ?? route.url,
+      target: route.health?.url ?? route.purl!,
       status: (route.health?.status as HealthStatusType) ?? "unknown",
       uptime: route.health?.uptimeStr ?? "",
       latency: route.health?.latencyStr ?? "",

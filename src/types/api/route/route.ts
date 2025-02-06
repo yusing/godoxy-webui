@@ -20,13 +20,16 @@ type Health = {
   };
 };
 
-type ContainerInfo = {
+type IdleWatcher = {
   container_name: string;
 };
 
 type HealthResult = {
   health: Health;
-  container?: ContainerInfo;
+  idlewatcher?: IdleWatcher;
+  provider: string;
+  lurl?: string;
+  purl?: string;
 };
 
 export type ReverseProxyRoute = Routes.ReverseProxyRoute & HealthResult;
