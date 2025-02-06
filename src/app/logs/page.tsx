@@ -53,8 +53,8 @@ function Logs() {
       <Stack
         ref={logRef}
         overflow="auto"
-        textWrap="pretty"
         maxH={"100%"}
+        maxW={"100%"}
         gap="0"
         py="2"
         px={6}
