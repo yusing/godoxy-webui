@@ -8,13 +8,13 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import {
   type Column,
-  getReverseProxies,
-  getStreams,
+  getHTTPRoutes,
+  getStreamRoutes,
+  HTTPColumns,
   type ReverseProxy,
-  ReverseProxyColumns,
   type Stream,
   StreamColumns,
-} from "@/types/api/proxy";
+} from "@/types/api/routes";
 import { FaStream } from "react-icons/fa";
 import { FaServer } from "react-icons/fa6";
 import { MdError, MdRefresh } from "react-icons/md";
@@ -117,17 +117,17 @@ function RenderTable({
 
 export default function ProxiesPage() {
   const streams = useAsyncList<Stream>({
-    load: async ({ signal }) => ({ items: await getStreams(signal) }),
+    load: async ({ signal }) => ({ items: await getStreamRoutes(signal) }),
     sort,
   });
 
-  const rps = useAsyncList<ReverseProxy>({
-    load: async ({ signal }) => ({ items: await getReverseProxies(signal) }),
+  const httpRoutes = useAsyncList<ReverseProxy>({
+    load: async ({ signal }) => ({ items: await getHTTPRoutes(signal) }),
     sort,
   });
 
-  const [activeList, setActiveList] = useState(rps);
-  const [tab, setTab] = useState("reverse_proxies");
+  const [activeList, setActiveList] = useState(httpRoutes);
+  const [tab, setTab] = useState("http");
 
   return (
     <Tabs.Root
@@ -137,14 +137,14 @@ export default function ProxiesPage() {
           return;
         }
         setTab(e.value);
-        setActiveList(e.value === "reverse_proxies" ? rps : streams);
+        setActiveList(e.value === "http" ? httpRoutes : streams);
       }}
       px="4"
     >
       <Tabs.List gap={6}>
-        <Tabs.Trigger value="reverse_proxies">
+        <Tabs.Trigger value="http">
           <FaServer />
-          Reverse Proxies
+          HTTP
         </Tabs.Trigger>
         <Tabs.Trigger value="streams">
           <FaStream />
@@ -155,8 +155,8 @@ export default function ProxiesPage() {
         </Button>
       </Tabs.List>
       <Tabs.Content
-        key="reverse_proxies"
-        value="reverse_proxies"
+        key="http"
+        value="http"
         _open={{
           animationName: "fade-in, slide-in",
           animationDuration: "300ms",
@@ -167,9 +167,9 @@ export default function ProxiesPage() {
         }}
       >
         <RenderTable
-          key_prefix="reverse_proxies"
-          columns={ReverseProxyColumns}
-          list={rps}
+          key_prefix="http"
+          columns={HTTPColumns}
+          list={httpRoutes}
         />
       </Tabs.Content>
       <Tabs.Content

@@ -31,7 +31,9 @@ export default function RootLayout(
       lang="en"
       className={`${GeistSans.variable}`}
     >
-      <head />
+      {/* <head>
+        <script src="https://unpkg.com/react-scan/dist/auto.global.js"></script>
+      </head> */}
       <body>
         <Provider
           defaultTheme="dark"

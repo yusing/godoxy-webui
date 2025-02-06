@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import Endpoints from "@/types/api/endpoints";
-import { HomepageItem } from "@/types/api/entry/homepage_item";
+import { HomepageItem } from "@/types/api/route/homepage_item";
 import React, { useState } from "react";
 import { Avatar, AvatarProps } from "../ui/avatar";
 

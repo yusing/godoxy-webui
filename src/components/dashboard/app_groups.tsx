@@ -6,7 +6,7 @@ import {
   getHomepageItems,
   HomepageItem,
   HomepageItems,
-} from "@/types/api/entry/homepage_item";
+} from "@/types/api/route/homepage_item";
 import {
   Card,
   Editable,

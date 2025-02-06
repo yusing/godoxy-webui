@@ -17,9 +17,9 @@ import {
   MenuRoot,
 } from "@/components/ui/menu";
 import { toastError } from "@/types/api/endpoints";
-import { type HomepageItem } from "@/types/api/entry/homepage_item";
 import { formatHealthInfo, type HealthInfo } from "@/types/api/health";
 import { overrideHomepage } from "@/types/api/homepage";
+import { type HomepageItem } from "@/types/api/route/homepage_item";
 import {
   Group,
   HStack,

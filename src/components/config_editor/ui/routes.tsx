@@ -50,18 +50,28 @@ const routeTypes = [
   {
     label: "Reverse Proxy",
     value: "rp",
-    description: "proxy to http/https target",
+    description: "proxy to a http/https app",
+  },
+  {
+    label: "File Server",
+    value: "fileserver",
+    description: "serve files over http/https",
   },
   {
     label: "Stream",
     value: "stream",
-    description: "port forward a tcp/udp stream",
+    description: "port forward a tcp/udp app",
   },
 ];
 
 const rpSchema = z.object({
   alias: z.string().min(1),
   port: z.number().min(1).max(65535).optional(),
+});
+
+const fileServerSchema = z.object({
+  alias: z.string().min(1),
+  root: z.string().min(1),
 });
 
 const streamSchema = z.object({
@@ -104,17 +114,29 @@ export const RoutesEditor: React.FC<{
           <Card.Root key={`${k}_card`} variant={"outline"}>
             <Card.Body w="full" px="4" py="2">
               <HStack>
-                <HStack wrap={"wrap"}>
-                  {k}
-                  <Badge colorPalette={"green"}>{route.scheme || "http"}</Badge>
-                  <Badge colorPalette={"blue"}>
-                    {route.host || "localhost"}
-                  </Badge>
-                  {route.healthcheck?.disable && <Badge>no healthcheck</Badge>}
-                  {route.homepage &&
-                    !route.homepage?.name &&
-                    !route.homepage?.icon && <Badge>hidden</Badge>}
-                </HStack>
+                {route.scheme === "fileserver" ? (
+                  <HStack wrap={"wrap"}>
+                    {k}
+                    <Badge colorPalette={"green"}>{route.scheme}</Badge>
+                    <Badge colorPalette={"blue"}>{route.root}</Badge>
+                  </HStack>
+                ) : (
+                  <HStack wrap={"wrap"}>
+                    {k}
+                    <Badge colorPalette={"green"}>
+                      {route.scheme || "http"}
+                    </Badge>
+                    <Badge colorPalette={"blue"}>
+                      {route.host || "localhost"}
+                    </Badge>
+                    {route.healthcheck?.disable && (
+                      <Badge>no healthcheck</Badge>
+                    )}
+                    {(route.scheme === "http" || route.scheme === "https") &&
+                      !route.homepage?.name &&
+                      !route.homepage?.icon && <Badge>hidden</Badge>}
+                  </HStack>
+                )}
                 <Spacer />
                 <DialogRoot
                   lazyMount
@@ -196,6 +218,11 @@ const RouteEditor: React.FC<{
       {type === "rp" ? (
         <ReverseProxyRouteForm
           value={route as Routes.ReverseProxyRoute}
+          onSubmit={onChange}
+        />
+      ) : type === "fileserver" ? (
+        <FileServerRouteForm
+          value={route as Routes.FileServerRoute}
           onSubmit={onChange}
         />
       ) : (
@@ -397,6 +424,104 @@ const ReverseProxyRouteForm: React.FC<{
   );
 };
 
+const FileServerRouteForm: React.FC<{
+  value: Routes.FileServerRoute;
+  onSubmit: (route: Routes.FileServerRoute) => void;
+}> = ({ value, onSubmit }) => {
+  const {
+    control,
+    register,
+    getValues,
+    setValue,
+    formState: { errors, isValid },
+  } = useForm<Routes.FileServerRoute>({
+    defaultValues: {
+      scheme: "fileserver",
+    },
+    values: value,
+    resolver: zodResolver(fileServerSchema),
+    mode: "onChange",
+    reValidateMode: "onChange",
+  });
+  const submit = () => onSubmit(getValues());
+  return (
+    <Stack gap="4">
+      <Field
+        label="Alias"
+        required
+        invalid={!!errors.alias}
+        errorText={errors.alias?.message}
+      >
+        <Input
+          placeholder="Subdomain or FQDN (no trailing dot)"
+          {...register("alias")}
+        />
+      </Field>
+      <Field
+        label="Path"
+        required
+        invalid={!!errors.root}
+        errorText={errors.root?.message}
+      >
+        <Input placeholder="Path (no leading slash)" {...register("root")} />
+      </Field>
+      <Collapsible.Root lazyMount unmountOnExit>
+        <Collapsible.Trigger asChild>
+          <Button variant={"subtle"}>Show Advanced Options</Button>
+        </Collapsible.Trigger>
+        <Collapsible.Content py="4">
+          <Stack gap="4">
+            <Controller
+              control={control}
+              name="homepage.show"
+              render={({ field }) => (
+                <Checkbox
+                  checked={field.value ?? true}
+                  onCheckedChange={({ checked }) => field.onChange(checked)}
+                >
+                  Show on dashboard
+                </Checkbox>
+              )}
+            />
+            <Controller
+              control={control}
+              name="homepage.show"
+              render={({ field }) => (
+                <Show when={field.value !== false}>
+                  <Stack gap="4">
+                    <Group>
+                      <Field label="Display Name">
+                        <Input {...register("homepage.name")} />
+                      </Field>
+                      <Field label="Category">
+                        <Input {...register("homepage.category")} />
+                      </Field>
+                    </Group>
+                    <Field label="Description">
+                      <Input {...register("homepage.description")} />
+                    </Field>
+                    <IconSearcher
+                      value={value.homepage?.icon ?? ""}
+                      onChange={(e) => setValue("homepage.icon", e)}
+                    />
+                  </Stack>
+                </Show>
+              )}
+            />
+          </Stack>
+        </Collapsible.Content>
+      </Collapsible.Root>
+      <DialogFooter>
+        <Dialog.CloseTrigger as="p" asChild>
+          <Button disabled={!isValid} onClick={submit}>
+            Save
+          </Button>
+        </Dialog.CloseTrigger>
+      </DialogFooter>
+    </Stack>
+  );
+};
+
 const StreamRouteForm: React.FC<{
   value: Routes.StreamRoute;
   onSubmit: (route: Routes.StreamRoute) => void;
@@ -404,7 +529,6 @@ const StreamRouteForm: React.FC<{
   const {
     control,
     register,
-    setValue,
     getValues,
     formState: { errors, isValid },
   } = useForm<Routes.StreamRoute>({
