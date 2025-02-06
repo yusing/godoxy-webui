@@ -463,7 +463,10 @@ const FileServerRouteForm: React.FC<{
         invalid={!!errors.root}
         errorText={errors.root?.message}
       >
-        <Input placeholder="Path (no leading slash)" {...register("root")} />
+        <Input
+          placeholder="Absolute path to file or directory (remember to mount to GoDoxy)"
+          {...register("root")}
+        />
       </Field>
       <Collapsible.Root lazyMount unmountOnExit>
         <Collapsible.Trigger asChild>
