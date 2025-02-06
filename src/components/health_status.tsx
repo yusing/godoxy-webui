@@ -9,8 +9,8 @@ export interface HealthStatusProps extends ChakraStatus.RootProps {
 
 const statusMap: Record<HealthStatusType, ColorPalette> = {
   healthy: "green",
-  napping: "orange",
-  unhealthy: "yellow",
+  napping: "yellow",
+  unhealthy: "red",
   starting: "blue",
   error: "red",
   unknown: "gray",
