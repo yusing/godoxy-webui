@@ -1,7 +1,7 @@
 VERSION ?= $(shell git describe --tags --abbrev=0)
 BUILD_DATE ?= $(shell date -u +'%Y%m%d-%H%M')
 
-.PHONY: build dev
+.PHONY: dev push-docker-io
 
 dev:
 	docker compose up --build

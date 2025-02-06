@@ -5,6 +5,9 @@ services:
     restart: no
     network_mode: host
     image: godoxy-frontend
+    env_file: .env
+    environment:
+      NEXT_PUBLIC_GODOXY_API_ADDR: ${GODOXY_API_ADDR}
     build:
       context: .
       dockerfile: dev.Dockerfile
