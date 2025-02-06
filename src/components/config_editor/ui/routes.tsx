@@ -157,7 +157,24 @@ const RouteEditor: React.FC<{
   route: Routes.Route;
   onChange: (v: Routes.Route) => void;
 }> = ({ route, onChange }) => {
-  const [type, setType] = React.useState("rp");
+  let t: string;
+  switch (route.scheme) {
+    case "http":
+    case "https":
+      t = "rp";
+      break;
+    case "fileserver":
+      t = "fileserver";
+      break;
+    case "tcp":
+    case "udp":
+      t = "stream";
+      break;
+    default:
+      t = "rp";
+      break;
+  }
+  const [type, setType] = React.useState(t);
   return (
     <Stack gap="4">
       <RadioCardRoot
