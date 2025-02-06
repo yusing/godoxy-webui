@@ -1,5 +1,5 @@
 import Endpoints, { fetchEndpoint } from "./endpoints";
-import { HomepageItem } from "./entry/homepage_item";
+import { HomepageItem } from "./route/homepage_item";
 
 type OverrideHomepageParams = {
   item: {

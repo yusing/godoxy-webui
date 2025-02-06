@@ -1,11 +1,10 @@
 import Endpoints, { fetchEndpoint } from "./endpoints";
 import { HealthStatusType } from "./health";
-import type { HTTPRoute } from "./route/http";
-import type { StreamRoute } from "./route/stream";
+import { FileserverRoute, ReverseProxyRoute, StreamRoute } from "./route/route";
 
 export type Column = { key: string; label: string };
 
-export const ReverseProxyColumns: Column[] = [
+export const HTTPColumns: Column[] = [
   { key: "container", label: "Container" },
   { key: "alias", label: "Alias" },
   { key: "load_balancer", label: "Load Balancer" },
@@ -46,24 +45,30 @@ export type Stream = {
   latency: string;
 };
 
-export async function getReverseProxies(signal: AbortSignal) {
+export async function getHTTPRoutes(signal: AbortSignal) {
   const results = await fetchEndpoint(Endpoints.LIST_PROXIES, {
-    query: { type: "reverse_proxy" },
+    query: { type: "http" },
     signal: signal,
   });
   if (results === null) {
     return [];
   }
-  const model = (await results.json()) as Record<string, HTTPRoute>;
-  const reverseProxies: ReverseProxy[] = [];
+  const model = (await results.json()) as Record<
+    string,
+    FileserverRoute | ReverseProxyRoute
+  >;
+  const httpRoutes: ReverseProxy[] = [];
 
   for (const route of Object.values(model)) {
     if (route.health && route.health.extra) {
       for (const v of Object.values(route.health.extra.pool)) {
-        reverseProxies.push({
+        httpRoutes.push({
           container: "",
           alias: v.name,
-          load_balancer: route.raw.alias,
+          load_balancer:
+            route.scheme === "fileserver"
+              ? undefined
+              : route.load_balance?.link,
           url: v.url,
           status: v.status as HealthStatusType,
           uptime: v.uptimeStr,
@@ -71,9 +76,9 @@ export async function getReverseProxies(signal: AbortSignal) {
         });
       }
     } else {
-      reverseProxies.push({
-        container: route.idlewatcher?.container_name ?? "",
-        alias: route.raw.alias,
+      httpRoutes.push({
+        container: route.container?.container_name ?? "",
+        alias: route.alias!,
         load_balancer: "",
         url: route.health?.url ?? route.url ?? "",
         status: (route.health?.status as HealthStatusType) ?? "unknown",
@@ -83,17 +88,17 @@ export async function getReverseProxies(signal: AbortSignal) {
     }
   }
 
-  reverseProxies.sort((a, b) => {
+  httpRoutes.sort((a, b) => {
     return (
       a.load_balancer?.localeCompare(b.load_balancer ?? "") ??
       (a.container.localeCompare(b.container) || a.alias.localeCompare(b.alias))
     );
   });
 
-  return reverseProxies;
+  return httpRoutes;
 }
 
-export async function getStreams(signal: AbortSignal) {
+export async function getStreamRoutes(signal: AbortSignal) {
   const results = await fetchEndpoint(Endpoints.LIST_PROXIES, {
     query: { type: "stream" },
     signal: signal,
@@ -106,9 +111,9 @@ export async function getStreams(signal: AbortSignal) {
 
   for (const route of Object.values(model)) {
     streams.push({
-      container: route.idlewatcher?.container_name ?? "",
-      alias: route.raw.alias,
-      listening: `${route.scheme.listening}://:${route.port.listening}`,
+      container: route.container?.container_name ?? "",
+      alias: route.alias!,
+      listening: `${route.scheme}://:${route.port.listening}`,
       target: route.health?.url ?? route.url,
       status: (route.health?.status as HealthStatusType) ?? "unknown",
       uptime: route.health?.uptimeStr ?? "",
