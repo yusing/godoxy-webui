@@ -7,7 +7,7 @@
 const config = {
   experimental: {
     optimizePackageImports: ["@chakra-ui/react"],
-    reactCompiler: true,
+    reactCompiler: process.env.NODE_ENV === "development",
   },
   output: "standalone",
   async rewrites() {
