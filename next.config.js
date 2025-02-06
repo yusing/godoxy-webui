@@ -10,14 +10,6 @@ const config = {
     reactCompiler: process.env.NODE_ENV === "development",
   },
   output: "standalone",
-  async rewrites() {
-    return [
-      {
-        source: "/api/:path*",
-        destination: `http://127.0.0.1:8888/v1/:path*`, // Proxy to Backend apiBaseURL,
-      },
-    ];
-  },
 };
 
 export default config;
