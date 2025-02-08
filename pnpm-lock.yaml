@@ -68,9 +68,6 @@ importers:
       react-use:
         specifier: ^17.6.0
         version: 17.6.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      react-use-websocket:
-        specifier: ^4.13.0
-        version: 4.13.0
       thememirror:
         specifier: ^2.0.1
         version: 2.0.1(@codemirror/language@6.10.8)(@codemirror/state@6.5.2)(@codemirror/view@6.36.2)
@@ -2501,9 +2498,6 @@ packages:
     peerDependencies:
       react: '*'
       tslib: '*'
-
-  react-use-websocket@4.13.0:
-    resolution: {integrity: sha512-anMuVoV//g2N76Wxqvqjjo1X48r9Np3y1/gMl7arX84tAPXdy5R7sB5lO5hvCzQRYjqXwV8XMAiEBOUbyrZFrw==}
 
   react-use@17.6.0:
     resolution: {integrity: sha512-OmedEScUMKFfzn1Ir8dBxiLLSOzhKe/dPZwVxcujweSj45aNM7BEGPb9BEVIgVEqEXx6f3/TsXzwIktNgUR02g==}
@@ -6136,8 +6130,6 @@ snapshots:
     dependencies:
       react: 19.0.0
       tslib: 2.8.1
-
-  react-use-websocket@4.13.0: {}
 
   react-use@17.6.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:

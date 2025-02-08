@@ -1,6 +1,5 @@
 import { toaster } from "@/components/ui/toaster";
 import { StatusCodes } from "http-status-codes";
-import useWebSocket, { type Options } from "react-use-websocket";
 
 namespace Endpoints {
   export const FileContent = (fileType: ConfigFileType, filename: string) =>
@@ -112,27 +111,6 @@ export async function fetchEndpoint(
   return resp;
 }
 
-export function useWS<T = string>(endpoint: string, options?: Options) {
-  const { lastMessage, readyState } = useWebSocket<MessageEvent<T | undefined>>(
-    endpoint,
-    { onError: toastError, ...options },
-  );
-  return { data: lastMessage?.data, readyState } as const;
-}
-
-export function useWSJSON<T>(endpoint: string, options?: Options) {
-  const { lastMessage, readyState } = useWebSocket<MessageEvent<T | undefined>>(
-    endpoint,
-    { onError: toastError, ...options },
-  );
-  if (lastMessage?.data) {
-    return {
-      data: JSON.parse(lastMessage.data) as T,
-      readyState,
-    } as const;
-  }
-  return { data: null, readyState } as const;
-}
 
 type loginProps = {
   username: string;

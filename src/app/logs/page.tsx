@@ -4,13 +4,13 @@ import { Prose } from "@/components/ui/prose";
 import { StepperInput } from "@/components/ui/stepper-input";
 import { Switch } from "@/components/ui/switch";
 import "@/styles/logs.css";
-import Endpoints, { useWS } from "@/types/api/endpoints";
+import Endpoints from "@/types/api/endpoints";
+import useWebsocket, { ReadyState } from "@/types/api/ws";
 import { useSetting } from "@/types/settings";
 import { bodyHeight } from "@/types/styles";
 import { ClientOnly, Group, HStack, Stack, Text } from "@chakra-ui/react";
 import Convert from "ansi-to-html";
 import React from "react";
-import { ReadyState } from "react-use-websocket";
 
 const convertANSI = new Convert();
 
@@ -27,7 +27,7 @@ function Logs() {
   const autoScroll = useSetting("logs_auto_scroll", true);
   const maxLines = useSetting("logs_max_lines", 100);
   const logRef = React.useRef<HTMLDivElement>(null);
-  const { data, readyState } = useWS<string>(Endpoints.LOGS);
+  const { data, readyState } = useWebsocket<string>(Endpoints.LOGS);
 
   React.useEffect(() => {
     if (data) {

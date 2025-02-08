@@ -4,7 +4,8 @@ import { StatLabel, StatRoot, StatValueText } from "@/components/ui/stat";
 import { skeletonStats, Stats } from "@/types/api/stats";
 import { Box, For, SimpleGrid, Stack } from "@chakra-ui/react";
 
-import Endpoints, { useWSJSON } from "@/types/api/endpoints";
+import Endpoints from "@/types/api/endpoints";
+import useWebsocket from "@/types/api/ws";
 import dynamic from "next/dynamic";
 import Conditional from "../conditional";
 import { Skeleton, SkeletonText } from "../ui/skeleton";
@@ -17,7 +18,9 @@ const ProvidersGrid = dynamic(() => import("./providers_grid"), {
 export default function DashboardStats({
   isMobile,
 }: Readonly<{ isMobile: boolean }>) {
-  const { data } = useWSJSON<Stats>(Endpoints.STATS);
+  const { data } = useWebsocket<Stats>(Endpoints.STATS, {
+    json: true,
+  });
 
   const stats = data ?? skeletonStats;
   const rps = stats.proxies.reverse_proxies;

@@ -17,8 +17,7 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 
-import Endpoints, { toastError, useWSJSON } from "@/types/api/endpoints";
-import { healthInfoUnknown, HealthMap } from "@/types/api/health";
+import { toastError } from "@/types/api/endpoints";
 import { overrideHomepage } from "@/types/api/homepage";
 import { useAsync } from "react-use";
 import Conditional from "../conditional";
@@ -36,12 +35,10 @@ function dummyItems(): HomepageItems {
 function Category({
   category,
   items,
-  healthMap,
   isMobile,
 }: Readonly<{
   category: string;
   items: HomepageItem[];
-  healthMap: HealthMap;
   isMobile: boolean;
 }>) {
   const {
@@ -131,7 +128,6 @@ function Category({
               <AppCard
                 key={item.alias}
                 item={item}
-                health={healthMap[item.alias] ?? healthInfoUnknown}
               />
             )}
           </For>
@@ -156,10 +152,6 @@ export default function AppGroups({
         return dummyItems();
       }),
     [categoryFilter.val, providerFilter.val],
-  );
-
-  const { data: healthMap, readyState } = useWSJSON<HealthMap>(
-    Endpoints.HEALTH,
   );
 
   const lessThanTwo = React.useCallback(
@@ -192,7 +184,6 @@ export default function AppGroups({
               key={category}
               isMobile={isMobile}
               category={category}
-              healthMap={healthMap ?? {}}
               items={items}
             />
           )}
@@ -206,7 +197,6 @@ export default function AppGroups({
                 key={category}
                 isMobile={isMobile}
                 category={category}
-                healthMap={healthMap ?? {}}
                 items={items}
               />
             )}

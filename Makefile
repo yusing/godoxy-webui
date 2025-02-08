@@ -18,3 +18,7 @@ push-docker-io:
 
 update-wiki-sidebar:
 	python scripts/wiki_sidebar.py
+
+update-wiki:
+  git submodule update --init public/wiki
+	make update-wiki-sidebar

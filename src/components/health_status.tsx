@@ -16,15 +16,18 @@ const statusMap: Record<HealthStatusType, ColorPalette> = {
   unknown: "gray",
 } as const;
 
-export const HealthStatus = React.forwardRef<HTMLDivElement, HealthStatusProps>(
-  function Status(props, ref) {
-    const { children, value = "unknown", ...rest } = props;
-    const colorPalette = rest.colorPalette ?? statusMap[value];
-    return (
-      <ChakraStatus.Root ref={ref} {...rest} colorPalette={colorPalette}>
-        <ChakraStatus.Indicator />
-        {children}
-      </ChakraStatus.Root>
-    );
-  },
-);
+const HealthStatus_: React.FC<HealthStatusProps> = ({
+  children,
+  value = "unknown",
+  ...rest
+}) => {
+  const colorPalette = rest.colorPalette ?? statusMap[value];
+  return (
+    <ChakraStatus.Root {...rest} colorPalette={colorPalette}>
+      <ChakraStatus.Indicator />
+      {children}
+    </ChakraStatus.Root>
+  );
+};
+
+export const HealthStatus = React.memo(HealthStatus_);

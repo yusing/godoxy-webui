@@ -1,3 +1,5 @@
+import { createContext, useContext } from "react";
+
 export const healthStatuses = [
   "healthy",
   "error",
@@ -26,5 +28,18 @@ export function formatHealthInfo(info: HealthInfo) {
   if (info.status === "unknown") {
     return info.status;
   }
-  return `${info.status[0]!.toUpperCase() + info.status.slice(1)} for ${info.uptime}, latency: ${info.latency}`;
+  return `${info.status[0]!.toUpperCase() + info.status.slice(1)} for ${info.uptime}` + (info.status === "healthy" ? `, latency: ${info.latency}` : "");
 }
+
+export type HealthMapContext = {
+  health: HealthMap;
+};
+
+export const HealthMapContext = createContext<HealthMapContext>({
+  health: {},
+});
+
+export const useHealthInfo = (alias: string) => {
+  const { health } = useContext(HealthMapContext);
+  return health[alias] ?? healthInfoUnknown;
+};
