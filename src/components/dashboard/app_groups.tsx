@@ -124,12 +124,7 @@ function Category({
           }}
         >
           <For each={items}>
-            {(item) => (
-              <AppCard
-                key={item.alias}
-                item={item}
-              />
-            )}
+            {(item) => <AppCard key={item.alias} item={item} />}
           </For>
         </Conditional>
       </Card.Body>
