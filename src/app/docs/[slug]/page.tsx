@@ -1,4 +1,4 @@
-import MarkdownPage from "@/components/markdown";
+import WikiPage from "@/components/wiki_page";
 
 export default async function Page({
   params,
@@ -6,5 +6,5 @@ export default async function Page({
   params: Promise<{ slug: string }>;
 }>) {
   const slug = (await params).slug;
-  return <MarkdownPage file={slug} />;
+  return <WikiPage file={slug} />;
 }

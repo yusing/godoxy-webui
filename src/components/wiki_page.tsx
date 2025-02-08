@@ -12,7 +12,7 @@ import MarkdownPreview from "@uiw/react-markdown-preview";
 import { useAsync } from "react-use";
 import sideBar from "./wiki_sidebar.json";
 
-export default function MarkdownPage({ file }: Readonly<{ file: string }>) {
+export default function WikiPage({ file }: Readonly<{ file: string }>) {
   const home = useAsync(async () => {
     return await fetch(`/wiki/${file}.md`).then((res) => res.text());
   });
@@ -34,11 +34,12 @@ export default function MarkdownPage({ file }: Readonly<{ file: string }>) {
                   <HStack key={item.name}>
                     <Link
                       href={item.link}
+                      fontWeight={"medium"}
                       colorPalette={
                         window.location.pathname.slice("/docs/".length) ===
                         item.link
-                          ? "blue"
-                          : "purple"
+                          ? "purple"
+                          : "blue"
                       }
                     >
                       {item.name}

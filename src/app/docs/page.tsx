@@ -1,7 +1,7 @@
 "use client";
 
-import MarkdownPage from "@/components/markdown";
+import WikiPage from "@/components/wiki_page";
 
 export default function DocsPage() {
-  return <MarkdownPage file="Home" />;
+  return <WikiPage file="Home" />;
 }
