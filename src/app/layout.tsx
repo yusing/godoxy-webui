@@ -66,8 +66,8 @@ export default function RootLayout(
               position={"fixed"}
               bottom={0}
               h={footerHeight}
-              as={"footer"}
               href={siteConfig.links.github}
+              target="_blank"
               title="GoDoxy Homepage"
               colorPalette={"teal"}
               w="full"
