@@ -30,11 +30,20 @@ export const ListInput: React.FC<
     placeholder?: string;
     value: string[];
     required?: boolean;
+    description?: string;
     onChange: (v: string[]) => void;
   } & Omit<React.ComponentProps<typeof Input>, "onChange" | "value">
-> = ({ label, placeholder, value, required = false, onChange, ...rest }) => {
+> = ({
+  label,
+  placeholder,
+  value,
+  required = false,
+  description,
+  onChange,
+  ...rest
+}) => {
   return (
-    <Field label={label} required={required}>
+    <Field label={label} required={required} title={description}>
       <Stack gap="3" w="full">
         {value.map((item, index) => (
           <Group attached key={`${label}_${index}`}>
@@ -84,6 +93,7 @@ export const NamedListInput: React.FC<
     allowedNames?: ReadonlyArray<string>;
     allowedKeys?: { [key: string]: ReadonlyArray<string> };
     allowedValues?: { [key: string]: { [key: string]: ReadonlyArray<string> } };
+    description?: { [key: string]: { [key: string]: string } };
     value: NamedList;
     onChange: (v: NamedList) => void;
   } & Omit<
@@ -99,6 +109,7 @@ export const NamedListInput: React.FC<
   allowedNames,
   allowedKeys,
   allowedValues,
+  description,
   ...rest
 }) => {
   if (!(value instanceof Array)) value = [];
@@ -116,6 +127,7 @@ export const NamedListInput: React.FC<
               allowedNames={allowedNames}
               allowedKeys={allowedKeys?.[item[nameField]!]}
               allowedValues={allowedValues?.[item[nameField]!]}
+              description={description?.[item[nameField]!]}
               onChange={(v) => {
                 value[index] = {
                   ...v,
@@ -163,6 +175,7 @@ export const MapInput: React.FC<
     allowedNames?: ReadonlyArray<string>;
     allowedKeys?: ReadonlyArray<string>;
     allowedValues?: { [key: string]: ReadonlyArray<string> };
+    description?: { [key: string]: string };
     onChange: (v: Record<string, string>) => void;
   } & Omit<
     React.ComponentProps<typeof Input>,
@@ -178,6 +191,7 @@ export const MapInput: React.FC<
   allowedNames,
   allowedKeys,
   allowedValues,
+  description,
   onChange,
   ...rest
 }) => {
@@ -240,6 +254,7 @@ export const MapInput: React.FC<
                 key={`${label}_${index}_list`}
                 label={`${label}.${k}`}
                 value={v}
+                description={description?.[k]}
                 onChange={(e) => {
                   value[k] = e;
                   onChange(value);
@@ -249,6 +264,7 @@ export const MapInput: React.FC<
               <Group
                 attached
                 key={`${label}_${index}_map`}
+                title={description?.[k]}
                 color={
                   allowedKeys && !allowedKeys.includes(k)
                     ? "red.500"

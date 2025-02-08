@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import { Field } from "@/components/ui/field";
 import { Switch } from "@/components/ui/switch";
+import { getSchemaDescription } from "@/types/schema";
 import { Stack } from "@chakra-ui/react";
 import { Autocert, Config, ConfigSchema, Notification } from "godoxy-schemas";
 import React from "react";
@@ -76,6 +77,10 @@ export function ConfigUIEditor({
                 ConfigSchema.properties.entrypoint.properties.access_log
                   .properties,
               )}
+              description={getSchemaDescription(
+                ConfigSchema.properties.entrypoint.properties.access_log
+                  .properties,
+              )}
               value={data.entrypoint?.access_log ?? {}}
               onChange={(v) => {
                 if (!data.entrypoint) data.entrypoint = {};
@@ -142,6 +147,17 @@ export function ConfigUIEditor({
                 ntfy: {
                   style: Notification.NTFY_MSG_STYLES,
                 },
+              }}
+              description={{
+                webhook: getSchemaDescription(
+                  ConfigSchema.definitions.WebhookConfig.properties,
+                ),
+                gotify: getSchemaDescription(
+                  ConfigSchema.definitions.GotifyConfig.properties,
+                ),
+                ntfy: getSchemaDescription(
+                  ConfigSchema.definitions.NtfyConfig.properties,
+                ),
               }}
               //@ts-ignore
               value={data.providers?.notification ?? []}
