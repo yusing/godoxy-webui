@@ -52,10 +52,18 @@ const DesktopNav: React.FC<StackProps> = (props) => {
         </For>
       </Group>
       <Group gap={4}>
-        <Link aria-label="Discord" href={siteConfig.links.discord}>
+        <Link
+          aria-label="Discord"
+          target="_blank"
+          href={siteConfig.links.discord}
+        >
           <DiscordIcon className="text-default-500" />
         </Link>
-        <Link aria-label="Github" href={siteConfig.links.github}>
+        <Link
+          aria-label="Github"
+          target="_blank"
+          href={siteConfig.links.github}
+        >
           <GithubIcon className="text-default-500" />
         </Link>
         <ThemeSwitch />

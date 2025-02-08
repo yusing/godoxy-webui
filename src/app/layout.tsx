@@ -31,15 +31,17 @@ export default function RootLayout(
       lang="en"
       className={`${GeistSans.variable}`}
     >
-      {/* <head>
-        <script src="https://unpkg.com/react-scan/dist/auto.global.js"></script>
-      </head> */}
+      {process.env.NODE_ENV === "development" && (
+        <head>
+          <script src="https://unpkg.com/react-scan/dist/auto.global.js"></script>
+        </head>
+      )}
       <body>
         <Provider
           defaultTheme="dark"
           enableSystem
           storageKey={"__theme"}
-          attribute={["class", "data-theme"]}
+          attribute={["class", "data-theme", "data-color-mode"]}
         >
           <VStack w="100vw" h="100vh">
             <Navbar

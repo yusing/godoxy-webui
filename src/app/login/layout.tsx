@@ -5,8 +5,8 @@ export default function Layout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <Flex
-      w="100vw"
-      h="90vh"
+      w="100%"
+      h="100%"
       justifyContent="center"
       alignItems="center"
       overflow="clip"

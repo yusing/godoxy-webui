@@ -15,3 +15,6 @@ push-docker-io:
 		-t docker.io/yusing/godoxy-frontend-nightly:${VERSION}-${BUILD_DATE} \
 		--build-arg VERSION="${VERSION}-nightly-${BUILD_DATE}" \
 		--push .
+
+update-wiki-sidebar:
+	python scripts/wiki_sidebar.py

@@ -35,10 +35,15 @@ export function middleware(request: NextRequest) {
       headers: new HeadersWithHost(request.headers, request.nextUrl.host),
     });
   }
+
+  if (pathname.startsWith("/docs/images/")) {
+    return NextResponse.redirect(
+      request.nextUrl.origin + "/wiki" + pathname.slice("/docs".length),
+    );
   }
 }
 
 // Configure matcher for paths that trigger this middleware
 export const config = {
-  matcher: "/api/:path*",
+  matcher: ["/api/:path*", "/docs/:path*"],
 };

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Toaster } from "@/components/ui/toaster";
 import { type FetchError, login } from "@/types/api/endpoints"; // Import the login function
-import { Card, Fieldset, Group, Input } from "@chakra-ui/react";
+import { Card, Fieldset, Group, IconButton, Input } from "@chakra-ui/react";
 import React from "react";
 import { useForm } from "react-hook-form";
 
@@ -83,13 +83,20 @@ export default function LoginPage() {
                       required: "Password is required",
                     })}
                   />
-                  <Button aria-hidden type="button" onClick={toggleVisibility}>
+                  <IconButton
+                    aria-hidden
+                    type="button"
+                    variant={"subtle"}
+                    onClick={toggleVisibility}
+                  >
                     {isVisible ? <EyeSlashFilledIcon /> : <EyeFilledIcon />}
-                  </Button>
+                  </IconButton>
                 </Group>
               </Field>
             </Fieldset.Content>
-            <Button type="submit">Login</Button>
+            <Button type="submit" variant={"subtle"}>
+              Login
+            </Button>
           </Fieldset.Root>
         </Card.Body>
       </Card.Root>
