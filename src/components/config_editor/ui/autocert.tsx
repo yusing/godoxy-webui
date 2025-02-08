@@ -36,11 +36,11 @@ export const AutocertUIEditor: React.FC<{
   const { control, register } = useHookForm({ value: cfg, onChange: onChange });
 
   return (
-    <Stack gap="3">
-      <Controller
-        control={control}
-        name="provider"
-        render={({ field }) => (
+    <Controller
+      control={control}
+      name="provider"
+      render={({ field }) => (
+        <Stack gap="3">
           <SelectRoot
             collection={collection}
             value={[field.value]}
@@ -67,41 +67,41 @@ export const AutocertUIEditor: React.FC<{
               ))}
             </SelectContent>
           </SelectRoot>
-        )}
-      ></Controller>
-      {cfg.provider !== "local" && (
-        <>
-          <Field required label="Email">
-            <Input {...register("email")} />
-          </Field>
-          <ListInput
-            label="Domains"
-            placeholder="domain"
-            value={cfg.domains ?? []}
-            onChange={(v) => {
-              // @ts-ignore
-              cfg.domains = v;
-              onChange(cfg);
-            }}
-          />
-        </>
-      )}
-      {cfg.provider !== "local" ? (
-        <Fieldset.Root>
-          <Fieldset.Legend>Provider Options</Fieldset.Legend>
-          <Fieldset.Content>
-            {cfg.provider === "ovh" ? (
-              <OVHConfigEditor
-                cfg={cfg as Autocert.OVHOptionsWithAppKey}
-                onChange={onChange}
+          {field.value !== "local" && (
+            <>
+              <Field required label="Email">
+                <Input {...register("email")} />
+              </Field>
+              <ListInput
+                label="Domains"
+                placeholder="domain"
+                value={cfg.domains ?? []}
+                onChange={(v) => {
+                  // @ts-ignore
+                  cfg.domains = v;
+                  onChange(cfg);
+                }}
               />
-            ) : (
-              <ProviderConfigEditor cfg={cfg} onChange={onChange} />
-            )}
-          </Fieldset.Content>
-        </Fieldset.Root>
-      ) : null}
-    </Stack>
+            </>
+          )}
+          {field.value !== "local" && (
+            <Fieldset.Root>
+              <Fieldset.Legend>Provider Options</Fieldset.Legend>
+              <Fieldset.Content>
+                {field.value === "ovh" ? (
+                  <OVHConfigEditor
+                    cfg={cfg as Autocert.OVHOptionsWithAppKey}
+                    onChange={onChange}
+                  />
+                ) : (
+                  <ProviderConfigEditor cfg={cfg} onChange={onChange} />
+                )}
+              </Fieldset.Content>
+            </Fieldset.Root>
+          )}
+        </Stack>
+      )}
+    />
   );
 };
 
