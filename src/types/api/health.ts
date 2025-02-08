@@ -28,7 +28,10 @@ export function formatHealthInfo(info: HealthInfo) {
   if (info.status === "unknown") {
     return info.status;
   }
-  return `${info.status[0]!.toUpperCase() + info.status.slice(1)} for ${info.uptime}` + (info.status === "healthy" ? `, latency: ${info.latency}` : "");
+  return (
+    `${info.status[0]!.toUpperCase() + info.status.slice(1)} for ${info.uptime}` +
+    (info.status === "healthy" ? `, latency: ${info.latency}` : "")
+  );
 }
 
 export type HealthMapContext = {

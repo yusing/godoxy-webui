@@ -111,7 +111,6 @@ export async function fetchEndpoint(
   return resp;
 }
 
-
 type loginProps = {
   username: string;
   password: string;
