@@ -1,11 +1,11 @@
-export type MemoryInfo = {
+type MemoryInfo = {
   total: number;
   used: number;
   used_percent: number;
   available: number;
 };
 
-export type DiskInfo = {
+type DiskInfo = {
   path: string;
   fstype: string;
   total: number;
@@ -14,7 +14,7 @@ export type DiskInfo = {
   free: number;
 };
 
-export type NetworkIOInfo = {
+type NetworkIOInfo = {
   name: string;
   bytes_sent: number;
   bytes_recv: number;
@@ -22,14 +22,14 @@ export type NetworkIOInfo = {
   download_speed: number;
 };
 
-export type SensorInfo = {
+type SensorInfo = {
   sensorKey: string;
   temperature: number;
   sensorHigh: number;
   sensorCritical: number;
 };
 
-export type SystemInfo = {
+type SystemInfo = {
   timestamp: number;
   time: string;
   cpu_average: number;
@@ -38,3 +38,5 @@ export type SystemInfo = {
   network: NetworkIOInfo;
   sensors: SensorInfo[];
 };
+
+export type { DiskInfo, MemoryInfo, NetworkIOInfo, SensorInfo, SystemInfo };

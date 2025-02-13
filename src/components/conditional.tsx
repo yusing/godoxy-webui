@@ -1,8 +1,8 @@
-import React from "react";
+import { ComponentProps, ElementType, ReactNode, createElement } from "react";
 
 export default function Conditional<
-  TTrue extends React.ElementType,
-  TFalse extends React.ElementType,
+  TTrue extends ElementType,
+  TFalse extends ElementType,
 >({
   condition,
   whenTrue,
@@ -14,13 +14,13 @@ export default function Conditional<
 }: {
   condition: boolean;
   whenTrue: TTrue;
-  trueProps?: React.ComponentProps<TTrue>;
+  trueProps?: ComponentProps<TTrue>;
   whenFalse: TFalse;
-  falseProps?: React.ComponentProps<TFalse>;
-  common?: React.ComponentProps<TTrue> & React.ComponentProps<TFalse>;
-  children?: React.ReactNode;
+  falseProps?: ComponentProps<TFalse>;
+  common?: ComponentProps<TTrue> & ComponentProps<TFalse>;
+  children?: ReactNode;
 }) {
   return condition
-    ? React.createElement(whenTrue, { ...trueProps, ...common }, children)
-    : React.createElement(whenFalse, { ...falseProps, ...common }, children);
+    ? createElement(whenTrue, { ...trueProps, ...common }, children)
+    : createElement(whenFalse, { ...falseProps, ...common }, children);
 }

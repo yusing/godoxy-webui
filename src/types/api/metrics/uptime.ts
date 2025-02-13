@@ -1,12 +1,12 @@
 import { type HealthStatusType } from "../health";
 
-export type RouteStatus = {
+type RouteStatus = {
   status: HealthStatusType;
   latency: number;
   time: string;
 };
 
-export type RouteUptimeMetrics = {
+type RouteUptimeMetrics = {
   alias: string;
   uptime: number;
   downtime: number;
@@ -20,4 +20,4 @@ type UptimeMetrics = {
   data: RouteUptimeMetrics[];
 };
 
-export default UptimeMetrics;
+export type { RouteStatus, RouteUptimeMetrics, UptimeMetrics };

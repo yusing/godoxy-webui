@@ -1,11 +1,10 @@
 "use client";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tag } from "@/components/ui/tag";
+import { useSetting } from "@/hooks/settings";
 import Endpoints, { toastError } from "@/types/api/endpoints";
-import { healthInfoUnknown } from "@/types/api/health";
 import { overrideHomepage } from "@/types/api/homepage";
 import { type HomepageItem } from "@/types/api/route/homepage_item";
-import { useSetting } from "@/types/settings";
 import { HStack, Icon, Stack, Tabs } from "@chakra-ui/react";
 import React from "react";
 import { AiOutlineLayout } from "react-icons/ai";
@@ -109,8 +108,8 @@ function HiddenApps({ hiddenApps }: Readonly<{ hiddenApps: HomepageItem[] }>) {
             }}
           >
             <HStack>
-              <AppCardInner item={app} health={healthInfoUnknown} />
-              {app.category ? <Tag>{app.category}</Tag> : null}
+              <AppCardInner item={app} />
+              {app.category && <Tag>{app.category}</Tag>}
             </HStack>
           </Checkbox>
         ))}

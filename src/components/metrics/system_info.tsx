@@ -1,8 +1,8 @@
+import useWebsocket from "@/hooks/ws";
 import { formatPercent } from "@/lib/format";
 import { Agent } from "@/types/api/agent";
 import Endpoints from "@/types/api/endpoints";
 import type { SystemInfo } from "@/types/api/metrics/system_info";
-import useWebsocket from "@/types/api/ws";
 import {
   Center,
   HStack,
@@ -99,7 +99,7 @@ export default function SystemInfo() {
 
 function SystemInfoRow({ agent }: { agent?: Agent }) {
   const { data: systemInfo } = useWebsocket<SystemInfo>(
-    Endpoints.METRICS_SYSTEM_INFO_WS({ agent_addr: agent?.addr }),
+    Endpoints.metricsSystemInfo({ agent_addr: agent?.addr }),
     { json: true },
   );
   if (!systemInfo) {

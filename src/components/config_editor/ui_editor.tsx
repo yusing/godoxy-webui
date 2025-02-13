@@ -1,7 +1,7 @@
 "use client";
 
+import { useSetting } from "@/hooks/settings";
 import { ConfigFileContextType } from "@/types/file";
-import { useSetting } from "@/types/settings";
 import { Alert, ClientOnly, Stack } from "@chakra-ui/react";
 import React from "react";
 import * as YAML from "yaml";

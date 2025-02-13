@@ -6,8 +6,8 @@ import CodeMirror from "@uiw/react-codemirror";
 import { useTheme } from "next-themes";
 import { coolGlow, noctisLilac } from "thememirror";
 
+import { ConfigFileContextType } from "@/hooks/config_file";
 import "@/styles/yaml_editor.css";
-import { ConfigFileContextType } from "@/types/file";
 
 const YAMLConfigEditor: React.FC<
   {

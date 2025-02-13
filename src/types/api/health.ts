@@ -1,5 +1,4 @@
 import { type ColorPalette } from "@chakra-ui/react";
-import { createContext, useContext } from "react";
 
 export const healthStatuses = [
   "healthy",
@@ -43,16 +42,3 @@ export function formatHealthInfo(info: HealthInfo) {
     (info.status === "healthy" ? `, latency: ${info.latency}` : "")
   );
 }
-
-export type HealthMapContext = {
-  health: HealthMap;
-};
-
-export const HealthMapContext = createContext<HealthMapContext>({
-  health: {},
-});
-
-export const useHealthInfo = (alias: string) => {
-  const { health } = useContext(HealthMapContext);
-  return health[alias] ?? healthInfoUnknown;
-};

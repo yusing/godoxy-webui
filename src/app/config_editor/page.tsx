@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import ConfigFileActions from "@/components/config_editor/actions";
 import UIEditor from "@/components/config_editor/ui_editor";
@@ -8,13 +8,13 @@ import YAMLConfigEditor from "@/components/config_editor/yaml_editor";
 import { ErrorPopup, useFetchError } from "@/components/error_popup";
 import { type GoDoxyError, GoDoxyErrorText } from "@/components/godoxy_error";
 import { ListboxSection } from "@/components/listbox/listbox_section";
+import { useConfigFileContext } from "@/hooks/config_file";
 import type { ConfigFileType } from "@/types/api/endpoints";
 import Endpoints from "@/types/api/endpoints";
 import {
   type ConfigFile,
   getConfigFiles,
   placeholderFiles,
-  useConfigFileContext,
 } from "@/types/file";
 import { Box, Center, For, Spinner, Stack } from "@chakra-ui/react";
 import { FaFile } from "react-icons/fa6";
@@ -22,7 +22,7 @@ import { useAsync } from "react-use";
 
 export default function ConfigEditorPage() {
   const cfgFile = useConfigFileContext();
-  const [files, setFiles] = React.useState(placeholderFiles);
+  const [files, setFiles] = useState(placeholderFiles);
   const { error, setError } = useFetchError();
 
   const createFile = useCallback((type: ConfigFileType, filename: string) => {

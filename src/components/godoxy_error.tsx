@@ -11,21 +11,6 @@ import {
 import React from "react";
 import { MdKeyboardArrowDown, MdKeyboardArrowRight } from "react-icons/md";
 
-// export const GoDoxyErrorText: React.FC<
-//   {
-//     err: string;
-//   } & Omit<React.ComponentProps<typeof Prose>, "dangerouslySetInnerHTML">
-// > = ({ err, ...props }) => {
-//   if (!err) return null;
-//   return (
-//     <Prose
-//       textWrap={"pretty"}
-//       {...props}
-//       dangerouslySetInnerHTML={{ __html: err }}
-//     />
-//   );
-// };
-
 export type GoDoxyError =
   | string
   | Record<string, string>

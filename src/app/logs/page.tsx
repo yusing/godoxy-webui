@@ -3,13 +3,13 @@
 import { Prose } from "@/components/ui/prose";
 import { StepperInput } from "@/components/ui/stepper-input";
 import { Switch } from "@/components/ui/switch";
+import { useSetting } from "@/hooks/settings";
+import useWebsocket, { ReadyState } from "@/hooks/ws";
 import "@/styles/logs.css";
 import Endpoints from "@/types/api/endpoints";
-import useWebsocket, { ReadyState } from "@/types/api/ws";
-import { useSetting } from "@/types/settings";
 import { ClientOnly, Group, HStack, Stack, Text } from "@chakra-ui/react";
 import Convert from "ansi-to-html";
-import React from "react";
+import { useEffect, useRef, useState } from "react";
 
 const convertANSI = new Convert();
 
@@ -22,19 +22,19 @@ export default function Page() {
 }
 
 function Logs() {
-  const [logs, setLogs] = React.useState<string[]>([]);
+  const [logs, setLogs] = useState<string[]>([]);
   const autoScroll = useSetting("logs_auto_scroll", true);
   const maxLines = useSetting("logs_max_lines", 100);
-  const logRef = React.useRef<HTMLDivElement>(null);
+  const logRef = useRef<HTMLDivElement>(null);
   const { data, readyState } = useWebsocket<string>(Endpoints.LOGS);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (data) {
       setLogs((prev) => prev.concat(data.split("\n")).slice(-maxLines.val));
     }
   }, [data]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (autoScroll.val) {
       logRef.current?.scrollTo(0, logRef.current.scrollHeight);
     }

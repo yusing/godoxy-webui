@@ -1,9 +1,9 @@
-import { ConfigFileType as FileType } from "@/types/api/endpoints";
+import { type ConfigFileType } from "@/types/api/endpoints";
 import path from "path";
 import { MdAdd, MdSave } from "react-icons/md";
 import { ListboxItem } from "../listbox/listbox_item";
 
-import { useConfigFileContext } from "@/types/file";
+import { useConfigFileContext } from "@/hooks/config_file";
 import { Group, Input, InputAddon, Stack } from "@chakra-ui/react";
 import React, { useCallback, useState } from "react";
 import { GrCloudSoftware, GrDocumentConfig } from "react-icons/gr";
@@ -21,8 +21,8 @@ export default function ConfigFileActions({
   checkExists,
   createFile,
 }: Readonly<{
-  checkExists: (fileType: FileType, filename: string) => boolean;
-  createFile: (fileType: FileType, filename: string) => void;
+  checkExists: (fileType: ConfigFileType, filename: string) => boolean;
+  createFile: (fileType: ConfigFileType, filename: string) => void;
 }>) {
   const { updateRemote } = useConfigFileContext();
 
@@ -45,18 +45,18 @@ export default function ConfigFileActions({
 
 export type FormProps = {
   fileExtension: string;
-  checkExists: (fileType: FileType, filename: string) => boolean;
-  onSubmit: (fileType: FileType, filename: string) => void;
+  checkExists: (fileType: ConfigFileType, filename: string) => boolean;
+  onSubmit: (fileType: ConfigFileType, filename: string) => void;
 };
 
 export const NewFileButton: React.FC<FormProps> = ({ ...props }) => {
   const [error, setError] = useState<string | null>(null);
   const [filename, setFilename] = useState("");
-  const [fileType, setFileType] = useState<FileType>("provider");
+  const [fileType, setFileType] = useState<ConfigFileType>("provider");
   const [isOpen, setIsOpen] = useState(false);
 
   const validate = useCallback(
-    (t: FileType, v: string) => {
+    (t: ConfigFileType, v: string) => {
       setFilename(v);
       if (v.length === 0) {
         setError("File name cannot be empty");
@@ -92,8 +92,8 @@ export const NewFileButton: React.FC<FormProps> = ({ ...props }) => {
             value={fileType}
             orientation="horizontal"
             onValueChange={(t) => {
-              setFileType(t.value as FileType);
-              validate(t.value as FileType, filename);
+              setFileType(t.value as ConfigFileType);
+              validate(t.value as ConfigFileType, filename);
             }}
           >
             <RadioCardLabel>Select file type</RadioCardLabel>

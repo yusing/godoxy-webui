@@ -1,4 +1,3 @@
-import React from "react";
 import Endpoints, { type ConfigFileType, fetchEndpoint } from "./api/endpoints";
 
 export type ConfigFile = {
@@ -30,25 +29,3 @@ export async function getConfigFiles() {
       }, {} as ConfigFiles);
     });
 }
-
-export interface ConfigFileContextType {
-  current: ConfigFile;
-  setCurrent: React.Dispatch<React.SetStateAction<ConfigFile>>;
-  content: string | undefined;
-  setContent: React.Dispatch<React.SetStateAction<string | undefined>>;
-  updateRemote: () => void;
-}
-
-export const ConfigFileContext = React.createContext<
-  ConfigFileContextType | undefined
->(undefined);
-
-export const useConfigFileContext = () => {
-  const context = React.useContext(ConfigFileContext);
-  if (!context) {
-    throw new Error(
-      "useConfigFileContext must be used within a ConfigFileProvider",
-    );
-  }
-  return context;
-};

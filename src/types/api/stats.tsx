@@ -1,6 +1,6 @@
 "use client";
 
-import { ProviderType } from "@/types/api/provider";
+import { ProviderType } from "@/types/api/route_provider";
 
 export type RouteStats = {
   total: number;

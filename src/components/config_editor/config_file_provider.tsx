@@ -1,5 +1,6 @@
+import { ConfigFileContext } from "@/hooks/config_file";
 import Endpoints, { fetchEndpoint, toastError } from "@/types/api/endpoints";
-import { ConfigFile, ConfigFileContext, godoxyConfig } from "@/types/file";
+import { ConfigFile, godoxyConfig } from "@/types/file";
 import React from "react";
 import { toaster, Toaster } from "../ui/toaster";
 

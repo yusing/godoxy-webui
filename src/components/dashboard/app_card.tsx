@@ -14,11 +14,7 @@ import {
   MenuItem,
   MenuRoot,
 } from "@/components/ui/menu";
-import {
-  formatHealthInfo,
-  healthInfoUnknown,
-  useHealthInfo,
-} from "@/types/api/health";
+import { formatHealthInfo, healthInfoUnknown } from "@/types/api/health";
 import { overrideHomepage } from "@/types/api/homepage";
 import { type HomepageItem } from "@/types/api/route/homepage_item";
 import {
@@ -40,6 +36,7 @@ import { Field } from "../ui/field";
 import { SkeletonCircle, SkeletonText } from "../ui/skeleton";
 import { FavIcon } from "./favicon";
 
+import { useHealthInfo } from "@/hooks/health_map";
 import { toastError } from "@/types/api/endpoints";
 import {
   FieldErrors,
@@ -81,6 +78,9 @@ const AppCardToolTip = ({ item }: { item: HomepageItem }) => {
 const AppCardHealthBubble = ({ item }: { item: HomepageItem }) => {
   const { healthBubbleAlignEnd } = useAllSettings();
   const health = useHealthInfo(item.alias) ?? healthInfoUnknown;
+  if (health.status === "unknown") {
+    return null;
+  }
   return (
     <>
       {healthBubbleAlignEnd.val ? <Spacer /> : null}

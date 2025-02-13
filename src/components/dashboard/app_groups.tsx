@@ -2,8 +2,6 @@
 
 import {
   DummyHomepageItem,
-  getHiddenHomepageItems,
-  getHomepageItems,
   HomepageItem,
   HomepageItems,
 } from "@/types/api/route/homepage_item";
@@ -15,8 +13,12 @@ import {
   SimpleGrid,
   Stack,
 } from "@chakra-ui/react";
-import React from "react";
+import { useCallback, useState } from "react";
 
+import {
+  getHiddenHomepageItems,
+  getHomepageItems,
+} from "@/lib/api/homepage_items";
 import { toastError } from "@/types/api/endpoints";
 import { overrideHomepage } from "@/types/api/homepage";
 import { useAsync } from "react-use";
@@ -49,7 +51,7 @@ function Category({
     categoryPaddingY,
   } = useAllSettings();
 
-  const [categoryName, setCategoryName] = React.useState(category);
+  const [categoryName, setCategoryName] = useState(category);
 
   if (items.filter((item) => item.show).length === 0) return null;
 
@@ -148,7 +150,7 @@ export default function AppGroups({
     [categoryFilter.val, providerFilter.val],
   );
 
-  const lessThanTwo = React.useCallback(
+  const lessThanTwo = useCallback(
     () =>
       Object.entries(homepageItems.value ?? {}).filter(
         ([_, items]) => items.length <= 2,
@@ -156,7 +158,7 @@ export default function AppGroups({
     [homepageItems.value],
   );
 
-  const others = React.useCallback(
+  const others = useCallback(
     () =>
       Object.entries(homepageItems.value ?? dummyItems()).filter(
         ([_, items]) => items.length > 2,

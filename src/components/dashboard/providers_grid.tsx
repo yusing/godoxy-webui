@@ -1,9 +1,9 @@
 "use client";
 
 import { Tooltip } from "@/components/ui/tooltip";
-import { ProviderType } from "@/types/api/provider";
+import { useSetting } from "@/hooks/settings";
+import { ProviderType } from "@/types/api/route_provider";
 import { ProviderStats, Stats } from "@/types/api/stats";
-import { useSetting } from "@/types/settings";
 import { Box, For, HStack, Text, VStack } from "@chakra-ui/react";
 import { useTheme } from "next-themes";
 import { FaDocker, FaEllipsis, FaFile } from "react-icons/fa6";

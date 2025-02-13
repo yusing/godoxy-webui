@@ -1,12 +1,12 @@
 "use client";
 
 import Endpoints, { fetchEndpoint } from "@/types/api/endpoints";
-import React from "react";
+import { useEffect, useState } from "react";
 
 export function useCheckAuth() {
-  const [authed, setAuthed] = React.useState(false);
+  const [authed, setAuthed] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (authed) {
       return;
     }

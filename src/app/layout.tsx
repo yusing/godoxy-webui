@@ -11,9 +11,10 @@ import {
   bodyWidth,
   footerHeight,
   navBarHeight,
-} from "@/types/styles";
+} from "@/styles";
 import { GeistSans } from "geist/font/sans";
 import dynamic from "next/dynamic";
+import { type ReactNode } from "react";
 
 export const metadata = siteConfig.metadata;
 
@@ -21,9 +22,7 @@ const VersionText = dynamic(() => import("@/components/version_text"), {
   loading: () => <Skeleton w="30px"></Skeleton>,
 });
 
-export default function RootLayout(
-  props: Readonly<{ children: React.ReactNode }>,
-) {
+export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
   const { children } = props;
   return (
     <html

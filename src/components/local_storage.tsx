@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
-import { SettingsItem } from "@/types/settings";
+import { SettingsItem } from "@/hooks/settings";
 import {
   Box,
   createListCollection,

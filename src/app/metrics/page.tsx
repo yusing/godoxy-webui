@@ -3,16 +3,19 @@ import SystemInfo from "@/components/metrics/system_info";
 import { Uptime } from "@/components/metrics/uptime";
 import { InputGroup } from "@/components/ui/input-group";
 import { SegmentedControl } from "@/components/ui/segmented-control";
-import { MetricsPeriod, MetricsPeriods } from "@/types/api/endpoints";
+import {
+  type MetricsPeriod,
+  MetricsPeriods,
+} from "@/types/api/metrics/metrics";
 import { HStack, Input, Spacer, Stack, Tabs } from "@chakra-ui/react";
-import React from "react";
+import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { LuCpu, LuHeartPulse } from "react-icons/lu";
 
 export default function MetricsPage() {
-  const [filter, setFilter] = React.useState("");
-  const [period, setPeriod] = React.useState<MetricsPeriod>("1h");
-  const [tab, setTab] = React.useState("uptime");
+  const [filter, setFilter] = useState("");
+  const [period, setPeriod] = useState<MetricsPeriod>("1h");
+  const [tab, setTab] = useState("uptime");
 
   return (
     <Stack mx="16" my="8">

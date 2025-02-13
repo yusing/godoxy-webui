@@ -4,6 +4,7 @@ import {
   PaginationPrevTrigger,
   PaginationRoot,
 } from "@/components/ui/pagination";
+import useWebsocket from "@/hooks/ws";
 import { formatPercent } from "@/lib/format";
 import Endpoints, { type MetricsPeriod } from "@/types/api/endpoints";
 import { healthStatusColors } from "@/types/api/health";
@@ -13,7 +14,6 @@ import type {
   RouteUptimeMetrics,
 } from "@/types/api/metrics/uptime";
 import { HomepageItem } from "@/types/api/route/homepage_item";
-import useWebsocket from "@/types/api/ws";
 import {
   Box,
   CardBody,
@@ -44,7 +44,7 @@ export function Uptime({
 }) {
   const [page, setPage] = React.useState(1);
   const { data: uptime } = useWebsocket<UptimeMetrics>(
-    Endpoints.METRICS_UPTIME_WS(period, {
+    Endpoints.metricsUptime(period, {
       keyword: filter,
       limit: countPerPage,
       offset: (page - 1) * countPerPage,

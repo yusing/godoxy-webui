@@ -1,28 +1,64 @@
 import { toaster } from "@/components/ui/toaster";
 import { StatusCodes } from "http-status-codes";
+import { MetricsPeriod } from "./metrics/metrics";
 
-function buildQuery(query: Record<string, any>) {
+function buildQuery(query: Record<string, string | number | undefined>) {
+  const q = new URLSearchParams();
   for (const key in query) {
     if (query[key] === undefined || query[key] === null) {
-      delete query[key];
+      continue;
+    }
+    if (typeof query[key] === "number") {
+      q.set(key, query[key].toString());
+    } else {
+      q.set(key, query[key]);
     }
   }
-  if (Object.keys(query).length === 0) {
+  if (q.size === 0) {
     return "";
   }
-  return `?${new URLSearchParams(query).toString()}`;
+  return `?${q.toString()}`;
 }
 
 namespace Endpoints {
   export const FileContent = (fileType: ConfigFileType, filename: string) =>
     `/api/file/${fileType}/${encodeURIComponent(filename)}`;
+
   export const FileValidate = (fileType: ConfigFileType) =>
     `/api/file/validate/${fileType}`;
   export const Schema = (filename: string) => `/api/schema/${filename}`;
+
   export const FavIcon = (alias?: string, url?: string) =>
     `/api/favicon${buildQuery({ alias, url })}`;
+
   export const SearchIcons = (keyword: string, limit: number) =>
     `/api/list/icons${buildQuery({ keyword, limit })}`;
+
+  export const metricsSystemInfo = ({
+    period,
+    agent_addr,
+    interval = "1s",
+  }: {
+    period?: MetricsPeriod;
+    agent_addr?: string;
+    interval?: string;
+  } = {}) =>
+    `/api/metrics/system_info${buildQuery({ period, agent_addr, interval })}`;
+  export const metricsUptime = (
+    period: MetricsPeriod,
+    {
+      limit,
+      offset,
+      interval = "1s",
+      keyword,
+    }: {
+      limit?: number;
+      offset?: number;
+      interval?: string;
+      keyword?: string;
+    } = {},
+  ) =>
+    `/api/metrics/uptime${buildQuery({ period, interval, limit, offset, keyword })}`;
 
   export const VERSION = "/api/version";
   export const AUTH = "/api/auth/callback";
@@ -42,36 +78,7 @@ namespace Endpoints {
   export const HEALTH = "/api/health";
   export const LOGS = "/api/logs";
   export const SET_HOMEPAGE = "/api/homepage/set";
-
-  export const METRICS_SYSTEM_INFO_WS = ({
-    period,
-    agent_addr,
-    interval = "1s",
-  }: {
-    period?: MetricsPeriod;
-    agent_addr?: string;
-    interval?: string;
-  } = {}) =>
-    `/api/metrics/system_info${buildQuery({ period, agent_addr, interval })}`;
-  export const METRICS_UPTIME_WS = (
-    period: MetricsPeriod,
-    {
-      limit,
-      offset,
-      interval = "1s",
-      keyword,
-    }: {
-      limit?: number;
-      offset?: number;
-      interval?: string;
-      keyword?: string;
-    } = {},
-  ) =>
-    `/api/metrics/uptime${buildQuery({ period, interval, limit, offset, keyword })}`;
 }
-
-export const MetricsPeriods = ["5m", "15m", "1h", "1d", "1m"];
-export type MetricsPeriod = (typeof MetricsPeriods)[number];
 
 export type ConfigFileType = "config" | "provider" | "middleware";
 

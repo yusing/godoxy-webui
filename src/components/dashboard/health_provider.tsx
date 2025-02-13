@@ -1,6 +1,7 @@
+import { HealthMapContext } from "@/hooks/health_map";
+import useWebsocket from "@/hooks/ws";
 import Endpoints from "@/types/api/endpoints";
-import { type HealthMap, HealthMapContext } from "@/types/api/health";
-import useWebsocket from "@/types/api/ws";
+import { type HealthMap } from "@/types/api/health";
 import React from "react";
 
 export default function HealthProvider({

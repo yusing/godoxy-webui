@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { toastError } from "./endpoints";
+import { toastError } from "../types/api/endpoints";
 
 // WebSocket connection manager
 const wsConnections: Record<string, WebSocket> = {};
