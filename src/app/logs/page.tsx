@@ -7,7 +7,6 @@ import "@/styles/logs.css";
 import Endpoints from "@/types/api/endpoints";
 import useWebsocket, { ReadyState } from "@/types/api/ws";
 import { useSetting } from "@/types/settings";
-import { bodyHeight } from "@/types/styles";
 import { ClientOnly, Group, HStack, Stack, Text } from "@chakra-ui/react";
 import Convert from "ansi-to-html";
 import React from "react";
@@ -42,23 +41,8 @@ function Logs() {
   }, [autoScroll.val, data]);
 
   return (
-    <Stack
-      align={"center"}
-      justify={"center"}
-      h={bodyHeight}
-      w="100%"
-      gap="4"
-      px="4"
-    >
-      <Stack
-        ref={logRef}
-        overflow="auto"
-        maxH={"100%"}
-        maxW={"100%"}
-        gap="0"
-        py="2"
-        px={6}
-      >
+    <Stack align={"center"} justify={"center"} gap="4" px="4">
+      <Stack ref={logRef} overflow="auto" gap="0">
         {readyState === ReadyState.CONNECTING ? (
           <Prose>Loading...</Prose>
         ) : null}

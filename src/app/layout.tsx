@@ -29,7 +29,7 @@ export default function RootLayout(
     <html
       suppressHydrationWarning
       lang="en"
-      className={`${GeistSans.variable}`}
+      className={`${GeistSans.variable} antialiased`}
     >
       {process.env.NODE_ENV === "development" && (
         <head>

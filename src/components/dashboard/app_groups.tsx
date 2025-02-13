@@ -58,7 +58,6 @@ function Category({
       size="sm"
       borderRadius="lg"
       variant={"subtle"}
-      filter={"brightness(115%)"}
       py={categoryPaddingY.val}
       px={categoryPaddingX.val}
     >

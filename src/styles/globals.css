@@ -1,7 +1,16 @@
 @import "tailwindcss";
+/*
+  ---break---
+*/
+@plugin "tailwindcss-animate";
+/*
+  ---break---
+*/
+@custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
+  --font-sans:
+    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
@@ -21,15 +30,44 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
+}
+/*
+  ---break---
+*/
+:root {
+  --radius: 0.6rem;
+}
+/*
+  ---break---
+*/
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
 
-  :root {
-    --bg-color: var(--chakra-colors-bg);
-  }
+:root {
+  --bg-color: var(--chakra-colors-bg);
+}
 
-  [data-theme="dark"] {
-    --bg-color: var(--chakra-colors-bg-muted);
-    body {
-      background-color: var(--bg-color);
-    }
+[data-theme="dark"] {
+  --bg-color: #151515;
+  --row-bg-color: var(--chakra-colors-bg-muted);
+  --selected-color: var(--chakra-colors-bg-emphasized);
+  body {
+    background-color: var(--bg-color);
   }
+}
+
+.chakra-table__row {
+  background-color: var(--row-bg-color);
+}
+
+.chakra-progress__track {
+  background-color: var(--chakra-colors-bg-emphasized);
+}
+
+[aria-selected="true"] {
+  background-color: var(--selected-color);
 }

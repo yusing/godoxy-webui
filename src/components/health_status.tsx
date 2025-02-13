@@ -1,33 +1,43 @@
-import { HealthStatusType } from "@/types/api/health";
-import type { ColorPalette } from "@chakra-ui/react";
-import { Status as ChakraStatus } from "@chakra-ui/react";
-import * as React from "react";
+import { healthStatusColors, HealthStatusType } from "@/types/api/health";
+import { Status as ChakraStatus, HStack, Text } from "@chakra-ui/react";
+import React from "react";
+import { Tag } from "./ui/tag";
 
 export interface HealthStatusProps extends ChakraStatus.RootProps {
   value?: HealthStatusType;
 }
 
-const statusMap: Record<HealthStatusType, ColorPalette> = {
-  healthy: "green",
-  napping: "yellow",
-  unhealthy: "red",
-  starting: "blue",
-  error: "red",
-  unknown: "gray",
-} as const;
-
 const HealthStatus_: React.FC<HealthStatusProps> = ({
   children,
   value = "unknown",
-  ...rest
 }) => {
-  const colorPalette = rest.colorPalette ?? statusMap[value];
   return (
-    <ChakraStatus.Root {...rest} colorPalette={colorPalette}>
+    <ChakraStatus.Root colorPalette={healthStatusColors[value]}>
       <ChakraStatus.Indicator />
       {children}
     </ChakraStatus.Root>
   );
 };
+const HealthStatusTag_: React.FC<HealthStatusProps> = ({
+  value = "unknown",
+}) => {
+  return (
+    <Tag variant={"surface"} colorPalette={healthStatusColors[value]}>
+      <HStack p="2" gap="2">
+        <ChakraStatus.Root colorPalette={healthStatusColors[value]}>
+          <ChakraStatus.Indicator />
+        </ChakraStatus.Root>
+        <Text fontSize="md" fontWeight={"medium"}>
+          {value}
+        </Text>
+      </HStack>
+    </Tag>
+  );
+};
 
-export const HealthStatus = React.memo(HealthStatus_);
+export const HealthStatus = React.memo(HealthStatus_, (prev, next) => {
+  return prev.value === next.value;
+});
+export const HealthStatusTag = React.memo(HealthStatusTag_, (prev, next) => {
+  return prev.value === next.value;
+});

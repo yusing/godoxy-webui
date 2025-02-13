@@ -1,3 +1,4 @@
+import { type ColorPalette } from "@chakra-ui/react";
 import { createContext, useContext } from "react";
 
 export const healthStatuses = [
@@ -9,6 +10,15 @@ export const healthStatuses = [
   "unknown",
 ] as const;
 export type HealthStatusType = (typeof healthStatuses)[number];
+
+export const healthStatusColors: Record<HealthStatusType, ColorPalette> = {
+  healthy: "green",
+  napping: "yellow",
+  unhealthy: "red",
+  starting: "blue",
+  error: "red",
+  unknown: "gray",
+} as const;
 
 export type HealthInfo = {
   status: HealthStatusType;

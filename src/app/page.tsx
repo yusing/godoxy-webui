@@ -2,6 +2,7 @@
 
 import AppGroups from "@/components/dashboard/app_groups";
 import DashboardStats from "@/components/dashboard/dashboard_stats";
+import DefaultLayout from "@/components/default_layout";
 import { Toaster } from "@/components/ui/toaster";
 import { Box, ClientOnly, Stack } from "@chakra-ui/react";
 import { useWindowSize } from "@uidotdev/usehooks";
@@ -12,21 +13,23 @@ export default function HomePage() {
   const isMobile = (windowSize.width ?? Infinity) < 600;
 
   return (
-    <Stack
-      direction={isMobile ? "column" : "row"}
-      align={"flex-start"}
-      justifyContent={"center"}
-      wrap={isMobile ? "wrap" : "nowrap"}
-      px="8"
-    >
-      <Toaster />
+    <DefaultLayout>
+      <Stack
+        direction={isMobile ? "column" : "row"}
+        align={"flex-start"}
+        justifyContent={"center"}
+        wrap={isMobile ? "wrap" : "nowrap"}
+        px="8"
+      >
+        <Toaster />
 
-      <Box position={isMobile ? "" : "sticky"} top={isMobile ? "" : "0"}>
-        <DashboardStats isMobile={isMobile} />
-      </Box>
-      <ClientOnly>
-        <AppGroups isMobile={isMobile} />
-      </ClientOnly>
-    </Stack>
+        <Box position={isMobile ? "" : "sticky"} top={isMobile ? "" : "0"}>
+          <DashboardStats isMobile={isMobile} />
+        </Box>
+        <ClientOnly>
+          <AppGroups isMobile={isMobile} />
+        </ClientOnly>
+      </Stack>
+    </DefaultLayout>
   );
 }

@@ -47,6 +47,7 @@ import {
   useForm,
   UseFormRegister,
 } from "react-hook-form";
+import { LuEyeOff, LuPencil } from "react-icons/lu";
 import { IconSearcher } from "../config_editor/icon_searcher";
 import HealthProvider from "./health_provider";
 import { useAllSettings } from "./settings";
@@ -159,6 +160,7 @@ export const AppCard: React.FC<AppCardProps> = ({ ...rest }) => {
       </MenuContextTrigger>
       <MenuContent>
         <MenuItem value="edit" aria-label="Edit app">
+          <LuPencil />
           <EditItemButton
             item={curItem}
             onUpdate={(e) => {
@@ -181,6 +183,7 @@ export const AppCard: React.FC<AppCardProps> = ({ ...rest }) => {
               .catch(toastError);
           }}
         >
+          <LuEyeOff />
           Hide App
         </MenuItem>
       </MenuContent>

@@ -1,6 +1,18 @@
 import { toaster } from "@/components/ui/toaster";
 import { StatusCodes } from "http-status-codes";
 
+function buildQuery(query: Record<string, any>) {
+  for (const key in query) {
+    if (query[key] === undefined || query[key] === null) {
+      delete query[key];
+    }
+  }
+  if (Object.keys(query).length === 0) {
+    return "";
+  }
+  return `?${new URLSearchParams(query).toString()}`;
+}
+
 namespace Endpoints {
   export const FileContent = (fileType: ConfigFileType, filename: string) =>
     `/api/file/${fileType}/${encodeURIComponent(filename)}`;
@@ -8,11 +20,9 @@ namespace Endpoints {
     `/api/file/validate/${fileType}`;
   export const Schema = (filename: string) => `/api/schema/${filename}`;
   export const FavIcon = (alias?: string, url?: string) =>
-    `/api/favicon?alias=${encodeURIComponent(alias ?? "")}&url=${encodeURIComponent(
-      url ?? "",
-    )}`;
+    `/api/favicon${buildQuery({ alias, url })}`;
   export const SearchIcons = (keyword: string, limit: number) =>
-    `/api/list/icons?keyword=${encodeURIComponent(keyword)}&limit=${limit}`;
+    `/api/list/icons${buildQuery({ keyword, limit })}`;
 
   export const VERSION = "/api/version";
   export const AUTH = "/api/auth/callback";
@@ -23,15 +33,45 @@ namespace Endpoints {
   export const LIST_PROXIES = "/api/list/routes";
   export const LIST_HOMEPAGE_CATEGORIES = "/api/list/homepage_categories";
   export const LIST_ROUTE_PROVIDERS = "/api/list/route_providers";
+  export const LIST_AGENTS = "/api/agents";
   export const SEARCH_ICONS = "/api/list/icons";
-  export const MATCH_DOMAINS = "/api/list/match_domains";
+  export const MATCH_DOMAIsNS = "/api/list/match_domains";
   export const HOMEPAGE_CFG = "/api/list/homepage_config";
 
-  export const STATS = "/api/stats/ws";
-  export const HEALTH = "/api/health/ws";
-  export const LOGS = "/api/logs/ws";
+  export const STATS = "/api/stats";
+  export const HEALTH = "/api/health";
+  export const LOGS = "/api/logs";
   export const SET_HOMEPAGE = "/api/homepage/set";
+
+  export const METRICS_SYSTEM_INFO_WS = ({
+    period,
+    agent_addr,
+    interval = "1s",
+  }: {
+    period?: MetricsPeriod;
+    agent_addr?: string;
+    interval?: string;
+  } = {}) =>
+    `/api/metrics/system_info${buildQuery({ period, agent_addr, interval })}`;
+  export const METRICS_UPTIME_WS = (
+    period: MetricsPeriod,
+    {
+      limit,
+      offset,
+      interval = "1s",
+      keyword,
+    }: {
+      limit?: number;
+      offset?: number;
+      interval?: string;
+      keyword?: string;
+    } = {},
+  ) =>
+    `/api/metrics/uptime${buildQuery({ period, interval, limit, offset, keyword })}`;
 }
+
+export const MetricsPeriods = ["5m", "15m", "1h", "1d", "1m"];
+export type MetricsPeriod = (typeof MetricsPeriods)[number];
 
 export type ConfigFileType = "config" | "provider" | "middleware";
 

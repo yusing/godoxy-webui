@@ -99,7 +99,7 @@ function RenderTable({
       <Table.Body>
         <For each={list.items}>
           {(item) => (
-            <Table.Row key={`${key_prefix}_${item.alias}`} bg={"transparent"}>
+            <Table.Row key={`${key_prefix}_${item.alias}`}>
               <For each={columns}>
                 {(col) => (
                   <Table.Cell key={`${key_prefix}_${item.alias}_${col.key}`}>
