@@ -11,8 +11,7 @@ WORKDIR /app
 # Install dependencies based on the preferred package manager
 COPY package.json pnpm-lock.yaml ./
 # check issue on https://github.com/pnpm/pnpm/issues/9014
-RUN npm install --global corepack@latest && \
-    corepack install -g pnpm@10.2.0+sha1.$(npm view pnpm@10.2.0 dist.shasum) && \
+RUN corepack enable pnpm && \
     pnpm i --frozen-lockfile --ignore-scripts
 
 # Rebuild the source code only when needed

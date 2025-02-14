@@ -51,23 +51,51 @@
   --bg-color: var(--chakra-colors-bg);
 }
 
-[data-theme="dark"] {
-  --bg-color: #151515;
-  --row-bg-color: var(--chakra-colors-bg-muted);
-  --selected-color: var(--chakra-colors-bg-emphasized);
-  body {
-    background-color: var(--bg-color);
+[data-theme="light"] {
+  --input-bg: var(--chakra-colors-bg-subtle);
+  --color-success: #00e000;
+  .chakra-card__root {
+    background-color: transparent;
   }
 }
 
-.chakra-table__row {
-  background-color: var(--row-bg-color);
+[data-theme="dark"] {
+  --bg-color: #161718;
+  --input-bg: #161718;
+  --on-bg-color: #191a1c;
+  --on-bg-emphasized: #1c1e20;
+  --color-success: #00e000;
+  --color-error: #ea0000;
+  body {
+    background-color: var(--bg-color);
+  }
+  .chakra-card__root {
+    background-color: var(--on-bg-color);
+  }
+  .chakra-table__row {
+    background-color: var(--on-bg-emphasized);
+  }
+  .chakra-dialog__body,
+  .chakra-dialog__header,
+  .chakra-dialog__footer {
+    background-color: var(--on-bg-color);
+  }
+  .chakra-checkbox__control[data-state="unchecked"] {
+    background-color: var(--input-bg);
+  }
+  .chakra-progress__track {
+    background-color: #26282b;
+  }
+  [aria-selected="true"] {
+    background-color: var(--on-bg-color);
+  }
 }
 
-.chakra-progress__track {
-  background-color: var(--chakra-colors-bg-emphasized);
+.chakra-input {
+  background-color: var(--input-bg);
+  border-radius: var(--radius-lg);
 }
 
-[aria-selected="true"] {
-  background-color: var(--selected-color);
+.chakra-card__root {
+  border-radius: var(--radius-lg);
 }

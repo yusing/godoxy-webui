@@ -28,20 +28,30 @@ export const SegmentedControl = React.forwardRef<
   const data = React.useMemo(() => normalize(items), [items]);
 
   return (
-    <SegmentGroup.Root ref={ref} {...rest}>
-      <SegmentGroup.Indicator />
+    <SegmentGroup.Root
+      ref={ref}
+      {...rest}
+      bg={rest.bg ? rest.bg : "bg.emphasized"}
+      borderRadius={"xl"}
+    >
       <For each={data}>
         {(item) => (
           <SegmentGroup.Item
             key={item.value}
             value={item.value}
             disabled={item.disabled}
+            w={rest.w === "full" ? "full" : undefined}
+            justifyContent={"center"}
+            borderRadius={"xl"}
           >
-            <SegmentGroup.ItemText>{item.label}</SegmentGroup.ItemText>
+            <SegmentGroup.ItemText fontWeight={"medium"} borderRadius={"xl"}>
+              {item.label}
+            </SegmentGroup.ItemText>
             <SegmentGroup.ItemHiddenInput />
           </SegmentGroup.Item>
         )}
       </For>
+      <SegmentGroup.Indicator bg={"bg.subtle"} borderRadius={"xl"} />
     </SegmentGroup.Root>
   );
 });

@@ -1,17 +1,27 @@
 "use client";
+import { AddAgentDialogButton } from "@/components/metrics/add_agent_button";
+import { MetricsSettings } from "@/components/metrics/settings";
 import SystemInfo from "@/components/metrics/system_info";
 import { Uptime } from "@/components/metrics/uptime";
+
 import { InputGroup } from "@/components/ui/input-group";
 import { SegmentedControl } from "@/components/ui/segmented-control";
+import { Toaster } from "@/components/ui/toaster";
 import {
   type MetricsPeriod,
   MetricsPeriods,
 } from "@/types/api/metrics/metrics";
-import { HStack, Input, Spacer, Stack, Tabs } from "@chakra-ui/react";
+import {
+  ClientOnly,
+  HStack,
+  Input,
+  Spacer,
+  Stack,
+  Tabs,
+} from "@chakra-ui/react";
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { LuCpu, LuHeartPulse } from "react-icons/lu";
-
 export default function MetricsPage() {
   const [filter, setFilter] = useState("");
   const [period, setPeriod] = useState<MetricsPeriod>("1h");
@@ -26,7 +36,7 @@ export default function MetricsPage() {
         lazyMount
         unmountOnExit
       >
-        <HStack justify={"space-between"}>
+        <HStack justify={"space-between"} wrap={"wrap"}>
           <Tabs.List>
             <Tabs.Trigger value="uptime">
               <LuHeartPulse />
@@ -47,6 +57,11 @@ export default function MetricsPage() {
               />
             </InputGroup>
           )}
+          <Toaster />
+          <AddAgentDialogButton />
+          <ClientOnly>
+            <MetricsSettings />
+          </ClientOnly>
           <Spacer />
           <SegmentedControl
             value={period}
@@ -56,10 +71,14 @@ export default function MetricsPage() {
           />
         </HStack>
         <Tabs.Content value="uptime">
-          <Uptime period={period} filter={filter} />
+          <ClientOnly>
+            <Uptime period={period} filter={filter} />
+          </ClientOnly>
         </Tabs.Content>
         <Tabs.Content value="system_info">
-          <SystemInfo />
+          <ClientOnly>
+            <SystemInfo />
+          </ClientOnly>
         </Tabs.Content>
       </Tabs.Root>
     </Stack>

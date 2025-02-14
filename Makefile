@@ -6,6 +6,12 @@ BUILD_DATE ?= $(shell date -u +'%Y%m%d-%H%M')
 dev:
 	docker compose up --build
 
+commit-push:
+	pnpm format:write
+	git add .
+	git commit
+	git push
+
 push-docker-io:
 	pnpm format:write
 	BUILDER=build docker buildx build \

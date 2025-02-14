@@ -6,7 +6,7 @@ import { ProviderType } from "@/types/api/route_provider";
 import { ProviderStats, Stats } from "@/types/api/stats";
 import { Box, For, HStack, Text, VStack } from "@chakra-ui/react";
 import { useTheme } from "next-themes";
-import { FaDocker, FaEllipsis, FaFile } from "react-icons/fa6";
+import { FaDocker, FaEllipsis, FaFile, FaServer } from "react-icons/fa6";
 import { SkeletonCircle, SkeletonText } from "../ui/skeleton";
 
 const iconSize = 16;
@@ -45,7 +45,10 @@ function ProviderIcon({
   if (providerType == ProviderType.docker) {
     return <FaDocker size={iconSize} color={color} />;
   }
-  return <FaFile size={iconSize} color={color} />;
+  if (providerType == ProviderType.file) {
+    return <FaFile size={iconSize} color={color} />;
+  }
+  return <FaServer size={iconSize} color={color} />;
 }
 
 function ProviderItem({

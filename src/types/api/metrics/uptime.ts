@@ -3,7 +3,7 @@ import { type HealthStatusType } from "../health";
 type RouteStatus = {
   status: HealthStatusType;
   latency: number;
-  time: string;
+  timestamp: number;
 };
 
 type RouteUptimeMetrics = {

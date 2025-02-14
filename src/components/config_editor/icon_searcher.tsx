@@ -7,12 +7,13 @@ import {
   Group,
   HStack,
   Input,
+  InputElement,
   Stack,
   StackProps,
   Text,
 } from "@chakra-ui/react";
 import { useTheme } from "next-themes";
-import React from "react";
+import React, { useState } from "react";
 import { MdError } from "react-icons/md";
 import { useAsync } from "react-use";
 import { FavIcon } from "../dashboard/favicon";
@@ -28,7 +29,7 @@ export const IconSearcher: React.FC<
 > = ({ value, onChange, ...rest }) => {
   const icons = useAsync<() => Promise<Icon[]>>(
     () =>
-      fetch(Endpoints.SearchIcons(value, 10))
+      fetch(Endpoints.searchIcons(value, 10))
         .then((r) => r.json() as Promise<Icon[]>)
         .then((r) =>
           r.toSorted(
@@ -41,20 +42,33 @@ export const IconSearcher: React.FC<
 
   const { resolvedTheme } = useTheme();
   const oppositeTheme = resolvedTheme === "light" ? "dark" : "light";
+  const [focused, setFocused] = useState(false);
 
   return (
-    <Stack w="full" {...rest}>
-      <Field label="Icon">
-        <Group attached w="full">
+    <Stack gap={focused ? 1 : 0} w="full" {...rest}>
+      <Field label="Icon" borderBottomRadius={"none"}>
+        <Group w="full">
           <Input
             placeholder="Start typing to fuzzy search an icon, or paste a URL"
             value={value}
             onChange={(e) => onChange(e.target.value)}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            variant={"subtle"}
           />
-          <CloseButton onClick={() => onChange("")} />
+          <InputElement placement="end">
+            <CloseButton variant={"plain"} onClick={() => onChange("")} />
+          </InputElement>
         </Group>
       </Field>
-      <Stack overflow={"scroll"} maxH="250px" minW={"full"}>
+      <Stack
+        overflow={"scroll"}
+        maxH="250px"
+        w={"full"}
+        px="3"
+        roundedBottom={"md"}
+        bg="var(--input-bg)"
+      >
         {icons.error ? (
           <EmptyState
             icon={<MdError />}
@@ -65,9 +79,14 @@ export const IconSearcher: React.FC<
           <EmptyState title={"No result"} />
         ) : (
           icons.value.map((e) => (
-            <Button p="0" key={e} asChild onClick={() => onChange(e)}>
+            <Button
+              bg="inherit"
+              p="0"
+              key={e}
+              asChild
+              onClick={() => onChange(e)}
+            >
               <HStack
-                bg="bg.panel"
                 color="fg.info"
                 gap="2"
                 textAlign={"left"}

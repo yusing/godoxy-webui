@@ -4,15 +4,17 @@ import {
   PaginationPrevTrigger,
   PaginationRoot,
 } from "@/components/ui/pagination";
+
 import useWebsocket from "@/hooks/ws";
-import { formatPercent } from "@/lib/format";
-import Endpoints, { type MetricsPeriod } from "@/types/api/endpoints";
+import { formatPercent, formatTimestamp } from "@/lib/format";
+import Endpoints from "@/types/api/endpoints";
 import { healthStatusColors } from "@/types/api/health";
-import type UptimeMetrics from "@/types/api/metrics/uptime";
+import { MetricsPeriod } from "@/types/api/metrics/metrics";
 import type {
   RouteStatus,
   RouteUptimeMetrics,
 } from "@/types/api/metrics/uptime";
+import { UptimeMetrics } from "@/types/api/metrics/uptime";
 import { HomepageItem } from "@/types/api/route/homepage_item";
 import {
   Box,
@@ -24,17 +26,19 @@ import {
   Group,
   Heading,
   HStack,
+  SimpleGrid,
   Spinner,
   Stack,
   Text,
 } from "@chakra-ui/react";
-import React from "react";
+import { useState } from "react";
+import { useWindowSize } from "react-use";
 import { FavIcon } from "../dashboard/favicon";
 import { HealthStatusTag } from "../health_status";
 import { EmptyState } from "../ui/empty-state";
 import { Tooltip } from "../ui/tooltip";
+import { useColsCount, useColsGap, useRowGap, useRowsCount } from "./settings";
 
-const countPerPage = 6;
 export function Uptime({
   period,
   filter,
@@ -42,7 +46,12 @@ export function Uptime({
   period: MetricsPeriod;
   filter: string;
 }) {
-  const [page, setPage] = React.useState(1);
+  const [page, setPage] = useState(1);
+  const rowsCount = useRowsCount();
+  const colsCount = useColsCount();
+  const rowGap = useRowGap();
+  const colsGap = useColsGap();
+  const countPerPage = rowsCount.val * colsCount.val;
   const { data: uptime } = useWebsocket<UptimeMetrics>(
     Endpoints.metricsUptime(period, {
       keyword: filter,
@@ -51,6 +60,7 @@ export function Uptime({
     }),
     { json: true },
   );
+
   if (!uptime) {
     return (
       <Center>
@@ -59,6 +69,9 @@ export function Uptime({
     );
   }
   if (uptime.total === 0) {
+    if (filter) {
+      return <EmptyState title="No matching metrics found" />;
+    }
     return <EmptyState title="Not enough data gathered for the period" />;
   }
 
@@ -71,7 +84,11 @@ export function Uptime({
       siblingCount={10}
     >
       <Stack gap="4">
-        <HStack gap="6" wrap={"wrap"}>
+        <SimpleGrid
+          columns={colsCount.val}
+          rowGap={rowGap.val}
+          columnGap={colsGap.val}
+        >
           {uptime.data.map((metrics) => (
             <RouteUptime
               key={metrics.alias}
@@ -79,7 +96,7 @@ export function Uptime({
               metrics={metrics}
             />
           ))}
-        </HStack>
+        </SimpleGrid>
         <HStack justify={"center"} w="full">
           <PaginationPrevTrigger />
           <PaginationItems />
@@ -98,13 +115,7 @@ function RouteUptime({
   metrics: RouteUptimeMetrics;
 }) {
   return (
-    <CardRoot
-      variant={"subtle"}
-      bg={"bg.muted"}
-      minW="400px"
-      maxW="480px"
-      h="180px"
-    >
+    <CardRoot minW="300px" maxW="full" h="180px">
       <CardHeader>
         <HStack justifyContent={"space-between"}>
           <Group>
@@ -149,15 +160,15 @@ function RouteUptime({
   );
 }
 
-function fillStatuses(statuses: RouteStatus[]): RouteStatus[] {
-  const count = 35;
+function fillStatuses(statuses: RouteStatus[], count: number): RouteStatus[] {
   if (statuses.length >= count) {
-    return statuses.slice(statuses.length - count);
+    const every = Math.floor(statuses.length / count);
+    statuses = statuses.filter((_, i) => i % every === 0);
   }
   const dummy: RouteStatus[] = [];
   for (let i = statuses.length; i < count; i++) {
     dummy.push({
-      time: "",
+      timestamp: 0,
       status: "unknown",
       latency: 0,
     });
@@ -166,27 +177,33 @@ function fillStatuses(statuses: RouteStatus[]): RouteStatus[] {
 }
 
 function UptimeTracker({ statuses }: { statuses: RouteStatus[] }) {
+  const { width } = useWindowSize();
+  const colsCount = useColsCount();
+
   return (
     <HStack gap="1">
-      {fillStatuses(statuses).map((s, i) => (
-        <UptimeStatus key={i} status={s} />
-      ))}
+      {fillStatuses(statuses, Math.floor(width / colsCount.val / 15)).map(
+        (s, i) => (
+          <UptimeStatus key={i} status={s} />
+        ),
+      )}
     </HStack>
   );
 }
 
 function UptimeStatus({ status }: { status: RouteStatus }) {
-  if (!status.time) {
+  if (!status.timestamp) {
     return <Box borderRadius={"xs"} w="full" h="6" bg={"gray.500"} />;
   }
   return (
-    <Tooltip content={`${status.time} - ${status.latency.toFixed(0)}ms`}>
+    <Tooltip
+      content={`${formatTimestamp(status.timestamp)} - ${status.latency.toFixed(0)}ms`}
+    >
       <Box
         borderRadius={"xs"}
         w="full"
         h="6"
         bg={healthStatusColors[status.status]}
-        filter={"brightness(1.2)"}
       />
     </Tooltip>
   );

@@ -38,7 +38,7 @@ export default function ConfigEditorPage() {
   }, []);
 
   const validationErr = useAsync(async () => {
-    const resp = await fetch(Endpoints.FileValidate(cfgFile.current.type), {
+    const resp = await fetch(Endpoints.fileValidate(cfgFile.current.type), {
       method: "POST",
       body: cfgFile.content,
     });

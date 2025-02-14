@@ -41,8 +41,8 @@ function Logs() {
   }, [autoScroll.val, data]);
 
   return (
-    <Stack align={"center"} justify={"center"} gap="4" px="4">
-      <Stack ref={logRef} overflow="auto" gap="0">
+    <Stack align={"center"} justify={"center"} gap="4" px="12">
+      <Stack ref={logRef} overflow="auto" gap="0" w="full">
         {readyState === ReadyState.CONNECTING ? (
           <Prose>Loading...</Prose>
         ) : null}

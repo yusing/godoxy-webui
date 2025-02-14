@@ -15,7 +15,7 @@ export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
       setContent("");
       return;
     }
-    fetchEndpoint(Endpoints.FileContent(current.type, current.filename))
+    fetchEndpoint(Endpoints.fileContent(current.type, current.filename))
       .then((r) => r?.text() ?? undefined)
       .then((content) => setContent(content))
       .catch((e: Error) => {
@@ -25,7 +25,7 @@ export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
   }, [current.filename]);
 
   const updateRemote = React.useCallback(() => {
-    fetchEndpoint(Endpoints.FileContent(current.type, current.filename), {
+    fetchEndpoint(Endpoints.fileContent(current.type, current.filename), {
       method: "PUT",
       body: content,
       headers: {

@@ -160,7 +160,6 @@ export const AppCard: React.FC<AppCardProps> = ({ ...rest }) => {
       </MenuContextTrigger>
       <MenuContent>
         <MenuItem value="edit" aria-label="Edit app">
-          <LuPencil />
           <EditItemButton
             item={curItem}
             onUpdate={(e) => {
@@ -270,7 +269,12 @@ function EditItemButton({
       lazyMount
       unmountOnExit
     >
-      <DialogTrigger>Edit App</DialogTrigger>
+      <DialogTrigger>
+        <HStack gap="2">
+          <LuPencil />
+          Edit App
+        </HStack>
+      </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle fontSize={"md"} fontWeight={"medium"}>
@@ -311,7 +315,9 @@ function EditItemButton({
                 onChange={iconField.onChange}
               />
               <DialogFooter>
-                <Button type="submit">Save</Button>
+                <Button type="submit" borderRadius={"lg"}>
+                  Save
+                </Button>
               </DialogFooter>
             </Stack>
           </form>

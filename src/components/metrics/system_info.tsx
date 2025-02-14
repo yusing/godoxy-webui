@@ -1,3 +1,4 @@
+import { useSetting } from "@/hooks/settings";
 import useWebsocket from "@/hooks/ws";
 import { formatPercent } from "@/lib/format";
 import { Agent } from "@/types/api/agent";
@@ -7,7 +8,6 @@ import {
   Center,
   HStack,
   Progress,
-  SimpleGrid,
   Spinner,
   Table,
   Text,
@@ -37,14 +37,14 @@ export default function SystemInfo() {
     );
   }
   return (
-    <Table.ScrollArea>
-      <Table.Root variant={"line"} size="md" stickyHeader interactive>
+    <Table.ScrollArea borderRadius={"lg"}>
+      <Table.Root size="md" stickyHeader interactive>
         <Table.ColumnGroup>
-          <Table.Column htmlWidth="10%" />
+          <Table.Column />
           <Table.Column htmlWidth="22%" />
           <Table.Column htmlWidth="22%" />
           <Table.Column htmlWidth="22%" />
-          <Table.Column htmlWidth="10%" />
+          <Table.Column htmlWidth="15%" />
           <Table.Column />
         </Table.ColumnGroup>
         <Table.Header>
@@ -107,7 +107,7 @@ function SystemInfoRow({ agent }: { agent?: Agent }) {
       <Table.Row>
         <Table.Cell>{agent?.name ?? "Main"}</Table.Cell>
         {Array.from({ length: 4 }).map((_, i) => (
-          <Table.Cell key={i}>
+          <Table.Cell key={`skeleton-${i}`}>
             <Skeleton height="20px" />
           </Table.Cell>
         ))}
@@ -131,11 +131,11 @@ function SystemInfoRow({ agent }: { agent?: Agent }) {
         </HStack>
       </Table.Cell>
       <Table.Cell>
-        <SimpleGrid columns={2} gap="2">
+        <HStack gap="2" wrap={"wrap"}>
           {systemInfo.sensors.map((sensor) => (
             <SensorCell sensor={sensor} />
           ))}
-        </SimpleGrid>
+        </HStack>
       </Table.Cell>
     </Table.Row>
   );
@@ -148,6 +148,7 @@ export const sensorIcons: Record<string, React.ReactNode> = {
 };
 
 function SensorCell({ sensor }: { sensor: SystemInfo["sensors"][number] }) {
+  const unit = useSetting("metrics_temperature_unit", "celsius");
   const icon = sensorIcons[sensor.sensorKey];
   if (!icon) {
     return null;
@@ -156,6 +157,10 @@ function SensorCell({ sensor }: { sensor: SystemInfo["sensors"][number] }) {
     sensor.sensorHigh > 0 && sensor.temperature > sensor.sensorHigh;
   const isCritical =
     sensor.sensorCritical > 0 && sensor.temperature > sensor.sensorCritical;
+  const temperature =
+    unit.val === "celsius"
+      ? sensor.temperature
+      : Math.round(sensor.temperature * 1.8 + 32 * 10) / 10;
   return (
     <HStack gap="2">
       {icon}
@@ -164,7 +169,7 @@ function SensorCell({ sensor }: { sensor: SystemInfo["sensors"][number] }) {
         fontWeight={"medium"}
         color={isCritical ? "red" : isHigh ? "orange" : "inherit"}
       >
-        {sensor.temperature} °C
+        {temperature} °{unit.val[0]!.toUpperCase()}
       </Text>
     </HStack>
   );

@@ -10,13 +10,23 @@ export const healthStatuses = [
 ] as const;
 export type HealthStatusType = (typeof healthStatuses)[number];
 
-export const healthStatusColors: Record<HealthStatusType, ColorPalette> = {
-  healthy: "green",
-  napping: "yellow",
-  unhealthy: "red",
-  starting: "blue",
-  error: "red",
-  unknown: "gray",
+export const healthStatusColorPalettes: Record<HealthStatusType, ColorPalette> =
+  {
+    healthy: "green",
+    napping: "yellow",
+    unhealthy: "red",
+    starting: "blue",
+    error: "red",
+    unknown: "gray",
+  } as const;
+
+export const healthStatusColors: Record<HealthStatusType, string> = {
+  healthy: "var(--color-success)",
+  napping: "#FFFF00cc",
+  unhealthy: "var(--color-error)",
+  starting: "#0000FF",
+  error: "var(--color-error)",
+  unknown: "#808080",
 } as const;
 
 export type HealthInfo = {

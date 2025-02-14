@@ -2,17 +2,15 @@ import { toaster } from "@/components/ui/toaster";
 import { StatusCodes } from "http-status-codes";
 import { MetricsPeriod } from "./metrics/metrics";
 
-function buildQuery(query: Record<string, string | number | undefined>) {
+export function buildQuery(
+  query: Record<string, string | number | boolean | undefined>,
+) {
   const q = new URLSearchParams();
   for (const key in query) {
     if (query[key] === undefined || query[key] === null) {
       continue;
     }
-    if (typeof query[key] === "number") {
-      q.set(key, query[key].toString());
-    } else {
-      q.set(key, query[key]);
-    }
+    q.set(key, query[key].toString());
   }
   if (q.size === 0) {
     return "";
@@ -21,17 +19,17 @@ function buildQuery(query: Record<string, string | number | undefined>) {
 }
 
 namespace Endpoints {
-  export const FileContent = (fileType: ConfigFileType, filename: string) =>
+  export const fileContent = (fileType: ConfigFileType, filename: string) =>
     `/api/file/${fileType}/${encodeURIComponent(filename)}`;
 
-  export const FileValidate = (fileType: ConfigFileType) =>
+  export const fileValidate = (fileType: ConfigFileType) =>
     `/api/file/validate/${fileType}`;
-  export const Schema = (filename: string) => `/api/schema/${filename}`;
+  export const schema = (filename: string) => `/api/schema/${filename}`;
 
-  export const FavIcon = (alias?: string, url?: string) =>
+  export const favIcon = (alias?: string, url?: string) =>
     `/api/favicon${buildQuery({ alias, url })}`;
 
-  export const SearchIcons = (keyword: string, limit: number) =>
+  export const searchIcons = (keyword: string, limit: number) =>
     `/api/list/icons${buildQuery({ keyword, limit })}`;
 
   export const metricsSystemInfo = ({
@@ -44,6 +42,7 @@ namespace Endpoints {
     interval?: string;
   } = {}) =>
     `/api/metrics/system_info${buildQuery({ period, agent_addr, interval })}`;
+
   export const metricsUptime = (
     period: MetricsPeriod,
     {
@@ -59,6 +58,9 @@ namespace Endpoints {
     } = {},
   ) =>
     `/api/metrics/uptime${buildQuery({ period, interval, limit, offset, keyword })}`;
+
+  export const NEW_AGENT = "/api/agents/new";
+  export const ADD_AGENT = "/api/agents/add";
 
   export const VERSION = "/api/version";
   export const AUTH = "/api/auth/callback";

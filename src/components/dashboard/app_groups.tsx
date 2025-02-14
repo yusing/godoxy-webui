@@ -58,7 +58,6 @@ function Category({
   return (
     <Card.Root
       size="sm"
-      borderRadius="lg"
       variant={"subtle"}
       py={categoryPaddingY.val}
       px={categoryPaddingX.val}
