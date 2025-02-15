@@ -1,5 +1,6 @@
 "use client";
 
+import { LogLine } from "@/components/config_editor/logline";
 import { Prose } from "@/components/ui/prose";
 import { StepperInput } from "@/components/ui/stepper-input";
 import { Switch } from "@/components/ui/switch";
@@ -47,17 +48,7 @@ function Logs() {
           <Prose>Loading...</Prose>
         ) : null}
         {logs.map((l) => (
-          <Prose
-            as="pre"
-            fontSize={"md"}
-            maxW="100%"
-            lineHeight="1.5em"
-            dangerouslySetInnerHTML={{
-              __html: convertANSI.toHtml(
-                l.replaceAll(" ", "&nbsp;").replaceAll("\t", "&emsp;"),
-              ),
-            }}
-          />
+          <LogLine key={l} line={l} />
         ))}
       </Stack>
       <HStack gap="6">

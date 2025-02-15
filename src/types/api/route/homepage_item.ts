@@ -1,5 +1,3 @@
-import { ProviderType } from "../route_provider";
-
 type HomepageItem = {
   show: boolean;
   name: string;
@@ -13,8 +11,6 @@ type HomepageItemMetadata = {
   alias: string;
   provider: string;
   url: string;
-  alt_url: string;
-  source_type: ProviderType;
   skeleton?: boolean;
 };
 
@@ -39,8 +35,6 @@ export const DummyHomepageItem = (): HomepageItem => {
     description: "",
     widget_config: {},
     url: "",
-    alt_url: "",
-    source_type: ProviderType.file,
     skeleton: true,
   };
 };

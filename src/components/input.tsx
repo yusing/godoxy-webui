@@ -141,6 +141,7 @@ export const NamedListInput: React.FC<
             <Button
               size={"xs"}
               bg={"red.500"}
+              color={"whiteAlpha.900"}
               onClick={() => {
                 value.splice(index, 1);
                 onChange(value);

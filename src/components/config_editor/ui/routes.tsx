@@ -85,7 +85,7 @@ export const RoutesEditor: React.FC<{
 }> = ({ data, onChange, ...rest }) => {
   return (
     <Stack gap="4">
-      <DialogRoot lazyMount motionPreset="slide-in-bottom">
+      <DialogRoot lazyMount unmountOnExit motionPreset="slide-in-bottom">
         <DialogTrigger asChild>
           <Button colorPalette={"teal"}>Add Route</Button>
         </DialogTrigger>

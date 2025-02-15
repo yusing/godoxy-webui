@@ -35,7 +35,9 @@ export const GoDoxyErrorText: React.FC<{
         {err.subjects.length > 1 && (
           <Text>{err.subjects.slice(0, -1).join("/")}/</Text>
         )}
-        <Text color="fg.warning">{err.subjects.slice(-1)}: </Text>
+        <Text color="fg.warning" whiteSpace={"preserve"}>
+          {err.subjects.slice(-1)}:{" "}
+        </Text>
         <GoDoxyErrorText err={err.err} />
       </HStack>
     );

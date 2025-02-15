@@ -1,10 +1,5 @@
 "use client";
 
-import { ConfigFileProvider } from "@/components/config_editor/config_file_provider";
-import type { FC, PropsWithChildren } from "react";
+import DefaultLayout from "@/components/default_layout";
 
-const ConfigEditorLayout: FC<PropsWithChildren> = ({ children }) => (
-  <ConfigFileProvider>{children}</ConfigFileProvider>
-);
-
-export default ConfigEditorLayout;
+export default DefaultLayout;

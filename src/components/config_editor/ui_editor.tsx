@@ -1,7 +1,7 @@
 "use client";
 
+import { useConfigFileContext } from "@/hooks/config_file";
 import { useSetting } from "@/hooks/settings";
-import { ConfigFileContextType } from "@/types/file";
 import { Alert, ClientOnly, Stack } from "@chakra-ui/react";
 import React from "react";
 import * as YAML from "yaml";
@@ -40,15 +40,14 @@ const UIEditorAlert: React.FC = () => {
   );
 };
 
-const UIEditor: React.FC<{
-  ctx: ConfigFileContextType;
-}> = ({ ctx }) => {
-  const data = tryParseYAML(ctx.content);
+const UIEditor: React.FC = () => {
+  const { content, setContent, current } = useConfigFileContext();
+  const data = tryParseYAML(content);
   let Editor: React.FC<{ data: any; onChange: (v: any) => void }>;
 
-  if (ctx.current.type == "config") {
+  if (current.type == "config") {
     Editor = ConfigUIEditor;
-  } else if (ctx.current.type == "provider") {
+  } else if (current.type == "provider") {
     Editor = RoutesEditor;
   } else {
     Editor = MiddlewareComposeEditor;
@@ -59,7 +58,7 @@ const UIEditor: React.FC<{
       <ClientOnly>
         <UIEditorAlert />
       </ClientOnly>
-      <Editor data={data} onChange={(v) => ctx.setContent(YAML.stringify(v))} />
+      <Editor data={data} onChange={(v) => setContent(YAML.stringify(v))} />
     </Stack>
   );
 };

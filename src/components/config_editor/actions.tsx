@@ -16,28 +16,26 @@ import {
   PopoverTrigger,
 } from "../ui/popover";
 import { RadioCardItem, RadioCardLabel, RadioCardRoot } from "../ui/radio-card";
+import { updateRemote } from "./config_file_provider";
 
-export default function ConfigFileActions({
-  checkExists,
-  createFile,
-}: Readonly<{
-  checkExists: (fileType: ConfigFileType, filename: string) => boolean;
-  createFile: (fileType: ConfigFileType, filename: string) => void;
-}>) {
-  const { updateRemote } = useConfigFileContext();
+export default function ConfigFileActions() {
+  const { setCurrent, files, current, content } = useConfigFileContext();
 
   return (
     <Stack gap="0">
       <NewFileButton
         fileExtension=".yml"
-        checkExists={checkExists}
-        onSubmit={(t, name) => createFile(t, name + ".yml")}
+        onSubmit={(t, name) => {
+          const newFile = { type: t, filename: name + ".yml", isNewFile: true };
+          setCurrent(newFile);
+          files[t].unshift(newFile);
+        }}
       />
       <ListboxItem
         aria-label="Save File"
         icon={<MdSave />}
         text="Save File"
-        onClick={updateRemote}
+        onClick={() => content && updateRemote(current, content)}
       />
     </Stack>
   );
@@ -45,7 +43,6 @@ export default function ConfigFileActions({
 
 export type FormProps = {
   fileExtension: string;
-  checkExists: (fileType: ConfigFileType, filename: string) => boolean;
   onSubmit: (fileType: ConfigFileType, filename: string) => void;
 };
 
@@ -54,6 +51,14 @@ export const NewFileButton: React.FC<FormProps> = ({ ...props }) => {
   const [filename, setFilename] = useState("");
   const [fileType, setFileType] = useState<ConfigFileType>("provider");
   const [isOpen, setIsOpen] = useState(false);
+  const { files } = useConfigFileContext();
+
+  const checkExists = useCallback(
+    (t: ConfigFileType, v: string) => {
+      return files[t].some((f) => f.filename === v);
+    },
+    [files],
+  );
 
   const validate = useCallback(
     (t: ConfigFileType, v: string) => {
@@ -64,13 +69,13 @@ export const NewFileButton: React.FC<FormProps> = ({ ...props }) => {
         setError("File name cannot contain path separators");
       } else if (v.indexOf(".") !== -1) {
         setError("File name cannot contain '.'");
-      } else if (props.checkExists(t, v + props.fileExtension)) {
+      } else if (checkExists(t, v + props.fileExtension)) {
         setError("File already exists");
       } else {
         setError(null);
       }
     },
-    [props.checkExists],
+    [checkExists],
   );
 
   return (
@@ -80,6 +85,8 @@ export const NewFileButton: React.FC<FormProps> = ({ ...props }) => {
       positioning={{
         placement: "bottom-start",
       }}
+      lazyMount
+      unmountOnExit
     >
       <PopoverTrigger asChild>
         <ListboxItem icon={<MdAdd />} text="New File" aria-label="New File" />

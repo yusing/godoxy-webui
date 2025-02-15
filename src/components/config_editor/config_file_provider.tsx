@@ -1,7 +1,13 @@
 import { ConfigFileContext } from "@/hooks/config_file";
 import Endpoints, { fetchEndpoint, toastError } from "@/types/api/endpoints";
-import { ConfigFile, godoxyConfig } from "@/types/file";
+import {
+  ConfigFile,
+  getConfigFiles,
+  godoxyConfig,
+  placeholderFiles,
+} from "@/types/file";
 import React from "react";
+import { useAsync } from "react-use";
 import { toaster, Toaster } from "../ui/toaster";
 
 export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
@@ -9,12 +15,9 @@ export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [content, setContent] = React.useState<string | undefined>(undefined);
   const [current, setCurrent] = React.useState<ConfigFile>(godoxyConfig);
+  const files = useAsync(getConfigFiles);
 
   React.useEffect(() => {
-    if (current.isNewFile) {
-      setContent("");
-      return;
-    }
     fetchEndpoint(Endpoints.fileContent(current.type, current.filename))
       .then((r) => r?.text() ?? undefined)
       .then((content) => setContent(content))
@@ -24,22 +27,12 @@ export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
       });
   }, [current.filename]);
 
-  const updateRemote = React.useCallback(() => {
-    fetchEndpoint(Endpoints.fileContent(current.type, current.filename), {
-      method: "PUT",
-      body: content,
-      headers: {
-        "Content-Type": "application/yaml",
-      },
-    })
-      .then(() =>
-        toaster.success({
-          title: "File saved",
-          description: current.filename,
-        }),
-      )
-      .catch(toastError);
-  }, [current.filename, content]);
+  React.useEffect(() => {
+    if (current.isNewFile) {
+      setContent("");
+      return;
+    }
+  }, [current.isNewFile]);
 
   return (
     <ConfigFileContext.Provider
@@ -49,9 +42,9 @@ export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
           setCurrent,
           content,
           setContent,
-          updateRemote,
+          files: files.value ?? placeholderFiles,
         }),
-        [current, content, updateRemote],
+        [current, content, files],
       )}
     >
       <Toaster />
@@ -59,3 +52,20 @@ export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
     </ConfigFileContext.Provider>
   );
 };
+
+export function updateRemote(current: ConfigFile, content: string) {
+  fetchEndpoint(Endpoints.fileContent(current.type, current.filename), {
+    method: "PUT",
+    body: content,
+    headers: {
+      "Content-Type": "application/yaml",
+    },
+  })
+    .then(() =>
+      toaster.success({
+        title: "File saved",
+        description: current.filename,
+      }),
+    )
+    .catch(toastError);
+}

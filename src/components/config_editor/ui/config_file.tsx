@@ -37,6 +37,8 @@ export function ConfigUIEditor({
       variant={"plain"}
       value={value}
       onValueChange={({ value }) => setValue(value)}
+      lazyMount
+      unmountOnExit
     >
       <AccordionItem value="autocert">
         <AccordionItemTrigger>

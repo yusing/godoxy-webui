@@ -1,12 +1,13 @@
+import { ConfigFileType } from "@/types/api/endpoints";
 import { ConfigFile } from "@/types/file";
 import { createContext, useContext } from "react";
 
 export interface ConfigFileContextType {
   current: ConfigFile;
-  setCurrent: React.Dispatch<React.SetStateAction<ConfigFile>>;
+  setCurrent: (file: ConfigFile) => void;
   content: string | undefined;
-  setContent: React.Dispatch<React.SetStateAction<string | undefined>>;
-  updateRemote: () => void;
+  setContent: (content: string | undefined) => void;
+  files: Record<ConfigFileType, ConfigFile[]>;
 }
 
 export const ConfigFileContext = createContext<
