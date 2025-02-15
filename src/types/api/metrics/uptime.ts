@@ -8,6 +8,7 @@ type RouteStatus = {
 
 type RouteUptimeMetrics = {
   alias: string;
+  display_name: string;
   uptime: number;
   downtime: number;
   idle: number;

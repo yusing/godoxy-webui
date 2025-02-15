@@ -90,11 +90,7 @@ export function Uptime({
           columnGap={colsGap.val}
         >
           {uptime.data.map((metrics) => (
-            <RouteUptime
-              key={metrics.alias}
-              route={metrics.alias}
-              metrics={metrics}
-            />
+            <RouteUptime key={metrics.alias} metrics={metrics} />
           ))}
         </SimpleGrid>
         <HStack justify={"center"} w="full">
@@ -107,21 +103,18 @@ export function Uptime({
   );
 }
 
-function RouteUptime({
-  route,
-  metrics,
-}: {
-  route: string;
-  metrics: RouteUptimeMetrics;
-}) {
+function RouteUptime({ metrics }: { metrics: RouteUptimeMetrics }) {
   return (
     <CardRoot minW="300px" maxW="full" h="180px">
       <CardHeader>
         <HStack justifyContent={"space-between"}>
           <Group>
-            <FavIcon size="24px" item={{ alias: route } as HomepageItem} />
-            <Heading as="h3" fontWeight={"medium"}>
-              {route}
+            <FavIcon
+              size="24px"
+              item={{ alias: metrics.alias } as HomepageItem}
+            />
+            <Heading as="h3" fontWeight={"medium"} title={metrics.alias}>
+              {metrics.display_name || metrics.alias}
             </Heading>
           </Group>
           <HealthStatusTag
