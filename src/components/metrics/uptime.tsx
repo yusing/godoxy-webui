@@ -18,12 +18,9 @@ import { UptimeMetrics } from "@/types/api/metrics/uptime";
 import { HomepageItem } from "@/types/api/route/homepage_item";
 import {
   Box,
-  CardBody,
-  CardHeader,
-  CardRoot,
+  Card,
   Center,
   Group,
-  Heading,
   HStack,
   SimpleGrid,
   Spinner,
@@ -35,6 +32,7 @@ import { useWindowSize } from "react-use";
 import { FavIcon } from "../dashboard/favicon";
 import { HealthStatusTag } from "../health_status";
 import { EmptyState } from "../ui/empty-state";
+import { Label } from "../ui/label";
 import { Tooltip } from "../ui/tooltip";
 import { useColsCount, useColsGap, useRowGap, useRowsCount } from "./settings";
 
@@ -101,51 +99,43 @@ export const Uptime: FC<{ filter: string; period: MetricsPeriod }> = ({
 
 const RouteUptime: FC<{ metrics: RouteUptimeMetrics }> = ({ metrics }) => {
   return (
-    <CardRoot minW="300px" maxW="full" maxH="180px">
-      <CardHeader>
+    <Card.Root size="sm" minW="300px" maxW="full" maxH="180px">
+      <Card.Header>
         <HStack justifyContent={"space-between"}>
           <Group>
             <FavIcon
               size="24px"
               item={{ alias: metrics.alias } as HomepageItem}
             />
-            <Heading as="h3" fontWeight={"medium"} title={metrics.alias}>
+            <Text as="h4" fontWeight={"medium"} title={metrics.alias}>
               {metrics.display_name || metrics.alias}
-            </Heading>
+            </Text>
           </Group>
           <HealthStatusTag
             value={metrics.statuses[metrics.statuses.length - 1]!.status}
           />
         </HStack>
-      </CardHeader>
-      <CardBody>
+      </Card.Header>
+      <Card.Body>
         <UptimeTracker statuses={metrics.statuses} />
-      </CardBody>
-      <CardBody>
+      </Card.Body>
+      <Card.Footer>
         <HStack gap="2" w="full" justify={"space-between"}>
-          <Text fontWeight={"medium"} fontSize={"sm"}>
-            Avg. Latency: {metrics.avg_latency.toFixed(0)}ms
-          </Text>
+          <Label>Avg. Latency: {metrics.avg_latency.toFixed(0)}ms</Label>
           <HStack gap="2">
             {metrics.uptime > 0 && (
-              <Text fontWeight={"medium"}>
-                {`${formatPercent(metrics.uptime)} UP`}
-              </Text>
+              <Label>{`${formatPercent(metrics.uptime)} UP`}</Label>
             )}
             {metrics.downtime > 0 && (
-              <Text fontWeight={"medium"}>
-                {`${formatPercent(metrics.downtime)} DOWN`}
-              </Text>
+              <Label>{`${formatPercent(metrics.downtime)} DOWN`}</Label>
             )}
             {metrics.idle > 0 && (
-              <Text fontWeight={"medium"}>
-                {`${formatPercent(metrics.idle)} IDLE`}
-              </Text>
+              <Label>{`${formatPercent(metrics.idle)} IDLE`}</Label>
             )}
           </HStack>
         </HStack>
-      </CardBody>
-    </CardRoot>
+      </Card.Footer>
+    </Card.Root>
   );
 };
 

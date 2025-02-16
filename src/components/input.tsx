@@ -8,12 +8,12 @@ import {
   Input,
   ListCollection,
   Stack,
-  Text,
 } from "@chakra-ui/react";
 import React from "react";
 import { FaPlus, FaTrash } from "react-icons/fa6";
 import { Button } from "./ui/button";
 import { Field } from "./ui/field";
+import { Label } from "./ui/label";
 import {
   SelectContent,
   SelectItem,
@@ -239,9 +239,7 @@ export const MapInput: React.FC<
 
   return (
     <Box>
-      <Text fontSize={"sm"} fontWeight={"medium"}>
-        {label}
-      </Text>
+      <Label>{label}</Label>
       <Stack pt="3" gap="3" w="full">
         <For
           each={Object.entries(value).sort((a, b) => {

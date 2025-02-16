@@ -1,6 +1,7 @@
 "use client";
 
 import { LogLine } from "@/components/config_editor/logline";
+import { Label } from "@/components/ui/label";
 import { Prose } from "@/components/ui/prose";
 import { StepperInput } from "@/components/ui/stepper-input";
 import { Switch } from "@/components/ui/switch";
@@ -8,7 +9,7 @@ import { useSetting } from "@/hooks/settings";
 import useWebsocket, { ReadyState } from "@/hooks/ws";
 import "@/styles/logs.css";
 import Endpoints from "@/types/api/endpoints";
-import { ClientOnly, Group, HStack, Stack, Text } from "@chakra-ui/react";
+import { ClientOnly, Group, HStack, Stack } from "@chakra-ui/react";
 import Convert from "ansi-to-html";
 import { useEffect, useRef, useState } from "react";
 
@@ -42,8 +43,8 @@ function Logs() {
   }, [autoScroll.val, data]);
 
   return (
-    <Stack align={"center"} justify={"center"} gap="4" px="12">
-      <Stack ref={logRef} overflow="auto" gap="0" w="full">
+    <Stack align={"center"} justify={"center"} gap="4" px="12" h="full">
+      <Stack ref={logRef} overflow="auto" gap="0" w="full" h="full">
         {readyState === ReadyState.CONNECTING ? (
           <Prose>Loading...</Prose>
         ) : null}
@@ -60,9 +61,7 @@ function Logs() {
           Auto Scroll
         </Switch>
         <Group attached>
-          <Text fontSize={"sm"} fontWeight={"medium"}>
-            Max Lines
-          </Text>
+          <Label>Max Lines</Label>
           <StepperInput
             value={maxLines.val.toString()}
             min={10}
