@@ -7,7 +7,6 @@ import { Uptime } from "@/components/metrics/uptime";
 
 import { InputGroup } from "@/components/ui/input-group";
 import { Toaster } from "@/components/ui/toaster";
-import { setUrlFragment } from "@/hooks/url_fragment";
 import { MetricsPeriod } from "@/types/api/metrics/metrics";
 import {
   ClientOnly,
@@ -21,6 +20,14 @@ import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { LuCpu, LuHeartPulse } from "react-icons/lu";
 export default function MetricsPage() {
+  return (
+    <ClientOnly>
+      <MetricsPageInner />
+    </ClientOnly>
+  );
+}
+
+function MetricsPageInner() {
   const [filter, setFilter] = useState("");
   const [tab, setTab] = useState(window.location.hash.slice(1) || "uptime");
   const [period, setPeriod] = useState<MetricsPeriod>("1h");
@@ -30,7 +37,7 @@ export default function MetricsPage() {
         value={tab}
         onValueChange={({ value }) => {
           setTab(value);
-          setUrlFragment(value);
+          window.location.hash = `#${value}`;
         }}
         variant={"enclosed"}
         lazyMount

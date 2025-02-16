@@ -188,6 +188,7 @@ const Chart: React.FC<{
       period,
       aggregate: type,
       agent_addr: agent?.addr,
+      interval: "5s",
     }),
     { json: true },
   );

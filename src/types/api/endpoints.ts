@@ -41,7 +41,7 @@ namespace Endpoints {
   }: {
     period?: MetricsPeriod;
     agent_addr?: string;
-    interval?: string;
+    interval?: `${number}${"s" | "m" | "h"}`;
     aggregate?: AggregateType;
   } = {}) =>
     `/api/metrics/system_info${buildQuery({ period, agent_addr, interval, aggregate })}`;
