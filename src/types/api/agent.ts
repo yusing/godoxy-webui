@@ -1,6 +1,6 @@
 type Agent = {
   name: string;
-  addr: string;
+  addr?: string;
 };
 
 export type { Agent };

@@ -4,6 +4,7 @@ import * as React from "react";
 import * as RechartsPrimitive from "recharts";
 
 import { cn } from "@/lib/utils";
+import { Box, Flex, Stack } from "@chakra-ui/react";
 
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" } as const;
@@ -177,28 +178,16 @@ const ChartTooltipContent = React.forwardRef<
     const nestLabel = payload.length === 1 && indicator !== "dot";
 
     return (
-      <div
-        ref={ref}
-        className={cn(
-          "grid min-w-[8rem] items-start gap-1.5 rounded-lg border border-neutral-200 border-neutral-200/50 bg-white px-2.5 py-1.5 text-xs shadow-xl dark:border-neutral-800 dark:border-neutral-800/50 dark:bg-neutral-950",
-          className,
-        )}
-      >
+      <Box ref={ref} p="2" bg="bg.muted" overflowY="auto" borderRadius="md">
         {!nestLabel ? tooltipLabel : null}
-        <div className="grid gap-1.5">
+        <Stack gap="0.5">
           {payload.map((item, index) => {
             const key = `${nameKey || item.name || item.dataKey || "value"}`;
             const itemConfig = getPayloadConfigFromPayload(config, item, key);
             const indicatorColor = color || item.payload.fill || item.color;
 
             return (
-              <div
-                key={item.dataKey}
-                className={cn(
-                  "flex w-full flex-wrap items-stretch gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-neutral-500 dark:[&>svg]:text-neutral-400",
-                  indicator === "dot" && "items-center",
-                )}
-              >
+              <Flex key={item.dataKey} w="full">
                 {formatter && item?.value !== undefined && item.name ? (
                   formatter(item.value, item.name, item, index, item.payload)
                 ) : (
@@ -247,11 +236,11 @@ const ChartTooltipContent = React.forwardRef<
                     </div>
                   </>
                 )}
-              </div>
+              </Flex>
             );
           })}
-        </div>
-      </div>
+        </Stack>
+      </Box>
     );
   },
 );
@@ -358,9 +347,9 @@ function getPayloadConfigFromPayload(
 
 export {
   ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
   ChartStyle,
+  ChartTooltip,
+  ChartTooltipContent,
 };

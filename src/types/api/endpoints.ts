@@ -1,6 +1,7 @@
 import { toaster } from "@/components/ui/toaster";
 import { StatusCodes } from "http-status-codes";
 import { MetricsPeriod } from "./metrics/metrics";
+import { AggregateType } from "./metrics/system_info";
 
 export function buildQuery(
   query: Record<string, string | number | boolean | undefined>,
@@ -36,12 +37,14 @@ namespace Endpoints {
     period,
     agent_addr,
     interval = "1s",
+    aggregate,
   }: {
     period?: MetricsPeriod;
     agent_addr?: string;
     interval?: string;
+    aggregate?: AggregateType;
   } = {}) =>
-    `/api/metrics/system_info${buildQuery({ period, agent_addr, interval })}`;
+    `/api/metrics/system_info${buildQuery({ period, agent_addr, interval, aggregate })}`;
 
   export const metricsUptime = (
     period: MetricsPeriod,

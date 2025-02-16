@@ -30,7 +30,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { FC, useState } from "react";
 import { useWindowSize } from "react-use";
 import { FavIcon } from "../dashboard/favicon";
 import { HealthStatusTag } from "../health_status";
@@ -38,13 +38,10 @@ import { EmptyState } from "../ui/empty-state";
 import { Tooltip } from "../ui/tooltip";
 import { useColsCount, useColsGap, useRowGap, useRowsCount } from "./settings";
 
-export function Uptime({
-  period,
+export const Uptime: FC<{ filter: string; period: MetricsPeriod }> = ({
   filter,
-}: {
-  period: MetricsPeriod;
-  filter: string;
-}) {
+  period,
+}) => {
   const [page, setPage] = useState(1);
   const rowsCount = useRowsCount();
   const colsCount = useColsCount();
@@ -100,9 +97,9 @@ export function Uptime({
       </Stack>
     </PaginationRoot>
   );
-}
+};
 
-function RouteUptime({ metrics }: { metrics: RouteUptimeMetrics }) {
+const RouteUptime: FC<{ metrics: RouteUptimeMetrics }> = ({ metrics }) => {
   return (
     <CardRoot minW="300px" maxW="full" maxH="180px">
       <CardHeader>
@@ -121,9 +118,9 @@ function RouteUptime({ metrics }: { metrics: RouteUptimeMetrics }) {
           />
         </HStack>
       </CardHeader>
-      {/* <CardBody>
+      <CardBody>
         <UptimeTracker statuses={metrics.statuses} />
-      </CardBody> */}
+      </CardBody>
       <CardBody>
         <HStack gap="2" w="full" justify={"space-between"}>
           <Text fontWeight={"medium"} fontSize={"sm"}>
@@ -150,7 +147,7 @@ function RouteUptime({ metrics }: { metrics: RouteUptimeMetrics }) {
       </CardBody>
     </CardRoot>
   );
-}
+};
 
 function fillStatuses(statuses: RouteStatus[], count: number): RouteStatus[] {
   if (statuses.length >= count) {

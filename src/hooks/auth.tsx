@@ -7,12 +7,14 @@ import { FC, PropsWithChildren, useEffect } from "react";
 export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
   useEffect(() => {
     fetch(Endpoints.AUTH_CHECK)
-      .then(
-        (r) =>
-          (r.status === StatusCodes.FORBIDDEN ||
-            r.status === StatusCodes.UNAUTHORIZED) &&
-          redirect(),
-      )
+      .then((r) => {
+        if (
+          r.status === StatusCodes.FORBIDDEN ||
+          r.status === StatusCodes.UNAUTHORIZED
+        ) {
+          redirect();
+        }
+      })
       .catch(redirect);
   }, []);
 

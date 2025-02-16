@@ -3,16 +3,19 @@ import useWebsocket from "@/hooks/ws";
 import { formatPercent } from "@/lib/format";
 import { Agent } from "@/types/api/agent";
 import Endpoints from "@/types/api/endpoints";
-import type { SystemInfo } from "@/types/api/metrics/system_info";
+import type { SensorInfo, SystemInfo } from "@/types/api/metrics/system_info";
 import {
   Center,
   HStack,
   Progress,
   Spinner,
+  Stack,
   Table,
   Text,
 } from "@chakra-ui/react";
 import byteSize from "byte-size";
+import { useRouter } from "next/navigation";
+import path from "path";
 import { FaTemperatureEmpty } from "react-icons/fa6";
 import {
   LuArrowDown,
@@ -88,8 +91,8 @@ export default function SystemInfo() {
           </Table.Row>
         </Table.Header>
         <Table.Body>
-          {[undefined, ...agents].map((agent) => (
-            <SystemInfoRow key={agent?.name ?? "main_server"} agent={agent} />
+          {[{ name: "Main" }, ...agents].map((agent) => (
+            <SystemInfoRow key={agent.name} agent={agent} />
           ))}
         </Table.Body>
       </Table.Root>
@@ -97,16 +100,17 @@ export default function SystemInfo() {
   );
 }
 
-function SystemInfoRow({ agent }: { agent?: Agent }) {
+const SystemInfoRow: React.FC<{ agent: Agent }> = ({ agent }) => {
   const { data: systemInfo } = useWebsocket<SystemInfo>(
-    Endpoints.metricsSystemInfo({ agent_addr: agent?.addr }),
+    Endpoints.metricsSystemInfo({ agent_addr: agent.addr, interval: "2s" }),
     { json: true },
   );
+  const router = useRouter();
   if (!systemInfo) {
     return (
       <Table.Row>
-        <Table.Cell>{agent?.name ?? "Main"}</Table.Cell>
-        {Array.from({ length: 4 }).map((_, i) => (
+        <Table.Cell>{agent.name}</Table.Cell>
+        {Array.from({ length: 5 }).map((_, i) => (
           <Table.Cell key={`skeleton-${i}`}>
             <Skeleton height="20px" />
           </Table.Cell>
@@ -115,31 +119,61 @@ function SystemInfoRow({ agent }: { agent?: Agent }) {
     );
   }
   return (
-    <Table.Row>
-      <Table.Cell>{agent?.name ?? "Main"}</Table.Cell>
-      <PercentageCell value={systemInfo.cpu_average} />
-      <PercentageCell value={systemInfo.memory.used_percent} />
-      <PercentageCell value={systemInfo.disk.used_percent} />
+    <Table.Row
+      onClick={() => {
+        router.push(`/metrics/system_info/${agent.name}/${agent.addr ?? ""}`);
+      }}
+    >
+      <Table.Cell>{agent.name}</Table.Cell>
       <Table.Cell>
-        <HStack fontWeight={"medium"} fontSize={"sm"}>
-          <LuArrowUp color="green" />{" "}
-          {`${byteSize(systemInfo.network.upload_speed)}`}/s
-        </HStack>
-        <HStack fontWeight={"medium"} fontSize={"sm"}>
-          <LuArrowDown color="red" />{" "}
-          {`${byteSize(systemInfo.network.download_speed)}`}/s
-        </HStack>
+        <PercentageCell value={systemInfo.cpu_average} />
       </Table.Cell>
       <Table.Cell>
-        <HStack gap="2" wrap={"wrap"}>
-          {systemInfo.sensors.map((sensor) => (
-            <SensorCell sensor={sensor} />
-          ))}
-        </HStack>
+        <PercentageCell value={systemInfo.memory?.used_percent} />
+      </Table.Cell>
+      <Table.Cell>
+        {systemInfo.disks &&
+          Object.values(systemInfo.disks)
+            .sort((a, b) => a.path.localeCompare(b.path))
+            .map((disk) => (
+              <Stack key={disk.path} gap="0">
+                {Object.keys(systemInfo.disks!).length > 1 && (
+                  <Text fontSize={"xs"} fontWeight={"medium"}>
+                    {disk.fstype}: {path.basename(disk.path) || disk.path}
+                  </Text>
+                )}
+                <PercentageCell value={disk.used_percent} />
+              </Stack>
+            ))}
+      </Table.Cell>
+      {systemInfo.network ? (
+        <Table.Cell>
+          <HStack fontWeight={"medium"} fontSize={"sm"}>
+            <LuArrowUp color="green" />{" "}
+            {`${byteSize(systemInfo.network.upload_speed)}`}/s
+          </HStack>
+          <HStack fontWeight={"medium"} fontSize={"sm"}>
+            <LuArrowDown color="red" />{" "}
+            {`${byteSize(systemInfo.network.download_speed)}`}/s
+          </HStack>
+        </Table.Cell>
+      ) : (
+        <Table.Cell />
+      )}
+      <Table.Cell>
+        {systemInfo.sensors && (
+          <HStack gap="2" wrap={"wrap"}>
+            {Object.values(systemInfo.sensors)
+              .sort((a, b) => a.name?.localeCompare(b.name ?? ""))
+              .map((sensor) => (
+                <SensorCell key={sensor.name} sensor={sensor} />
+              ))}
+          </HStack>
+        )}
       </Table.Cell>
     </Table.Row>
   );
-}
+};
 
 export const sensorIcons: Record<string, React.ReactNode> = {
   coretemp_package_id_0: <LuCpu />,
@@ -147,9 +181,15 @@ export const sensorIcons: Record<string, React.ReactNode> = {
   nvme_composite: <LuHardDrive />,
 };
 
-function SensorCell({ sensor }: { sensor: SystemInfo["sensors"][number] }) {
+const SensorCell: React.FC<{
+  sensor?: SensorInfo;
+  key?: string;
+}> = ({ sensor, key }) => {
   const unit = useSetting("metrics_temperature_unit", "celsius");
-  const icon = sensorIcons[sensor.sensorKey];
+  if (!sensor) {
+    return null;
+  }
+  const icon = sensorIcons[sensor.name];
   if (!icon) {
     return null;
   }
@@ -173,30 +213,26 @@ function SensorCell({ sensor }: { sensor: SystemInfo["sensors"][number] }) {
       </Text>
     </HStack>
   );
-}
+};
 
-function PercentageCell({
-  value,
-  startElement,
-}: {
-  value: number;
+const PercentageCell: React.FC<{
+  value?: number;
   startElement?: React.ReactNode;
-}) {
+}> = ({ value, startElement }) => {
+  if (!value) {
+    return null;
+  }
   return (
-    <Table.Cell>
-      <Progress.Root value={value} maxW="sm">
-        <HStack gap="5">
-          {startElement}
-          <Progress.Track flex="1">
-            <Progress.Range />
-          </Progress.Track>
-          <Text
-            minW={"16"}
-            fontSize="sm"
-            fontWeight={"medium"}
-          >{`${formatPercent(value / 100)}`}</Text>
-        </HStack>
-      </Progress.Root>
-    </Table.Cell>
+    <Progress.Root value={value} maxW="sm">
+      <HStack gap="5">
+        {startElement}
+        <Progress.Track flex="1">
+          <Progress.Range />
+        </Progress.Track>
+        <Text minW={"16"} fontSize="sm" fontWeight={"medium"}>
+          {`${formatPercent(value / 100)}`}
+        </Text>
+      </HStack>
+    </Progress.Root>
   );
-}
+};

@@ -1,16 +1,14 @@
 "use client";
 import { AddAgentDialogButton } from "@/components/metrics/add_agent_button";
+import { PeriodsSelect } from "@/components/metrics/periods_select";
 import { MetricsSettings } from "@/components/metrics/settings";
 import SystemInfo from "@/components/metrics/system_info";
 import { Uptime } from "@/components/metrics/uptime";
 
 import { InputGroup } from "@/components/ui/input-group";
-import { SegmentedControl } from "@/components/ui/segmented-control";
 import { Toaster } from "@/components/ui/toaster";
-import {
-  type MetricsPeriod,
-  MetricsPeriods,
-} from "@/types/api/metrics/metrics";
+import { setUrlFragment } from "@/hooks/url_fragment";
+import { MetricsPeriod } from "@/types/api/metrics/metrics";
 import {
   ClientOnly,
   HStack,
@@ -24,14 +22,16 @@ import { FaSearch } from "react-icons/fa";
 import { LuCpu, LuHeartPulse } from "react-icons/lu";
 export default function MetricsPage() {
   const [filter, setFilter] = useState("");
+  const [tab, setTab] = useState(window.location.hash.slice(1) || "uptime");
   const [period, setPeriod] = useState<MetricsPeriod>("1h");
-  const [tab, setTab] = useState("uptime");
-
   return (
     <Stack mx="16" my="8">
       <Tabs.Root
         value={tab}
-        onValueChange={({ value }) => setTab(value)}
+        onValueChange={({ value }) => {
+          setTab(value);
+          setUrlFragment(value);
+        }}
         variant={"enclosed"}
         lazyMount
         unmountOnExit
@@ -63,16 +63,11 @@ export default function MetricsPage() {
             <MetricsSettings />
           </ClientOnly>
           <Spacer />
-          <SegmentedControl
-            value={period}
-            onValueChange={({ value }) => setPeriod(value)}
-            items={MetricsPeriods}
-            fontWeight={"medium"}
-          />
+          <PeriodsSelect period={period} setPeriod={setPeriod} />
         </HStack>
         <Tabs.Content value="uptime">
           <ClientOnly>
-            <Uptime period={period} filter={filter} />
+            <Uptime filter={filter} period={period} />
           </ClientOnly>
         </Tabs.Content>
         <Tabs.Content value="system_info">
