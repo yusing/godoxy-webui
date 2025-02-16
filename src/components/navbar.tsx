@@ -3,7 +3,6 @@
 import { siteConfig } from "@/site_config";
 import { Box, For, Group, Link, Stack, StackProps } from "@chakra-ui/react";
 import React from "react";
-import useCheckAuth from "./auth";
 import { DiscordIcon, GithubIcon } from "./icons";
 import LogoutButton from "./logout_button";
 import NavItemText from "./navItem_text";
@@ -18,8 +17,7 @@ export const HrefLabelMapping = siteConfig.navItems.reduce(
 );
 
 const Navbar: React.FC<StackProps> = (props) => {
-  const authed = useCheckAuth();
-  if (!authed) {
+  if (window && window.location.pathname == "/login") {
     return null;
   }
   return <DesktopNav {...props} />;

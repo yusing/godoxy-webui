@@ -4,6 +4,7 @@ import "@/styles/globals.css";
 import { Box, Link, Text, VStack } from "@chakra-ui/react";
 
 import { Skeleton } from "@/components/ui/skeleton";
+import { AuthProvider } from "@/hooks/auth";
 import { siteConfig } from "@/site_config";
 import {
   bodyHeight,
@@ -42,43 +43,45 @@ export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
           storageKey={"__theme"}
           attribute={["class", "data-theme", "data-color-mode"]}
         >
-          <VStack w="100vw" h="100vh">
-            <Navbar
-              h={navBarHeight}
-              position={"fixed"}
-              top={0}
-              pt="0"
-              px="20"
-            />
-            <Box
-              as="main"
-              position={"fixed"}
-              top={navBarHeight}
-              mx={bodyPaddingX}
-              height={bodyHeight}
-              width={bodyWidth}
-              overflowY={"auto"}
-              scrollBehavior={"smooth"}
-              scrollbar={"auto"}
-            >
-              {children}
-            </Box>
-            <Link
-              position={"fixed"}
-              bottom={0}
-              h={footerHeight}
-              href={siteConfig.links.github}
-              target="_blank"
-              title="GoDoxy Homepage"
-              colorPalette={"teal"}
-              w="full"
-              justifyContent={"center"}
-            >
-              <Text>Powered by</Text>
-              <Text color="fg.success">GoDoxy</Text>
-              <VersionText />
-            </Link>
-          </VStack>
+          <AuthProvider>
+            <VStack w="100vw" h="100vh">
+              <Navbar
+                h={navBarHeight}
+                position={"fixed"}
+                top={0}
+                pt="0"
+                px="20"
+              />
+              <Box
+                as="main"
+                position={"fixed"}
+                top={navBarHeight}
+                mx={bodyPaddingX}
+                height={bodyHeight}
+                width={bodyWidth}
+                overflowY={"auto"}
+                scrollBehavior={"smooth"}
+                scrollbar={"auto"}
+              >
+                {children}
+              </Box>
+              <Link
+                position={"fixed"}
+                bottom={0}
+                h={footerHeight}
+                href={siteConfig.links.github}
+                target="_blank"
+                title="GoDoxy Homepage"
+                colorPalette={"teal"}
+                w="full"
+                justifyContent={"center"}
+              >
+                <Text>Powered by</Text>
+                <Text color="fg.success">GoDoxy</Text>
+                <VersionText />
+              </Link>
+            </VStack>
+          </AuthProvider>
         </Provider>
       </body>
     </html>

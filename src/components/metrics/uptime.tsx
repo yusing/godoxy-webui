@@ -19,7 +19,6 @@ import { HomepageItem } from "@/types/api/route/homepage_item";
 import {
   Box,
   CardBody,
-  CardFooter,
   CardHeader,
   CardRoot,
   Center,
@@ -105,7 +104,7 @@ export function Uptime({
 
 function RouteUptime({ metrics }: { metrics: RouteUptimeMetrics }) {
   return (
-    <CardRoot minW="300px" maxW="full" h="180px">
+    <CardRoot minW="300px" maxW="full" maxH="180px">
       <CardHeader>
         <HStack justifyContent={"space-between"}>
           <Group>
@@ -122,12 +121,12 @@ function RouteUptime({ metrics }: { metrics: RouteUptimeMetrics }) {
           />
         </HStack>
       </CardHeader>
-      <CardBody>
+      {/* <CardBody>
         <UptimeTracker statuses={metrics.statuses} />
-      </CardBody>
-      <CardFooter>
+      </CardBody> */}
+      <CardBody>
         <HStack gap="2" w="full" justify={"space-between"}>
-          <Text fontWeight={"medium"}>
+          <Text fontWeight={"medium"} fontSize={"sm"}>
             Avg. Latency: {metrics.avg_latency.toFixed(0)}ms
           </Text>
           <HStack gap="2">
@@ -148,7 +147,7 @@ function RouteUptime({ metrics }: { metrics: RouteUptimeMetrics }) {
             )}
           </HStack>
         </HStack>
-      </CardFooter>
+      </CardBody>
     </CardRoot>
   );
 }

@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { toastError } from "../types/api/endpoints";
 
 // WebSocket connection manager
 const wsConnections: Record<string, WebSocket> = {};
@@ -26,6 +25,14 @@ function getOrCreateWebSocket<T>(
     wsConnections[endpoint] = ws;
     wsSubscribers[endpoint] = new Set();
 
+    // Add beforeunload event listener to close connections cleanly
+    window.addEventListener("beforeunload", () => {
+      if (ws.readyState === ReadyState.OPEN) {
+        // Use a clean close
+        ws.close(1000, "Page closed");
+      }
+    });
+
     ws.onmessage = (event) => {
       let parsed: T | null = null;
       try {
@@ -37,8 +44,6 @@ function getOrCreateWebSocket<T>(
         callback(parsed);
       });
     };
-
-    ws.onerror = toastError;
   }
   return wsConnections[endpoint];
 }
