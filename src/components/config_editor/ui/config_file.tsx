@@ -110,6 +110,16 @@ export function ConfigUIEditor({
                 onChange(data);
               }}
             />
+            <ListInput
+              label="Agents"
+              placeholder="address:port"
+              value={data.providers?.agents ?? []}
+              onChange={(v) => {
+                if (!data.providers) data.providers = {};
+                data.providers.agents = v as typeof data.providers.agents;
+                onChange(data);
+              }}
+            />
             <MapInput
               label="Docker"
               placeholder={{

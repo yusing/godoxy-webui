@@ -6,6 +6,7 @@ import {
   Group,
   IconButton,
   Input,
+  InputProps,
   ListCollection,
   Stack,
 } from "@chakra-ui/react";
@@ -32,7 +33,7 @@ export const ListInput: React.FC<
     required?: boolean;
     description?: string;
     onChange: (v: string[]) => void;
-  } & Omit<React.ComponentProps<typeof Input>, "onChange" | "value">
+  } & Omit<InputProps, "onChange" | "value">
 > = ({
   label,
   placeholder,
@@ -96,10 +97,7 @@ export const NamedListInput: React.FC<
     description?: { [key: string]: { [key: string]: string } };
     value: NamedList;
     onChange: (v: NamedList) => void;
-  } & Omit<
-    React.ComponentProps<typeof Input>,
-    "onChange" | "value" | "placeholder"
-  >
+  } & Omit<InputProps, "onChange" | "value" | "placeholder">
 > = ({
   label,
   placeholder,
@@ -178,10 +176,7 @@ export const MapInput: React.FC<
     allowedValues?: { [key: string]: ReadonlyArray<string> };
     description?: { [key: string]: string };
     onChange: (v: Record<string, string>) => void;
-  } & Omit<
-    React.ComponentProps<typeof Input>,
-    "onChange" | "value" | "placeholder"
-  >
+  } & Omit<InputProps, "onChange" | "value" | "placeholder">
 > = ({
   label,
   placeholder,
