@@ -19,10 +19,7 @@ export async function getHomepageItems({
   category,
   provider,
 }: HomepageItemsFilter): Promise<HomepageItems> {
-  const currentHostname = window.location.hostname
-    .split(".")
-    .slice(1)
-    .join(".");
+  const currentHost = window.location.host.split(".").slice(1).join(".");
 
   try {
     const response = await fetchEndpoint(Endpoints.HOMEPAGE_CFG, {
@@ -47,7 +44,7 @@ export async function getHomepageItems({
           if (item.alias.includes(".")) {
             fqdn = item.alias;
           } else {
-            fqdn = `${item.alias}.${currentHostname}`;
+            fqdn = `${item.alias}.${currentHost}`;
           }
           item.url = `${window.location.protocol}//${fqdn}/`;
         }

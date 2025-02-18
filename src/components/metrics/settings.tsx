@@ -15,6 +15,22 @@ import { Radio, RadioGroup } from "@/components/ui/radio";
 import { useSetting } from "@/hooks/settings";
 import { LuSettings } from "react-icons/lu";
 import { Field } from "../ui/field";
+import { Label } from "../ui/label";
+import { SegmentedControl } from "../ui/segmented-control";
+
+export type UptimeLayout = "square_card" | "rect_card" | "default";
+export function useLayoutMode() {
+  const layoutMode = useSetting<UptimeLayout>(
+    "metrics_uptime_layout_mode",
+    "default",
+  );
+  return layoutMode;
+}
+
+export function useSquareCardSize() {
+  const cardSize = useSetting<number>("metrics_uptime_square_card_size", 240);
+  return cardSize;
+}
 
 export function useRowsCount() {
   const rowsCount = useSetting<number>("metrics_uptime_rows_count", 3);
@@ -50,7 +66,8 @@ export function MetricsSettings() {
   const rowGap = useRowGap();
   const colsGap = useColsGap();
   const temperatureUnit = useTemperatureUnit();
-
+  const layoutMode = useLayoutMode();
+  const squareCardSize = useSquareCardSize();
   const [open, setOpen] = useState(false);
   return (
     <PopoverRoot
@@ -71,24 +88,52 @@ export function MetricsSettings() {
           <Table.Root>
             <Table.ColumnGroup>
               <Table.Column />
-              <Table.Column htmlWidth="20%" />
               <Table.Column htmlWidth="35%" />
             </Table.ColumnGroup>
             <Table.Header>
               <Table.Row>
                 <Table.ColumnHeader>Layout</Table.ColumnHeader>
-                <Table.ColumnHeader>Sort By</Table.ColumnHeader>
                 <Table.ColumnHeader>Preferences</Table.ColumnHeader>
               </Table.Row>
             </Table.Header>
             <Table.Body>
               <Table.Row>
                 <Table.Cell>
+                  <HStack gap="2">
+                    <Label>Style</Label>
+                    <SegmentedControl
+                      size="sm"
+                      borderRadius="md"
+                      items={[
+                        { label: "Default", value: "default" },
+                        { label: "Square", value: "square_card" },
+                        { label: "Minimal", value: "rect_card" },
+                      ]}
+                      value={layoutMode.val}
+                      onValueChange={({ value }) =>
+                        layoutMode.set(value as UptimeLayout)
+                      }
+                    />
+                  </HStack>
+                  {layoutMode.val === "square_card" && (
+                    <Stack gap="2">
+                      <Slider
+                        label={`Square Card Size (${squareCardSize.val}px)`}
+                        min={100}
+                        max={300}
+                        step={10}
+                        value={[squareCardSize.val]}
+                        onValueChange={({ value }) =>
+                          squareCardSize.set(value[0]!)
+                        }
+                      />
+                    </Stack>
+                  )}
                   <Stack gap="2">
                     <Slider
                       label={`Rows (${rowsCount.val})`}
                       min={1}
-                      max={10}
+                      max={15}
                       step={1}
                       value={[rowsCount.val]}
                       onValueChange={({ value }) => rowsCount.set(value[0]!)}
@@ -119,7 +164,6 @@ export function MetricsSettings() {
                     />
                   </Stack>
                 </Table.Cell>
-                <Table.Cell></Table.Cell>
                 <Table.Cell asChild>
                   <Stack gap="2">
                     <Field label="Temperature Unit">

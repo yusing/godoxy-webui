@@ -9,37 +9,45 @@ import useWebsocket from "@/hooks/ws";
 import { formatPercent, formatTimestamp } from "@/lib/format";
 import Endpoints from "@/types/api/endpoints";
 import { healthStatusColors } from "@/types/api/health";
-import { MetricsPeriod } from "@/types/api/metrics/metrics";
+import type { MetricsPeriod } from "@/types/api/metrics/metrics";
 import type {
   RouteStatus,
   RouteUptimeMetrics,
+  UptimeMetrics,
 } from "@/types/api/metrics/uptime";
-import { UptimeMetrics } from "@/types/api/metrics/uptime";
-import { HomepageItem } from "@/types/api/route/homepage_item";
+import type { HomepageItem } from "@/types/api/route/homepage_item";
 import {
   Box,
   Card,
   Center,
+  ClientOnly,
   Group,
   HStack,
+  Link,
   SimpleGrid,
   Spinner,
   Stack,
-  Text,
 } from "@chakra-ui/react";
-import { FC, useState } from "react";
+import React, { FC, useState } from "react";
 import { useWindowSize } from "react-use";
 import { FavIcon } from "../dashboard/favicon";
-import { HealthStatusTag } from "../health_status";
+import { HealthStatus, HealthStatusTag } from "../health_status";
 import { EmptyState } from "../ui/empty-state";
 import { Label } from "../ui/label";
 import { Tooltip } from "../ui/tooltip";
-import { useColsCount, useColsGap, useRowGap, useRowsCount } from "./settings";
+import {
+  useColsCount,
+  useColsGap,
+  useLayoutMode,
+  useRowGap,
+  useRowsCount,
+  useSquareCardSize,
+} from "./settings";
 
-export const Uptime: FC<{ filter: string; period: MetricsPeriod }> = ({
-  filter,
-  period,
-}) => {
+export const Uptime: FC<{
+  filter?: string;
+  period?: MetricsPeriod;
+}> = ({ filter, period }) => {
   const [page, setPage] = useState(1);
   const rowsCount = useRowsCount();
   const colsCount = useColsCount();
@@ -47,7 +55,7 @@ export const Uptime: FC<{ filter: string; period: MetricsPeriod }> = ({
   const colsGap = useColsGap();
   const countPerPage = rowsCount.val * colsCount.val;
   const { data: uptime } = useWebsocket<UptimeMetrics>(
-    Endpoints.metricsUptime(period, {
+    Endpoints.metricsUptime(period ?? "1d", {
       keyword: filter,
       limit: countPerPage,
       offset: (page - 1) * countPerPage,
@@ -78,15 +86,17 @@ export const Uptime: FC<{ filter: string; period: MetricsPeriod }> = ({
       siblingCount={10}
     >
       <Stack gap="4">
-        <SimpleGrid
-          columns={colsCount.val}
-          rowGap={rowGap.val}
-          columnGap={colsGap.val}
-        >
-          {uptime.data.map((metrics) => (
-            <RouteUptime key={metrics.alias} metrics={metrics} />
-          ))}
-        </SimpleGrid>
+        <ClientOnly>
+          <SimpleGrid
+            columns={colsCount.val}
+            rowGap={rowGap.val}
+            columnGap={colsGap.val}
+          >
+            {uptime.data.map((metrics) => (
+              <Layout key={metrics.alias} metrics={metrics} />
+            ))}
+          </SimpleGrid>
+        </ClientOnly>
         <HStack justify={"center"} w="full">
           <PaginationPrevTrigger />
           <PaginationItems />
@@ -97,9 +107,45 @@ export const Uptime: FC<{ filter: string; period: MetricsPeriod }> = ({
   );
 };
 
-const RouteUptime: FC<{ metrics: RouteUptimeMetrics }> = ({ metrics }) => {
+const Layout = ({ metrics }: { metrics: RouteUptimeMetrics }) => {
+  const layoutMode = useLayoutMode();
+  const AppCard =
+    layoutMode.val === "square_card"
+      ? RouteUptimeSquare
+      : layoutMode.val === "rect_card"
+        ? RouteUptimeRect
+        : RouteUptime;
+  const currentHost = window.location.host.split(".").slice(1).join(".");
+
   return (
-    <Card.Root size="sm" minW="300px" maxW="full" maxH="180px">
+    <Link
+      href={`${window.location.protocol}//${metrics.alias}.${currentHost}/`}
+      target="_blank"
+    >
+      <AppCard
+        metrics={metrics}
+        _hover={{
+          bg: "var(--hover-bg)",
+        }}
+      />
+    </Link>
+  );
+};
+
+type RouteUptimeProps = React.ComponentProps<typeof Card.Root> & {
+  metrics: RouteUptimeMetrics;
+};
+
+const RouteUptime: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
+  return (
+    <Card.Root
+      size="sm"
+      minW="300px"
+      maxW="full"
+      maxH="180px"
+      title={metrics.alias}
+      {...props}
+    >
       <Card.Header>
         <HStack justifyContent={"space-between"}>
           <Group>
@@ -107,9 +153,7 @@ const RouteUptime: FC<{ metrics: RouteUptimeMetrics }> = ({ metrics }) => {
               size="24px"
               item={{ alias: metrics.alias } as HomepageItem}
             />
-            <Text as="h4" fontWeight={"medium"} title={metrics.alias}>
-              {metrics.display_name || metrics.alias}
-            </Text>
+            <Label>{metrics.display_name || metrics.alias}</Label>
           </Group>
           <HealthStatusTag
             value={metrics.statuses[metrics.statuses.length - 1]!.status}
@@ -139,6 +183,96 @@ const RouteUptime: FC<{ metrics: RouteUptimeMetrics }> = ({ metrics }) => {
   );
 };
 
+const RouteUptimeSquare: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
+  const squareCardSize = useSquareCardSize();
+  return (
+    <Card.Root
+      size="sm"
+      w={`${squareCardSize.val}px`}
+      h={`${squareCardSize.val}px`}
+      title={metrics.alias}
+      overflow={"hidden"}
+      {...props}
+    >
+      <Card.Body>
+        <HealthStatus
+          value={metrics.statuses[metrics.statuses.length - 1]!.status}
+        />
+        <Center h="full">
+          <Stack gap="4" justify={"center"} align={"center"}>
+            <FavIcon
+              size={`${squareCardSize.val / 2.5}px`}
+              item={{ alias: metrics.alias } as HomepageItem}
+            />
+            <Label>{metrics.display_name || metrics.alias}</Label>
+          </Stack>
+        </Center>
+        <HStack gap="2" w="full" justify={"space-between"} pt="1">
+          <Label>
+            {squareCardSize.val > 220 && "Avg. Latency: "}
+            {metrics.avg_latency.toFixed(0)}ms
+          </Label>
+          <HStack gap="2">
+            {metrics.uptime > 0 && (
+              <Label>{`${formatPercent(metrics.uptime)} UP`}</Label>
+            )}
+            {metrics.downtime > 0 && (
+              <Label>{`${formatPercent(metrics.downtime)} DOWN`}</Label>
+            )}
+            {metrics.idle > 0 && (
+              <Label>{`${formatPercent(metrics.idle)} IDLE`}</Label>
+            )}
+          </HStack>
+        </HStack>
+      </Card.Body>
+    </Card.Root>
+  );
+};
+
+const RouteUptimeRect: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
+  return (
+    <Card.Root
+      size="sm"
+      minW="300px"
+      maxW="full"
+      maxH="180px"
+      title={metrics.alias}
+      {...props}
+    >
+      <Card.Body asChild>
+        <HStack w="full" justifyContent={"space-between"}>
+          <HStack gap="2">
+            <FavIcon
+              size="24px"
+              item={{ alias: metrics.alias } as HomepageItem}
+            />
+            <Label>{metrics.display_name || metrics.alias}</Label>
+          </HStack>
+          <HealthStatusTag
+            value={metrics.statuses[metrics.statuses.length - 1]!.status}
+          />
+        </HStack>
+      </Card.Body>
+      <Card.Footer>
+        <HStack gap="2" w="full" justify={"space-between"}>
+          <Label>Avg. Latency: {metrics.avg_latency.toFixed(0)}ms</Label>
+          <Stack gap="2">
+            {metrics.uptime > 0 && (
+              <Label>{`${formatPercent(metrics.uptime)} UP`}</Label>
+            )}
+            {metrics.downtime > 0 && (
+              <Label>{`${formatPercent(metrics.downtime)} DOWN`}</Label>
+            )}
+            {metrics.idle > 0 && (
+              <Label>{`${formatPercent(metrics.idle)} IDLE`}</Label>
+            )}
+          </Stack>
+        </HStack>
+      </Card.Footer>
+    </Card.Root>
+  );
+};
+
 function fillStatuses(statuses: RouteStatus[], count: number): RouteStatus[] {
   if (statuses.length >= count) {
     const every = Math.floor(statuses.length / count);
@@ -155,7 +289,7 @@ function fillStatuses(statuses: RouteStatus[], count: number): RouteStatus[] {
   return [...dummy, ...statuses];
 }
 
-function UptimeTracker({ statuses }: { statuses: RouteStatus[] }) {
+const UptimeTracker: React.FC<{ statuses: RouteStatus[] }> = ({ statuses }) => {
   const { width } = useWindowSize();
   const colsCount = useColsCount();
 
@@ -168,9 +302,9 @@ function UptimeTracker({ statuses }: { statuses: RouteStatus[] }) {
       )}
     </HStack>
   );
-}
+};
 
-function UptimeStatus({ status }: { status: RouteStatus }) {
+const UptimeStatus: React.FC<{ status: RouteStatus }> = ({ status }) => {
   if (!status.timestamp) {
     return <Box borderRadius={"xs"} w="full" h="6" bg={"gray.500"} />;
   }
@@ -186,4 +320,4 @@ function UptimeStatus({ status }: { status: RouteStatus }) {
       />
     </Tooltip>
   );
-}
+};

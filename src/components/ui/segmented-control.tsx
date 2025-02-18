@@ -32,7 +32,7 @@ export const SegmentedControl = React.forwardRef<
       ref={ref}
       {...rest}
       bg={rest.bg ? rest.bg : "bg.emphasized"}
-      borderRadius={"xl"}
+      borderRadius={rest.borderRadius ?? "xl"}
     >
       <For each={data}>
         {(item) => (
@@ -42,16 +42,22 @@ export const SegmentedControl = React.forwardRef<
             disabled={item.disabled}
             w={rest.w === "full" ? "full" : undefined}
             justifyContent={"center"}
-            borderRadius={"xl"}
+            borderRadius={rest.borderRadius ?? "xl"}
           >
-            <SegmentGroup.ItemText fontWeight={"medium"} borderRadius={"xl"}>
+            <SegmentGroup.ItemText
+              fontWeight={"medium"}
+              borderRadius={rest.borderRadius ?? "xl"}
+            >
               {item.label}
             </SegmentGroup.ItemText>
             <SegmentGroup.ItemHiddenInput />
           </SegmentGroup.Item>
         )}
       </For>
-      <SegmentGroup.Indicator bg={"bg.subtle"} borderRadius={"xl"} />
+      <SegmentGroup.Indicator
+        bg={"bg.subtle"}
+        borderRadius={rest.borderRadius ?? "xl"}
+      />
     </SegmentGroup.Root>
   );
 });

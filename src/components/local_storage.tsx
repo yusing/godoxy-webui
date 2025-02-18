@@ -12,12 +12,18 @@ import { SettingsItem } from "@/hooks/settings";
 import {
   Box,
   createListCollection,
+  HStack,
   ListCollection,
   Select,
   Text,
   TextProps,
 } from "@chakra-ui/react";
 import React from "react";
+import { Label } from "./ui/label";
+import {
+  SegmentedControl,
+  SegmentedControlProps,
+} from "./ui/segmented-control";
 import { Slider, SliderProps } from "./ui/slider";
 import { Switch, SwitchProps } from "./ui/switch";
 
@@ -165,3 +171,27 @@ export const LocalStorageToggle = React.forwardRef<
     </Box>
   );
 });
+
+interface LocalStorageSegmentedControlProps<T extends string>
+  extends Omit<SegmentedControlProps, "value" | "items"> {
+  item: SettingsItem<T>;
+  items: Readonly<Array<{ label: string; value: T }>>;
+  label: string;
+}
+
+export function LocalStorageSegmentedControl<T extends string>(
+  props: Readonly<LocalStorageSegmentedControlProps<T>>,
+) {
+  const { item, label, items, ...rest } = props;
+  return (
+    <HStack gap={2}>
+      <Label>{label}</Label>
+      <SegmentedControl
+        items={items}
+        value={item.val}
+        onValueChange={({ value }) => item.set(value as T)}
+        {...rest}
+      />
+    </HStack>
+  );
+}
