@@ -3,6 +3,7 @@ import {
   DialogBody,
   DialogCloseTrigger,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogRoot,
@@ -17,7 +18,7 @@ import {
   NewAgentResponse,
 } from "@/lib/api/agent";
 import { toastError } from "@/types/api/endpoints";
-import { Group, HStack, Input, Stack, Text } from "@chakra-ui/react";
+import { Code, Group, HStack, Input, Stack, Text } from "@chakra-ui/react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FaDocker, FaServer } from "react-icons/fa6";
@@ -103,6 +104,10 @@ export function AddAgentDialogButton() {
               />
             )}
           />
+          <DialogDescription>
+            Remember to add the agent to <Code>config.yml</Code> after adding
+            it.
+          </DialogDescription>
         </DialogHeader>
         <DialogBody>
           <Stack gap={3}>
