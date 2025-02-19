@@ -25,7 +25,4 @@ function redirect() {
   if (window.location.pathname != "/login") {
     window.location.href = Endpoints.AUTH_REDIRECT;
   }
-  if (window.location.pathname == "/login") {
-    window.location.href = "/";
-  }
 }
