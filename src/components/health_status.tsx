@@ -21,8 +21,9 @@ const HealthStatus_: React.FC<HealthStatusProps> = ({
     </ChakraStatus.Root>
   );
 };
-const HealthStatusTag_: React.FC<HealthStatusProps> = ({
+const HealthStatusTag_: React.FC<HealthStatusProps & { fontSize?: string }> = ({
   value = "unknown",
+  fontSize = "md",
 }) => {
   return (
     <Tag variant={"surface"} colorPalette={healthStatusColorPalettes[value]}>
@@ -30,7 +31,7 @@ const HealthStatusTag_: React.FC<HealthStatusProps> = ({
         <ChakraStatus.Root colorPalette={healthStatusColorPalettes[value]}>
           <ChakraStatus.Indicator />
         </ChakraStatus.Root>
-        <Text fontSize="md" fontWeight={"medium"}>
+        <Text fontSize={fontSize} fontWeight={"medium"}>
           {value}
         </Text>
       </HStack>

@@ -86,22 +86,24 @@ export const Uptime: FC<{
       siblingCount={10}
     >
       <Stack gap="4">
-        <ClientOnly>
-          <SimpleGrid
-            columns={colsCount.val}
-            rowGap={rowGap.val}
-            columnGap={colsGap.val}
-          >
-            {uptime.data.map((metrics) => (
-              <Layout key={metrics.alias} metrics={metrics} />
-            ))}
-          </SimpleGrid>
-        </ClientOnly>
-        <HStack justify={"center"} w="full">
-          <PaginationPrevTrigger />
-          <PaginationItems />
-          <PaginationNextTrigger />
-        </HStack>
+        <SimpleGrid
+          columns={colsCount.val}
+          rowGap={rowGap.val}
+          columnGap={colsGap.val}
+        >
+          {uptime.data.map((metrics) => (
+            <ClientOnly key={metrics.alias}>
+              <Layout metrics={metrics} />
+            </ClientOnly>
+          ))}
+        </SimpleGrid>
+        {uptime.data.length < uptime.total && (
+          <HStack justify={"center"} w="full">
+            <PaginationPrevTrigger />
+            <PaginationItems />
+            <PaginationNextTrigger />
+          </HStack>
+        )}
       </Stack>
     </PaginationRoot>
   );
@@ -109,18 +111,21 @@ export const Uptime: FC<{
 
 const Layout = ({ metrics }: { metrics: RouteUptimeMetrics }) => {
   const layoutMode = useLayoutMode();
-  const AppCard =
+  const AppCard = React.memo(
     layoutMode.val === "square_card"
       ? RouteUptimeSquare
       : layoutMode.val === "rect_card"
-        ? RouteUptimeRect
-        : RouteUptime;
+        ? RouteUptimeMinimal
+        : RouteUptime,
+    (prev, next) => prev.metrics.alias === next.metrics.alias,
+  );
   const currentHost = window.location.host.split(".").slice(1).join(".");
 
   return (
     <Link
       href={`${window.location.protocol}//${metrics.alias}.${currentHost}/`}
       target="_blank"
+      unstyled
     >
       <AppCard
         metrics={metrics}
@@ -208,10 +213,7 @@ const RouteUptimeSquare: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
           </Stack>
         </Center>
         <HStack gap="2" w="full" justify={"space-between"} pt="1">
-          <Label>
-            {squareCardSize.val > 220 && "Avg. Latency: "}
-            {metrics.avg_latency.toFixed(0)}ms
-          </Label>
+          <Label>{metrics.avg_latency.toFixed(0)}ms</Label>
           <HStack gap="2">
             {metrics.uptime > 0 && (
               <Label>{`${formatPercent(metrics.uptime)} UP`}</Label>
@@ -229,42 +231,46 @@ const RouteUptimeSquare: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
   );
 };
 
-const RouteUptimeRect: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
+const RouteUptimeMinimal: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
   return (
-    <Card.Root
-      size="sm"
-      minW="300px"
-      maxW="full"
-      maxH="180px"
-      title={metrics.alias}
-      {...props}
-    >
-      <Card.Body asChild>
+    <Card.Root size="sm" w="full" maxH="180px" title={metrics.alias} {...props}>
+      <Card.Body>
         <HStack w="full" justifyContent={"space-between"}>
           <HStack gap="2">
             <FavIcon
-              size="24px"
+              size="26px"
               item={{ alias: metrics.alias } as HomepageItem}
             />
-            <Label>{metrics.display_name || metrics.alias}</Label>
+            <Label fontSize={"md"}>
+              {metrics.display_name || metrics.alias}
+            </Label>
           </HStack>
           <HealthStatusTag
+            fontSize={"sm"}
             value={metrics.statuses[metrics.statuses.length - 1]!.status}
           />
         </HStack>
       </Card.Body>
       <Card.Footer>
         <HStack gap="2" w="full" justify={"space-between"}>
-          <Label>Avg. Latency: {metrics.avg_latency.toFixed(0)}ms</Label>
+          <Label fontSize={"xs"}>
+            Avg. Latency: {metrics.avg_latency.toFixed(0)}ms
+          </Label>
           <Stack gap="2">
             {metrics.uptime > 0 && (
-              <Label>{`${formatPercent(metrics.uptime)} UP`}</Label>
+              <Label
+                fontSize={"xs"}
+              >{`${formatPercent(metrics.uptime)} UP`}</Label>
             )}
             {metrics.downtime > 0 && (
-              <Label>{`${formatPercent(metrics.downtime)} DOWN`}</Label>
+              <Label
+                fontSize={"xs"}
+              >{`${formatPercent(metrics.downtime)} DOWN`}</Label>
             )}
             {metrics.idle > 0 && (
-              <Label>{`${formatPercent(metrics.idle)} IDLE`}</Label>
+              <Label
+                fontSize={"xs"}
+              >{`${formatPercent(metrics.idle)} IDLE`}</Label>
             )}
           </Stack>
         </HStack>
