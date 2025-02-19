@@ -1,7 +1,6 @@
 "use client";
 import { PeriodsSelect } from "@/components/metrics/periods_select";
 import { useTemperatureUnit } from "@/components/metrics/settings";
-import { ChartTooltip } from "@/components/ui/chart";
 import { EmptyState } from "@/components/ui/empty-state";
 import useWebsocket from "@/hooks/ws";
 import { formatByte } from "@/lib/format";
@@ -14,7 +13,14 @@ import { Box, Heading, HStack, Stack, Text } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { LuGlobe } from "react-icons/lu";
 import { useEffectOnce } from "react-use";
-import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { Label } from "../ui/label";
 
 export const SystemInfoGraphsPage: React.FC<{
@@ -224,7 +230,7 @@ const ChartInner: React.FC<{
       )}
     >
       <AreaChart accessibilityLayer data={data}>
-        <ChartTooltip
+        <RechartsTooltip
           content={(props) => {
             const { active, payload } = props;
             if (!active || !payload?.length) return null;
