@@ -1,22 +1,21 @@
 "use client";
 import { PeriodsSelect } from "@/components/metrics/periods_select";
 import { useTemperatureUnit } from "@/components/metrics/settings";
-import {
-  ChartContainer,
-  ChartTooltip,
-  type ChartConfig,
-} from "@/components/ui/chart";
+import { ChartTooltip } from "@/components/ui/chart";
 import { EmptyState } from "@/components/ui/empty-state";
 import useWebsocket from "@/hooks/ws";
 import { formatByte } from "@/lib/format";
+import { cn } from "@/lib/utils";
 import { Agent } from "@/types/api/agent";
 import Endpoints from "@/types/api/endpoints";
 import { MetricsPeriod } from "@/types/api/metrics/metrics";
 import type { AggregateType } from "@/types/api/metrics/system_info";
 import { Box, Heading, HStack, Stack, Text } from "@chakra-ui/react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { LuGlobe } from "react-icons/lu";
-import { Area, AreaChart, XAxis, YAxis } from "recharts";
+import { useEffectOnce } from "react-use";
+import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis } from "recharts";
+import { Label } from "../ui/label";
 
 export const SystemInfoGraphsPage: React.FC<{
   agent: Agent;
@@ -158,14 +157,14 @@ const colorMap: Record<string, string> = {
   memory_usage: "hsl(var(--chart-4))",
 };
 
-const randomColor = (key: string) => {
+const color = (key: string) => {
   if (!colorMap[key]) {
     colorMap[key] = `hsla(${Math.floor(Math.random() * 360)}, 100%, 70%, 1)`;
   }
   return colorMap[key];
 };
 
-const timestampTicks = (data: Record<string, any>[]) => {
+const getTimestampTicks = (data: Record<string, any>[]) => {
   const every = Math.floor(data.length / 10);
   return data
     .map((item, index) => {
@@ -192,6 +191,7 @@ const Chart: React.FC<{
     }),
     { json: true },
   );
+
   if (!data || !data.data?.length) {
     return (
       <ChartOuter label={label} description={description}>
@@ -200,94 +200,93 @@ const Chart: React.FC<{
     );
   }
 
-  const chartConfig = Object.keys(data.data[0]!).reduce((acc, key) => {
-    if (key === "timestamp") return acc;
-    acc[key] = {
-      label: key,
-      color: randomColor(key),
-    };
-    return acc;
-  }, {} as ChartConfig) satisfies ChartConfig;
-
   return (
     <ChartOuter label={label} description={description}>
-      <ChartContainer config={chartConfig} className="max-h-[200px] w-full">
-        <AreaChart accessibilityLayer data={data.data}>
-          <ChartTooltip
-            content={(props) => {
-              const { active, payload } = props;
-              if (!active || !payload?.length) return null;
-              return (
-                <Stack bg="bg.muted" p="2" borderRadius="lg">
-                  <Text fontSize="sm" fontWeight="medium">
-                    {new Date(
-                      (payload[0]!.payload as Record<string, any>).timestamp *
-                        1000,
-                    ).toLocaleString(undefined, {
-                      month: "2-digit",
-                      day: "2-digit",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </Text>
-                  <Stack gap="0.5">
-                    {Object.entries(chartConfig).reduce(
-                      (acc, [key, config], index) => {
-                        if (key === "timestamp") return acc;
-                        const item = payload[index];
-                        if (!item) return acc;
-                        if (item.value === 0) return acc;
-                        acc.push(
-                          <HStack gap="2" justify="space-between">
-                            <HStack gap="2">
-                              <Box
-                                w="2"
-                                h="2"
-                                bg={randomColor(key)}
-                                borderRadius="full"
-                              />
-                              <Text fontSize="sm" fontWeight="medium">
-                                {config.label}
-                              </Text>
-                            </HStack>
-                            <Text fontSize="sm" fontWeight="medium">
-                              {yAxisFormatter(item.value)}
-                            </Text>
-                          </HStack>,
-                        );
-                        return acc;
-                      },
-                      [] as React.ReactNode[],
-                    )}
-                  </Stack>
-                </Stack>
-              );
-            }}
-          />
-          {Object.entries(chartConfig).reduce((acc, [key, config]) => {
-            if (key === "timestamp") return acc;
-            acc.push(
-              <Area
-                key={key}
-                dataKey={key}
-                fill={config.color}
-                radius={4}
-                type="monotone"
-              />,
-            );
-            return acc;
-          }, [] as React.ReactNode[])}
-          <XAxis
-            dataKey="timestamp"
-            tickLine={false}
-            tickMargin={10}
-            axisLine={false}
-            tickFormatter={formatTimestamp}
-            ticks={timestampTicks(data.data)}
-          />
-          <YAxis tickFormatter={yAxisFormatter} axisLine={true} />
-        </AreaChart>
-      </ChartContainer>
+      <ChartInner data={data.data} yAxisFormatter={yAxisFormatter} />
     </ChartOuter>
+  );
+};
+
+const ChartInner: React.FC<{
+  data: Record<string, any>[];
+  yAxisFormatter: (value: any) => string;
+}> = ({ data, yAxisFormatter }) => {
+  const [keys, setKeys] = useState<string[]>([]);
+  useEffectOnce(() => {
+    setKeys(Object.keys(data[0]!).filter((key) => key !== "timestamp"));
+  });
+
+  return (
+    <ResponsiveContainer
+      className={cn(
+        "[&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border flex aspect-video justify-center text-xs [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-hidden [&_.recharts-sector]:outline-hidden [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-surface]:outline-hidden",
+        "max-h-[200px] w-full",
+      )}
+    >
+      <AreaChart accessibilityLayer data={data}>
+        <ChartTooltip
+          content={(props) => {
+            const { active, payload } = props;
+            if (!active || !payload?.length) return null;
+            return (
+              <Stack bg="bg.muted" p="2" borderRadius="lg">
+                <Text fontSize="sm" fontWeight="medium">
+                  {new Date(
+                    (payload[0]!.payload as Record<string, any>).timestamp *
+                      1000,
+                  ).toLocaleString(undefined, {
+                    month: "2-digit",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </Text>
+                <Stack gap="0.5">
+                  {payload.reduce((acc, { dataKey }, index) => {
+                    if (dataKey === "timestamp") return acc;
+                    const item = payload[index];
+                    if (!item) return acc;
+                    if (item.value === 0) return acc;
+                    acc.push(
+                      <HStack gap="2" justify="space-between">
+                        <HStack gap="2">
+                          <Box
+                            w="2"
+                            h="2"
+                            bg={color(dataKey as string)}
+                            borderRadius="full"
+                          />
+                          <Label>{dataKey}</Label>
+                        </HStack>
+                        <Label>{yAxisFormatter(item.value)}</Label>
+                      </HStack>,
+                    );
+                    return acc;
+                  }, [] as React.ReactNode[])}
+                </Stack>
+              </Stack>
+            );
+          }}
+        />
+        {keys.map((key) => (
+          <Area
+            key={key}
+            dataKey={key}
+            fill={color(key)}
+            radius={4}
+            type="monotone"
+          />
+        ))}
+        <XAxis
+          dataKey="timestamp"
+          tickLine={false}
+          tickMargin={10}
+          axisLine={false}
+          tickFormatter={formatTimestamp}
+          ticks={getTimestampTicks(data)}
+        />
+        <YAxis tickFormatter={yAxisFormatter} axisLine={true} />
+      </AreaChart>
+    </ResponsiveContainer>
   );
 };
