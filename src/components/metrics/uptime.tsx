@@ -20,7 +20,6 @@ import {
   Box,
   Card,
   Center,
-  ClientOnly,
   Group,
   HStack,
   Link,
@@ -28,7 +27,7 @@ import {
   Spinner,
   Stack,
 } from "@chakra-ui/react";
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { useWindowSize } from "react-use";
 import { FavIcon } from "../dashboard/favicon";
 import { HealthStatus, HealthStatusTag } from "../health_status";
@@ -92,9 +91,7 @@ export const Uptime: FC<{
           columnGap={colsGap.val}
         >
           {uptime.data.map((metrics) => (
-            <ClientOnly key={metrics.alias}>
-              <Layout metrics={metrics} />
-            </ClientOnly>
+            <Layout key={metrics.alias} metrics={metrics} />
           ))}
         </SimpleGrid>
         {uptime.data.length < uptime.total && (
@@ -111,15 +108,19 @@ export const Uptime: FC<{
 
 const Layout = ({ metrics }: { metrics: RouteUptimeMetrics }) => {
   const layoutMode = useLayoutMode();
-  const AppCard = React.memo(
-    layoutMode.val === "square_card"
+  const AppCard = React.useMemo(() => {
+    return layoutMode.val === "square_card"
       ? RouteUptimeSquare
       : layoutMode.val === "rect_card"
         ? RouteUptimeMinimal
-        : RouteUptime,
-    (prev, next) => prev.metrics.alias === next.metrics.alias,
-  );
-  const currentHost = window.location.host.split(".").slice(1).join(".");
+        : RouteUptime;
+  }, [layoutMode.val]);
+  const [currentHost, setCurrentHost] = useState("");
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCurrentHost(window.location.host.split(".").slice(1).join("."));
+    }
+  }, []);
 
   return (
     <Link
@@ -209,7 +210,9 @@ const RouteUptimeSquare: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
               size={`${squareCardSize.val / 2.5}px`}
               item={{ alias: metrics.alias } as HomepageItem}
             />
-            <Label>{metrics.display_name || metrics.alias}</Label>
+            <Label w={`${squareCardSize.val * 0.85}px`} textAlign={"center"}>
+              {metrics.display_name || metrics.alias}
+            </Label>
           </Stack>
         </Center>
         <HStack gap="2" w="full" justify={"space-between"} pt="1">
@@ -233,7 +236,7 @@ const RouteUptimeSquare: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
 
 const RouteUptimeMinimal: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
   return (
-    <Card.Root size="sm" w="full" maxH="180px" title={metrics.alias} {...props}>
+    <Card.Root size="sm" maxH="180px" title={metrics.alias} {...props}>
       <Card.Body>
         <HStack w="full" justifyContent={"space-between"}>
           <HStack gap="2">
