@@ -8,7 +8,7 @@ export default function NavItemText({
   text,
 }: Readonly<{ href: string; text: string }>) {
   const pathname = usePathname();
-  if (pathname === href) {
+  if (pathname.split("/")[1] === href.slice(1)) {
     return <Text color="fg.success">{text}</Text>;
   }
   return <Text>{text}</Text>;
