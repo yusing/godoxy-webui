@@ -94,6 +94,18 @@
   [data-scope="popover"][data-part="content"] {
     background-color: var(--bg-color);
   }
+  [data-scope="tabs"][data-part="list"] {
+    background-color: var(--input-bg);
+  }
+  [data-scope="tabs"][data-part="trigger"] {
+    background-color: var(--input-bg);
+  }
+  [data-scope="tabs"][data-part="trigger"][aria-selected="true"] {
+    background-color: var(--on-bg-emphasized);
+  }
+  [data-scope="tabs"][data-part="indicator"] {
+    background-color: var(--chakra-colors-bg);
+  }
   .chakra-checkbox__control[data-state="unchecked"] {
     background-color: var(--input-bg);
   }
@@ -101,7 +113,7 @@
     background-color: #26282b;
   }
   [aria-selected="true"] {
-    background-color: var(--on-bg-color);
+    background-color: var(--on-bg-emphasized);
   }
 }
 

@@ -83,6 +83,30 @@ namespace Endpoints {
   export const HEALTH = "/api/health";
   export const LOGS = "/api/logs";
   export const SET_HOMEPAGE = "/api/homepage/set";
+
+  export const DOCKER_INFO = "/api/docker/info";
+  export const DOCKER_CONTAINERS = "/api/docker/containers";
+  export const DOCKER_LOGS = ({
+    server,
+    container,
+    from,
+    to,
+    stdout = true,
+    stderr = true,
+  }: {
+    server: string;
+    container: string;
+    from?: string;
+    to?: string;
+    stdout?: boolean;
+    stderr?: boolean;
+  }) =>
+    `/api/docker/logs/${server}/${container}${buildQuery({
+      from,
+      to,
+      stdout,
+      stderr,
+    })}`;
 }
 
 export type ConfigFileType = "config" | "provider" | "middleware";

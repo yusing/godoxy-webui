@@ -6,7 +6,7 @@ export const LogLine: React.FC<{ line: string }> = ({ line }) => {
   return (
     <Prose
       as="pre"
-      fontSize={"md"}
+      fontSize={"sm"}
       w="full"
       lineHeight="1.3rem"
       dangerouslySetInnerHTML={{

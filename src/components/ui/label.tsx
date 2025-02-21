@@ -11,6 +11,7 @@ export const Label: FC<PropsWithChildren<TextProps>> = ({
       fontWeight={"medium"}
       textOverflow={"ellipsis"}
       textWrap={"nowrap"}
+      whiteSpace={"nowrap"}
       {...props}
     >
       {children}
