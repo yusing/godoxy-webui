@@ -7,8 +7,9 @@
 const config = {
   experimental: {
     optimizePackageImports: ["@chakra-ui/react"],
-    reactCompiler: process.env.NODE_ENV === "development",
+    reactCompiler: true,
   },
+  transpilePackages: ["geist"],
   output: "standalone",
 };
 

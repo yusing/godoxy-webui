@@ -13,7 +13,9 @@ import {
   footerHeight,
   navBarHeight,
 } from "@/styles";
+import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
+
 import dynamic from "next/dynamic";
 import { type ReactNode } from "react";
 
@@ -29,7 +31,7 @@ export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
     <html
       suppressHydrationWarning
       lang="en"
-      className={`${GeistSans.variable} antialiased`}
+      className={`${GeistSans.className} ${GeistMono.variable} antialiased`}
     >
       {process.env.NODE_ENV === "development" && (
         <head>
