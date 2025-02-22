@@ -43,9 +43,9 @@ const Logs: FC<{
       Endpoints.DOCKER_LOGS({ server, container: container.id }),
     );
     setReadyState(ReadyState.CONNECTING);
+    setLines([]);
     ws.onopen = () => {
       setReadyState(ReadyState.OPEN);
-      setLines([]);
     };
     ws.onmessage = (event) => {
       setLines((prev) => prev.concat(parseLogLine(event.data)).slice(-100));
