@@ -9,6 +9,7 @@ type Options = {
 };
 
 export enum ReadyState {
+  UNINITIALIZED = -1,
   CONNECTING = 0,
   OPEN = 1,
   CLOSING = 2,
@@ -51,7 +52,7 @@ function getOrCreateWebSocket<T>(
 export default function useWebsocket<T>(endpoint: string, options?: Options) {
   const [data, setData] = React.useState<T | null>(null);
   const [readyState, setReadyState] = React.useState<number>(
-    WebSocket.CONNECTING,
+    ReadyState.UNINITIALIZED,
   );
 
   useEffect(() => {

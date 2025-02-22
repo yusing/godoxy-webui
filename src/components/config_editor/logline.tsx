@@ -7,7 +7,8 @@ export const LogLine: React.FC<{ line: string }> = ({ line }) => {
     <Prose
       as="pre"
       fontSize={"sm"}
-      w="full"
+      w="max-content"
+      textWrap={"wrap"}
       lineHeight="1.3rem"
       dangerouslySetInnerHTML={{
         __html: convertANSI.toHtml(

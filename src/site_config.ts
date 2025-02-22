@@ -9,7 +9,7 @@ export const siteConfig = {
     { label: "Config Editor", href: "/config_editor" },
     { label: "Proxies", href: "/proxies" },
     { label: "Metrics", href: "/metrics", bg: "unset" },
-    { label: "Logs", href: "/logs" },
+    { label: "Docker", href: "/docker" },
     { label: "Docs", href: "/docs/Home" },
   ],
   links: {

@@ -59,8 +59,8 @@ function Category({
     <Card.Root
       size="sm"
       variant={"subtle"}
-      py={categoryPaddingY.val}
       px={categoryPaddingX.val}
+      pt={categoryPaddingY.val}
     >
       <Card.Header pt={0} mx={-1}>
         <Editable.Root
@@ -95,7 +95,7 @@ function Category({
           <Editable.Input mt="-1" w="fit" />
         </Editable.Root>
       </Card.Header>
-      <Card.Body>
+      <Card.Body pb={categoryPaddingY.val}>
         <Conditional
           condition={gridMode.val}
           whenTrue={SimpleGrid}

@@ -1,4 +1,5 @@
 import { Tag as ChakraTag } from "@chakra-ui/react";
+import { GeistMono } from "geist/font/mono";
 import * as React from "react";
 
 export interface TagProps extends ChakraTag.RootProps {
@@ -24,7 +25,9 @@ export const Tag = React.forwardRef<HTMLSpanElement, TagProps>(
         {startElement && (
           <ChakraTag.StartElement>{startElement}</ChakraTag.StartElement>
         )}
-        <ChakraTag.Label>{children}</ChakraTag.Label>
+        <ChakraTag.Label className={GeistMono.className}>
+          {children}
+        </ChakraTag.Label>
         {endElement && (
           <ChakraTag.EndElement>{endElement}</ChakraTag.EndElement>
         )}
