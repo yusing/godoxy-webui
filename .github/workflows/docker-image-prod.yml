@@ -1,0 +1,12 @@
+name: Docker Image CI
+
+on:
+  push:
+    tags: [v*]
+
+jobs:
+  build-prod:
+    uses: ./.github/workflows/docker-image.yml
+    with:
+      image_name: ${{ github.repository_owner }}/godoxy-frontend
+      tag: latest
