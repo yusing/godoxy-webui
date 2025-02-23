@@ -180,6 +180,9 @@ const SystemInfoRow: React.FC<{ agent: Agent }> = ({ agent }) => {
 export const sensorIcons: Record<string, React.ReactNode> = {
   coretemp_package_id_0: <LuCpu />,
   coretemp_package_id_1: <LuCpu />,
+  coretemp_physical_id_0: <LuCpu />,
+  coretemp_physical_id_1: <LuCpu />,
+  cpu_thermal: <LuCpu />,
   nvme_composite: <LuHardDrive />,
 };
 
