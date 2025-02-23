@@ -53,7 +53,13 @@ export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-export function updateRemote(current: ConfigFile, content: string) {
+export function updateRemote(
+  current: ConfigFile,
+  content: string,
+  props: {
+    toast?: boolean;
+  },
+) {
   return fetchEndpoint(Endpoints.fileContent(current.type, current.filename), {
     method: "PUT",
     body: content,
@@ -61,11 +67,13 @@ export function updateRemote(current: ConfigFile, content: string) {
       "Content-Type": "application/yaml",
     },
   })
-    .then(() =>
-      toaster.success({
-        title: "File saved",
-        description: current.filename,
-      }),
+    .then(
+      () =>
+        props.toast &&
+        toaster.create({
+          title: "File saved",
+          description: current.filename,
+        }),
     )
     .catch(toastError);
 }

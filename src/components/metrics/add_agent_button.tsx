@@ -243,7 +243,7 @@ function AddAgentDialogButtonInner() {
                     `${form.host}:${form.port}`,
                     configContent!,
                   );
-                  await updateRemote(config, content);
+                  await updateRemote(config, content, { toast: false });
                   setConfigContent(content);
                   return e;
                 })
