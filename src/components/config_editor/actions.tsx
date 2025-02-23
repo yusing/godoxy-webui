@@ -35,7 +35,9 @@ export default function ConfigFileActions() {
         aria-label="Save File"
         icon={<MdSave />}
         text="Save File"
-        onClick={() => content && updateRemote(current, content)}
+        onClick={() =>
+          content && updateRemote(current, content, { toast: true })
+        }
       />
     </Stack>
   );
