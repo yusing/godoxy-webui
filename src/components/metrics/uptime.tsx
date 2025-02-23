@@ -27,8 +27,8 @@ import {
   Spinner,
   Stack,
 } from "@chakra-ui/react";
-import React, { FC, useEffect, useState } from "react";
-import { useWindowSize } from "react-use";
+import React, { FC, useState } from "react";
+import { useLocation, useWindowSize } from "react-use";
 import { FavIcon } from "../dashboard/favicon";
 import { HealthStatus, HealthStatusTag } from "../health_status";
 import { EmptyState } from "../ui/empty-state";
@@ -115,16 +115,12 @@ const Layout = ({ metrics }: { metrics: RouteUptimeMetrics }) => {
         ? RouteUptimeMinimal
         : RouteUptime;
   }, [layoutMode.val]);
-  const [currentHost, setCurrentHost] = useState("");
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setCurrentHost(window.location.host.split(".").slice(1).join("."));
-    }
-  }, []);
+  const location = useLocation();
+  const currentHost = location.host?.split(".").slice(1).join(".") ?? "";
 
   return (
     <Link
-      href={`${window.location.protocol}//${metrics.alias}.${currentHost}/`}
+      href={`${location.protocol}//${metrics.alias}.${currentHost}/`}
       target="_blank"
       unstyled
     >

@@ -16,28 +16,25 @@ import {
   Stack,
   Tabs,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { LuCpu, LuHeartPulse } from "react-icons/lu";
-export default function MetricsPage() {
-  return (
-    <ClientOnly>
-      <MetricsPageInner />
-    </ClientOnly>
-  );
-}
+import { useLocation } from "react-use";
 
-function MetricsPageInner() {
+export default function MetricsPage() {
   const [filter, setFilter] = useState("");
-  const [tab, setTab] = useState(window.location.hash.slice(1) || "uptime");
+  const [tab, setTab] = useState(useLocation().hash?.slice(1) || "uptime");
   const [period, setPeriod] = useState<MetricsPeriod>("1h");
+  const router = useRouter();
+
   return (
     <Stack mx="16" my="8">
       <Tabs.Root
         value={tab}
         onValueChange={({ value }) => {
           setTab(value);
-          window.location.hash = `#${value}`;
+          router.push(`#${value}`);
         }}
         variant={"enclosed"}
         lazyMount

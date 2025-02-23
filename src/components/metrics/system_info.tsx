@@ -41,7 +41,7 @@ export default function SystemInfo() {
   }
   return (
     <Table.ScrollArea borderRadius={"lg"}>
-      <Table.Root size="md" stickyHeader interactive>
+      <Table.Root size="md" stickyHeader>
         <Table.ColumnGroup>
           <Table.Column />
           <Table.Column htmlWidth="22%" />
@@ -123,6 +123,8 @@ const SystemInfoRow: React.FC<{ agent: Agent }> = ({ agent }) => {
       onClick={() => {
         router.push(`/metrics/system_info/${agent.name}/${agent.addr ?? ""}`);
       }}
+      cursor={"pointer"}
+      _hover={{ bg: "var(--hover-bg)" }}
     >
       <Table.Cell>{agent.name}</Table.Cell>
       <Table.Cell>

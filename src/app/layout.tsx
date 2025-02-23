@@ -1,6 +1,6 @@
 import { Provider } from "@/components/ui/provider";
 import "@/styles/globals.css";
-import { Box, ClientOnly, Link, Text, VStack } from "@chakra-ui/react";
+import { Box, Link, Text, VStack } from "@chakra-ui/react";
 
 import Navbar from "@/components/navbar";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -47,15 +47,13 @@ export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
         >
           <AuthProvider>
             <VStack w="100vw" h="100vh">
-              <ClientOnly>
-                <Navbar
-                  h={navBarHeight}
-                  position={"fixed"}
-                  top={0}
-                  pt="0"
-                  px="20"
-                />
-              </ClientOnly>
+              <Navbar
+                h={navBarHeight}
+                position={"fixed"}
+                top={0}
+                pt="0"
+                px="20"
+              />
               <Box
                 as="main"
                 position={"fixed"}

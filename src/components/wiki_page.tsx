@@ -9,6 +9,7 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import MarkdownPreview from "@uiw/react-markdown-preview";
+import { usePathname } from "next/navigation";
 import { useAsync } from "react-use";
 import sideBar from "./wiki_sidebar.json";
 
@@ -16,6 +17,7 @@ export default function WikiPage({ file }: Readonly<{ file: string }>) {
   const home = useAsync(async () => {
     return await fetch(`/wiki/${file}.md`).then((res) => res.text());
   });
+  const pathname = usePathname();
   return (
     <HStack gap="4" align={"start"} justify={"space-between"}>
       <Box overflow={"auto"}>
@@ -36,8 +38,7 @@ export default function WikiPage({ file }: Readonly<{ file: string }>) {
                       href={item.link}
                       fontWeight={"medium"}
                       colorPalette={
-                        window.location.pathname.slice("/docs/".length) ===
-                        item.link
+                        pathname.slice("/docs/".length) === item.link
                           ? "purple"
                           : "blue"
                       }
