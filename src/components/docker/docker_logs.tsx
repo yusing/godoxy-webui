@@ -37,7 +37,27 @@ const Logs: FC<{
   );
   const topRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
-  const [isScrolledToBottom, setIsScrolledToBottom] = useState(false);
+  const logsRef = useRef<HTMLDivElement>(null);
+  const [chevronDirection, setChevronDirection] = useState<"up" | "down">("up");
+
+  useEffect(() => {
+    const calcChevronShouldUp = () => {
+      if (!logsRef.current) {
+        return;
+      }
+      setChevronDirection(
+        logsRef.current.scrollTop >= logsRef.current.scrollHeight / 2
+          ? "up"
+          : "down",
+      );
+    };
+    logsRef.current?.addEventListener("scroll", calcChevronShouldUp);
+
+    return () => {
+      logsRef.current?.removeEventListener("scroll", calcChevronShouldUp);
+    };
+  }, [logsRef.current]);
+
   useEffect(() => {
     const ws = new WebSocket(
       Endpoints.DOCKER_LOGS({ server, container: container.id }),
@@ -52,12 +72,14 @@ const Logs: FC<{
     };
     ws.onclose = () => {
       setReadyState(ReadyState.CLOSED);
-      setLines([]);
+      setLines((prev) =>
+        prev.concat([{ time: "", content: "Connection closed" }]),
+      );
     };
     return () => {
       ws.close();
     };
-  }, [server, container]);
+  }, [server, container.id]);
   return (
     <Stack w="full" h={bodyHeight}>
       <Float placement="bottom-end" bottom="12" right="12">
@@ -67,16 +89,14 @@ const Logs: FC<{
           color="white"
           aria-label="Scroll to bottom"
           onClick={() => {
-            if (isScrolledToBottom) {
+            if (chevronDirection === "up") {
               topRef.current?.scrollIntoView({ behavior: "smooth" });
-              setIsScrolledToBottom(false);
             } else {
               bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-              setIsScrolledToBottom(true);
             }
           }}
         >
-          <Icon as={isScrolledToBottom ? FaChevronUp : FaChevronDown} />
+          <Icon as={chevronDirection === "up" ? FaChevronUp : FaChevronDown} />
           {/* TODO: fix scroll to bottom */}
         </IconButton>
       </Float>
@@ -86,7 +106,7 @@ const Logs: FC<{
         <Tag>{container.image}</Tag>
         <ContainerStatusIndicator status={container.state} withText />
       </HStack>
-      <Stack gap="1" overflowY="auto">
+      <Stack gap="1" overflowY="auto" ref={logsRef}>
         <Box ref={topRef} />
         <For
           each={lines}
@@ -127,7 +147,7 @@ export function DockerLogs() {
         <SearchInputProvider>
           <Stack gap="4">
             <SearchInput position={"fixed"} top="4" />
-            <ServerList />
+            <ServerList onItemClick={() => {}} />
           </Stack>
         </SearchInputProvider>
         <ServerOverview />

@@ -73,8 +73,13 @@ export function SearchInputProvider({
 }
 
 export function ServerListDrawerButton() {
+  const [open, setOpen] = useState(false);
   return (
-    <DrawerRoot placement={"start"}>
+    <DrawerRoot
+      placement={"start"}
+      open={open}
+      onOpenChange={({ open }) => setOpen(open)}
+    >
       <DrawerBackdrop />
       <DrawerTrigger asChild>
         <IconButton variant={"ghost"} size="sm">
@@ -86,7 +91,7 @@ export function ServerListDrawerButton() {
           <DrawerHeader>
             <SearchInput />
           </DrawerHeader>
-          <ServerList px="6" />
+          <ServerList px="6" onItemClick={() => setOpen(false)} />
         </DrawerContent>
       </SearchInputProvider>
     </DrawerRoot>
@@ -95,7 +100,9 @@ export function ServerListDrawerButton() {
 
 let scrollPosition = 0;
 
-export function ServerList(props: Readonly<StackProps>) {
+export function ServerList(
+  props: Readonly<StackProps & { onItemClick: () => void }>,
+) {
   const { keyword } = useSearchInput();
   const { containers, setContainer } = useContainerContext();
   const filteredContainers = useMemo(() => {
@@ -123,12 +130,13 @@ export function ServerList(props: Readonly<StackProps>) {
     if (ref.current && scrollPosition > 0) {
       ref.current.scrollTo(0, scrollPosition);
     }
-    if (typeof window !== "undefined") {
-      ref.current?.addEventListener("scroll", () => {
-        scrollPosition = ref.current?.scrollTop ?? 0;
-        console.log(scrollPosition);
-      });
-    }
+    const handleScroll = () => {
+      scrollPosition = ref.current?.scrollTop ?? 0;
+    };
+    ref.current?.addEventListener("scroll", handleScroll);
+    return () => {
+      ref.current?.removeEventListener("scroll", handleScroll);
+    };
   }, []);
   return (
     <Stack overflow="auto" h={bodyHeight} ref={ref} minW="200px" {...props}>
@@ -143,7 +151,12 @@ export function ServerList(props: Readonly<StackProps>) {
       </Text>
       <For each={Object.entries(containerByServer)}>
         {([server, containers]) => (
-          <ContainerList key={server} server={server} containers={containers} />
+          <ContainerList
+            key={server}
+            server={server}
+            containers={containers}
+            onItemClick={props.onItemClick}
+          />
         )}
       </For>
     </Stack>
@@ -156,10 +169,11 @@ function DummyContainerList() {
   ));
 }
 
-const ContainerList: FC<{ server: string; containers: Container[] }> = ({
-  server,
-  containers,
-}) => {
+const ContainerList: FC<{
+  server: string;
+  containers: Container[];
+  onItemClick: () => void;
+}> = ({ server, containers, onItemClick }) => {
   const [collapsed, setCollapsed] = useState(false);
   return (
     <Collapsible.Root
@@ -181,6 +195,7 @@ const ContainerList: FC<{ server: string; containers: Container[] }> = ({
               container={container}
               pl={4}
               py="2"
+              onItemClick={onItemClick}
             />
           )}
         </For>
@@ -192,17 +207,22 @@ const ContainerList: FC<{ server: string; containers: Container[] }> = ({
 export const ContainerItem: FC<
   {
     container: Container;
+    onItemClick: () => void;
   } & StackProps
-> = ({ container, ...props }) => {
+> = ({ container, onItemClick, ...props }) => {
   const { container: current, setContainer } = useContainerContext();
   return (
     <HStack
       {...props}
-      onClick={() => setContainer(container)}
+      onClick={() => {
+        setContainer(container);
+        onItemClick();
+      }}
       _hover={{
         bg: "var(--hover-bg)",
       }}
       gap="2"
+      w="full"
     >
       <ContainerStatusIndicator status={container.state} />
       <Label color={current?.id === container.id ? "fg.success" : "unset"}>

@@ -124,7 +124,6 @@ export const LocalStorageSelect: React.FC<LocalStorageSelectProps> = (
       defaultValue={[collection.firstValue ?? item.val]}
       value={[item.val]}
       onValueChange={({ value }) => {
-        console.log(value);
         if (value[0] === LocalStorageSelectShowAll) {
           return item.set("");
         }
