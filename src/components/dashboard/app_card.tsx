@@ -4,7 +4,6 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogRoot,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -18,6 +17,7 @@ import { formatHealthInfo, healthInfoUnknown } from "@/types/api/health";
 import { overrideHomepage } from "@/types/api/homepage";
 import { type HomepageItem } from "@/types/api/route/homepage_item";
 import {
+  DialogRootProvider,
   Group,
   HStack,
   Input,
@@ -28,6 +28,7 @@ import {
   Stack,
   Text,
   Tooltip,
+  useDialog,
 } from "@chakra-ui/react";
 import React, { useMemo } from "react";
 import { HealthStatus } from "../health_status";
@@ -120,7 +121,9 @@ export const AppCardInner: React.FC<AppCardProps> = ({ item, ...rest }) => {
   );
 };
 
-export const AppCard: React.FC<AppCardProps> = ({ ...rest }) => {
+export const AppCard: React.FC<
+  AppCardProps & { containerRef: React.RefObject<HTMLDivElement | null> }
+> = ({ containerRef, ...rest }) => {
   const [curItem, setCurItem] = React.useState(rest.item);
   const [menuOpen, setMenuOpen] = React.useState(false);
 
@@ -162,11 +165,13 @@ export const AppCard: React.FC<AppCardProps> = ({ ...rest }) => {
         <MenuItem value="edit" aria-label="Edit app">
           <EditItemButton
             item={curItem}
+            containerRef={containerRef}
             onUpdate={(e) => {
               // rest.item.category = e.category;
               setCurItem(e);
               setMenuOpen(false);
             }}
+            onClose={() => setMenuOpen(false)}
           />
         </MenuItem>
         <MenuItem
@@ -217,11 +222,15 @@ const FieldInput = ({
 function EditItemButton({
   item,
   onUpdate,
+  onClose,
+  containerRef,
 }: Readonly<{
   item: HomepageItem;
   onUpdate: (newItem: HomepageItem) => void;
+  onClose: () => void;
+  containerRef: React.RefObject<HTMLElement | null>;
 }>) {
-  const [open, setOpen] = React.useState(false);
+  const dialog = useDialog();
 
   const item_ = useMemo(() => structuredClone(item), [item]);
 
@@ -254,28 +263,28 @@ function EditItemButton({
       .then(() => overrideHomepage("item_visible", [data.alias], true))
       .then(() => {
         onUpdate(data);
-        setOpen(false);
+        dialog.setOpen(false);
       })
       .catch(toastError);
   };
 
   return (
-    <DialogRoot
+    <DialogRootProvider
+      value={dialog}
       size="lg"
       placement="center"
       motionPreset="slide-in-bottom"
-      open={open}
-      onOpenChange={({ open }) => setOpen(open)}
       lazyMount
       unmountOnExit
+      onExitComplete={onClose}
     >
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <HStack gap="2">
           <LuPencil />
           Edit App
         </HStack>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent portalRef={containerRef} portalled>
         <DialogHeader>
           <DialogTitle fontSize={"md"} fontWeight={"medium"}>
             Edit App
@@ -323,6 +332,6 @@ function EditItemButton({
           </form>
         </DialogBody>
       </DialogContent>
-    </DialogRoot>
+    </DialogRootProvider>
   );
 }

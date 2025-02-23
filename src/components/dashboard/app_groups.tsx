@@ -13,7 +13,7 @@ import {
   SimpleGrid,
   Stack,
 } from "@chakra-ui/react";
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import {
   getHiddenHomepageItems,
@@ -50,6 +50,8 @@ function Category({
     categoryPaddingX,
     categoryPaddingY,
   } = useAllSettings();
+
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const [categoryName, setCategoryName] = useState(category);
 
@@ -96,6 +98,7 @@ function Category({
         </Editable.Root>
       </Card.Header>
       <Card.Body pb={categoryPaddingY.val}>
+        <div ref={containerRef} />
         <Conditional
           condition={gridMode.val}
           whenTrue={SimpleGrid}
@@ -124,7 +127,13 @@ function Category({
           }}
         >
           <For each={items}>
-            {(item) => <AppCard key={item.alias} item={item} />}
+            {(item) => (
+              <AppCard
+                key={item.alias}
+                item={item}
+                containerRef={containerRef}
+              />
+            )}
           </For>
         </Conditional>
       </Card.Body>
@@ -169,7 +178,7 @@ export default function AppGroups({
     <Stack direction={isMobile ? "column" : "row"}>
       <DashboardSettingsButton
         size="md"
-        hiddenApps={getHiddenHomepageItems(homepageItems.value ?? {})}
+        getHiddenApps={() => getHiddenHomepageItems(homepageItems.value ?? {})}
       />
       <Stack gap={categoryGroupGap.val}>
         {/* Categories with two or more items */}

@@ -27,10 +27,10 @@ import { AppCardInner } from "./app_card";
 
 export function DashboardSettingsButton({
   size,
-  hiddenApps,
+  getHiddenApps,
 }: Readonly<{
   size?: "sm" | "md" | "lg";
-  hiddenApps: HomepageItem[];
+  getHiddenApps: () => HomepageItem[];
 }>) {
   const contentRef = React.useRef<HTMLDivElement>(null);
 
@@ -66,7 +66,7 @@ export function DashboardSettingsButton({
           </Stack>
         </Tabs.Content>
         <Tabs.Content value="hidden_apps">
-          <HiddenApps hiddenApps={hiddenApps} />
+          <HiddenApps getHiddenApps={getHiddenApps} />
         </Tabs.Content>
       </Tabs.Root>
     </SettingsButton>
@@ -86,8 +86,12 @@ export const useAllSettings = () => ({
   providerFilter: useSetting("dashboard_provider_filter", ""),
 });
 
-function HiddenApps({ hiddenApps }: Readonly<{ hiddenApps: HomepageItem[] }>) {
+function HiddenApps({
+  getHiddenApps,
+}: Readonly<{ getHiddenApps: () => HomepageItem[] }>) {
   const [selected, { push, removeAt, clear }] = useList<string>();
+
+  const hiddenApps = getHiddenApps();
 
   if (hiddenApps.length === 0) {
     return <EmptyState icon={<MdViewComfy />} title="No apps" />;

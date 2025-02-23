@@ -60,10 +60,12 @@
 [data-theme="light"] {
   --bg-color: var(--chakra-colors-bg);
   --input-bg: var(--chakra-colors-bg-subtle);
+  --on-bg-color: var(--chakra-colors-bg);
+  --on-bg-emphasized: var(--chakra-colors-bg-emphasized);
   --color-success: #00e000;
   --hover-bg: var(--chakra-colors-gray-100);
   .chakra-card__root {
-    background-color: transparent;
+    box-shadow: var(--chakra-shadows-xs);
   }
 }
 
@@ -77,9 +79,6 @@
   --hover-bg: #26282b;
   body {
     background-color: var(--bg-color);
-  }
-  .chakra-card__root {
-    background-color: var(--on-bg-color);
   }
   .chakra-table__row {
     background-color: var(--on-bg-emphasized);
@@ -117,5 +116,6 @@
 }
 
 .chakra-card__root {
+  background-color: var(--on-bg-color);
   border-radius: var(--radius-lg);
 }
