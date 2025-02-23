@@ -9,11 +9,14 @@ on:
       image_name:
         required: true
         type: string
+      old_image_name:
+        required: false
+        type: string
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ inputs.image_name }}
-  OLD_IMAGE_NAME: ${{ github.repository}}
+  OLD_IMAGE_NAME: ${{ inputs.old_image_name }}
 
 jobs:
   build:
@@ -131,6 +134,7 @@ jobs:
             $(printf '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@sha256:%s ' *)
 
       - name: Old image name
+        if: inputs.old_image_name != ''
         run: |
           docker buildx imagetools create -t ${{ env.REGISTRY }}/${{ env.OLD_IMAGE_NAME }}:${{ steps.meta.outputs.version }}\
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
