@@ -7,7 +7,7 @@ export type PEMPair = {
   Cert: Uint8Array;
 };
 
-export function addAgent({
+export function verifyNewAgent({
   host,
   port,
   ca,
@@ -18,7 +18,7 @@ export function addAgent({
   ca: PEMPair;
   client: PEMPair;
 }) {
-  return fetchEndpoint(Endpoints.ADD_AGENT, {
+  return fetchEndpoint(Endpoints.VERIFY_NEW_AGENT, {
     method: "POST",
     body: JSON.stringify({ host: `${host}:${port}`, ca, client }),
   });

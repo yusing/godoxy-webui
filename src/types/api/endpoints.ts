@@ -63,7 +63,7 @@ namespace Endpoints {
     `/api/metrics/uptime${buildQuery({ period, interval, limit, offset, keyword })}`;
 
   export const NEW_AGENT = "/api/agents/new";
-  export const ADD_AGENT = "/api/agents/add";
+  export const VERIFY_NEW_AGENT = "/api/agents/verify";
 
   export const VERSION = "/api/version";
   export const AUTH = "/api/auth/callback";

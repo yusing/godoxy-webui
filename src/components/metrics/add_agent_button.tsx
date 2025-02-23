@@ -10,24 +10,30 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useConfigFileContext } from "@/hooks/config_file";
 import {
-  addAgent,
   AddAgentForm,
   AgentType,
   newAgent,
   NewAgentResponse,
+  verifyNewAgent,
 } from "@/lib/api/agent";
 import { toastError } from "@/types/api/endpoints";
 import { Code, Group, HStack, Input, Stack, Text } from "@chakra-ui/react";
-import { useState } from "react";
+import { Config } from "godoxy-schemas";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FaDocker, FaServer } from "react-icons/fa6";
 import { LuInfo, LuPlus } from "react-icons/lu";
+import { parse as parseYAML, stringify as stringifyYAML } from "yaml";
+import {
+  ConfigFileProvider,
+  updateRemote,
+} from "../config_editor/config_file_provider";
 import { Checkbox } from "../ui/checkbox";
 import { SegmentedControl } from "../ui/segmented-control";
 import { toaster } from "../ui/toaster";
 import { ToggleTip } from "../ui/toggle-tip";
-
 const agentTypes = {
   docker: {
     label: "Docker",
@@ -41,13 +47,21 @@ const agentTypes = {
 
 function Label({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <Text fontWeight={"medium"} textAlign={"left"} minW={"70px"} mr="2">
+    <Text fontWeight={"medium"} textAlign={"left"} minW={"85px"}>
       {children}
     </Text>
   );
 }
 
 export function AddAgentDialogButton() {
+  return (
+    <ConfigFileProvider>
+      <AddAgentDialogButtonInner />
+    </ConfigFileProvider>
+  );
+}
+
+function AddAgentDialogButtonInner() {
   const [open, setOpen] = useState(false);
   const [copyLoading, setCopyLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
@@ -62,6 +76,20 @@ export function AddAgentDialogButton() {
   const [type, setType] = useState<AgentType>("docker");
   const [explicitOnly, setExplicitOnly] = useState(false);
   const [agent, setAgent] = useState<NewAgentResponse | null>(null);
+  const {
+    current: config,
+    setCurrent: setConfig,
+    content: configContent,
+    setContent: setConfigContent,
+  } = useConfigFileContext();
+  useEffect(() => {
+    if (config.type != "config") {
+      setConfig({
+        type: "config",
+        filename: "config.yml",
+      });
+    }
+  }, [config]);
 
   return (
     <DialogRoot
@@ -99,8 +127,14 @@ export function AddAgentDialogButton() {
             }))}
           />
           <DialogDescription pt={2}>
-            Remember to add the agent to <Code>config.yml</Code> after adding
-            it.
+            The agent must be running on the system to connect.
+            <br /> Copy the{" "}
+            {type === "docker" ? (
+              <Code>compose.yml</Code>
+            ) : (
+              <Text>shell command</Text>
+            )}{" "}
+            below to add the agent to the system.
           </DialogDescription>
         </DialogHeader>
         <DialogBody>
@@ -132,8 +166,8 @@ export function AddAgentDialogButton() {
               <ToggleTip
                 content={
                   <Text>
-                    When enabled, only routes with GoDoxy labels{" "}
-                    <Code>proxy.*</Code> will be proxied by GoDoxy
+                    When enabled, only containers with GoDoxy labels{" "}
+                    <Code>proxy.*</Code> will be proxied
                   </Text>
                 }
               >
@@ -198,12 +232,21 @@ export function AddAgentDialogButton() {
             onClick={handleSubmit((form) => {
               if (!agent) return;
               setAddLoading(true);
-              addAgent({
+              verifyNewAgent({
                 host: form.host,
                 port: form.port,
                 ca: agent.ca,
                 client: agent.client,
               })
+                .then(async (e) => {
+                  const content = addAgentToConfig(
+                    `${form.host}:${form.port}`,
+                    configContent!,
+                  );
+                  await updateRemote(config, content);
+                  setConfigContent(content);
+                  return e;
+                })
                 .then(async (e) => {
                   setAgent(null);
                   setOpen(false);
@@ -222,4 +265,24 @@ export function AddAgentDialogButton() {
       </DialogContent>
     </DialogRoot>
   );
+}
+
+function addAgentToConfig(
+  agent_addr: `${string}:${number}`,
+  content: string,
+): string {
+  const cfg = parseYAML(content) as Config.Config;
+  if (!cfg.providers) {
+    cfg.providers = {
+      agents: [agent_addr],
+    };
+  } else {
+    if (!cfg.providers.agents) {
+      cfg.providers.agents = [];
+    }
+    if (!cfg.providers.agents.includes(agent_addr)) {
+      cfg.providers.agents.push(agent_addr);
+    }
+  }
+  return stringifyYAML(cfg);
 }

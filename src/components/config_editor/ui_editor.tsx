@@ -3,8 +3,8 @@
 import { useConfigFileContext } from "@/hooks/config_file";
 import { useSetting } from "@/hooks/settings";
 import { Alert, ClientOnly, Stack } from "@chakra-ui/react";
-import React from "react";
-import * as YAML from "yaml";
+import { FC } from "react";
+import { parse as parseYAML, stringify as stringifyYAML } from "yaml";
 import { CloseButton } from "../ui/close-button";
 import { ConfigUIEditor } from "./ui/config_file";
 import { MiddlewareComposeEditor } from "./ui/middlewares";
@@ -13,13 +13,13 @@ import { RoutesEditor } from "./ui/routes";
 function tryParseYAML(str?: string) {
   if (!str) return {};
   try {
-    return YAML.parse(str);
+    return parseYAML(str);
   } catch (e) {
     return {};
   }
 }
 
-const UIEditorAlert: React.FC = () => {
+function UIEditorAlert() {
   const alertHidden = useSetting("uiEditorAlertHidden", false);
   return (
     <Alert.Root status="info" hidden={alertHidden.val}>
@@ -38,12 +38,12 @@ const UIEditorAlert: React.FC = () => {
       />
     </Alert.Root>
   );
-};
+}
 
-const UIEditor: React.FC = () => {
+export default function UIEditor() {
   const { content, setContent, current } = useConfigFileContext();
   const data = tryParseYAML(content);
-  let Editor: React.FC<{ data: any; onChange: (v: any) => void }>;
+  let Editor: FC<{ data: any; onChange: (v: any) => void }>;
 
   if (current.type == "config") {
     Editor = ConfigUIEditor;
@@ -58,9 +58,7 @@ const UIEditor: React.FC = () => {
       <ClientOnly>
         <UIEditorAlert />
       </ClientOnly>
-      <Editor data={data} onChange={(v) => setContent(YAML.stringify(v))} />
+      <Editor data={data} onChange={(v) => setContent(stringifyYAML(v))} />
     </Stack>
   );
-};
-
-export default UIEditor;
+}

@@ -54,7 +54,7 @@ export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
 };
 
 export function updateRemote(current: ConfigFile, content: string) {
-  fetchEndpoint(Endpoints.fileContent(current.type, current.filename), {
+  return fetchEndpoint(Endpoints.fileContent(current.type, current.filename), {
     method: "PUT",
     body: content,
     headers: {
