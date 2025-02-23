@@ -3,7 +3,7 @@ import { PeriodsSelect } from "@/components/metrics/periods_select";
 import { useTemperatureUnit } from "@/components/metrics/settings";
 import { EmptyState } from "@/components/ui/empty-state";
 import useWebsocket from "@/hooks/ws";
-import { formatByte } from "@/lib/format";
+import { formatByte, toFahrenheit } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Agent } from "@/types/api/agent";
 import Endpoints from "@/types/api/endpoints";
@@ -30,7 +30,7 @@ export const SystemInfoGraphsPage: React.FC<{
   const temperatureFormatter =
     temperatureUnit === "celsius"
       ? (value: number) => `${value}°C`
-      : (value: number) => `${(value * 9) / 5 + 32}°F`;
+      : (value: number) => `${toFahrenheit(value)}°F`;
   const byteSizeFormatter = (value: number) => formatByte(value, 0);
   const speedFormatter = (value: number) => `${byteSizeFormatter(value)}/s`;
   const iopsFormatter = (value: number) => `${value} IOPS`;

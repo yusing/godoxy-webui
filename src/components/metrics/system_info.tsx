@@ -1,6 +1,5 @@
-import { useSetting } from "@/hooks/settings";
 import useWebsocket from "@/hooks/ws";
-import { formatPercent } from "@/lib/format";
+import { formatPercent, toFahrenheit } from "@/lib/format";
 import { Agent } from "@/types/api/agent";
 import Endpoints from "@/types/api/endpoints";
 import type { SensorInfo, SystemInfo } from "@/types/api/metrics/system_info";
@@ -27,6 +26,7 @@ import {
   LuServer,
 } from "react-icons/lu";
 import { Skeleton } from "../ui/skeleton";
+import { useTemperatureUnit } from "./settings";
 
 export default function SystemInfo() {
   const { data: agents } = useWebsocket<Agent[]>(Endpoints.LIST_AGENTS, {
@@ -187,7 +187,7 @@ const SensorCell: React.FC<{
   sensor?: SensorInfo;
   key?: string;
 }> = ({ sensor, key }) => {
-  const unit = useSetting("metrics_temperature_unit", "celsius");
+  const unit = useTemperatureUnit();
   if (!sensor) {
     return null;
   }
@@ -201,10 +201,10 @@ const SensorCell: React.FC<{
     sensor.sensorCritical > 0 && sensor.temperature > sensor.sensorCritical;
   const temperature =
     unit.val === "celsius"
-      ? sensor.temperature
-      : Math.round(sensor.temperature * 1.8 + 32 * 10) / 10;
+      ? Math.round(sensor.temperature * 10) / 10
+      : toFahrenheit(sensor.temperature);
   return (
-    <HStack gap="2">
+    <HStack gap="2" key={key}>
       {icon}
       <Text
         fontSize={"sm"}
