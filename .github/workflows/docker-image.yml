@@ -144,5 +144,6 @@ jobs:
           docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
 
       - name: Inspect image (old)
+        if: inputs.old_image_name != ''
         run: |
           docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.OLD_IMAGE_NAME }}:${{ steps.meta.outputs.version }}
