@@ -33,12 +33,12 @@ export function useSquareCardSize() {
 }
 
 export function useRowsCount() {
-  const rowsCount = useSetting<number>("metrics_uptime_rows_count", 3);
+  const rowsCount = useSetting<number>("metrics_uptime_rows_count", 5);
   return rowsCount;
 }
 
 export function useColsCount() {
-  const colsCount = useSetting<number>("metrics_uptime_cols_count", 2);
+  const colsCount = useSetting<number>("metrics_uptime_cols_count", 4);
   return colsCount;
 }
 

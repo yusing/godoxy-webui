@@ -27,7 +27,7 @@ const HealthStatusTag_: React.FC<HealthStatusProps & { fontSize?: string }> = ({
 }) => {
   return (
     <Tag variant={"surface"} colorPalette={healthStatusColorPalettes[value]}>
-      <HStack p="2" gap="2">
+      <HStack px="1" py="1.5" gap="1.5">
         <ChakraStatus.Root colorPalette={healthStatusColorPalettes[value]}>
           <ChakraStatus.Indicator />
         </ChakraStatus.Root>

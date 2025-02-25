@@ -149,8 +149,8 @@ const RouteUptime: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
       {...props}
     >
       <Card.Header>
-        <HStack justifyContent={"space-between"}>
-          <Group>
+        <HStack justify={"space-between"}>
+          <Group overflow={"hidden"}>
             <FavIcon
               size="24px"
               item={{ alias: metrics.alias } as HomepageItem}
@@ -235,7 +235,7 @@ const RouteUptimeMinimal: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
     <Card.Root size="sm" maxH="180px" title={metrics.alias} {...props}>
       <Card.Body>
         <HStack w="full" justifyContent={"space-between"}>
-          <HStack gap="2">
+          <HStack gap="2" overflow={"hidden"}>
             <FavIcon
               size="26px"
               item={{ alias: metrics.alias } as HomepageItem}
