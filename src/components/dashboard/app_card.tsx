@@ -46,10 +46,10 @@ import {
   UseFormRegister,
 } from "react-hook-form";
 import { LuEyeOff, LuPencil } from "react-icons/lu";
+import { useLocation } from "react-use";
 import { IconSearcher } from "../config_editor/icon_searcher";
 import HealthProvider from "./health_provider";
 import { useAllSettings } from "./settings";
-
 type AppCardProps = {
   item: HomepageItem;
 } & React.ComponentProps<typeof HStack>;
@@ -126,6 +126,7 @@ export const AppCard: React.FC<
 > = ({ containerRef, ...rest }) => {
   const [curItem, setCurItem] = React.useState(rest.item);
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const location = useLocation();
 
   if (curItem.skeleton) {
     return (
@@ -151,7 +152,7 @@ export const AppCard: React.FC<
       <MenuContextTrigger asChild>
         <Link
           className="transform transition-transform hover:scale-105"
-          href={curItem.url}
+          href={`${location.protocol}//${curItem.url}`}
           target="_blank"
           variant={"plain"}
           aria-label={curItem.name}
