@@ -72,9 +72,6 @@ const Logs: FC<{
     };
     ws.onclose = () => {
       setReadyState(ReadyState.CLOSED);
-      setLines((prev) =>
-        prev.concat([{ time: "", content: "Connection closed" }]),
-      );
     };
     return () => {
       ws.close();
@@ -126,7 +123,7 @@ const Logs: FC<{
               gap="2"
               bg={index % 2 === 0 ? "bg.subtle" : "inherit"}
             >
-              <Tag colorPalette="teal" minW="fit">
+              <Tag colorPalette="teal" minW="fit" fontFamily={"monospace"}>
                 {line.time}
               </Tag>
               <LogLine line={line.content} />

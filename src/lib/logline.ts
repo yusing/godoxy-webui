@@ -5,7 +5,7 @@ export type LogLine = {
 
 // 2025-02-19T17:06:57.726414698Z [xxx] 2025/02/19 17:06:57 xxxx
 export const parseLogLine = (line: string): LogLine => {
-  const [timestamp, ...content] = line.split(" ");
+  const [timestamp] = line.split(" ", 1);
   const date = new Date(timestamp!);
   return {
     time: date.toLocaleString("en-US", {
@@ -16,8 +16,8 @@ export const parseLogLine = (line: string): LogLine => {
       minute: "2-digit",
       second: "2-digit",
     }),
-    content: content
-      .join(" ")
+    content: line
+      .slice(timestamp!.length + 1)
       .replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[.,]\d*)?Z/, "")
       .replace(
         /(?:\u001b\[\d{2}m)?(?:\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}[-/]\d{1,2}[-/]\d{4})[,\s]*/,
@@ -26,10 +26,6 @@ export const parseLogLine = (line: string): LogLine => {
       .replace(
         /(?:\d{1,2}:\d{1,2}(?::\d{1,2})?\s*(?:[ap]m)?(?:\u001b\[32m)?)(?:[.,]\d*)?/i,
         "",
-      )
-      .split(" ")
-      .map((c) => c.trim())
-      .filter((c) => c.length > 0)
-      .join(" "),
+      ),
   };
 };

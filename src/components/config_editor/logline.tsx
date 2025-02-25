@@ -6,14 +6,10 @@ export const LogLine: React.FC<{ line: string }> = ({ line }) => {
   return (
     <Prose
       as="pre"
-      fontSize={"sm"}
-      w="max-content"
       textWrap={"wrap"}
       lineHeight="1.3rem"
       dangerouslySetInnerHTML={{
-        __html: convertANSI.toHtml(
-          line.replaceAll(" ", "&nbsp;").replaceAll("\t", "&emsp;"),
-        ),
+        __html: convertANSI.toHtml(line),
       }}
     />
   );
