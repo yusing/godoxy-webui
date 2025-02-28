@@ -112,7 +112,9 @@ const Logs: FC<{
               title={
                 readyState === ReadyState.CONNECTING
                   ? "Connecting..."
-                  : "Connection closed"
+                  : readyState === ReadyState.CLOSED
+                    ? "Connection closed"
+                    : "No logs"
               }
             />
           }
