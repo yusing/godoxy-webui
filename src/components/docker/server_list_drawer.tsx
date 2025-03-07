@@ -4,6 +4,7 @@ import {
   DrawerRoot,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { providerName } from "@/lib/format";
 import { bodyHeight } from "@/styles";
 import {
   Collapsible,
@@ -184,7 +185,7 @@ const ContainerList: FC<{
     >
       <Collapsible.Trigger _hover={{ bg: "var(--hover-bg)" }}>
         <Label>
-          {server} ({containers.length})
+          {providerName(server)} ({containers.length})
         </Label>
       </Collapsible.Trigger>
       <Collapsible.Content>

@@ -1,4 +1,5 @@
 import useWebsocket, { ReadyState } from "@/hooks/ws";
+import { providerName } from "@/lib/format";
 import Endpoints from "@/types/api/endpoints";
 import { Box, Center, HStack, Span, Spinner, Stack } from "@chakra-ui/react";
 import { FC } from "react";
@@ -35,7 +36,7 @@ export const ServerInfo: FC<{ server: ServerInfoType }> = ({ server }) => {
     >
       <Stack>
         <IconLabel fontSize={"xl"} icon={<LuServer />}>
-          {server.name}
+          {providerName(server.name)}
         </IconLabel>
         <HStack justifyContent={"space-between"}>
           <IconLabel icon={<LuCpu />}>

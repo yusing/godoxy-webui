@@ -1,5 +1,5 @@
 import useWebsocket from "@/hooks/ws";
-import { formatPercent, toFahrenheit } from "@/lib/format";
+import { formatPercent, providerName, toFahrenheit } from "@/lib/format";
 import { Agent } from "@/types/api/agent";
 import Endpoints from "@/types/api/endpoints";
 import type { SensorInfo, SystemInfo } from "@/types/api/metrics/system_info";
@@ -109,7 +109,7 @@ const SystemInfoRow: React.FC<{ agent: Agent }> = ({ agent }) => {
   if (!systemInfo) {
     return (
       <Table.Row>
-        <Table.Cell>{agent.name}</Table.Cell>
+        <Table.Cell>{providerName(agent.name)}</Table.Cell>
         {Array.from({ length: 5 }).map((_, i) => (
           <Table.Cell key={`skeleton-${i}`}>
             <Skeleton height="20px" />
@@ -126,7 +126,7 @@ const SystemInfoRow: React.FC<{ agent: Agent }> = ({ agent }) => {
       cursor={"pointer"}
       _hover={{ bg: "var(--hover-bg)" }}
     >
-      <Table.Cell>{agent.name}</Table.Cell>
+      <Table.Cell>{providerName(agent.name)}</Table.Cell>
       <Table.Cell>
         <PercentageCell value={systemInfo.cpu_average} />
       </Table.Cell>

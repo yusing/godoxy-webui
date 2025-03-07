@@ -2,6 +2,7 @@
 
 import { Tooltip } from "@/components/ui/tooltip";
 import { useSetting } from "@/hooks/settings";
+import { providerName } from "@/lib/format";
 import { ProviderType } from "@/types/api/route_provider";
 import { ProviderStats, Stats } from "@/types/api/stats";
 import { Box, For, HStack, Text, VStack } from "@chakra-ui/react";
@@ -70,7 +71,7 @@ function ProviderItem({
         <ProviderIcon providerType={stats.type} color={color} />
       </Box>
       <Text truncate lineClamp="2">
-        {name.endsWith("!") ? name.slice(0, -1) : name}
+        {providerName(name)}
       </Text>
     </HStack>
   );

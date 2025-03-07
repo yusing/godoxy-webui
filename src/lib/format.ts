@@ -25,3 +25,10 @@ export function formatByte(value: number, precision = 2) {
 export function toFahrenheit(celsius: number) {
   return Math.round((celsius * 1.8 + 32) * 10) / 10;
 }
+
+export function providerName(name: string) {
+  if (name.endsWith("!")) {
+    return name.slice(0, -1);
+  }
+  return name;
+}
