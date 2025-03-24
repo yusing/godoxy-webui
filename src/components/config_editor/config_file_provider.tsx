@@ -15,6 +15,7 @@ export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [content, setContent] = React.useState<string | undefined>(undefined);
   const [current, setCurrent] = React.useState<ConfigFile>(godoxyConfig);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = React.useState(false);
   const files = useAsync(getConfigFiles);
 
   React.useEffect(() => {
@@ -39,12 +40,22 @@ export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
       value={React.useMemo(
         () => ({
           current,
-          setCurrent,
+          setCurrent: (current) => {
+            setCurrent(current);
+            setHasUnsavedChanges(false);
+          },
           content,
-          setContent,
+          setContent: (content) => {
+            setContent(content);
+            setHasUnsavedChanges(true);
+          },
+          updateRemote: (file, content, args) =>
+            updateRemote(file, content, { ...args, setHasUnsavedChanges }),
           files: files.value ?? placeholderFiles,
+          hasUnsavedChanges,
+          setHasUnsavedChanges,
         }),
-        [current, content, files],
+        [current, content, files, hasUnsavedChanges],
       )}
     >
       <Toaster />
@@ -53,14 +64,15 @@ export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-export function updateRemote(
+async function updateRemote(
   current: ConfigFile,
   content: string,
   props: {
     toast?: boolean;
+    setHasUnsavedChanges: (hasUnsavedChanges: boolean) => void;
   },
 ) {
-  return fetchEndpoint(Endpoints.fileContent(current.type, current.filename), {
+  await fetchEndpoint(Endpoints.fileContent(current.type, current.filename), {
     method: "PUT",
     body: content,
     headers: {
@@ -75,5 +87,6 @@ export function updateRemote(
           description: current.filename,
         }),
     )
-    .catch(toastError);
+    .catch(toastError)
+    .finally(() => props.setHasUnsavedChanges(false));
 }

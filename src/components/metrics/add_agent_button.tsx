@@ -26,10 +26,7 @@ import { Controller, useForm } from "react-hook-form";
 import { FaDocker, FaServer } from "react-icons/fa6";
 import { LuInfo, LuPlus } from "react-icons/lu";
 import { parse as parseYAML, stringify as stringifyYAML } from "yaml";
-import {
-  ConfigFileProvider,
-  updateRemote,
-} from "../config_editor/config_file_provider";
+import { ConfigFileProvider } from "../config_editor/config_file_provider";
 import { Checkbox } from "../ui/checkbox";
 import { SegmentedControl } from "../ui/segmented-control";
 import { toaster } from "../ui/toaster";
@@ -81,7 +78,9 @@ function AddAgentDialogButtonInner() {
     setCurrent: setConfig,
     content: configContent,
     setContent: setConfigContent,
+    updateRemote,
   } = useConfigFileContext();
+
   useEffect(() => {
     if (config.type != "config") {
       setConfig({

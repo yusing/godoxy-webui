@@ -7,7 +7,14 @@ export interface ConfigFileContextType {
   setCurrent: (file: ConfigFile) => void;
   content: string | undefined;
   setContent: (content: string | undefined) => void;
+  updateRemote: (
+    file: ConfigFile,
+    content: string,
+    args?: { toast: boolean },
+  ) => Promise<void>;
   files: Record<ConfigFileType, ConfigFile[]>;
+  hasUnsavedChanges: boolean;
+  setHasUnsavedChanges: (hasUnsavedChanges: boolean) => void;
 }
 
 export const ConfigFileContext = createContext<
