@@ -41,7 +41,7 @@ import {
 import { LoadBalance, Routes } from "godoxy-schemas";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import { IconSearcher } from "../icon_searcher";
 
 const routeTypes = [
@@ -150,6 +150,16 @@ export const RoutesEditor: React.FC<{
                     <DialogCloseTrigger />
                   </DialogContent>
                 </DialogRoot>
+                <IconButton
+                  variant={"ghost"}
+                  colorPalette={"red"}
+                  onClick={() => {
+                    delete data[k];
+                    onChange(data);
+                  }}
+                >
+                  <FaTrash />
+                </IconButton>
               </HStack>
             </Card.Body>
           </Card.Root>
