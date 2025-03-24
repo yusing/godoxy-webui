@@ -17,7 +17,7 @@
     "dev_docker": "pnpm run dev -H 0.0.0.0 -p 3002"
   },
   "dependencies": {
-    "@chakra-ui/react": "^3.13.0",
+    "@chakra-ui/react": "^3.14.1",
     "@codemirror/lang-yaml": "^6.1.2",
     "@codemirror/lint": "^6.8.4",
     "@emotion/react": "^11.14.0",
@@ -55,16 +55,16 @@
     "@tailwindcss/postcss": "^4.0.15",
     "@types/byte-size": "^8.1.2",
     "@types/eslint": "^9.6.1",
-    "@types/node": "^22.13.11",
+    "@types/node": "^22.13.13",
     "@types/react": "^19.0.12",
     "@types/react-dom": "^19.0.4",
     "@types/react-resizable": "^3.0.8",
-    "@typescript-eslint/eslint-plugin": "^8.27.0",
-    "@typescript-eslint/parser": "^8.27.0",
-    "babel-plugin-react-compiler": "19.0.0-beta-21e868a-20250216",
+    "@typescript-eslint/eslint-plugin": "^8.28.0",
+    "@typescript-eslint/parser": "^8.28.0",
+    "babel-plugin-react-compiler": "19.0.0-beta-aeaed83-20250323",
     "eslint": "^9.23.0",
     "eslint-config-next": "^15.2.3",
-    "eslint-plugin-react-compiler": "19.0.0-beta-21e868a-20250216",
+    "eslint-plugin-react-compiler": "19.0.0-beta-aeaed83-20250323",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
@@ -74,7 +74,7 @@
   "ct3aMetadata": {
     "initVersion": "7.38.1"
   },
-  "packageManager": "pnpm@10.4.1",
+  "packageManager": "pnpm@10.6.5",
   "pnpm.onlyBuiltDependencies": [
     "esbuild"
   ]
