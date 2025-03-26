@@ -7,7 +7,8 @@
 const config = {
   experimental: {
     optimizePackageImports: ["@chakra-ui/react"],
-    reactCompiler: true,
+    // disable react compiler in production to avoid misterious user input bugs
+    reactCompiler: process.env.NODE_ENV !== "production",
   },
   transpilePackages: ["geist"],
   output: "standalone",
