@@ -10,7 +10,9 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json pnpm-lock.yaml ./
-RUN corepack enable pnpm && pnpm i --frozen-lockfile --ignore-scripts
+# check issue on https://github.com/pnpm/pnpm/issues/9014
+RUN corepack enable pnpm && \
+    pnpm i --frozen-lockfile --ignore-scripts
 
 # Rebuild the source code only when needed
 FROM deps AS builder

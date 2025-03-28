@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { type ColorPalette } from "@chakra-ui/react";
 
 export const healthStatuses = [
   "healthy",
@@ -9,6 +9,25 @@ export const healthStatuses = [
   "unknown",
 ] as const;
 export type HealthStatusType = (typeof healthStatuses)[number];
+
+export const healthStatusColorPalettes: Record<HealthStatusType, ColorPalette> =
+  {
+    healthy: "green",
+    napping: "yellow",
+    unhealthy: "red",
+    starting: "blue",
+    error: "red",
+    unknown: "gray",
+  } as const;
+
+export const healthStatusColors: Record<HealthStatusType, string> = {
+  healthy: "var(--color-success)",
+  napping: "#FFFF00cc",
+  unhealthy: "var(--color-error)",
+  starting: "#0000FF",
+  error: "var(--color-error)",
+  unknown: "#808080",
+} as const;
 
 export type HealthInfo = {
   status: HealthStatusType;
@@ -33,16 +52,3 @@ export function formatHealthInfo(info: HealthInfo) {
     (info.status === "healthy" ? `, latency: ${info.latency}` : "")
   );
 }
-
-export type HealthMapContext = {
-  health: HealthMap;
-};
-
-export const HealthMapContext = createContext<HealthMapContext>({
-  health: {},
-});
-
-export const useHealthInfo = (alias: string) => {
-  const { health } = useContext(HealthMapContext);
-  return health[alias] ?? healthInfoUnknown;
-};

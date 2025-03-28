@@ -1,13 +1,12 @@
 "use client";
 
-import useCheckAuth from "@/components/auth";
 import { EyeFilledIcon, EyeSlashFilledIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
 import { Toaster } from "@/components/ui/toaster";
 import { type FetchError, login } from "@/types/api/endpoints"; // Import the login function
 import { Card, Fieldset, Group, IconButton, Input } from "@chakra-ui/react";
-import React from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 interface FormValues {
@@ -17,20 +16,13 @@ interface FormValues {
 
 // TODO: make a logo
 export default function LoginPage() {
-  const [isVisible, setIsVisible] = React.useState(false);
-  const [errorMessage, setErrorMessage] = React.useState("");
-  const authed = useCheckAuth();
+  const [isVisible, setIsVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<FormValues>();
-
-  React.useEffect(() => {
-    if (authed) {
-      window.location.href = "/";
-    }
-  }, [authed]);
 
   function toggleVisibility() {
     setIsVisible(!isVisible);

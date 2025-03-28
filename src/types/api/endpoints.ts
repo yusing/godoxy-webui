@@ -1,18 +1,69 @@
 import { toaster } from "@/components/ui/toaster";
 import { StatusCodes } from "http-status-codes";
+import { MetricsPeriod } from "./metrics/metrics";
+import { AggregateType } from "./metrics/system_info";
+
+export function buildQuery(
+  query: Record<string, string | number | boolean | undefined>,
+) {
+  const q = new URLSearchParams();
+  for (const key in query) {
+    if (query[key] === undefined || query[key] === null) {
+      continue;
+    }
+    q.set(key, query[key].toString());
+  }
+  if (q.size === 0) {
+    return "";
+  }
+  return `?${q.toString()}`;
+}
 
 namespace Endpoints {
-  export const FileContent = (fileType: ConfigFileType, filename: string) =>
+  export const fileContent = (fileType: ConfigFileType, filename: string) =>
     `/api/file/${fileType}/${encodeURIComponent(filename)}`;
-  export const FileValidate = (fileType: ConfigFileType) =>
+
+  export const fileValidate = (fileType: ConfigFileType) =>
     `/api/file/validate/${fileType}`;
-  export const Schema = (filename: string) => `/api/schema/${filename}`;
-  export const FavIcon = (alias?: string, url?: string) =>
-    `/api/favicon?alias=${encodeURIComponent(alias ?? "")}&url=${encodeURIComponent(
-      url ?? "",
-    )}`;
-  export const SearchIcons = (keyword: string, limit: number) =>
-    `/api/list/icons?keyword=${encodeURIComponent(keyword)}&limit=${limit}`;
+  export const schema = (filename: string) => `/api/schema/${filename}`;
+
+  export const favIcon = (alias?: string, url?: string) =>
+    `/api/favicon${buildQuery({ alias, url })}`;
+
+  export const searchIcons = (keyword: string, limit: number) =>
+    `/api/list/icons${buildQuery({ keyword, limit })}`;
+
+  export const metricsSystemInfo = ({
+    period,
+    agent_addr,
+    interval = "1s",
+    aggregate,
+  }: {
+    period?: MetricsPeriod;
+    agent_addr?: string;
+    interval?: `${number}${"s" | "m" | "h"}`;
+    aggregate?: AggregateType;
+  } = {}) =>
+    `/api/metrics/system_info${buildQuery({ period, agent_addr, interval, aggregate })}`;
+
+  export const metricsUptime = (
+    period: MetricsPeriod,
+    {
+      limit,
+      offset,
+      interval = "1s",
+      keyword,
+    }: {
+      limit?: number;
+      offset?: number;
+      interval?: string;
+      keyword?: string;
+    } = {},
+  ) =>
+    `/api/metrics/uptime${buildQuery({ period, interval, limit, offset, keyword })}`;
+
+  export const NEW_AGENT = "/api/agents/new";
+  export const VERIFY_NEW_AGENT = "/api/agents/verify";
 
   export const VERSION = "/api/version";
   export const AUTH = "/api/auth/callback";
@@ -23,14 +74,39 @@ namespace Endpoints {
   export const LIST_PROXIES = "/api/list/routes";
   export const LIST_HOMEPAGE_CATEGORIES = "/api/list/homepage_categories";
   export const LIST_ROUTE_PROVIDERS = "/api/list/route_providers";
+  export const LIST_AGENTS = "/api/agents";
   export const SEARCH_ICONS = "/api/list/icons";
-  export const MATCH_DOMAINS = "/api/list/match_domains";
+  export const MATCH_DOMAIsNS = "/api/list/match_domains";
   export const HOMEPAGE_CFG = "/api/list/homepage_config";
 
-  export const STATS = "/api/stats/ws";
-  export const HEALTH = "/api/health/ws";
-  export const LOGS = "/api/logs/ws";
+  export const STATS = "/api/stats";
+  export const HEALTH = "/api/health";
+  export const LOGS = "/api/logs";
   export const SET_HOMEPAGE = "/api/homepage/set";
+
+  export const DOCKER_INFO = "/api/docker/info";
+  export const DOCKER_CONTAINERS = "/api/docker/containers";
+  export const DOCKER_LOGS = ({
+    server,
+    container,
+    from,
+    to,
+    stdout = true,
+    stderr = true,
+  }: {
+    server: string;
+    container: string;
+    from?: string;
+    to?: string;
+    stdout?: boolean;
+    stderr?: boolean;
+  }) =>
+    `/api/docker/logs/${server}/${container}${buildQuery({
+      from,
+      to,
+      stdout,
+      stderr,
+    })}`;
 }
 
 export type ConfigFileType = "config" | "provider" | "middleware";

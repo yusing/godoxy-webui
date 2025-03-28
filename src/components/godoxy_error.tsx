@@ -11,21 +11,6 @@ import {
 import React from "react";
 import { MdKeyboardArrowDown, MdKeyboardArrowRight } from "react-icons/md";
 
-// export const GoDoxyErrorText: React.FC<
-//   {
-//     err: string;
-//   } & Omit<React.ComponentProps<typeof Prose>, "dangerouslySetInnerHTML">
-// > = ({ err, ...props }) => {
-//   if (!err) return null;
-//   return (
-//     <Prose
-//       textWrap={"pretty"}
-//       {...props}
-//       dangerouslySetInnerHTML={{ __html: err }}
-//     />
-//   );
-// };
-
 export type GoDoxyError =
   | string
   | Record<string, string>
@@ -50,7 +35,9 @@ export const GoDoxyErrorText: React.FC<{
         {err.subjects.length > 1 && (
           <Text>{err.subjects.slice(0, -1).join("/")}/</Text>
         )}
-        <Text color="fg.warning">{err.subjects.slice(-1)}: </Text>
+        <Text color="fg.warning" whiteSpace={"preserve"}>
+          {err.subjects.slice(-1)}:{" "}
+        </Text>
         <GoDoxyErrorText err={err.err} />
       </HStack>
     );

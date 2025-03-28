@@ -1,9 +1,12 @@
 @import "tailwindcss";
-
-@theme {
-  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-}
+/*
+  ---break---
+*/
+@plugin "tailwindcss-animate";
+/*
+  ---break---
+*/
+@custom-variant dark (&:is(.dark *));
 
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
@@ -23,13 +26,96 @@
   }
 
   :root {
-    --bg-color: var(--chakra-colors-bg);
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
   }
 
-  [data-theme="dark"] {
-    --bg-color: var(--chakra-colors-bg-muted);
-    body {
-      background-color: var(--bg-color);
-    }
+  .dark {
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
   }
+}
+/*
+  ---break---
+*/
+:root {
+  --radius: 0.6rem;
+}
+/*
+  ---break---
+*/
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+[data-theme="light"] {
+  --bg-color: var(--chakra-colors-bg);
+  --input-bg: var(--chakra-colors-bg-subtle);
+  --on-bg-color: var(--chakra-colors-bg);
+  --on-bg-emphasized: var(--chakra-colors-bg-emphasized);
+  --color-success: #00e000;
+  --hover-bg: var(--chakra-colors-gray-100);
+  .chakra-card__root {
+    box-shadow: var(--chakra-shadows-xs);
+  }
+}
+
+[data-theme="dark"] {
+  --bg-color: #161718;
+  --input-bg: #161718;
+  --on-bg-color: #191a1c;
+  --on-bg-emphasized: #1c1e20;
+  --color-success: #00e000;
+  --color-error: #ea0000;
+  --hover-bg: #26282b;
+  body {
+    background-color: var(--bg-color);
+  }
+  .chakra-table__row {
+    background-color: var(--on-bg-emphasized);
+  }
+  [data-scope="dialog"][data-part="content"],
+  [data-scope="popover"][data-part="content"] {
+    background-color: var(--bg-color);
+  }
+  [data-scope="tabs"][data-part="list"] {
+    background-color: var(--input-bg);
+  }
+  [data-scope="tabs"][data-part="trigger"] {
+    background-color: var(--input-bg);
+  }
+  [data-scope="tabs"][data-part="trigger"][aria-selected="true"] {
+    background-color: var(--on-bg-emphasized);
+  }
+  [data-scope="tabs"][data-part="indicator"] {
+    background-color: var(--chakra-colors-bg);
+  }
+  [data-scope="checkbox"][data-part="control"][data-state="unchecked"] {
+    background-color: var(--on-bg-emphasized);
+  }
+  .chakra-progress__track {
+    background-color: #26282b;
+  }
+  [aria-selected="true"] {
+    background-color: var(--on-bg-emphasized);
+  }
+}
+
+.chakra-input {
+  background-color: var(--input-bg);
+  border-radius: var(--radius-lg);
+}
+
+.chakra-card__root {
+  background-color: var(--on-bg-color);
+  border-radius: var(--radius-lg);
 }

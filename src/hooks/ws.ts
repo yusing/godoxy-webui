@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { toastError } from "./endpoints";
 
 // WebSocket connection manager
 const wsConnections: Record<string, WebSocket> = {};
@@ -10,6 +9,7 @@ type Options = {
 };
 
 export enum ReadyState {
+  UNINITIALIZED = -1,
   CONNECTING = 0,
   OPEN = 1,
   CLOSING = 2,
@@ -26,6 +26,14 @@ function getOrCreateWebSocket<T>(
     wsConnections[endpoint] = ws;
     wsSubscribers[endpoint] = new Set();
 
+    // Add beforeunload event listener to close connections cleanly
+    window.addEventListener("beforeunload", () => {
+      if (ws.readyState === ReadyState.OPEN) {
+        // Use a clean close
+        ws.close(1000, "Page closed");
+      }
+    });
+
     ws.onmessage = (event) => {
       let parsed: T | null = null;
       try {
@@ -37,8 +45,6 @@ function getOrCreateWebSocket<T>(
         callback(parsed);
       });
     };
-
-    ws.onerror = toastError;
   }
   return wsConnections[endpoint];
 }
@@ -46,7 +52,7 @@ function getOrCreateWebSocket<T>(
 export default function useWebsocket<T>(endpoint: string, options?: Options) {
   const [data, setData] = React.useState<T | null>(null);
   const [readyState, setReadyState] = React.useState<number>(
-    WebSocket.CONNECTING,
+    ReadyState.UNINITIALIZED,
   );
 
   useEffect(() => {

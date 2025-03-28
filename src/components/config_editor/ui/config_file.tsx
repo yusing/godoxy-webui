@@ -37,6 +37,8 @@ export function ConfigUIEditor({
       variant={"plain"}
       value={value}
       onValueChange={({ value }) => setValue(value)}
+      lazyMount
+      unmountOnExit
     >
       <AccordionItem value="autocert">
         <AccordionItemTrigger>
@@ -105,6 +107,16 @@ export function ConfigUIEditor({
               onChange={(v) => {
                 if (!data.providers) data.providers = {};
                 data.providers.include = v;
+                onChange(data);
+              }}
+            />
+            <ListInput
+              label="Agents"
+              placeholder="address:port"
+              value={data.providers?.agents ?? []}
+              onChange={(v) => {
+                if (!data.providers) data.providers = {};
+                data.providers.agents = v as typeof data.providers.agents;
                 onChange(data);
               }}
             />

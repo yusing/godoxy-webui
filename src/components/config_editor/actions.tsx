@@ -1,9 +1,9 @@
-import { ConfigFileType as FileType } from "@/types/api/endpoints";
+import { type ConfigFileType } from "@/types/api/endpoints";
 import path from "path";
 import { MdAdd, MdSave } from "react-icons/md";
-import { ListboxItem } from "../listbox/listbox_item";
+import { ListboxItem, ListboxItemProps } from "../listbox/listbox_item";
 
-import { useConfigFileContext } from "@/types/file";
+import { useConfigFileContext } from "@/hooks/config_file";
 import { Group, Input, InputAddon, Stack } from "@chakra-ui/react";
 import React, { useCallback, useState } from "react";
 import { GrCloudSoftware, GrDocumentConfig } from "react-icons/gr";
@@ -17,27 +17,37 @@ import {
 } from "../ui/popover";
 import { RadioCardItem, RadioCardLabel, RadioCardRoot } from "../ui/radio-card";
 
-export default function ConfigFileActions({
-  checkExists,
-  createFile,
-}: Readonly<{
-  checkExists: (fileType: FileType, filename: string) => boolean;
-  createFile: (fileType: FileType, filename: string) => void;
-}>) {
-  const { updateRemote } = useConfigFileContext();
+export default function ConfigFileActions() {
+  const {
+    files,
+    current,
+    setCurrent,
+    updateRemote,
+    content,
+    hasUnsavedChanges,
+  } = useConfigFileContext();
 
   return (
     <Stack gap="0">
       <NewFileButton
+        p={1}
         fileExtension=".yml"
-        checkExists={checkExists}
-        onSubmit={(t, name) => createFile(t, name + ".yml")}
+        onSubmit={(t, name) => {
+          const newFile = { type: t, filename: name + ".yml", isNewFile: true };
+          setCurrent(newFile);
+          files[t].unshift(newFile);
+        }}
       />
       <ListboxItem
+        p={1}
+        colorPalette={hasUnsavedChanges ? "green" : "fg"}
+        disabled={!hasUnsavedChanges}
         aria-label="Save File"
         icon={<MdSave />}
         text="Save File"
-        onClick={updateRemote}
+        onClick={() =>
+          content && updateRemote(current, content, { toast: true })
+        }
       />
     </Stack>
   );
@@ -45,18 +55,29 @@ export default function ConfigFileActions({
 
 export type FormProps = {
   fileExtension: string;
-  checkExists: (fileType: FileType, filename: string) => boolean;
-  onSubmit: (fileType: FileType, filename: string) => void;
+  onSubmit: (fileType: ConfigFileType, filename: string) => void;
 };
 
-export const NewFileButton: React.FC<FormProps> = ({ ...props }) => {
+export const NewFileButton: React.FC<
+  FormProps & Partial<Omit<ListboxItemProps, "onSubmit">>
+> = ({ ...props }) => {
   const [error, setError] = useState<string | null>(null);
   const [filename, setFilename] = useState("");
-  const [fileType, setFileType] = useState<FileType>("provider");
+  const [fileType, setFileType] = useState<ConfigFileType>("provider");
   const [isOpen, setIsOpen] = useState(false);
+  const { files } = useConfigFileContext();
+
+  const { fileExtension, onSubmit, ...listboxProps } = props;
+
+  const checkExists = useCallback(
+    (t: ConfigFileType, v: string) => {
+      return files[t].some((f) => f.filename === v);
+    },
+    [files],
+  );
 
   const validate = useCallback(
-    (t: FileType, v: string) => {
+    (t: ConfigFileType, v: string) => {
       setFilename(v);
       if (v.length === 0) {
         setError("File name cannot be empty");
@@ -64,13 +85,13 @@ export const NewFileButton: React.FC<FormProps> = ({ ...props }) => {
         setError("File name cannot contain path separators");
       } else if (v.indexOf(".") !== -1) {
         setError("File name cannot contain '.'");
-      } else if (props.checkExists(t, v + props.fileExtension)) {
+      } else if (checkExists(t, v + fileExtension)) {
         setError("File already exists");
       } else {
         setError(null);
       }
     },
-    [props.checkExists],
+    [checkExists],
   );
 
   return (
@@ -80,9 +101,17 @@ export const NewFileButton: React.FC<FormProps> = ({ ...props }) => {
       positioning={{
         placement: "bottom-start",
       }}
+      lazyMount
+      unmountOnExit
     >
       <PopoverTrigger asChild>
-        <ListboxItem icon={<MdAdd />} text="New File" aria-label="New File" />
+        <ListboxItem
+          icon={<MdAdd />}
+          text="New File"
+          aria-label="New File"
+          colorPalette="fg"
+          {...listboxProps}
+        />
       </PopoverTrigger>
       <PopoverContent>
         <PopoverArrow />
@@ -92,8 +121,8 @@ export const NewFileButton: React.FC<FormProps> = ({ ...props }) => {
             value={fileType}
             orientation="horizontal"
             onValueChange={(t) => {
-              setFileType(t.value as FileType);
-              validate(t.value as FileType, filename);
+              setFileType(t.value as ConfigFileType);
+              validate(t.value as ConfigFileType, filename);
             }}
           >
             <RadioCardLabel>Select file type</RadioCardLabel>
@@ -119,7 +148,7 @@ export const NewFileButton: React.FC<FormProps> = ({ ...props }) => {
                 onChange={(e) => validate(fileType, e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && error === null) {
-                    props.onSubmit(fileType, filename);
+                    onSubmit(fileType, filename);
                     setIsOpen(false);
                   }
                   if (e.key === "Escape") {
@@ -127,7 +156,7 @@ export const NewFileButton: React.FC<FormProps> = ({ ...props }) => {
                   }
                 }}
               />
-              <InputAddon>{props.fileExtension}</InputAddon>
+              <InputAddon>{fileExtension}</InputAddon>
             </Group>
           </Field>
         </PopoverBody>

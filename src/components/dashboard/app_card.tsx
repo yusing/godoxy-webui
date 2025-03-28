@@ -4,7 +4,6 @@ import {
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogRoot,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -14,14 +13,11 @@ import {
   MenuItem,
   MenuRoot,
 } from "@/components/ui/menu";
-import {
-  formatHealthInfo,
-  healthInfoUnknown,
-  useHealthInfo,
-} from "@/types/api/health";
+import { formatHealthInfo, healthInfoUnknown } from "@/types/api/health";
 import { overrideHomepage } from "@/types/api/homepage";
 import { type HomepageItem } from "@/types/api/route/homepage_item";
 import {
+  DialogRootProvider,
   Group,
   HStack,
   Input,
@@ -32,6 +28,7 @@ import {
   Stack,
   Text,
   Tooltip,
+  useDialog,
 } from "@chakra-ui/react";
 import React, { useMemo } from "react";
 import { HealthStatus } from "../health_status";
@@ -40,6 +37,7 @@ import { Field } from "../ui/field";
 import { SkeletonCircle, SkeletonText } from "../ui/skeleton";
 import { FavIcon } from "./favicon";
 
+import { useHealthInfo } from "@/hooks/health_map";
 import { toastError } from "@/types/api/endpoints";
 import {
   FieldErrors,
@@ -47,10 +45,11 @@ import {
   useForm,
   UseFormRegister,
 } from "react-hook-form";
+import { LuEyeOff, LuPencil } from "react-icons/lu";
+import { useLocation } from "react-use";
 import { IconSearcher } from "../config_editor/icon_searcher";
 import HealthProvider from "./health_provider";
 import { useAllSettings } from "./settings";
-
 type AppCardProps = {
   item: HomepageItem;
 } & React.ComponentProps<typeof HStack>;
@@ -80,6 +79,9 @@ const AppCardToolTip = ({ item }: { item: HomepageItem }) => {
 const AppCardHealthBubble = ({ item }: { item: HomepageItem }) => {
   const { healthBubbleAlignEnd } = useAllSettings();
   const health = useHealthInfo(item.alias) ?? healthInfoUnknown;
+  if (health.status === "unknown") {
+    return null;
+  }
   return (
     <>
       {healthBubbleAlignEnd.val ? <Spacer /> : null}
@@ -119,9 +121,12 @@ export const AppCardInner: React.FC<AppCardProps> = ({ item, ...rest }) => {
   );
 };
 
-export const AppCard: React.FC<AppCardProps> = ({ ...rest }) => {
+export const AppCard: React.FC<
+  AppCardProps & { containerRef: React.RefObject<HTMLDivElement | null> }
+> = ({ containerRef, ...rest }) => {
   const [curItem, setCurItem] = React.useState(rest.item);
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const location = useLocation();
 
   if (curItem.skeleton) {
     return (
@@ -147,7 +152,7 @@ export const AppCard: React.FC<AppCardProps> = ({ ...rest }) => {
       <MenuContextTrigger asChild>
         <Link
           className="transform transition-transform hover:scale-105"
-          href={curItem.url}
+          href={`${location.protocol}//${curItem.url}`}
           target="_blank"
           variant={"plain"}
           aria-label={curItem.name}
@@ -161,11 +166,13 @@ export const AppCard: React.FC<AppCardProps> = ({ ...rest }) => {
         <MenuItem value="edit" aria-label="Edit app">
           <EditItemButton
             item={curItem}
+            containerRef={containerRef}
             onUpdate={(e) => {
               // rest.item.category = e.category;
               setCurItem(e);
               setMenuOpen(false);
             }}
+            onClose={() => setMenuOpen(false)}
           />
         </MenuItem>
         <MenuItem
@@ -181,6 +188,7 @@ export const AppCard: React.FC<AppCardProps> = ({ ...rest }) => {
               .catch(toastError);
           }}
         >
+          <LuEyeOff />
           Hide App
         </MenuItem>
       </MenuContent>
@@ -215,11 +223,15 @@ const FieldInput = ({
 function EditItemButton({
   item,
   onUpdate,
+  onClose,
+  containerRef,
 }: Readonly<{
   item: HomepageItem;
   onUpdate: (newItem: HomepageItem) => void;
+  onClose: () => void;
+  containerRef: React.RefObject<HTMLElement | null>;
 }>) {
-  const [open, setOpen] = React.useState(false);
+  const dialog = useDialog();
 
   const item_ = useMemo(() => structuredClone(item), [item]);
 
@@ -252,23 +264,28 @@ function EditItemButton({
       .then(() => overrideHomepage("item_visible", [data.alias], true))
       .then(() => {
         onUpdate(data);
-        setOpen(false);
+        dialog.setOpen(false);
       })
       .catch(toastError);
   };
 
   return (
-    <DialogRoot
+    <DialogRootProvider
+      value={dialog}
       size="lg"
       placement="center"
       motionPreset="slide-in-bottom"
-      open={open}
-      onOpenChange={({ open }) => setOpen(open)}
       lazyMount
       unmountOnExit
+      onExitComplete={onClose}
     >
-      <DialogTrigger>Edit App</DialogTrigger>
-      <DialogContent>
+      <DialogTrigger asChild>
+        <HStack gap="2">
+          <LuPencil />
+          Edit App
+        </HStack>
+      </DialogTrigger>
+      <DialogContent portalRef={containerRef} portalled>
         <DialogHeader>
           <DialogTitle fontSize={"md"} fontWeight={"medium"}>
             Edit App
@@ -308,12 +325,14 @@ function EditItemButton({
                 onChange={iconField.onChange}
               />
               <DialogFooter>
-                <Button type="submit">Save</Button>
+                <Button type="submit" borderRadius={"lg"}>
+                  Save
+                </Button>
               </DialogFooter>
             </Stack>
           </form>
         </DialogBody>
       </DialogContent>
-    </DialogRoot>
+    </DialogRootProvider>
   );
 }

@@ -4,8 +4,8 @@ import { chakra } from "@chakra-ui/react";
 
 export const Prose = chakra("div", {
   base: {
-    color: "fg.muted",
-    maxWidth: "65ch",
+    color: "fg",
+    w: "full",
     fontSize: "sm",
     lineHeight: "1.7em",
     "& p": {

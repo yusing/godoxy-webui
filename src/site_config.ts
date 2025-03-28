@@ -8,7 +8,8 @@ export const siteConfig = {
     { label: "Dashboard", href: "/" },
     { label: "Config Editor", href: "/config_editor" },
     { label: "Proxies", href: "/proxies" },
-    { label: "Logs", href: "/logs" },
+    { label: "Metrics", href: "/metrics", bg: "unset" },
+    { label: "Docker", href: "/docker" },
     { label: "Docs", href: "/docs/Home" },
   ],
   links: {

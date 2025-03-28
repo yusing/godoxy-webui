@@ -45,19 +45,21 @@ export const MiddlewareComposeEditor: React.FC<{
   data: Record<string, MiddlewareCompose.MiddlewareCompose>;
   onChange: (v: Record<string, MiddlewareCompose.MiddlewareCompose>) => void;
 }> = ({ data, onChange }) => {
-  const [selectedTab, setSelectedTab] = React.useState<string>("");
+  const [selectedTab, setSelectedTab] = React.useState(Object.keys(data)[0]);
 
   return (
     <Tabs.Root
       value={selectedTab}
       onValueChange={({ value }) => setSelectedTab(value)}
       // orientation="vertical"
+      lazyMount
+      unmountOnExit
       fitted
     >
       <Tabs.List gap="4">
         {Object.keys(data).map((k, index) => (
           <Tabs.Trigger
-            key={`${k}_tab`}
+            key={`${index}_tab`}
             value={k}
             height={"10"}
             justifyContent={"space-between"}

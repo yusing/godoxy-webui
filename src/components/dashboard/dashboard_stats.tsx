@@ -4,8 +4,8 @@ import { StatLabel, StatRoot, StatValueText } from "@/components/ui/stat";
 import { skeletonStats, Stats } from "@/types/api/stats";
 import { Box, For, SimpleGrid, Stack } from "@chakra-ui/react";
 
+import useWebsocket from "@/hooks/ws";
 import Endpoints from "@/types/api/endpoints";
-import useWebsocket from "@/types/api/ws";
 import dynamic from "next/dynamic";
 import Conditional from "../conditional";
 import { Skeleton, SkeletonText } from "../ui/skeleton";

@@ -38,12 +38,10 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { LoadBalance, Routes } from "godoxy-schemas";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
-import { FaEdit } from "react-icons/fa";
-import { z } from "zod";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import { IconSearcher } from "../icon_searcher";
 
 const routeTypes = [
@@ -64,28 +62,14 @@ const routeTypes = [
   },
 ];
 
-const rpSchema = z.object({
-  alias: z.string().min(1),
-  port: z.number().min(1).max(65535).optional(),
-});
-
-const fileServerSchema = z.object({
-  alias: z.string().min(1),
-  root: z.string().min(1),
-});
-
-const streamSchema = z.object({
-  alias: z.string().min(1),
-  port: z.string().regex(/^\d{1,5}:\d{1,5}$/),
-});
-
 export const RoutesEditor: React.FC<{
   data: Routes.Routes;
   onChange: (v: Routes.Routes) => void;
-}> = ({ data, onChange, ...rest }) => {
+}> = ({ data, onChange }) => {
+  "use no memo";
   return (
     <Stack gap="4">
-      <DialogRoot lazyMount motionPreset="slide-in-bottom">
+      <DialogRoot lazyMount unmountOnExit motionPreset="slide-in-bottom">
         <DialogTrigger asChild>
           <Button colorPalette={"teal"}>Add Route</Button>
         </DialogTrigger>
@@ -166,6 +150,16 @@ export const RoutesEditor: React.FC<{
                     <DialogCloseTrigger />
                   </DialogContent>
                 </DialogRoot>
+                <IconButton
+                  variant={"ghost"}
+                  colorPalette={"red"}
+                  onClick={() => {
+                    delete data[k];
+                    onChange(data);
+                  }}
+                >
+                  <FaTrash />
+                </IconButton>
               </HStack>
             </Card.Body>
           </Card.Root>
@@ -254,7 +248,6 @@ const ReverseProxyRouteForm: React.FC<{
       },
     },
     values: value,
-    resolver: zodResolver(rpSchema),
     mode: "onChange",
     reValidateMode: "onChange",
   });
@@ -439,7 +432,6 @@ const FileServerRouteForm: React.FC<{
       scheme: "fileserver",
     },
     values: value,
-    resolver: zodResolver(fileServerSchema),
     mode: "onChange",
     reValidateMode: "onChange",
   });
@@ -539,7 +531,6 @@ const StreamRouteForm: React.FC<{
       scheme: "tcp",
     },
     values: value,
-    resolver: zodResolver(streamSchema),
     mode: "onChange",
     reValidateMode: "onChange",
   });

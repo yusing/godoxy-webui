@@ -6,14 +6,15 @@ import {
   Group,
   IconButton,
   Input,
+  InputProps,
   ListCollection,
   Stack,
-  Text,
 } from "@chakra-ui/react";
 import React from "react";
 import { FaPlus, FaTrash } from "react-icons/fa6";
 import { Button } from "./ui/button";
 import { Field } from "./ui/field";
+import { Label } from "./ui/label";
 import {
   SelectContent,
   SelectItem,
@@ -32,7 +33,7 @@ export const ListInput: React.FC<
     required?: boolean;
     description?: string;
     onChange: (v: string[]) => void;
-  } & Omit<React.ComponentProps<typeof Input>, "onChange" | "value">
+  } & Omit<InputProps, "onChange" | "value">
 > = ({
   label,
   placeholder,
@@ -96,10 +97,7 @@ export const NamedListInput: React.FC<
     description?: { [key: string]: { [key: string]: string } };
     value: NamedList;
     onChange: (v: NamedList) => void;
-  } & Omit<
-    React.ComponentProps<typeof Input>,
-    "onChange" | "value" | "placeholder"
-  >
+  } & Omit<InputProps, "onChange" | "value" | "placeholder">
 > = ({
   label,
   placeholder,
@@ -141,6 +139,7 @@ export const NamedListInput: React.FC<
             <Button
               size={"xs"}
               bg={"red.500"}
+              color={"whiteAlpha.900"}
               onClick={() => {
                 value.splice(index, 1);
                 onChange(value);
@@ -177,10 +176,7 @@ export const MapInput: React.FC<
     allowedValues?: { [key: string]: ReadonlyArray<string> };
     description?: { [key: string]: string };
     onChange: (v: Record<string, string>) => void;
-  } & Omit<
-    React.ComponentProps<typeof Input>,
-    "onChange" | "value" | "placeholder"
-  >
+  } & Omit<InputProps, "onChange" | "value" | "placeholder">
 > = ({
   label,
   placeholder,
@@ -238,9 +234,7 @@ export const MapInput: React.FC<
 
   return (
     <Box>
-      <Text fontSize={"sm"} fontWeight={"medium"}>
-        {label}
-      </Text>
+      <Label>{label}</Label>
       <Stack pt="3" gap="3" w="full">
         <For
           each={Object.entries(value).sort((a, b) => {

@@ -1,4 +1,4 @@
-name: Docker Image CI (godoxy-frontend:nightly)
+name: Docker Image CI (nightly)
 
 on:
   push:

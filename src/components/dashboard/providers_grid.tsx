@@ -1,12 +1,13 @@
 "use client";
 
 import { Tooltip } from "@/components/ui/tooltip";
-import { ProviderType } from "@/types/api/provider";
+import { useSetting } from "@/hooks/settings";
+import { providerName } from "@/lib/format";
+import { ProviderType } from "@/types/api/route_provider";
 import { ProviderStats, Stats } from "@/types/api/stats";
-import { useSetting } from "@/types/settings";
 import { Box, For, HStack, Text, VStack } from "@chakra-ui/react";
 import { useTheme } from "next-themes";
-import { FaDocker, FaEllipsis, FaFile } from "react-icons/fa6";
+import { FaDocker, FaEllipsis, FaFile, FaServer } from "react-icons/fa6";
 import { SkeletonCircle, SkeletonText } from "../ui/skeleton";
 
 const iconSize = 16;
@@ -45,7 +46,10 @@ function ProviderIcon({
   if (providerType == ProviderType.docker) {
     return <FaDocker size={iconSize} color={color} />;
   }
-  return <FaFile size={iconSize} color={color} />;
+  if (providerType == ProviderType.file) {
+    return <FaFile size={iconSize} color={color} />;
+  }
+  return <FaServer size={iconSize} color={color} />;
 }
 
 function ProviderItem({
@@ -67,7 +71,7 @@ function ProviderItem({
         <ProviderIcon providerType={stats.type} color={color} />
       </Box>
       <Text truncate lineClamp="2">
-        {name.endsWith("!") ? name.slice(0, -1) : name}
+        {providerName(name)}
       </Text>
     </HStack>
   );

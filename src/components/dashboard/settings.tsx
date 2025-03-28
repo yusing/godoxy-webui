@@ -1,11 +1,10 @@
 "use client";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tag } from "@/components/ui/tag";
+import { useSetting } from "@/hooks/settings";
 import Endpoints, { toastError } from "@/types/api/endpoints";
-import { healthInfoUnknown } from "@/types/api/health";
 import { overrideHomepage } from "@/types/api/homepage";
 import { type HomepageItem } from "@/types/api/route/homepage_item";
-import { useSetting } from "@/types/settings";
 import { HStack, Icon, Stack, Tabs } from "@chakra-ui/react";
 import React from "react";
 import { AiOutlineLayout } from "react-icons/ai";
@@ -28,10 +27,10 @@ import { AppCardInner } from "./app_card";
 
 export function DashboardSettingsButton({
   size,
-  hiddenApps,
+  getHiddenApps,
 }: Readonly<{
   size?: "sm" | "md" | "lg";
-  hiddenApps: HomepageItem[];
+  getHiddenApps: () => HomepageItem[];
 }>) {
   const contentRef = React.useRef<HTMLDivElement>(null);
 
@@ -67,7 +66,7 @@ export function DashboardSettingsButton({
           </Stack>
         </Tabs.Content>
         <Tabs.Content value="hidden_apps">
-          <HiddenApps hiddenApps={hiddenApps} />
+          <HiddenApps getHiddenApps={getHiddenApps} />
         </Tabs.Content>
       </Tabs.Root>
     </SettingsButton>
@@ -87,8 +86,12 @@ export const useAllSettings = () => ({
   providerFilter: useSetting("dashboard_provider_filter", ""),
 });
 
-function HiddenApps({ hiddenApps }: Readonly<{ hiddenApps: HomepageItem[] }>) {
+function HiddenApps({
+  getHiddenApps,
+}: Readonly<{ getHiddenApps: () => HomepageItem[] }>) {
   const [selected, { push, removeAt, clear }] = useList<string>();
+
+  const hiddenApps = getHiddenApps();
 
   if (hiddenApps.length === 0) {
     return <EmptyState icon={<MdViewComfy />} title="No apps" />;
@@ -109,8 +112,8 @@ function HiddenApps({ hiddenApps }: Readonly<{ hiddenApps: HomepageItem[] }>) {
             }}
           >
             <HStack>
-              <AppCardInner item={app} health={healthInfoUnknown} />
-              {app.category ? <Tag>{app.category}</Tag> : null}
+              <AppCardInner item={app} />
+              {app.category && <Tag>{app.category}</Tag>}
             </HStack>
           </Checkbox>
         ))}
