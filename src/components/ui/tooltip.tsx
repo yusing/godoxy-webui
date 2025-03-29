@@ -1,6 +1,5 @@
-import { Tooltip as ChakraTooltip, IconButton, Portal } from "@chakra-ui/react";
+import { Tooltip as ChakraTooltip, Portal } from "@chakra-ui/react";
 import * as React from "react";
-import { HiOutlineInformationCircle } from "react-icons/hi2";
 
 export interface TooltipProps extends ChakraTooltip.RootProps {
   showArrow?: boolean;
@@ -17,7 +16,7 @@ export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
       showArrow,
       children,
       disabled,
-      portalled,
+      portalled = true,
       content,
       contentProps,
       portalRef,
@@ -27,16 +26,11 @@ export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
     if (disabled) return children;
 
     return (
-      <ChakraTooltip.Root {...rest} openDelay={100}>
+      <ChakraTooltip.Root {...rest}>
         <ChakraTooltip.Trigger asChild>{children}</ChakraTooltip.Trigger>
         <Portal disabled={!portalled} container={portalRef}>
           <ChakraTooltip.Positioner>
-            <ChakraTooltip.Content
-              bg="gray.700"
-              color="gray.300"
-              ref={ref}
-              {...contentProps}
-            >
+            <ChakraTooltip.Content ref={ref} {...contentProps}>
               {showArrow && (
                 <ChakraTooltip.Arrow>
                   <ChakraTooltip.ArrowTip />
@@ -47,24 +41,6 @@ export const Tooltip = React.forwardRef<HTMLDivElement, TooltipProps>(
           </ChakraTooltip.Positioner>
         </Portal>
       </ChakraTooltip.Root>
-    );
-  },
-);
-
-export const InfoTip = React.forwardRef<HTMLDivElement, Partial<TooltipProps>>(
-  function InfoTip(props, ref) {
-    const { children, ...rest } = props;
-    return (
-      <Tooltip content={children} {...rest} ref={ref}>
-        <IconButton
-          variant="ghost"
-          aria-label="info"
-          size="2xs"
-          colorPalette="gray"
-        >
-          <HiOutlineInformationCircle />
-        </IconButton>
-      </Tooltip>
     );
   },
 );
