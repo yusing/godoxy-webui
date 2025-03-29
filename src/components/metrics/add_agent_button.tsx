@@ -1,15 +1,5 @@
 import { Button } from "@/components/ui/button";
-import {
-  DialogBody,
-  DialogCloseTrigger,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogRoot,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { DialogDescription } from "@/components/ui/dialog";
 import { useConfigFileContext } from "@/hooks/config_file";
 import {
   AddAgentForm,
@@ -19,7 +9,15 @@ import {
   verifyNewAgent,
 } from "@/lib/api/agent";
 import { toastError } from "@/types/api/endpoints";
-import { Code, Group, HStack, Input, Stack, Text } from "@chakra-ui/react";
+import {
+  Code,
+  Dialog,
+  Group,
+  HStack,
+  Input,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
 import { Config } from "godoxy-schemas";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -91,7 +89,7 @@ function AddAgentDialogButtonInner() {
   }, [config]);
 
   return (
-    <DialogRoot
+    <Dialog.Root
       size="sm"
       placement="center"
       motionPreset="scale"
@@ -100,169 +98,175 @@ function AddAgentDialogButtonInner() {
       lazyMount
       unmountOnExit
     >
-      <DialogTrigger asChild>
+      <Dialog.Trigger asChild>
         <Button variant={"outline"}>
           <LuPlus />
           Add agent
         </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add New Agent</DialogTitle>
-          <DialogCloseTrigger />
-          <SegmentedControl
-            mt={2}
-            w="full"
-            value={type}
-            onValueChange={({ value }) => setType(value as AgentType)}
-            items={Object.entries(agentTypes).map(([key, value]) => ({
-              label: (
-                <HStack gap="2">
-                  {value.icon}
-                  {value.label}
-                </HStack>
-              ),
-              value: key,
-            }))}
-          />
-          <DialogDescription pt={2}>
-            The agent must be running on the system to connect.
-            <br /> Copy the{" "}
-            {type === "docker" ? (
-              <Code>compose.yml</Code>
-            ) : (
-              <Text>shell command</Text>
-            )}{" "}
-            below to add the agent to the system.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogBody>
-          <Stack gap={3}>
-            <Group>
-              <Label>Name</Label>
-              <Input {...register("name")} />
-            </Group>
-            <Group>
-              <Label>Host / IP</Label>
-              <Input {...register("host")} />
-            </Group>
-            <Group>
-              <Label>Port</Label>
-              <Input
-                {...register("port", { valueAsNumber: true })}
-                type="number"
-              />
-            </Group>
-            <Group>
-              <Label>Explicit Only</Label>
-              <Checkbox
+      </Dialog.Trigger>
+      <Dialog.Positioner>
+        <Dialog.Content>
+          <Dialog.Header>
+            <Stack>
+              <Dialog.Title>Add New Agent</Dialog.Title>
+              <Dialog.CloseTrigger />
+              <SegmentedControl
+                mt={2}
                 w="full"
-                checked={explicitOnly}
-                onCheckedChange={({ checked }) =>
-                  setExplicitOnly(checked === true)
-                }
+                value={type}
+                onValueChange={({ value }) => setType(value as AgentType)}
+                items={Object.entries(agentTypes).map(([key, value]) => ({
+                  label: (
+                    <HStack gap="2">
+                      {value.icon}
+                      {value.label}
+                    </HStack>
+                  ),
+                  value: key,
+                }))}
               />
-              <ToggleTip
-                content={
-                  <Text>
-                    When enabled, only containers with GoDoxy labels{" "}
-                    <Code>proxy.*</Code> will be proxied
-                  </Text>
-                }
-              >
-                <Button size="xs" variant="ghost">
-                  <LuInfo />
-                </Button>
-              </ToggleTip>
-            </Group>
-
-            {type === "docker" && (
+              <DialogDescription pt={2}>
+                The agent must be running on the system to connect.
+                <br /> Copy the{" "}
+                {type === "docker" ? (
+                  <Code>compose.yml</Code>
+                ) : (
+                  <Text>shell command</Text>
+                )}{" "}
+                below to add the agent to the system.
+              </DialogDescription>
+            </Stack>
+          </Dialog.Header>
+          <Dialog.Body>
+            <Stack gap={3}>
               <Group>
-                <Label>Nightly</Label>
-                <Controller
-                  control={control}
-                  name="nightly"
-                  render={({ field }) => (
-                    <Checkbox
-                      w="full"
-                      checked={field.value}
-                      onCheckedChange={({ checked }) => field.onChange(checked)}
-                    />
-                  )}
+                <Label>Name</Label>
+                <Input {...register("name")} />
+              </Group>
+              <Group>
+                <Label>Host / IP</Label>
+                <Input {...register("host")} />
+              </Group>
+              <Group>
+                <Label>Port</Label>
+                <Input
+                  {...register("port", { valueAsNumber: true })}
+                  type="number"
                 />
-                <ToggleTip content="Nightly builds are less stable and may contain bugs">
+              </Group>
+              <Group>
+                <Label>Explicit Only</Label>
+                <Checkbox
+                  w="full"
+                  checked={explicitOnly}
+                  onCheckedChange={({ checked }) =>
+                    setExplicitOnly(checked === true)
+                  }
+                />
+                <ToggleTip
+                  content={
+                    <Text>
+                      When enabled, only containers with GoDoxy labels{" "}
+                      <Code>proxy.*</Code> will be proxied
+                    </Text>
+                  }
+                >
                   <Button size="xs" variant="ghost">
                     <LuInfo />
                   </Button>
                 </ToggleTip>
               </Group>
-            )}
-          </Stack>
-        </DialogBody>
-        <DialogFooter>
-          <Button
-            variant={"ghost"}
-            loading={copyLoading}
-            loadingText="Creating certificates"
-            onClick={handleSubmit((form) => {
-              if (explicitOnly) {
-                form.name += "!";
-              }
-              setCopyLoading(true);
-              newAgent({ ...form, type })
-                .then(async (e) => {
-                  await navigator.clipboard.writeText(e.compose);
-                  toaster.create({
-                    title: "Copied to clipboard",
-                  });
-                  setAgent(e);
+
+              {type === "docker" && (
+                <Group>
+                  <Label>Nightly</Label>
+                  <Controller
+                    control={control}
+                    name="nightly"
+                    render={({ field }) => (
+                      <Checkbox
+                        w="full"
+                        checked={field.value}
+                        onCheckedChange={({ checked }) =>
+                          field.onChange(checked)
+                        }
+                      />
+                    )}
+                  />
+                  <ToggleTip content="Nightly builds are less stable and may contain bugs">
+                    <Button size="xs" variant="ghost">
+                      <LuInfo />
+                    </Button>
+                  </ToggleTip>
+                </Group>
+              )}
+            </Stack>
+          </Dialog.Body>
+          <Dialog.Footer>
+            <Button
+              variant={"ghost"}
+              loading={copyLoading}
+              loadingText="Creating certificates"
+              onClick={handleSubmit((form) => {
+                if (explicitOnly) {
+                  form.name += "!";
+                }
+                setCopyLoading(true);
+                newAgent({ ...form, type })
+                  .then(async (e) => {
+                    await navigator.clipboard.writeText(e.compose);
+                    toaster.create({
+                      title: "Copied to clipboard",
+                    });
+                    setAgent(e);
+                  })
+                  .catch(toastError)
+                  .finally(() => setCopyLoading(false));
+              })}
+            >
+              Copy
+              {type === "docker" ? " docker compose" : " shell command"}
+            </Button>
+            <Button
+              borderRadius={"lg"}
+              disabled={!agent}
+              loading={addLoading}
+              onClick={handleSubmit((form) => {
+                if (!agent) return;
+                setAddLoading(true);
+                verifyNewAgent({
+                  host: form.host,
+                  port: form.port,
+                  ca: agent.ca,
+                  client: agent.client,
                 })
-                .catch(toastError)
-                .finally(() => setCopyLoading(false));
-            })}
-          >
-            Copy
-            {type === "docker" ? " docker compose" : " shell command"}
-          </Button>
-          <Button
-            borderRadius={"lg"}
-            disabled={!agent}
-            loading={addLoading}
-            onClick={handleSubmit((form) => {
-              if (!agent) return;
-              setAddLoading(true);
-              verifyNewAgent({
-                host: form.host,
-                port: form.port,
-                ca: agent.ca,
-                client: agent.client,
-              })
-                .then(async (e) => {
-                  const content = addAgentToConfig(
-                    `${form.host}:${form.port}`,
-                    configContent!,
-                  );
-                  await updateRemote(config, content, { toast: false });
-                  setConfigContent(content);
-                  return e;
-                })
-                .then(async (e) => {
-                  setAgent(null);
-                  setOpen(false);
-                  toaster.create({
-                    title: "Agent added",
-                    description: await e?.text(),
-                  });
-                })
-                .catch(toastError)
-                .finally(() => setAddLoading(false));
-            })}
-          >
-            Add Agent
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </DialogRoot>
+                  .then(async (e) => {
+                    const content = addAgentToConfig(
+                      `${form.host}:${form.port}`,
+                      configContent!,
+                    );
+                    await updateRemote(config, content, { toast: false });
+                    setConfigContent(content);
+                    return e;
+                  })
+                  .then(async (e) => {
+                    setAgent(null);
+                    setOpen(false);
+                    toaster.create({
+                      title: "Agent added",
+                      description: await e?.text(),
+                    });
+                  })
+                  .catch(toastError)
+                  .finally(() => setAddLoading(false));
+              })}
+            >
+              Add Agent
+            </Button>
+          </Dialog.Footer>
+        </Dialog.Content>
+      </Dialog.Positioner>
+    </Dialog.Root>
   );
 }
 
