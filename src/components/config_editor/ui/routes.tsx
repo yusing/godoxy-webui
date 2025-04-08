@@ -40,7 +40,7 @@ import {
 } from "@chakra-ui/react";
 import { LoadBalance, Routes } from "godoxy-schemas";
 import React from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Control, Controller, useForm, UseFormRegister } from "react-hook-form";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { IconSearcher } from "../icon_searcher";
 
@@ -366,53 +366,11 @@ const ReverseProxyRouteForm: React.FC<{
                 );
               }}
             />
-            <Controller
-              control={control}
-              name="homepage.show"
-              render={({ field }) => (
-                <Checkbox
-                  checked={field.value ?? true}
-                  onCheckedChange={({ checked }) => field.onChange(checked)}
-                >
-                  Show on dashboard
-                </Checkbox>
-              )}
-            />
-            <Controller
-              control={control}
-              name="homepage.show"
-              render={({ field }) => (
-                <Show when={field.value !== false}>
-                  <Stack gap="4">
-                    <Group>
-                      <Field label="Display Name">
-                        <Input {...register("homepage.name")} />
-                      </Field>
-                      <Field label="Category">
-                        <Input {...register("homepage.category")} />
-                      </Field>
-                    </Group>
-                    <Field label="Description">
-                      <Input {...register("homepage.description")} />
-                    </Field>
-                    <IconSearcher
-                      value={value.homepage?.icon ?? ""}
-                      onChange={(e) => setValue("homepage.icon", e)}
-                    />
-                  </Stack>
-                </Show>
-              )}
-            />
+            <HomepageSettings control={control} register={register} />
           </Stack>
         </Collapsible.Content>
       </Collapsible.Root>
-      <DialogFooter>
-        <Dialog.CloseTrigger as="p" asChild>
-          <Button disabled={!isValid} onClick={submit}>
-            Save
-          </Button>
-        </Dialog.CloseTrigger>
-      </DialogFooter>
+      <FormFooter isValid={isValid} onSubmit={submit} />
     </Stack>
   );
 };
@@ -425,7 +383,6 @@ const FileServerRouteForm: React.FC<{
     control,
     register,
     getValues,
-    setValue,
     formState: { errors, isValid },
   } = useForm<Routes.FileServerRoute>({
     defaultValues: {
@@ -465,54 +422,10 @@ const FileServerRouteForm: React.FC<{
           <Button variant={"subtle"}>Show Advanced Options</Button>
         </Collapsible.Trigger>
         <Collapsible.Content py="4">
-          <Stack gap="4">
-            <Controller
-              control={control}
-              name="homepage.show"
-              render={({ field }) => (
-                <Checkbox
-                  checked={field.value ?? true}
-                  onCheckedChange={({ checked }) => field.onChange(checked)}
-                >
-                  Show on dashboard
-                </Checkbox>
-              )}
-            />
-            <Controller
-              control={control}
-              name="homepage.show"
-              render={({ field }) => (
-                <Show when={field.value !== false}>
-                  <Stack gap="4">
-                    <Group>
-                      <Field label="Display Name">
-                        <Input {...register("homepage.name")} />
-                      </Field>
-                      <Field label="Category">
-                        <Input {...register("homepage.category")} />
-                      </Field>
-                    </Group>
-                    <Field label="Description">
-                      <Input {...register("homepage.description")} />
-                    </Field>
-                    <IconSearcher
-                      value={value.homepage?.icon ?? ""}
-                      onChange={(e) => setValue("homepage.icon", e)}
-                    />
-                  </Stack>
-                </Show>
-              )}
-            />
-          </Stack>
+          <HomepageSettings control={control} register={register} />
         </Collapsible.Content>
       </Collapsible.Root>
-      <DialogFooter>
-        <Dialog.CloseTrigger as="p" asChild>
-          <Button disabled={!isValid} onClick={submit}>
-            Save
-          </Button>
-        </Dialog.CloseTrigger>
-      </DialogFooter>
+      <FormFooter isValid={isValid} onSubmit={submit} />
     </Stack>
   );
 };
@@ -603,13 +516,64 @@ const StreamRouteForm: React.FC<{
           );
         }}
       />
-      <DialogFooter>
-        <Dialog.ActionTrigger asChild>
-          <Button disabled={!isValid} onClick={submit}>
-            Save
-          </Button>
-        </Dialog.ActionTrigger>
-      </DialogFooter>
+      <FormFooter isValid={isValid} onSubmit={submit} />
     </Stack>
   );
 };
+
+function HomepageSettings({
+  control,
+  register,
+}: {
+  control: Control<Routes.ReverseProxyRoute | Routes.FileServerRoute>;
+  register: UseFormRegister<Routes.ReverseProxyRoute | Routes.FileServerRoute>;
+}) {
+  return (
+    <Controller
+      control={control}
+      name="homepage.show"
+      render={({ field }) => (
+        <Show when={field.value !== false}>
+          <Stack gap="4">
+            <Group>
+              <Field label="Display Name">
+                <Input {...register("homepage.name")} />
+              </Field>
+              <Field label="Category">
+                <Input {...register("homepage.category")} />
+              </Field>
+            </Group>
+            <Field label="Description">
+              <Input {...register("homepage.description")} />
+            </Field>
+            <Controller
+              control={control}
+              name="homepage.icon"
+              render={({ field: iconField }) => (
+                <IconSearcher
+                  value={iconField.value ?? ""}
+                  onChange={iconField.onChange}
+                />
+              )}
+            />
+          </Stack>
+        </Show>
+      )}
+    />
+  );
+}
+
+function FormFooter({
+  isValid,
+  onSubmit,
+}: Readonly<{ isValid: boolean; onSubmit: () => void }>) {
+  return (
+    <DialogFooter>
+      <Dialog.CloseTrigger asChild>
+        <Button position={"relative"} disabled={!isValid} onClick={onSubmit}>
+          Save
+        </Button>
+      </Dialog.CloseTrigger>
+    </DialogFooter>
+  );
+}
