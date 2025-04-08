@@ -9,7 +9,13 @@ import { Field } from "@/components/ui/field";
 import { Switch } from "@/components/ui/switch";
 import { getSchemaDescription } from "@/types/schema";
 import { Stack } from "@chakra-ui/react";
-import { Autocert, Config, ConfigSchema, Notification } from "godoxy-schemas";
+import {
+  AccessLog,
+  Autocert,
+  Config,
+  ConfigSchema,
+  Notification,
+} from "godoxy-schemas";
 import React from "react";
 import { FaHome } from "react-icons/fa";
 import { FaDocker, FaInbox, FaLink } from "react-icons/fa6";
@@ -83,6 +89,9 @@ export function ConfigUIEditor({
                 ConfigSchema.properties.entrypoint.properties.access_log
                   .properties,
               )}
+              allowedValues={{
+                format: AccessLog.ACCESS_LOG_FORMATS,
+              }}
               value={data.entrypoint?.access_log ?? {}}
               onChange={(v) => {
                 if (!data.entrypoint) data.entrypoint = {};
