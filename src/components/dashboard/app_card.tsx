@@ -152,7 +152,7 @@ export const AppCard: React.FC<
       <MenuContextTrigger asChild>
         <Link
           className="transform transition-transform hover:scale-105"
-          href={`${location.protocol}//${curItem.url}`}
+          href={`${curItem.url}`}
           target="_blank"
           variant={"plain"}
           aria-label={curItem.name}
