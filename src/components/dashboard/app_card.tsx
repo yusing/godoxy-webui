@@ -46,7 +46,6 @@ import {
   UseFormRegister,
 } from "react-hook-form";
 import { LuEyeOff, LuPencil } from "react-icons/lu";
-import { useLocation } from "react-use";
 import { IconSearcher } from "../config_editor/icon_searcher";
 import HealthProvider from "./health_provider";
 import { useAllSettings } from "./settings";
@@ -126,7 +125,6 @@ export const AppCard: React.FC<
 > = ({ containerRef, ...rest }) => {
   const [curItem, setCurItem] = React.useState(rest.item);
   const [menuOpen, setMenuOpen] = React.useState(false);
-  const location = useLocation();
 
   if (curItem.skeleton) {
     return (
