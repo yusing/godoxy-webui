@@ -20,7 +20,6 @@ FROM deps AS builder
 # WORKDIR /app
 # COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN sed -i 's/config = {/config = { typescript: { ignoreBuildErrors: true }, eslint: { ignoreDuringBuilds: true },/' next.config.js
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
