@@ -38,6 +38,11 @@ export async function getHomepageItems({
         return a.name.length - b.name.length || a.name.localeCompare(b.name);
       });
       for (const item of category) {
+        try {
+          new URL(item.url);
+        } catch {
+          item.url = "";
+        }
         // if an override url is not set, use the default
         if (!item.url) {
           let fqdn: string;
