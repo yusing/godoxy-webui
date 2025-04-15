@@ -38,7 +38,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { LoadBalance, Routes } from "godoxy-schemas";
+import { Homepage, LoadBalance, Routes } from "godoxy-schemas";
 import React from "react";
 import { Control, Controller, useForm, UseFormRegister } from "react-hook-form";
 import { FaEdit, FaTrash } from "react-icons/fa";
@@ -346,26 +346,7 @@ const ReverseProxyRouteForm: React.FC<{
                 ))}
               </SelectContent>
             </SelectRoot>
-            <Controller
-              control={control}
-              name="healthcheck"
-              render={({ field }) => {
-                return (
-                  <Checkbox
-                    checked={field.value?.disable}
-                    onCheckedChange={({ checked }) => {
-                      if (checked) {
-                        field.onChange({ disable: true });
-                      } else {
-                        field.onChange({ disable: false, ...field.value });
-                      }
-                    }}
-                  >
-                    Disable healthcheck
-                  </Checkbox>
-                );
-              }}
-            />
+            <HealthcheckSettings control={control} />
             <HomepageSettings control={control} register={register} />
           </Stack>
         </Collapsible.Content>
@@ -423,6 +404,7 @@ const FileServerRouteForm: React.FC<{
         </Collapsible.Trigger>
         <Collapsible.Content py="4">
           <HomepageSettings control={control} register={register} />
+          <HealthcheckSettings control={control} />
         </Collapsible.Content>
       </Collapsible.Root>
       <FormFooter isValid={isValid} onSubmit={submit} />
@@ -496,37 +478,19 @@ const StreamRouteForm: React.FC<{
       >
         <Input placeholder="Listening:Target" {...register("port")} />
       </Field>
-      <Controller
-        control={control}
-        name="healthcheck"
-        render={({ field }) => {
-          return (
-            <Checkbox
-              checked={field.value?.disable}
-              onCheckedChange={({ checked }) => {
-                if (checked) {
-                  field.onChange({ disable: true });
-                } else {
-                  field.onChange({ disable: false, ...field.value });
-                }
-              }}
-            >
-              Disable healthcheck
-            </Checkbox>
-          );
-        }}
-      />
+      <HealthcheckSettings control={control} />
       <FormFooter isValid={isValid} onSubmit={submit} />
     </Stack>
   );
 };
 
+type WithHomepage = { homepage?: Homepage.HomepageConfig };
 function HomepageSettings({
   control,
   register,
 }: {
-  control: Control<Routes.ReverseProxyRoute | Routes.FileServerRoute>;
-  register: UseFormRegister<Routes.ReverseProxyRoute | Routes.FileServerRoute>;
+  control: Control<WithHomepage>;
+  register: UseFormRegister<WithHomepage>;
 }) {
   return (
     <Controller
@@ -558,6 +522,28 @@ function HomepageSettings({
             />
           </Stack>
         </Show>
+      )}
+    />
+  );
+}
+
+type WithHealthcheck = { healthcheck?: { disable?: boolean } };
+function HealthcheckSettings({
+  control,
+}: {
+  control: Control<WithHealthcheck>;
+}) {
+  return (
+    <Controller
+      control={control}
+      name="healthcheck.disable"
+      render={({ field }) => (
+        <Checkbox
+          checked={!!field.value}
+          onCheckedChange={({ checked }) => field.onChange(checked)}
+        >
+          Disable healthcheck
+        </Checkbox>
       )}
     />
   );
