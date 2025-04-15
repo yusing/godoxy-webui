@@ -39,11 +39,10 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Homepage, LoadBalance, Routes } from "godoxy-schemas";
+import { Pencil, Trash } from "lucide-react";
 import React from "react";
 import { Control, Controller, useForm, UseFormRegister } from "react-hook-form";
-import { FaEdit, FaTrash } from "react-icons/fa";
 import { IconSearcher } from "../icon_searcher";
-
 const routeTypes = [
   {
     label: "Reverse Proxy",
@@ -129,7 +128,7 @@ export const RoutesEditor: React.FC<{
                 >
                   <DialogTrigger asChild>
                     <IconButton variant={"ghost"}>
-                      <FaEdit />
+                      <Pencil />
                     </IconButton>
                   </DialogTrigger>
                   <DialogContent>
@@ -158,7 +157,7 @@ export const RoutesEditor: React.FC<{
                     onChange(data);
                   }}
                 >
-                  <FaTrash />
+                  <Trash />
                 </IconButton>
               </HStack>
             </Card.Body>

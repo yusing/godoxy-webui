@@ -10,8 +10,8 @@ import {
   ListCollection,
   Stack,
 } from "@chakra-ui/react";
+import { Plus, Trash } from "lucide-react";
 import React from "react";
-import { FaPlus, FaTrash } from "react-icons/fa6";
 import { Button } from "./ui/button";
 import { Field } from "./ui/field";
 import { Label } from "./ui/label";
@@ -58,14 +58,13 @@ export const ListInput: React.FC<
               {...rest}
             />
             <IconButton
-              size={"xs"}
               variant={"ghost"}
               onClick={() => {
                 value.splice(index, 1);
                 onChange(value);
               }}
             >
-              <FaTrash />
+              <Trash />
             </IconButton>
           </Group>
         ))}
@@ -78,7 +77,7 @@ export const ListInput: React.FC<
             onChange(value);
           }}
         >
-          <FaPlus />
+          <Plus />
           {label}
         </Button>
       </Stack>
@@ -345,14 +344,13 @@ export const MapInput: React.FC<
                   visibility={
                     !allowDelete || k === nameField ? "hidden" : "visible"
                   }
-                  size={"xs"}
                   variant={"ghost"}
                   onClick={() => {
                     delete value[k];
                     onChange(value);
                   }}
                 >
-                  <FaTrash />
+                  <Trash />
                 </IconButton>
               </Group>
             )
@@ -368,7 +366,7 @@ export const MapInput: React.FC<
               onChange(value);
             }}
           >
-            <FaPlus />
+            <Plus />
             {label}
           </Button>
         )}
