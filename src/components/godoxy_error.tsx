@@ -13,7 +13,7 @@ import { MdKeyboardArrowDown, MdKeyboardArrowRight } from "react-icons/md";
 
 export type GoDoxyError =
   | string
-  | Record<string, string>
+  | Record<string, unknown>
   | WithSubject
   | NestedError;
 type WithSubject = { subjects: string[]; err: GoDoxyError };
@@ -29,7 +29,7 @@ export const GoDoxyErrorText: React.FC<{
   if (typeof err === "string") {
     return <Text pl={pl}>{err}</Text>;
   }
-  if ("subjects" in err) {
+  if ("subjects" in err && Array.isArray(err.subjects)) {
     return (
       <HStack pl={pl} gap="0">
         {err.subjects.length > 1 && (
@@ -42,12 +42,20 @@ export const GoDoxyErrorText: React.FC<{
       </HStack>
     );
   }
-  if ("extras" in err) {
+  if ("extras" in err && Array.isArray(err.extras)) {
     if (err.extras.length == 1) {
       return (
         <Stack gap="1">
           <GoDoxyErrorText err={err.err} level={level ?? 0} />
-          <GoDoxyErrorText err={err.extras[0]!} level={level ?? 0} />
+          <For each={err.extras}>
+            {(extra, index) => (
+              <GoDoxyErrorText
+                key={index}
+                err={extra}
+                level={(level ?? 0) + 1}
+              />
+            )}
+          </For>
         </Stack>
       );
     }
@@ -85,11 +93,37 @@ export const GoDoxyErrorText: React.FC<{
   return (
     <Stack gap="0">
       <For each={Object.entries(err)}>
-        {([k, v], index) => (
-          <Text key={index}>
-            <Span color="fg.warning">{k}:</Span> {v}
-          </Text>
-        )}
+        {([k, v], index) => {
+          if (!v) return null;
+          if (typeof v === "string") return (
+            <Text key={`${index}_${k}`}>
+              <Span color="fg.warning">{k}:</Span> {`${v}`}
+            </Text>
+          )
+          if (typeof v === "object") return (
+            <For each={Object.entries(v)}>
+              {([k2, v2], index2) => (
+                <GoDoxyErrorText
+                  key={`${index}_${index2}_${k}`}
+                  err={{ [k2]: v2 }}
+                  level={(level ?? 0) + 1}
+                />
+              )}
+            </For>
+          )
+          if (Array.isArray(v)) return (
+            <For each={v}>
+              {(v2, index2) => (
+                <GoDoxyErrorText
+                  key={`${index}_${index2}`}
+                  err={v2}
+                  level={(level ?? 0) + 1}
+                />
+              )}
+            </For>
+          )
+          return null;
+        }}
       </For>
     </Stack>
   );
