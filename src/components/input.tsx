@@ -13,6 +13,7 @@ import {
 import { Plus, Trash } from "lucide-react";
 import React from "react";
 import { Button } from "./ui/button";
+import { Checkbox } from "./ui/checkbox";
 import { Field } from "./ui/field";
 import { Label } from "./ui/label";
 import {
@@ -324,21 +325,26 @@ export const MapInput: React.FC<
                     </SelectContent>
                   </SelectRoot>
                 ) : (
-                  <Input
+                  typeof v === "string" ?  <Input
                     maxW={"2/3"}
-                    value={typeof v === "string" ? v : ""}
-                    readOnly={typeof v !== "string"}
+                    value={v}
                     placeholder={
-                      typeof v === "string"
-                        ? (placeholder?.value ?? "Value")
-                        : "use yaml editor"
+                      placeholder?.value ?? "Value"
                     }
                     onChange={(e) => {
                       value[k] = e.target.value;
-                      onChange(value);
+                      onChange(value as Record<string, string>);
                     }}
                     {...rest}
-                  />
+                  /> : typeof v === "boolean" ? <Checkbox
+                  w={"full"}
+                  checked={v}
+                  onCheckedChange={({checked}) => {
+                    value[k] = checked;
+                    onChange(value);
+                  }}
+                  {...rest}
+                /> : null
                 )}
                 <IconButton
                   visibility={
