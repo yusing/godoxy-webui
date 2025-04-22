@@ -173,7 +173,7 @@ const RouteEditor: React.FC<{
   onChange: (v: Routes.Route) => void;
 }> = ({ route, onChange }) => {
   let t: string;
-  switch (route.scheme) {
+  switch (route.scheme??"http") {
     case "http":
     case "https":
       t = "rp";
@@ -194,7 +194,7 @@ const RouteEditor: React.FC<{
     <Stack gap="4">
       <RadioCardRoot
         defaultValue={type}
-        onValueChange={({ value }) => setType(value)}
+        onValueChange={({ value }) => setType(value??"http")}
       >
         <Text fontWeight={"medium"}>Select route type</Text>
         <Flex gap="2">

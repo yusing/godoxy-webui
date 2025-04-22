@@ -4,6 +4,7 @@ import { MdAdd, MdSave } from "react-icons/md";
 import { ListboxItem, ListboxItemProps } from "../listbox/listbox_item";
 
 import { useConfigFileContext } from "@/hooks/config_file";
+import { ConfigFile } from "@/types/file";
 import { Group, Input, InputAddon, Stack } from "@chakra-ui/react";
 import React, { useCallback, useState } from "react";
 import { GrCloudSoftware, GrDocumentConfig } from "react-icons/gr";
@@ -33,7 +34,7 @@ export default function ConfigFileActions() {
         p={1}
         fileExtension=".yml"
         onSubmit={(t, name) => {
-          const newFile = { type: t, filename: name + ".yml", isNewFile: true };
+          const newFile: ConfigFile = { type: t, filename: name + ".yml", isNewFile: true };
           setCurrent(newFile);
           files[t].unshift(newFile);
         }}
