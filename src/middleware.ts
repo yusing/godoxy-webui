@@ -4,18 +4,6 @@ import { NextResponse } from "next/server";
 // Default to localhost:8888 if env var is not set
 const API_BASE_URL = `http://${process.env.GODOXY_API_ADDR ?? "127.0.0.1:8888"}`;
 
-class HeadersWithHost extends Headers {
-  host: string;
-
-  constructor(init?: Headers, host?: string) {
-    super({});
-    init?.forEach((value, key) => {
-      this.set(key, value);
-    });
-    this.host = host ?? "";
-  }
-}
-
 export function middleware(request: NextRequest) {
   // Get the pathname of the request (e.g. /api/users)
   const pathname = request.nextUrl.pathname;
@@ -31,8 +19,13 @@ export function middleware(request: NextRequest) {
     url.search = request.nextUrl.search;
 
     // Return rewritten URL response
+    const headers = new Headers(request.headers);
+    headers.set("X-Forwarded-Host", request.nextUrl.host);
+
     return NextResponse.rewrite(url, {
-      headers: new HeadersWithHost(request.headers, request.nextUrl.host),
+      request:{
+        headers: headers,
+      }
     });
   }
 
