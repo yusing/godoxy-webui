@@ -18,6 +18,13 @@ const config = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  redirects: async () => [
+    {
+      source: "/auth/callback",
+      destination: "/api/auth/callback",
+      permanent: false,
+    },
+  ],
 };
 
 export default config;
