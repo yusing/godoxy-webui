@@ -24,6 +24,10 @@ export const StreamColumns: Column[] = [
   { key: "latency", label: "Latency" },
 ] as const;
 
+type Container = {
+  container_name: string;
+};
+
 export type ReverseProxy = {
   container: string;
   alias: string;
@@ -63,12 +67,12 @@ export async function getHTTPRoutes(signal: AbortSignal) {
     if (route.health && route.health.extra) {
       for (const v of Object.values(route.health.extra.pool)) {
         httpRoutes.push({
-          container: "",
+          container: route.container?.container_name ?? "",
           alias: v.name,
           load_balancer:
             route.scheme === "fileserver"
               ? undefined
-              : route.load_balance?.link,
+              : route.health.extra.config.link,
           url: v.url,
           status: v.status as HealthStatusType,
           uptime: v.uptimeStr,
@@ -77,7 +81,7 @@ export async function getHTTPRoutes(signal: AbortSignal) {
       }
     } else {
       httpRoutes.push({
-        container: route.idlewatcher?.container_name ?? "",
+        container: route.container?.container_name ?? "",
         alias: route.alias!,
         load_balancer: "",
         url: route.purl ?? (route as FileserverRoute).root,
