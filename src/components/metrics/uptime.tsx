@@ -28,7 +28,7 @@ import {
   Spinner,
   Stack,
 } from "@chakra-ui/react";
-import React, { FC, useState } from "react";
+import React, { FC, useState, useMemo, memo } from "react";
 import { useLocation, useWindowSize } from "react-use";
 import { FavIcon } from "../dashboard/favicon";
 import { HealthStatus, HealthStatusTag } from "../health_status";
@@ -118,13 +118,12 @@ const Layout = ({ metrics }: { metrics: RouteUptimeMetrics }) => {
   }, [layoutMode.val]);
   const location = useLocation();
   const currentHost = location.host?.split(".").slice(1).join(".") ?? "";
+  const url = metrics.alias.search(".")
+    ? metrics.alias
+    : `${metrics.alias}.${currentHost}`;
 
   return (
-    <Link
-      href={`${location.protocol}//${metrics.alias}.${currentHost}/`}
-      target="_blank"
-      unstyled
-    >
+    <Link href={`${location.protocol}//${url}/`} target="_blank" unstyled>
       <AppCard
         metrics={metrics}
         _hover={{
@@ -298,32 +297,31 @@ function fillStatuses(statuses: RouteStatus[], count: number): RouteStatus[] {
 const UptimeTracker: React.FC<{ statuses: RouteStatus[] }> = ({ statuses }) => {
   const { width } = useWindowSize();
   const colsCount = useColsCount();
+  const count = useMemo(() => Math.floor(width / colsCount.val / 15), [width, colsCount.val]);
+  const statusesToShow = useMemo(() => fillStatuses(statuses, count), [statuses, count]);
 
   return (
     <HStack gap="1">
-      {fillStatuses(statuses, Math.floor(width / colsCount.val / 15)).map(
-        (s, i) => (
-          <UptimeStatus key={i} status={s} />
-        ),
-      )}
+      {statusesToShow.map((s, i) => (
+        <UptimeStatus key={i} status={s} />
+      ))}
     </HStack>
   );
 };
 
-const UptimeStatus: React.FC<{ status: RouteStatus }> = ({ status }) => {
-  if (!status.timestamp) {
-    return <Box borderRadius={"xs"} w="full" h="6" bg={"gray.500"} />;
-  }
-  return (
-    <Tooltip
-      content={`${formatTimestamp(status.timestamp)} - ${status.latency.toFixed(0)}ms`}
-    >
-      <Box
-        borderRadius={"xs"}
-        w="full"
-        h="6"
-        bg={healthStatusColors[status.status]}
-      />
-    </Tooltip>
-  );
-};
+const UptimeStatus = memo<{ status: RouteStatus }>(
+  ({ status }) => {
+    if (!status.timestamp) {
+      return <Box borderRadius={"xs"} w="full" h="6" bg={"gray.500"} />;
+    }
+    return (
+      <Tooltip content={`${formatTimestamp(status.timestamp)} - ${status.latency.toFixed(0)}ms`}>
+        <Box borderRadius={"xs"} w="full" h="6" bg={healthStatusColors[status.status]} />
+      </Tooltip>
+    );
+  },
+  (prev, next) =>
+    prev.status.timestamp === next.status.timestamp &&
+    prev.status.latency === next.status.latency &&
+    prev.status.status === next.status.status
+);
