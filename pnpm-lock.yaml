@@ -14,9 +14,6 @@ importers:
       '@codemirror/lang-yaml':
         specifier: ^6.1.2
         version: 6.1.2
-      '@codemirror/lint':
-        specifier: ^6.8.5
-        version: 6.8.5
       '@emotion/react':
         specifier: ^11.14.0
         version: 11.14.0(@types/react@19.1.2)(react@19.1.0)

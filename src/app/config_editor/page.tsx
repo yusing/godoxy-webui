@@ -15,14 +15,14 @@ import { useAsync } from "react-use";
 
 export default function ConfigEditorPage() {
   return (
-    <ConfigFileProvider>
-      <Stack gap="0" direction="row" h="full">
+    <Stack gap="0" direction="row" h="full">
+      <ConfigFileProvider>
         <Stack align={"flex-start"} px="4">
           <ConfigFileActions />
           <FileList />
         </Stack>
         <Box
-          w={"45%"}
+          w={"full"}
           brightness={"10%"}
           overflow={"auto"}
           pr="6"
@@ -30,12 +30,12 @@ export default function ConfigEditorPage() {
         >
           <UIEditor />
         </Box>
-        <Stack w="55%" overflow="auto" fontSize="sm">
+        <Stack w="40%" minW="800px" overflow="auto" fontSize="sm">
           <YAMLConfigEditor />
           <ValidationErrorText />
         </Stack>
-      </Stack>
-    </ConfigFileProvider>
+      </ConfigFileProvider>
+    </Stack>
   );
 }
 

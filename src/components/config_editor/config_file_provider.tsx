@@ -1,13 +1,17 @@
 import { ConfigFileContext } from "@/hooks/config_file";
-import Endpoints, { ConfigFileType, fetchEndpoint, toastError } from "@/types/api/endpoints";
+import Endpoints, {
+  ConfigFileType,
+  fetchEndpoint,
+  toastError,
+} from "@/types/api/endpoints";
 import {
   ConfigFile,
   getConfigFiles,
   godoxyConfig,
-  placeholderFiles
+  placeholderFiles,
 } from "@/types/file";
 import React from "react";
-import { useAsync } from "react-use";
+import { useAsync, useSetState } from "react-use";
 import { toaster, Toaster } from "../ui/toaster";
 
 type State = {
@@ -19,7 +23,7 @@ type State = {
 export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [state, setState] = React.useState<State>({
+  const [state, setState] = useSetState<State>({
     content: undefined,
     current: godoxyConfig,
     hasUnsavedChanges: false,
@@ -27,19 +31,30 @@ export const ConfigFileProvider: React.FC<{ children: React.ReactNode }> = ({
   const files = useAsync(getConfigFiles);
 
   const setContent = React.useCallback((content: string | undefined) => {
-    setState((prev) => ({
-      ...prev,
-      content,
-      hasUnsavedChanges: true,
-    }));
+    setState((prev) => {
+      if (
+        prev.content === content &&
+        prev.current.type === prev.current.type &&
+        prev.current.filename === prev.current.filename
+      )
+        return prev;
+      return {
+        ...prev,
+        content,
+        hasUnsavedChanges: true,
+      };
+    });
   }, []);
 
-  const setHasUnsavedChanges = React.useCallback((hasUnsavedChanges: boolean) => {
-    setState((prev) => ({
-      ...prev,
-      hasUnsavedChanges,
-    }));
-  }, []);
+  const setHasUnsavedChanges = React.useCallback(
+    (hasUnsavedChanges: boolean) => {
+      setState((prev) => ({
+        ...prev,
+        hasUnsavedChanges,
+      }));
+    },
+    [],
+  );
 
   const fetchContent = React.useCallback((file: ConfigFile) => {
     if (file.isNewFile) {
