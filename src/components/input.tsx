@@ -26,16 +26,16 @@ import {
 
 type NamedList = { [key: string]: string }[];
 
-export const ListInput: React.FC<
-  {
-    label: React.ReactNode;
-    placeholder?: string;
-    value: string[];
-    required?: boolean;
-    description?: string;
-    onChange: (v: string[]) => void;
-  } & Omit<InputProps, "onChange" | "value">
-> = ({
+interface ListInputProps extends Omit<InputProps, "onChange" | "value"> {
+  label: React.ReactNode;
+  placeholder?: string;
+  value: string[];
+  required?: boolean;
+  description?: string;
+  onChange: (v: string[]) => void;
+}
+
+export const ListInput: React.FC<ListInputProps> = ({
   label,
   placeholder,
   value,
@@ -86,19 +86,19 @@ export const ListInput: React.FC<
   );
 };
 
-export const NamedListInput: React.FC<
-  {
-    label: React.ReactNode;
-    placeholder?: { key?: string; value?: string };
-    nameField?: string;
-    allowedNames?: ReadonlyArray<string>;
-    allowedKeys?: { [key: string]: ReadonlyArray<string> };
-    allowedValues?: { [key: string]: { [key: string]: ReadonlyArray<string> } };
-    description?: { [key: string]: { [key: string]: string } };
-    value: NamedList;
-    onChange: (v: NamedList) => void;
-  } & Omit<InputProps, "onChange" | "value" | "placeholder">
-> = ({
+interface NamedListInputProps extends Omit<InputProps, "onChange" | "value"> {
+  label: React.ReactNode;
+  placeholder?: { key?: string; value?: string };
+  nameField?: string;
+  allowedNames?: ReadonlyArray<string>;
+  allowedKeys?: { [key: string]: ReadonlyArray<string> };
+  allowedValues?: { [key: string]: { [key: string]: ReadonlyArray<string> } };
+  description?: { [key: string]: { [key: string]: string } };
+  value: NamedList;
+  onChange: (v: NamedList) => void;
+}
+
+export const NamedListInput: React.FC<NamedListInputProps> = ({
   label,
   placeholder,
   value,
@@ -163,21 +163,22 @@ export const NamedListInput: React.FC<
   );
 };
 
-export const MapInput: React.FC<
-  {
-    label: React.ReactNode;
-    placeholder?: { key?: string; value?: string };
-    value: Record<string, string>;
-    allowAdd?: boolean;
-    allowDelete?: boolean;
-    nameField?: string;
-    allowedNames?: ReadonlyArray<string>;
-    allowedKeys?: ReadonlyArray<string>;
-    allowedValues?: { [key: string]: ReadonlyArray<string> };
-    description?: { [key: string]: string };
-    onChange: (v: Record<string, string>) => void;
-  } & Omit<InputProps, "onChange" | "value" | "placeholder">
-> = ({
+interface MapInputProps
+  extends Omit<InputProps, "onChange" | "value" | "placeholder"> {
+  label: React.ReactNode;
+  placeholder?: { key?: string; value?: string };
+  value: Record<string, string>;
+  allowAdd?: boolean;
+  allowDelete?: boolean;
+  nameField?: string;
+  allowedNames?: ReadonlyArray<string>;
+  allowedKeys?: ReadonlyArray<string>;
+  allowedValues?: { [key: string]: ReadonlyArray<string> };
+  description?: { [key: string]: string };
+  onChange: (v: Record<string, string>) => void;
+}
+
+export const MapInput: React.FC<MapInputProps> = ({
   label,
   placeholder,
   value,
@@ -324,28 +325,28 @@ export const MapInput: React.FC<
                       ))}
                     </SelectContent>
                   </SelectRoot>
-                ) : (
-                  typeof v === "string" ?  <Input
+                ) : typeof v === "string" ? (
+                  <Input
                     maxW={"2/3"}
                     value={v}
-                    placeholder={
-                      placeholder?.value ?? "Value"
-                    }
+                    placeholder={placeholder?.value ?? "Value"}
                     onChange={(e) => {
                       value[k] = e.target.value;
                       onChange(value as Record<string, string>);
                     }}
                     {...rest}
-                  /> : typeof v === "boolean" ? <Checkbox
-                  w={"full"}
-                  checked={v}
-                  onCheckedChange={({checked}) => {
-                    value[k] = checked;
-                    onChange(value);
-                  }}
-                  {...rest}
-                /> : null
-                )}
+                  />
+                ) : typeof v === "boolean" ? (
+                  <Checkbox
+                    w={"full"}
+                    checked={v}
+                    onCheckedChange={({ checked }) => {
+                      value[k] = checked;
+                      onChange(value);
+                    }}
+                    {...rest}
+                  />
+                ) : null}
                 <IconButton
                   visibility={
                     !allowDelete || k === nameField ? "hidden" : "visible"

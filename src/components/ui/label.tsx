@@ -21,9 +21,17 @@ export const Label: FC<PropsWithChildren<TextProps>> = ({
   );
 };
 
-export const IconLabel: FC<
-  PropsWithChildren & TextProps & { wrapperProps?: StackProps; icon: ReactNode }
-> = ({ children, wrapperProps, icon, ...props }) => {
+interface IconLabelProps extends TextProps, PropsWithChildren {
+  wrapperProps?: StackProps;
+  icon: ReactNode;
+}
+
+export const IconLabel: FC<IconLabelProps> = ({
+  children,
+  wrapperProps,
+  icon,
+  ...props
+}) => {
   return (
     <HStack {...wrapperProps}>
       {icon}

@@ -205,12 +205,16 @@ const ContainerList: FC<{
   );
 };
 
-export const ContainerItem: FC<
-  {
-    container: Container;
-    onItemClick: () => void;
-  } & StackProps
-> = ({ container, onItemClick, ...props }) => {
+interface ContainerItemProps extends Omit<StackProps, "container"> {
+  container: Container;
+  onItemClick: () => void;
+}
+
+export const ContainerItem: FC<ContainerItemProps> = ({
+  container,
+  onItemClick,
+  ...props
+}) => {
   const { container: current, setContainer } = useContainerContext();
   return (
     <HStack

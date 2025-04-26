@@ -1,18 +1,18 @@
-type HomepageItem = {
-  show: boolean;
-  name: string;
-  icon: string;
-  category: string;
-  description: string;
-  widget_config?: {};
-} & HomepageItemMetadata;
-
 type HomepageItemMetadata = {
   alias: string;
   provider: string;
   url: string;
   skeleton?: boolean;
 };
+
+interface HomepageItem extends HomepageItemMetadata {
+  show: boolean;
+  name: string;
+  icon: string;
+  category: string;
+  description: string;
+  widget_config?: {};
+}
 
 const randName = (length: number) => {
   let result = "";

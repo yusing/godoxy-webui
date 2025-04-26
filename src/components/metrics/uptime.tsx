@@ -19,6 +19,7 @@ import type { HomepageItem } from "@/types/api/route/homepage_item";
 import {
   Box,
   Card,
+  CardRootProps,
   Center,
   Group,
   HStack,
@@ -134,9 +135,9 @@ const Layout = ({ metrics }: { metrics: RouteUptimeMetrics }) => {
   );
 };
 
-type RouteUptimeProps = React.ComponentProps<typeof Card.Root> & {
+interface RouteUptimeProps extends CardRootProps {
   metrics: RouteUptimeMetrics;
-};
+}
 
 const RouteUptime: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
   return (

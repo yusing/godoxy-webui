@@ -26,6 +26,7 @@ import {
   Spacer,
   Span,
   Stack,
+  StackProps,
   Text,
   Tooltip,
   useDialog,
@@ -49,9 +50,10 @@ import { LuEyeOff, LuPencil } from "react-icons/lu";
 import { IconSearcher } from "../config_editor/icon_searcher";
 import HealthProvider from "./health_provider";
 import { useAllSettings } from "./settings";
-type AppCardProps = {
+
+interface AppCardInnerProps extends StackProps {
   item: HomepageItem;
-} & React.ComponentProps<typeof HStack>;
+}
 
 const AppCardToolTip = ({ item }: { item: HomepageItem }) => {
   const health = useHealthInfo(item.alias) ?? healthInfoUnknown;
@@ -89,7 +91,10 @@ const AppCardHealthBubble = ({ item }: { item: HomepageItem }) => {
   );
 };
 
-export const AppCardInner: React.FC<AppCardProps> = ({ item, ...rest }) => {
+export const AppCardInner: React.FC<AppCardInnerProps> = ({
+  item,
+  ...rest
+}) => {
   const portalRef = React.useRef<HTMLDivElement>(null);
   return (
     <HStack gap="2" w="full" {...rest}>
@@ -120,9 +125,11 @@ export const AppCardInner: React.FC<AppCardProps> = ({ item, ...rest }) => {
   );
 };
 
-export const AppCard: React.FC<
-  AppCardProps & { containerRef: React.RefObject<HTMLDivElement | null> }
-> = ({ containerRef, ...rest }) => {
+interface AppCardProps extends AppCardInnerProps {
+  containerRef: React.RefObject<HTMLDivElement | null>;
+}
+
+export const AppCard: React.FC<AppCardProps> = ({ containerRef, ...rest }) => {
   const [curItem, setCurItem] = React.useState(rest.item);
   const [menuOpen, setMenuOpen] = React.useState(false);
 
