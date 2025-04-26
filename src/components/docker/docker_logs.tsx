@@ -11,7 +11,7 @@ import {
   IconButton,
   Stack,
 } from "@chakra-ui/react";
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, memo, useEffect, useRef, useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
 import { LogLine } from "../config_editor/logline";
 import { EmptyState } from "../ui/empty-state";
@@ -31,7 +31,7 @@ const Logs: FC<{
   server: string;
   container: Container;
 }> = ({ server, container }) => {
-  const [lines, setLines] = useState<LogLineType[]>([]);
+  const [lines, setLines] = useState<LogLineWithId[]>([]);
   const [readyState, setReadyState] = useState<ReadyState>(
     ReadyState.UNINITIALIZED,
   );
@@ -39,6 +39,7 @@ const Logs: FC<{
   const bottomRef = useRef<HTMLDivElement>(null);
   const logsRef = useRef<HTMLDivElement>(null);
   const [chevronDirection, setChevronDirection] = useState<"up" | "down">("up");
+  const idRef = useRef(0);
 
   useEffect(() => {
     const calcChevronShouldUp = () => {
@@ -59,6 +60,7 @@ const Logs: FC<{
   }, [logsRef.current]);
 
   useEffect(() => {
+    idRef.current = 0;
     const ws = new WebSocket(
       Endpoints.DOCKER_LOGS({ server, container: container.id }),
     );
@@ -68,7 +70,12 @@ const Logs: FC<{
       setReadyState(ReadyState.OPEN);
     };
     ws.onmessage = (event) => {
-      setLines((prev) => prev.concat(parseLogLine(event.data)).slice(-100));
+      setLines((prev) => {
+        const parsed = parseLogLine(event.data);
+        const newLine = { ...parsed, id: idRef.current++ };
+        const newLines = [...prev, newLine];
+        return newLines.slice(-100);
+      });
     };
     ws.onclose = () => {
       setReadyState(ReadyState.CLOSED);
@@ -77,6 +84,7 @@ const Logs: FC<{
       ws.close();
     };
   }, [server, container.id]);
+
   return (
     <Stack w="full" h={bodyHeight}>
       <Float placement="bottom-end" bottom="12" right="12">
@@ -119,24 +127,26 @@ const Logs: FC<{
             />
           }
         >
-          {(line, index) => (
-            <HStack
-              key={index}
-              gap="2"
-              bg={index % 2 === 0 ? "bg.subtle" : "inherit"}
-            >
-              <Tag colorPalette="teal" minW="fit" fontFamily={"monospace"}>
-                {line.time}
-              </Tag>
-              <LogLine line={line.content} />
-            </HStack>
-          )}
+          {(line) => <LogEntry key={line.id} line={line} />}
         </For>
         <Box ref={bottomRef} />
       </Stack>
     </Stack>
   );
 };
+
+interface LogLineWithId extends LogLineType {
+  id: number;
+}
+
+const LogEntry = memo(({ line }: { line: LogLineWithId }) => (
+  <HStack gap="2" bg={line.id % 2 === 0 ? "bg.subtle" : "inherit"}>
+    <Tag colorPalette="teal" minW="fit" fontFamily={"monospace"}>
+      {line.time}
+    </Tag>
+    <LogLine line={line.content} />
+  </HStack>
+));
 
 export function DockerLogs() {
   const { container } = useContainerContext();
