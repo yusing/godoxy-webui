@@ -6,9 +6,7 @@
 /** @type {import("next").NextConfig} */
 const config = {
   experimental: {
-    optimizePackageImports: ["@chakra-ui/react","godoxy-schemas"],
-    // disable react compiler in production to avoid misterious user input bugs
-    reactCompiler: process.env.NODE_ENV !== "production",
+    optimizePackageImports: ["@chakra-ui/react", "godoxy-schemas"],
   },
   transpilePackages: ["geist"],
   output: "standalone",

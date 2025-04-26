@@ -3,7 +3,7 @@ import {
   HealthStatusType,
 } from "@/types/api/health";
 import { Status as ChakraStatus, HStack, Text } from "@chakra-ui/react";
-import React from "react";
+import React, { memo } from "react";
 import { Tag } from "./ui/tag";
 
 export interface HealthStatusProps extends ChakraStatus.RootProps {
@@ -39,9 +39,9 @@ const HealthStatusTag_: React.FC<HealthStatusProps & { fontSize?: string }> = ({
   );
 };
 
-export const HealthStatus = React.memo(HealthStatus_, (prev, next) => {
+export const HealthStatus = memo(HealthStatus_, (prev, next) => {
   return prev.value === next.value;
 });
-export const HealthStatusTag = React.memo(HealthStatusTag_, (prev, next) => {
+export const HealthStatusTag = memo(HealthStatusTag_, (prev, next) => {
   return prev.value === next.value;
 });

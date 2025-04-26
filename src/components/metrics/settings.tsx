@@ -165,21 +165,19 @@ export function MetricsSettings() {
                   </Stack>
                 </Table.Cell>
                 <Table.Cell asChild>
-                  <Stack gap="2">
-                    <Field label="Temperature Unit">
-                      <RadioGroup
-                        value={temperatureUnit.val}
-                        onValueChange={({ value }) =>
-                          temperatureUnit.set(value as "fahrenheit" | "celsius")
-                        }
-                      >
-                        <HStack gap="4">
-                          <Radio value="celsius">°C</Radio>
-                          <Radio value="fahrenheit">°F</Radio>
-                        </HStack>
-                      </RadioGroup>
-                    </Field>
-                  </Stack>
+                  <Field label="Temperature Unit">
+                    <RadioGroup
+                      value={temperatureUnit.val}
+                      onValueChange={({ value }) =>
+                        temperatureUnit.set(value as "fahrenheit" | "celsius")
+                      }
+                    >
+                      <HStack gap="4">
+                        <Radio value="celsius">°C</Radio>
+                        <Radio value="fahrenheit">°F</Radio>
+                      </HStack>
+                    </RadioGroup>
+                  </Field>
                 </Table.Cell>
               </Table.Row>
             </Table.Body>

@@ -48,4 +48,6 @@ ENV PORT=3000
 ENV NODE_ENV=production
 ENV HOSTNAME="127.0.0.1"
 
+USER 1001:1001
+
 CMD ["server.js"]

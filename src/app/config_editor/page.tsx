@@ -30,7 +30,7 @@ export default function ConfigEditorPage() {
         >
           <UIEditor />
         </Box>
-        <Stack w="40%" minW="800px" overflow="auto" fontSize="sm">
+        <Stack minW="40%" overflow="auto" fontSize="sm">
           <YAMLConfigEditor />
           <ValidationErrorText />
         </Stack>

@@ -28,7 +28,7 @@ import {
   Spinner,
   Stack,
 } from "@chakra-ui/react";
-import React, { FC, useState, useMemo, memo } from "react";
+import React, { FC, memo, useMemo, useState } from "react";
 import { useLocation, useWindowSize } from "react-use";
 import { FavIcon } from "../dashboard/favicon";
 import { HealthStatus, HealthStatusTag } from "../health_status";
@@ -134,20 +134,37 @@ const Layout = ({ metrics }: { metrics: RouteUptimeMetrics }) => {
   );
 };
 
+function title(metrics: RouteUptimeMetrics) {
+  if (!metrics.display_name) {
+    return metrics.alias;
+  }
+  // if (metrics.display_name.length === metrics.alias.length) {
+  //   return metrics.display_name;
+  // }
+  // return `${metrics.display_name} (${metrics.alias})`;
+  return metrics.display_name;
+}
+
+function TitleLabel_({ metrics }: { metrics: RouteUptimeMetrics }) {
+  return (
+    <Label fontSize={"md"} title={metrics.alias}>
+      {title(metrics)}
+    </Label>
+  );
+}
+
+const TitleLabel = memo(
+  TitleLabel_,
+  (prev, next) => title(prev.metrics) === title(next.metrics),
+);
+
 interface RouteUptimeProps extends CardRootProps {
   metrics: RouteUptimeMetrics;
 }
 
 const RouteUptime: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
   return (
-    <Card.Root
-      size="sm"
-      minW="300px"
-      maxW="full"
-      maxH="180px"
-      title={metrics.alias}
-      {...props}
-    >
+    <Card.Root size="sm" minW="300px" maxW="full" maxH="180px" {...props}>
       <Card.Header>
         <HStack justify={"space-between"}>
           <Group overflow={"hidden"}>
@@ -155,7 +172,7 @@ const RouteUptime: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
               size="24px"
               item={{ alias: metrics.alias } as HomepageItem}
             />
-            <Label>{metrics.display_name || metrics.alias}</Label>
+            <TitleLabel metrics={metrics} />
           </Group>
           <HealthStatusTag
             value={metrics.statuses[metrics.statuses.length - 1]!.status}
@@ -163,7 +180,7 @@ const RouteUptime: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
         </HStack>
       </Card.Header>
       <Card.Body>
-        <UptimeTracker statuses={metrics.statuses} />
+        <UptimeTracker alias={metrics.alias} statuses={metrics.statuses} />
       </Card.Body>
       <Card.Footer>
         <HStack gap="2" w="full" justify={"space-between"}>
@@ -192,7 +209,6 @@ const RouteUptimeSquare: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
       size="sm"
       w={`${squareCardSize.val}px`}
       h={`${squareCardSize.val}px`}
-      title={metrics.alias}
       overflow={"hidden"}
       {...props}
     >
@@ -207,7 +223,7 @@ const RouteUptimeSquare: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
               item={{ alias: metrics.alias } as HomepageItem}
             />
             <Label w={`${squareCardSize.val * 0.85}px`} textAlign={"center"}>
-              {metrics.display_name || metrics.alias}
+              {title(metrics)}
             </Label>
           </Stack>
         </Center>
@@ -232,7 +248,7 @@ const RouteUptimeSquare: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
 
 const RouteUptimeMinimal: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
   return (
-    <Card.Root size="sm" maxH="180px" title={metrics.alias} {...props}>
+    <Card.Root size="sm" maxH="180px" {...props}>
       <Card.Body>
         <HStack w="full" justifyContent={"space-between"}>
           <HStack gap="2" overflow={"hidden"}>
@@ -240,9 +256,7 @@ const RouteUptimeMinimal: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
               size="26px"
               item={{ alias: metrics.alias } as HomepageItem}
             />
-            <Label fontSize={"md"}>
-              {metrics.display_name || metrics.alias}
-            </Label>
+            <TitleLabel metrics={metrics} />
           </HStack>
           <HealthStatusTag
             fontSize={"sm"}
@@ -294,16 +308,25 @@ function fillStatuses(statuses: RouteStatus[], count: number): RouteStatus[] {
   return [...dummy, ...statuses];
 }
 
-const UptimeTracker: React.FC<{ statuses: RouteStatus[] }> = ({ statuses }) => {
+const UptimeTracker: React.FC<{ alias: string; statuses: RouteStatus[] }> = ({
+  alias,
+  statuses,
+}) => {
   const { width } = useWindowSize();
   const colsCount = useColsCount();
-  const count = useMemo(() => Math.floor(width / colsCount.val / 15), [width, colsCount.val]);
-  const statusesToShow = useMemo(() => fillStatuses(statuses, count), [statuses, count]);
+  const count = useMemo(
+    () => Math.floor(width / colsCount.val / 15.5),
+    [width, colsCount.val],
+  );
+  const statusesToShow = useMemo(
+    () => fillStatuses(statuses, count),
+    [statuses, count],
+  );
 
   return (
     <HStack gap="1">
       {statusesToShow.map((s, i) => (
-        <UptimeStatus key={i} status={s} />
+        <UptimeStatus key={`${alias}-${i}`} status={s} />
       ))}
     </HStack>
   );
@@ -315,13 +338,20 @@ const UptimeStatus = memo<{ status: RouteStatus }>(
       return <Box borderRadius={"xs"} w="full" h="6" bg={"gray.500"} />;
     }
     return (
-      <Tooltip content={`${formatTimestamp(status.timestamp)} - ${status.latency.toFixed(0)}ms`}>
-        <Box borderRadius={"xs"} w="full" h="6" bg={healthStatusColors[status.status]} />
+      <Tooltip
+        content={`${formatTimestamp(status.timestamp)} - ${status.latency.toFixed(0)}ms`}
+      >
+        <Box
+          borderRadius={"xs"}
+          w="full"
+          h="6"
+          bg={healthStatusColors[status.status]}
+        />
       </Tooltip>
     );
   },
   (prev, next) =>
     prev.status.timestamp === next.status.timestamp &&
     prev.status.latency === next.status.latency &&
-    prev.status.status === next.status.status
+    prev.status.status === next.status.status,
 );
