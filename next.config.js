@@ -22,6 +22,11 @@ const config = {
       destination: "/api/auth/callback",
       permanent: false,
     },
+    {
+      source: "/v1/:path*",
+      destination: "/api/:path*",
+      permanent: false,
+    },
   ],
 };
 
