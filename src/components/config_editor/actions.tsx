@@ -34,7 +34,11 @@ export default function ConfigFileActions() {
         p={1}
         fileExtension=".yml"
         onSubmit={(t, name) => {
-          const newFile: ConfigFile = { type: t, filename: name + ".yml", isNewFile: true };
+          const newFile: ConfigFile = {
+            type: t,
+            filename: name + ".yml",
+            isNewFile: true,
+          };
           setCurrent(newFile);
           files[t].unshift(newFile);
         }}

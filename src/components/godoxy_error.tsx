@@ -95,33 +95,36 @@ export const GoDoxyErrorText: React.FC<{
       <For each={Object.entries(err)}>
         {([k, v], index) => {
           if (!v) return null;
-          if (typeof v === "string") return (
-            <Text key={`${index}_${k}`}>
-              <Span color="fg.warning">{k}:</Span> {`${v}`}
-            </Text>
-          )
-          if (typeof v === "object") return (
-            <For each={Object.entries(v)}>
-              {([k2, v2], index2) => (
-                <GoDoxyErrorText
-                  key={`${index}_${index2}_${k}`}
-                  err={{ [k2]: v2 }}
-                  level={(level ?? 0) + 1}
-                />
-              )}
-            </For>
-          )
-          if (Array.isArray(v)) return (
-            <For each={v}>
-              {(v2, index2) => (
-                <GoDoxyErrorText
-                  key={`${index}_${index2}`}
-                  err={v2}
-                  level={(level ?? 0) + 1}
-                />
-              )}
-            </For>
-          )
+          if (typeof v === "string")
+            return (
+              <Text key={`${index}_${k}`}>
+                <Span color="fg.warning">{k}:</Span> {`${v}`}
+              </Text>
+            );
+          if (typeof v === "object")
+            return (
+              <For each={Object.entries(v)}>
+                {([k2, v2], index2) => (
+                  <GoDoxyErrorText
+                    key={`${index}_${index2}_${k}`}
+                    err={{ [k2]: v2 }}
+                    level={(level ?? 0) + 1}
+                  />
+                )}
+              </For>
+            );
+          if (Array.isArray(v))
+            return (
+              <For each={v}>
+                {(v2, index2) => (
+                  <GoDoxyErrorText
+                    key={`${index}_${index2}`}
+                    err={v2}
+                    level={(level ?? 0) + 1}
+                  />
+                )}
+              </For>
+            );
           return null;
         }}
       </For>

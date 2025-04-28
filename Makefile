@@ -1,6 +1,8 @@
 VERSION ?= $(shell git describe --tags --abbrev=0)
 BUILD_DATE ?= $(shell date -u +'%Y%m%d-%H%M')
 
+SCHEMA_DIR := src/types/godoxy
+
 .PHONY: dev push-docker-io
 
 dev:
@@ -28,3 +30,35 @@ update-wiki-sidebar:
 update-wiki:
 	git submodule update --init public/wiki
 	make update-wiki-sidebar
+
+# To generate schema
+# comment out this part from typescript-json-schema.js#L884
+#
+#	if (indexType.flags !== ts.TypeFlags.Number && !isIndexedObject) {
+#			throw new Error("Not supported: IndexSignatureDeclaration with index symbol other than a number or a string");
+#	}
+
+gen-schema-single:
+	pnpm typescript-json-schema --noExtraProps --required --skipLibCheck --tsNodeRegister=true -o "${OUT}" "${IN}" ${CLASS}
+	# minify
+	python3 -c "import json; f=open('${OUT}', 'r'); j=json.load(f); f.close(); f=open('${OUT}', 'w'); json.dump(j, f, separators=(',', ':'));"
+
+gen-schema:
+	# pnpm tsc ${SCHEMA_DIR}/**/*.ts --noEmit
+	make IN=${SCHEMA_DIR}/config/config.ts \
+			CLASS=Config \
+			OUT=${SCHEMA_DIR}/config.schema.json \
+			gen-schema-single
+	make IN=${SCHEMA_DIR}/providers/routes.ts \
+			CLASS=Routes \
+			OUT=${SCHEMA_DIR}/routes.schema.json \
+			gen-schema-single
+	make IN=${SCHEMA_DIR}/middlewares/middleware_compose.ts \
+			CLASS=MiddlewareCompose \
+			OUT=${SCHEMA_DIR}/middleware_compose.schema.json \
+			gen-schema-single
+	make IN=${SCHEMA_DIR}/docker.ts \
+			CLASS=DockerRoutes \
+			OUT=${SCHEMA_DIR}/docker_routes.schema.json \
+			gen-schema-single
+	pnpm format:write
