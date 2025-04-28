@@ -9,15 +9,17 @@ import { Field } from "@/components/ui/field";
 import { Switch } from "@/components/ui/switch";
 import {
   AccessLog,
+  ACLSchema,
   Autocert,
   Config,
   ConfigSchema,
   Notification,
 } from "@/types/godoxy";
+import { MaxmindConfig } from "@/types/godoxy/config/acl";
 import { getSchemaDescription } from "@/types/schema";
 import { Stack } from "@chakra-ui/react";
 import React from "react";
-import { FaHome } from "react-icons/fa";
+import { FaHome, FaLock } from "react-icons/fa";
 import { FaDocker, FaInbox, FaLink } from "react-icons/fa6";
 import { PiCertificate } from "react-icons/pi";
 import { AutocertUIEditor } from "./autocert";
@@ -63,6 +65,70 @@ export function ConfigUIEditor({
           />
         </AccordionItemContent>
       </AccordionItem>
+      <AccordionItem value="acl">
+        <AccordionItemTrigger>
+          <FaLock />
+          Access Control
+        </AccordionItemTrigger>
+        <AccordionItemContent>
+          <Stack gap="3">
+            <Field
+              label={`Default ${data.acl?.default === "allow" ? "allow" : "deny"}`}
+            >
+              <Switch
+                gap="2"
+                checked={!(data.acl?.default === "deny")}
+                onCheckedChange={({ checked }) => {
+                  if (!data.acl) data.acl = {};
+                  data.acl.default = checked ? "allow" : "deny";
+                  onChange(data);
+                }}
+              />
+            </Field>
+            <MapInput
+              label="Maxmind Config"
+              allowedKeys={Object.keys(ACLSchema.properties.maxmind.properties)}
+              // allowedValues={Object.values(ACLSchema.properties.maxmind)}
+              value={data.acl?.maxmind ?? {}}
+              onChange={(v) => {
+                if (!data.acl) data.acl = {};
+                data.acl.maxmind = v as MaxmindConfig;
+                onChange(data);
+              }}
+            />
+            <ListInput
+              label="Allowed"
+              value={data.acl?.allow ?? []}
+              onChange={(v) => {
+                if (!data.acl) data.acl = {};
+                data.acl.allow = v;
+                onChange(data);
+              }}
+            />
+            <ListInput
+              label="Denied"
+              value={data.acl?.deny ?? []}
+              onChange={(v) => {
+                if (!data.acl) data.acl = {};
+                data.acl.deny = v;
+                onChange(data);
+              }}
+            />
+            <MapInput
+              label="Log"
+              allowedKeys={Object.keys(
+                ConfigSchema.definitions.ACLLogConfig.properties,
+              )}
+              value={data.acl?.log ?? {}}
+              onChange={(v) => {
+                if (!data.acl) data.acl = {};
+                data.acl.log = v;
+                onChange(data);
+              }}
+            />
+          </Stack>
+        </AccordionItemContent>
+      </AccordionItem>
       <AccordionItem value="entrypoint">
         <AccordionItemTrigger>
           <FaInbox />
@@ -82,15 +148,13 @@ export function ConfigUIEditor({
             <MapInput
               label="Access Log"
               allowedKeys={Object.keys(
-                ConfigSchema.properties.entrypoint.properties.access_log
-                  .properties,
+                ConfigSchema.definitions.RequestLogConfig.properties,
               )}
               description={getSchemaDescription(
-                ConfigSchema.properties.entrypoint.properties.access_log
-                  .properties,
+                ConfigSchema.definitions.RequestLogConfig.properties,
               )}
               allowedValues={{
-                format: AccessLog.ACCESS_LOG_FORMATS,
+                format: AccessLog.REQUEST_LOG_FORMATS,
               }}
               value={data.entrypoint?.access_log ?? {}}
               onChange={(v) => {
@@ -140,6 +204,16 @@ export function ConfigUIEditor({
                 if (!data.providers) data.providers = {};
                 data.providers.docker = v;
                 if (Object.keys(v).length === 0) delete data.providers.docker;
+                onChange(data);
+              }}
+            />
+            <NamedListInput
+              label="Proxmox"
+              nameField="url"
+              value={data.providers?.proxmox ?? []}
+              onChange={(v) => {
+                if (!data.providers) data.providers = {};
+                data.providers.proxmox = v;
                 onChange(data);
               }}
             />

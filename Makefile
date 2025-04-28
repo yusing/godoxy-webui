@@ -54,4 +54,8 @@ gen-schema:
 			CLASS=DockerRoutes \
 			OUT=${SCHEMA_DIR}/docker_routes.schema.json \
 			gen-schema-single
+	make IN=${SCHEMA_DIR}/config/acl.ts \
+			CLASS=ACLConfig \
+			OUT=${SCHEMA_DIR}/acl.schema.json \
+			gen-schema-single
 	pnpm format:write

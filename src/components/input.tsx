@@ -325,7 +325,7 @@ export const MapInput: React.FC<MapInputProps> = ({
                       ))}
                     </SelectContent>
                   </SelectRoot>
-                ) : typeof v === "string" ? (
+                ) : typeof v === "string" || typeof v === "number" ? (
                   <Input
                     maxW={"2/3"}
                     value={v}

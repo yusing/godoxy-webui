@@ -18,6 +18,7 @@ import * as Routes from "./providers/routes";
 
 import * as GoDoxy from "./types";
 
+import ACLSchema from "./acl.schema.json";
 import ConfigSchema from "./config.schema.json";
 import DockerRoutesSchema from "./docker_routes.schema.json";
 import MiddlewareComposeSchema from "./middleware_compose.schema.json";
@@ -26,6 +27,7 @@ import RoutesSchema from "./routes.schema.json";
 export {
   AccessLog,
   ACL,
+  ACLSchema,
   Autocert,
   Config,
   ConfigSchema,
