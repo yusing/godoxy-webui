@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
+import { Homepage, LoadBalance, Routes } from "@/types/godoxy";
 import {
   Badge,
   Card,
@@ -38,7 +39,6 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { Homepage, LoadBalance, Routes } from "godoxy-schemas";
 import { Pencil, Trash } from "lucide-react";
 import React from "react";
 import { Control, Controller, useForm, UseFormRegister } from "react-hook-form";

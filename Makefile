@@ -31,13 +31,6 @@ update-wiki:
 	git submodule update --init public/wiki
 	make update-wiki-sidebar
 
-# To generate schema
-# comment out this part from typescript-json-schema.js#L884
-#
-#	if (indexType.flags !== ts.TypeFlags.Number && !isIndexedObject) {
-#			throw new Error("Not supported: IndexSignatureDeclaration with index symbol other than a number or a string");
-#	}
-
 gen-schema-single:
 	pnpm typescript-json-schema --noExtraProps --required --skipLibCheck --tsNodeRegister=true -o "${OUT}" "${IN}" ${CLASS}
 	# minify

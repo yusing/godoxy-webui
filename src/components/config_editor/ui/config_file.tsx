@@ -7,15 +7,15 @@ import {
 } from "@/components/ui/accordion";
 import { Field } from "@/components/ui/field";
 import { Switch } from "@/components/ui/switch";
-import { getSchemaDescription } from "@/types/schema";
-import { Stack } from "@chakra-ui/react";
 import {
   AccessLog,
   Autocert,
   Config,
   ConfigSchema,
   Notification,
-} from "godoxy-schemas";
+} from "@/types/godoxy";
+import { getSchemaDescription } from "@/types/schema";
+import { Stack } from "@chakra-ui/react";
 import React from "react";
 import { FaHome } from "react-icons/fa";
 import { FaDocker, FaInbox, FaLink } from "react-icons/fa6";

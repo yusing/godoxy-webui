@@ -1,12 +1,12 @@
 import { NamedListInput } from "@/components/input";
 import { Button } from "@/components/ui/button";
 import { CloseButton } from "@/components/ui/close-button";
-import { Tabs } from "@chakra-ui/react";
 import {
   MiddlewareCompose,
   MiddlewareComposeSchema,
   Middlewares,
-} from "godoxy-schemas";
+} from "@/types/godoxy";
+import { Tabs } from "@chakra-ui/react";
 import React from "react";
 import { LuPlus } from "react-icons/lu";
 

@@ -18,6 +18,7 @@ import {
 import { CertInfo, fetchCertInfo, renewCert } from "@/lib/api/cert";
 import { formatTimestamp } from "@/lib/format";
 import { toastError } from "@/types/api/endpoints";
+import { Autocert } from "@/types/godoxy";
 import {
   createListCollection,
   DataList,
@@ -31,7 +32,6 @@ import {
   Input,
   Stack,
 } from "@chakra-ui/react";
-import { Autocert } from "godoxy-schemas";
 import React, { useEffect } from "react";
 import { Controller } from "react-hook-form";
 import { LuRefreshCcw } from "react-icons/lu";

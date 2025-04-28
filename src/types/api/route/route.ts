@@ -1,4 +1,4 @@
-import { Healthcheck, LoadBalance, Routes } from "godoxy-schemas";
+import { Healthcheck, LoadBalance, Routes } from "@/types/godoxy";
 
 type Health = {
   name: string;

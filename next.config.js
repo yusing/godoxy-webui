@@ -6,7 +6,7 @@
 /** @type {import("next").NextConfig} */
 const config = {
   experimental: {
-    optimizePackageImports: ["@chakra-ui/react", "godoxy-schemas"],
+    optimizePackageImports: ["@chakra-ui/react", "@/types/godoxy"],
   },
   transpilePackages: ["geist"],
   output: "standalone",

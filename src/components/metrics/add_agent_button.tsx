@@ -9,6 +9,7 @@ import {
   verifyNewAgent,
 } from "@/lib/api/agent";
 import { toastError } from "@/types/api/endpoints";
+import { Config } from "@/types/godoxy";
 import {
   Code,
   Dialog,
@@ -18,7 +19,6 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { Config } from "godoxy-schemas";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FaDocker, FaServer } from "react-icons/fa6";

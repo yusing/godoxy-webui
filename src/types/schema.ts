@@ -2,7 +2,7 @@ import {
   ConfigSchema,
   MiddlewareComposeSchema,
   RoutesSchema,
-} from "godoxy-schemas";
+} from "@/types/godoxy";
 
 export type Schema =
   | typeof ConfigSchema
