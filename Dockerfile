@@ -8,14 +8,14 @@ RUN apk add --no-cache libc6-compat
 HEALTHCHECK NONE
 
 FROM bun AS wiki-deps
-WORKDIR /app
+WORKDIR /src
 
 # git is for building wiki (vitepress deps)
 RUN apk add --no-cache git
 
 # Install dependencies based on the preferred package manager
 COPY public/wiki/package.json public/wiki/bun.lock ./
-RUN bun i --frozen-lockfile --ignore-scripts
+RUN bun i -D --frozen-lockfile
 
 # Install dependencies only when needed
 FROM base AS webui-deps
