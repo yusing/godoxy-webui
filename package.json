@@ -66,8 +66,7 @@
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^4.1.4",
-    "typescript": "^5.8.3",
-    "vitepress": "^1.6.3"
+    "typescript": "^5.8.3"
   },
   "ct3aMetadata": {
     "initVersion": "7.38.1"
