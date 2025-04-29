@@ -1,3 +1,0 @@
-[submodule "public/wiki"]
-	path = public/wiki
-	url = https://github.com/yusing/go-proxy.wiki.git
