@@ -10,7 +10,7 @@ export const siteConfig = {
     { label: "Proxies", href: "/proxies" },
     { label: "Metrics", href: "/metrics", bg: "unset" },
     { label: "Docker", href: "/docker" },
-    { label: "Docs", href: "/docs/Home" },
+    { label: "Wiki", href: "/wiki/Home" },
   ],
   links: {
     github: "https://github.com/yusing/go-proxy",

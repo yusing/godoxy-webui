@@ -28,6 +28,13 @@ const config = {
       permanent: false,
     },
   ],
+  rewrites: async () => [
+    {
+      source: "/wiki/:path*",
+      destination: "/wiki/:path*.html",
+    },
+  ],
 };
 
 export default config;
+
