@@ -2,11 +2,12 @@
 
 import Endpoints from "@/types/api/endpoints";
 import { StatusCodes } from "http-status-codes";
-import { FC, PropsWithChildren, useEffect } from "react";
+import { FC, PropsWithChildren } from "react";
+import { useEffectOnce } from "react-use";
 
 export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
-  useEffect(() => {
-    fetch(Endpoints.AUTH_CHECK)
+  useEffectOnce(() => {
+    fetch(Endpoints.AUTH_CHECK, { redirect: "error" })
       .then((r) => {
         if (
           r.status === StatusCodes.FORBIDDEN ||
@@ -16,7 +17,7 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
         }
       })
       .catch(redirect);
-  }, []);
+  });
 
   return children;
 };
