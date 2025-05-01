@@ -33,7 +33,7 @@ export type AccessLogConfigBase = {
    *
    * @default "1 day"
    */
-  rotate?: Duration;
+  rotate_interval?: Duration;
 };
 
 export type LogKeepDays = `${number} ${"days" | "weeks" | "months"}`;
