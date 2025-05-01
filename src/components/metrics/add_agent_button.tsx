@@ -15,6 +15,7 @@ import {
   Group,
   HStack,
   Input,
+  Span,
   Stack,
   Text,
 } from "@chakra-ui/react";
@@ -37,9 +38,9 @@ const agentTypes = {
   },
 };
 
-function Label({ children }: Readonly<{ children: React.ReactNode }>) {
+function Label({ children, ...rest }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <Text fontWeight={"medium"} textAlign={"left"} minW={"85px"}>
+    <Text fontWeight={"medium"} textAlign={"left"} minW={"92px"} {...rest}>
       {children}
     </Text>
   );
@@ -59,6 +60,7 @@ export function AddAgentDialogButton() {
   });
   const [type, setType] = useState<AgentType>("docker");
   const [explicitOnly, setExplicitOnly] = useState(false);
+  const [addToConfig, setAddToConfig] = useState(true);
   const [agent, setAgent] = useState<NewAgentResponse | null>(null);
   const { addAgent } = useConfigFileState();
 
@@ -127,6 +129,32 @@ export function AddAgentDialogButton() {
                   {...register("port", { valueAsNumber: true })}
                   type="number"
                 />
+              </Group>
+              <Group>
+                <Label>Add to config</Label>
+                <Checkbox
+                  w="full"
+                  checked={addToConfig}
+                  onCheckedChange={({ checked }) =>
+                    setAddToConfig(checked === true)
+                  }
+                />
+                <ToggleTip
+                  content={
+                    <Text>
+                      Add agent to <Code>config.yml</Code> under{" "}
+                      <Code>providers.agents</Code>
+                      <br />
+                      <Span color={"fg.warning"}>
+                        This will remove all comments from the config file
+                      </Span>
+                    </Text>
+                  }
+                >
+                  <Button size="xs" variant="ghost">
+                    <LuInfo />
+                  </Button>
+                </ToggleTip>
               </Group>
               <Group>
                 <Label>Explicit Only</Label>
@@ -215,7 +243,9 @@ export function AddAgentDialogButton() {
                   client: agent.client,
                 })
                   .then(async (e) => {
-                    await addAgent(form.host, form.port);
+                    if (addToConfig) {
+                      await addAgent(form.host, form.port);
+                    }
                     return e;
                   })
                   .then(async (e) => {
