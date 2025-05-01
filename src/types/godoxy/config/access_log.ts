@@ -1,5 +1,6 @@
 import type {
   CIDR,
+  Duration,
   Hostname,
   HTTPHeader,
   HTTPMethod,
@@ -12,14 +13,6 @@ export const REQUEST_LOG_FORMATS = ["combined", "common", "json"] as const;
 export type RequestLogFormat = (typeof REQUEST_LOG_FORMATS)[number];
 
 export type AccessLogConfigBase = {
-  /**
-   * The size of the buffer.
-   *
-   * @minimum 0
-   * @default 65536
-   * @TJS-type integer
-   */
-  buffer_size?: number;
   /**
    * The path to the access log file.
    */
@@ -35,6 +28,12 @@ export type AccessLogConfigBase = {
    * @default "30 days"
    */
   keep?: RetentionPolicy;
+  /**
+   * Rotation interval
+   *
+   * @default "1 day"
+   */
+  rotate?: Duration;
 };
 
 export type LogKeepDays = `${number} ${"days" | "weeks" | "months"}`;
