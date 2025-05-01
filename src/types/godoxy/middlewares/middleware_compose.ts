@@ -1,3 +1,4 @@
 import { MiddlewareComposeMap } from "./middlewares";
 
-export type MiddlewareCompose = MiddlewareComposeMap[];
+export type MiddlewareCompose = { [key: string]: MiddlewareComposeMap[] };
+export type EntrypointMiddlewares = MiddlewareComposeMap[];

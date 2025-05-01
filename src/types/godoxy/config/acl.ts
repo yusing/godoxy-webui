@@ -44,7 +44,7 @@ export type MaxmindConfig = {
   /**
    * Account ID
    */
-  account_id: string;
+  account_id: `${number}` | number;
   /**
    * License key
    */
