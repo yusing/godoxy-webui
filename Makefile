@@ -21,30 +21,33 @@ test-run:
 	docker compose -f test-run.compose.yml up --build
 
 gen-schema-single:
-	pnpm typescript-json-schema --noExtraProps --required --skipLibCheck --tsNodeRegister=true -o "${OUT}" "${IN}" ${CLASS}
+	pnpm typescript-json-schema --noExtraProps --required --skipLibCheck --tsNodeRegister=true -o "${SCHEMA_DIR}/${OUT}" "${SCHEMA_DIR}/${IN}" ${CLASS}
 	# minify
-	python3 -c "import json; f=open('${OUT}', 'r'); j=json.load(f); f.close(); f=open('${OUT}', 'w'); json.dump(j, f, separators=(',', ':'));"
+	python3 -c "import json; f=open('${SCHEMA_DIR}/${OUT}', 'r'); j=json.load(f); f.close(); f=open('${SCHEMA_DIR}/${OUT}', 'w'); json.dump(j, f, separators=(',', ':'));"
 
 gen-schema:
-	# pnpm tsc ${SCHEMA_DIR}/**/*.ts --noEmit
-	make IN=${SCHEMA_DIR}/config/config.ts \
+	make IN=config/config.ts \
 			CLASS=Config \
-			OUT=${SCHEMA_DIR}/config.schema.json \
+			OUT=config.schema.json \
 			gen-schema-single
-	make IN=${SCHEMA_DIR}/providers/routes.ts \
+	make IN=providers/routes.ts \
 			CLASS=Routes \
-			OUT=${SCHEMA_DIR}/routes.schema.json \
+			OUT=routes.schema.json \
 			gen-schema-single
-	make IN=${SCHEMA_DIR}/middlewares/middleware_compose.ts \
+	make IN=middlewares/middleware_compose.ts \
 			CLASS=MiddlewareCompose \
-			OUT=${SCHEMA_DIR}/middleware_compose.schema.json \
+			OUT=middleware_compose.schema.json \
 			gen-schema-single
-	make IN=${SCHEMA_DIR}/docker.ts \
+	make IN=middlewares/middleware_compose.ts \
+			CLASS=EntrypointMiddlewares \
+			OUT=entrypoint_middlewares.schema.json \
+			gen-schema-single
+	make IN=docker.ts \
 			CLASS=DockerRoutes \
-			OUT=${SCHEMA_DIR}/docker_routes.schema.json \
+			OUT=docker_routes.schema.json \
 			gen-schema-single
-	make IN=${SCHEMA_DIR}/config/acl.ts \
+	make IN=config/acl.ts \
 			CLASS=ACLConfig \
-			OUT=${SCHEMA_DIR}/acl.schema.json \
+			OUT=acl.schema.json \
 			gen-schema-single
 	pnpm format:write
