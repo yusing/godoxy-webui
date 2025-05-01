@@ -19,6 +19,17 @@ const config = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  webpack: (config, { dev }) => {
+    if (!dev) {
+      config.devtool = false;
+    config.optimization.minimize = true;
+    }
+    config.optimization.splitChunks = {
+      chunks: 'all',
+    };
+    config.optimization.runtimeChunk = 'single';
+    return config;
+  },
   redirects: async () => [
     {
       source: "/auth/callback",
