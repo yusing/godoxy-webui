@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { DialogDescription } from "@/components/ui/dialog";
-import { useConfigFileContext } from "@/hooks/config_file";
+import { useConfigFileState } from "@/hooks/config_file";
 import {
   AddAgentForm,
   AgentType,
@@ -9,7 +9,6 @@ import {
   verifyNewAgent,
 } from "@/lib/api/agent";
 import { toastError } from "@/types/api/endpoints";
-import { Config } from "@/types/godoxy";
 import {
   Code,
   Dialog,
@@ -19,12 +18,10 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FaDocker, FaServer } from "react-icons/fa6";
 import { LuInfo, LuPlus } from "react-icons/lu";
-import { parse as parseYAML, stringify as stringifyYAML } from "yaml";
-import { ConfigFileProvider } from "../config_editor/config_file_provider";
 import { Checkbox } from "../ui/checkbox";
 import { SegmentedControl } from "../ui/segmented-control";
 import { toaster } from "../ui/toaster";
@@ -49,14 +46,6 @@ function Label({ children }: Readonly<{ children: React.ReactNode }>) {
 }
 
 export function AddAgentDialogButton() {
-  return (
-    <ConfigFileProvider>
-      <AddAgentDialogButtonInner />
-    </ConfigFileProvider>
-  );
-}
-
-function AddAgentDialogButtonInner() {
   const [open, setOpen] = useState(false);
   const [copyLoading, setCopyLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
@@ -71,22 +60,7 @@ function AddAgentDialogButtonInner() {
   const [type, setType] = useState<AgentType>("docker");
   const [explicitOnly, setExplicitOnly] = useState(false);
   const [agent, setAgent] = useState<NewAgentResponse | null>(null);
-  const {
-    current: config,
-    setCurrent: setConfig,
-    content: configContent,
-    setContent: setConfigContent,
-    updateRemote,
-  } = useConfigFileContext();
-
-  useEffect(() => {
-    if (config.type != "config") {
-      setConfig({
-        type: "config",
-        filename: "config.yml",
-      });
-    }
-  }, [config]);
+  const { addAgent } = useConfigFileState();
 
   return (
     <Dialog.Root
@@ -241,12 +215,7 @@ function AddAgentDialogButtonInner() {
                   client: agent.client,
                 })
                   .then(async (e) => {
-                    const content = addAgentToConfig(
-                      `${form.host}:${form.port}`,
-                      configContent!,
-                    );
-                    await updateRemote(config, content, { toast: false });
-                    setConfigContent(content);
+                    await addAgent(form.host, form.port);
                     return e;
                   })
                   .then(async (e) => {
@@ -268,24 +237,4 @@ function AddAgentDialogButtonInner() {
       </Dialog.Positioner>
     </Dialog.Root>
   );
-}
-
-function addAgentToConfig(
-  agent_addr: `${string}:${number}`,
-  content: string,
-): string {
-  const cfg = parseYAML(content) as Config.Config;
-  if (!cfg.providers) {
-    cfg.providers = {
-      agents: [agent_addr],
-    };
-  } else {
-    if (!cfg.providers.agents) {
-      cfg.providers.agents = [];
-    }
-    if (!cfg.providers.agents.includes(agent_addr)) {
-      cfg.providers.agents.push(agent_addr);
-    }
-  }
-  return stringifyYAML(cfg);
 }
