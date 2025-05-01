@@ -1,31 +1,77 @@
 "use client";
 
 import { yaml } from "@codemirror/lang-yaml";
-import CodeMirror from "@uiw/react-codemirror";
+import CodeMirror, { Extension, hoverTooltip } from "@uiw/react-codemirror";
 import { useTheme } from "next-themes";
 import { coolGlow, noctisLilac } from "thememirror";
 
-import { useConfigFileContext } from "@/hooks/config_file";
+import { useConfigFileState } from "@/hooks/config_file";
 import "@/styles/yaml_editor.css";
-import React from "react";
-import { useDebounce } from "react-use";
+import {
+  ConfigSchema,
+  MiddlewareComposeSchema,
+  RoutesSchema,
+} from "@/types/godoxy";
+import { linter } from "@codemirror/lint";
+import { stateExtensions } from "codemirror-json-schema";
+import { yamlSchemaHover, yamlSchemaLinter } from "codemirror-json-schema/yaml";
+import { useCallback, useEffect, useState } from "react";
+import { useBoolean, useDebounce } from "react-use";
 
-const YAMLConfigEditor: React.FC<React.CSSProperties> = ({ ...rest }) => {
-  const { theme } = useTheme();
-  const { content, setContent } = useConfigFileContext();
-  const [localContent, setLocalContent] = React.useState(content);
-  // Pass content directly to avoid cursor jumps due to deferred/lazy updates
-  let cmTheme = theme === "light" ? noctisLilac : coolGlow;
+function yamlSchema(schema: unknown) {
+  return [
+    yaml(),
+    linter(yamlSchemaLinter(), {
+      delay: 200,
+    }),
+    hoverTooltip(yamlSchemaHover()),
+    stateExtensions(schema as Parameters<typeof stateExtensions>[0]),
+  ];
+}
 
-  React.useEffect(() => {
+const extensions: { [key: string]: Extension[] } = {
+  config: yamlSchema(ConfigSchema),
+  provider: yamlSchema(RoutesSchema),
+  middleware: yamlSchema(MiddlewareComposeSchema),
+};
+
+function YAMLConfigEditor() {
+  const { content, current, setContent } = useConfigFileState();
+  const [localContent, setLocalContent] = useState(content);
+  const [typing, setTyping] = useBoolean(false);
+
+  const cmTheme = useTheme().resolvedTheme === "light" ? noctisLilac : coolGlow;
+
+  const keyDown = useCallback(() => setTyping(true), [setTyping]);
+  const keyUp = useCallback(() => setTyping(false), [setTyping]);
+
+  useEffect(() => {
     setLocalContent(content);
   }, [content]);
 
-  useDebounce(() => setContent(localContent), 500, [localContent]);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.addEventListener("keydown", keyDown);
+      window.addEventListener("keyup", keyUp);
+    }
+    return () => {
+      window.removeEventListener("keydown", keyDown);
+      window.removeEventListener("keyup", keyUp);
+    };
+  }, [keyDown, keyUp]);
+
+  useDebounce(
+    () => {
+      if (typing) return;
+      setContent(localContent);
+    },
+    300,
+    [localContent],
+  );
 
   return (
     <CodeMirror
-      extensions={[yaml()]}
+      extensions={extensions[current.type]}
       theme={cmTheme}
       value={localContent}
       autoFocus
@@ -34,10 +80,9 @@ const YAMLConfigEditor: React.FC<React.CSSProperties> = ({ ...rest }) => {
       style={{
         fontSize: "14px",
         overflow: "auto",
-        ...rest,
       }}
     />
   );
-};
+}
 
 export default YAMLConfigEditor;

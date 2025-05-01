@@ -65,7 +65,6 @@ export const RoutesEditor: React.FC<{
   data: Routes.Routes;
   onChange: (v: Routes.Routes) => void;
 }> = ({ data, onChange }) => {
-  "use no memo";
   return (
     <Stack gap="4">
       <DialogRoot lazyMount unmountOnExit motionPreset="slide-in-bottom">

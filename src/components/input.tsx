@@ -10,6 +10,7 @@ import {
   ListCollection,
   Stack,
 } from "@chakra-ui/react";
+import { JSONSchemaType } from "ajv";
 import { Plus, Trash } from "lucide-react";
 import React from "react";
 import { Button } from "./ui/button";
@@ -381,3 +382,46 @@ export const MapInput: React.FC<MapInputProps> = ({
     </Box>
   );
 };
+
+type MapSchema = {
+  properties: Record<string, JSONSchemaType<any>>;
+};
+
+export function SchemaInputMap<T extends object>({
+  title,
+  schema,
+}: Readonly<{
+  title: string;
+  schema: MapSchema;
+}>) {
+  return (
+    <Field label={title}>
+      <Stack>
+        <For each={Object.entries(schema.properties)}>
+          {([k, v]) => <DynamicInput label={k} schema={v} />}
+        </For>
+      </Stack>
+    </Field>
+  );
+}
+
+type DynamicInputProps<T extends number | string | boolean> = {
+  label: string;
+  schema: JSONSchemaType<T>;
+};
+
+export function DynamicInput<T extends number | string | boolean>({
+  label,
+  schema,
+}: Readonly<DynamicInputProps<T>>) {
+  switch (schema.type) {
+    case "string":
+      return <Input />;
+    case "number":
+      return <Input />;
+    case "boolean":
+      return <Checkbox />;
+    default:
+      return <Input />;
+  }
+}

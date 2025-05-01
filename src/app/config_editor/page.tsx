@@ -1,46 +1,48 @@
 "use client";
 
-import ConfigFileActions from "@/components/config_editor/actions";
-import { ConfigFileProvider } from "@/components/config_editor/config_file_provider";
+import { NewFileButton, SaveButton } from "@/components/config_editor/actions";
 import UIEditor from "@/components/config_editor/ui_editor";
 import YAMLConfigEditor from "@/components/config_editor/yaml_editor";
-import { type GoDoxyError, GoDoxyErrorText } from "@/components/godoxy_error";
+import { GoDoxyErrorText } from "@/components/godoxy_error";
 import { ListboxSection } from "@/components/listbox/listbox_section";
-import { useConfigFileContext } from "@/hooks/config_file";
-import Endpoints from "@/types/api/endpoints";
+import { Toaster } from "@/components/ui/toaster";
+import { useConfigFileState } from "@/hooks/config_file";
 import { type ConfigFile } from "@/types/file";
 import { Box, For, Stack } from "@chakra-ui/react";
 import { FaFile } from "react-icons/fa6";
-import { useAsync } from "react-use";
+import { useEffectOnce } from "react-use";
 
 export default function ConfigEditorPage() {
   return (
     <Stack gap="0" direction="row" h="full">
-      <ConfigFileProvider>
-        <Stack align={"flex-start"} px="4">
-          <ConfigFileActions />
-          <FileList />
+      <Stack align={"flex-start"} px="4">
+        <Stack gap="0">
+          <NewFileButton fileExtension=".yml" />
+          <SaveButton />
         </Stack>
-        <Box
-          w={"full"}
-          brightness={"10%"}
-          overflow={"auto"}
-          pr="6"
-          scrollbar={"hidden"}
-        >
-          <UIEditor />
-        </Box>
-        <Stack minW="40%" overflow="auto" fontSize="sm">
-          <YAMLConfigEditor />
-          <ValidationErrorText />
-        </Stack>
-      </ConfigFileProvider>
+        <FileList />
+      </Stack>
+      <Box
+        w={"full"}
+        brightness={"10%"}
+        overflow={"auto"}
+        pr="6"
+        scrollbar={"hidden"}
+      >
+        <UIEditor />
+      </Box>
+      <Stack minW="40%" overflow="auto" fontSize="sm">
+        <YAMLConfigEditor />
+        <ValidationErrorText />
+      </Stack>
+      <ConfigStateInitializer />
+      <Toaster />
     </Stack>
   );
 }
 
 function FileList() {
-  const { files, current, setCurrent } = useConfigFileContext();
+  const { files, current, setCurrent } = useConfigFileState();
   return (
     <Box gap="3" overflowY="auto" scrollbar={"hidden"}>
       <For each={Object.entries(files)}>
@@ -66,21 +68,17 @@ function FileList() {
 }
 
 function ValidationErrorText() {
-  const { content, current } = useConfigFileContext();
-  const validationErr = useAsync(async () => {
-    const resp = await fetch(Endpoints.fileValidate(current.type), {
-      method: "POST",
-      body: content,
-    });
-    if (resp.ok) {
-      return undefined;
-    } else {
-      return (await resp.json()) as GoDoxyError;
-    }
-  }, [content, current.type]);
-
-  if (!validationErr.value) {
+  const { valErr } = useConfigFileState();
+  if (!valErr) {
     return null;
   }
-  return <GoDoxyErrorText err={validationErr.value} />;
+  return <GoDoxyErrorText err={valErr} />;
+}
+
+function ConfigStateInitializer() {
+  const { init } = useConfigFileState();
+  useEffectOnce(() => {
+    init();
+  });
+  return null;
 }

@@ -1,11 +1,11 @@
 "use client";
 
-import { useConfigFileContext } from "@/hooks/config_file";
+import { CloseButton } from "@/components/ui/close-button";
+import { useConfigFileState } from "@/hooks/config_file";
 import { useSetting } from "@/hooks/settings";
 import { Alert, ClientOnly, Stack } from "@chakra-ui/react";
 import { FC } from "react";
 import { parse as parseYAML, stringify as stringifyYAML } from "yaml";
-import { CloseButton } from "../ui/close-button";
 import { ConfigUIEditor } from "./ui/config_file";
 import { MiddlewareComposeEditor } from "./ui/middlewares";
 import { RoutesEditor } from "./ui/routes";
@@ -41,7 +41,7 @@ function UIEditorAlert() {
 }
 
 export default function UIEditor() {
-  const { content, setContent, current } = useConfigFileContext();
+  const { content, current, setContent } = useConfigFileState();
   const data = tryParseYAML(content);
   let Editor: FC<{ data: any; onChange: (v: any) => void }>;
 
@@ -58,7 +58,10 @@ export default function UIEditor() {
       <ClientOnly>
         <UIEditorAlert />
       </ClientOnly>
-      <Editor data={data} onChange={(v) => setContent(stringifyYAML(v))} />
+      <Editor
+        data={data}
+        onChange={(v) => setContent(stringifyYAML(v, { stringKeys: true }))}
+      />
     </Stack>
   );
 }

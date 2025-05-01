@@ -1,78 +1,37 @@
+import { ListboxItem } from "@/components/listbox/listbox_item";
 import { type ConfigFileType } from "@/types/api/endpoints";
 import path from "path";
 import { MdAdd, MdSave } from "react-icons/md";
-import { ListboxItem, ListboxItemProps } from "../listbox/listbox_item";
 
-import { useConfigFileContext } from "@/hooks/config_file";
-import { ConfigFile } from "@/types/file";
-import { Group, Input, InputAddon, Stack } from "@chakra-ui/react";
-import React, { useCallback, useState } from "react";
-import { GrCloudSoftware, GrDocumentConfig } from "react-icons/gr";
-import { Field } from "../ui/field";
+import { Field } from "@/components/ui/field";
 import {
   PopoverArrow,
   PopoverBody,
   PopoverContent,
   PopoverRoot,
   PopoverTrigger,
-} from "../ui/popover";
-import { RadioCardItem, RadioCardLabel, RadioCardRoot } from "../ui/radio-card";
+} from "@/components/ui/popover";
+import {
+  RadioCardItem,
+  RadioCardLabel,
+  RadioCardRoot,
+} from "@/components/ui/radio-card";
+import { useConfigFileState } from "@/hooks/config_file";
+import { ConfigFile } from "@/types/file";
+import { Group, Input, InputAddon } from "@chakra-ui/react";
+import { useCallback, useState } from "react";
+import { GrCloudSoftware, GrDocumentConfig } from "react-icons/gr";
 
-export default function ConfigFileActions() {
-  const {
-    files,
-    current,
-    setCurrent,
-    updateRemote,
-    content,
-    hasUnsavedChanges,
-  } = useConfigFileContext();
-
-  return (
-    <Stack gap="0">
-      <NewFileButton
-        p={1}
-        fileExtension=".yml"
-        onSubmit={(t, name) => {
-          const newFile: ConfigFile = {
-            type: t,
-            filename: name + ".yml",
-            isNewFile: true,
-          };
-          setCurrent(newFile);
-          files[t].unshift(newFile);
-        }}
-      />
-      <ListboxItem
-        p={1}
-        colorPalette={hasUnsavedChanges ? "green" : "fg"}
-        disabled={!hasUnsavedChanges}
-        aria-label="Save File"
-        icon={<MdSave />}
-        text="Save File"
-        onClick={() =>
-          content && updateRemote(current, content, { toast: true })
-        }
-      />
-    </Stack>
-  );
+interface FormProps {
+  fileExtension: string;
 }
 
-export type FormProps = {
-  fileExtension: string;
-  onSubmit: (fileType: ConfigFileType, filename: string) => void;
-};
-
-export const NewFileButton: React.FC<
-  FormProps & Partial<Omit<ListboxItemProps, "onSubmit">>
-> = ({ ...props }) => {
+export function NewFileButton({ fileExtension }: FormProps) {
   const [error, setError] = useState<string | null>(null);
   const [filename, setFilename] = useState("");
   const [fileType, setFileType] = useState<ConfigFileType>("provider");
   const [isOpen, setIsOpen] = useState(false);
-  const { files } = useConfigFileContext();
-
-  const { fileExtension, onSubmit, ...listboxProps } = props;
+  const files = useConfigFileState((state) => state.files);
 
   const checkExists = useCallback(
     (t: ConfigFileType, v: string) => {
@@ -115,7 +74,7 @@ export const NewFileButton: React.FC<
           text="New File"
           aria-label="New File"
           colorPalette="fg"
-          {...listboxProps}
+          p={1}
         />
       </PopoverTrigger>
       <PopoverContent>
@@ -153,7 +112,13 @@ export const NewFileButton: React.FC<
                 onChange={(e) => validate(fileType, e.target.value)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && error === null) {
-                    onSubmit(fileType, filename);
+                    const newFile: ConfigFile = {
+                      type: fileType,
+                      filename: filename + ".yml",
+                      isNewFile: true,
+                    };
+                    useConfigFileState((state) => state.setCurrent(newFile));
+                    files[fileType].unshift(newFile);
                     setIsOpen(false);
                   }
                   if (e.key === "Escape") {
@@ -168,4 +133,19 @@ export const NewFileButton: React.FC<
       </PopoverContent>
     </PopoverRoot>
   );
-};
+}
+
+export function SaveButton() {
+  const { hasUnsavedChanges, updateRemote } = useConfigFileState();
+  return (
+    <ListboxItem
+      p={1}
+      colorPalette={hasUnsavedChanges ? "green" : "fg"}
+      disabled={!hasUnsavedChanges}
+      aria-label="Save File"
+      icon={<MdSave />}
+      text="Save File"
+      onClick={updateRemote}
+    />
+  );
+}
