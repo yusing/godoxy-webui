@@ -31,7 +31,7 @@ export function NewFileButton({ fileExtension }: FormProps) {
   const [filename, setFilename] = useState("");
   const [fileType, setFileType] = useState<ConfigFileType>("provider");
   const [isOpen, setIsOpen] = useState(false);
-  const files = useConfigFileState((state) => state.files);
+  const { files, setCurrent } = useConfigFileState();
 
   const checkExists = useCallback(
     (t: ConfigFileType, v: string) => {
@@ -117,7 +117,7 @@ export function NewFileButton({ fileExtension }: FormProps) {
                       filename: filename + ".yml",
                       isNewFile: true,
                     };
-                    useConfigFileState((state) => state.setCurrent(newFile));
+                    setCurrent(newFile);
                     files[fileType].unshift(newFile);
                     setIsOpen(false);
                   }
