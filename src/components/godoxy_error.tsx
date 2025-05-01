@@ -17,7 +17,50 @@ export type GoDoxyError =
   | WithSubject
   | NestedError;
 type WithSubject = { subjects: string[]; err: GoDoxyError };
-type NestedError = { err: string | WithSubject; extras: GoDoxyError[] };
+type NestedError = { err: string | WithSubject | null; extras: GoDoxyError[] };
+
+function SubjectText({
+  subjects,
+  level,
+}: {
+  subjects: string[] | undefined;
+  level: number;
+}) {
+  if (!subjects || subjects.length === 0) {
+    return null;
+  }
+  if (subjects.length > 1) {
+    return (
+      <>
+        <GoDoxyErrorText err={subjects.slice(0, -1).join("/")} />
+        <SubjectText subjects={subjects.slice(-1)} level={level} />
+      </>
+    );
+  }
+  return (
+    <Text pl={level ? 5 : 0} color="fg.warning" whiteSpace={"preserve"}>
+      {subjects.slice(-1)}:{" "}
+    </Text>
+  );
+}
+
+function MultiErrors({
+  errors,
+  level,
+}: {
+  errors: GoDoxyError[];
+  level: number;
+}) {
+  return (
+    <Stack gap="1">
+      <For each={errors}>
+        {(error, index) => (
+          <GoDoxyErrorText key={index} err={error} level={level} />
+        )}
+      </For>
+    </Stack>
+  );
+}
 
 export const GoDoxyErrorText: React.FC<{
   err: GoDoxyError;
@@ -30,20 +73,20 @@ export const GoDoxyErrorText: React.FC<{
     return <Text pl={pl}>{err}</Text>;
   }
   if ("subjects" in err && Array.isArray(err.subjects)) {
+    if (!err.err)
+      return <SubjectText subjects={err.subjects} level={level ?? 0} />;
     return (
       <HStack pl={pl} gap="0">
-        {err.subjects.length > 1 && (
-          <Text>{err.subjects.slice(0, -1).join("/")}/</Text>
-        )}
-        <Text color="fg.warning" whiteSpace={"preserve"}>
-          {err.subjects.slice(-1)}:{" "}
-        </Text>
+        <SubjectText subjects={err.subjects} level={level ?? 0} />
         <GoDoxyErrorText err={err.err} />
       </HStack>
     );
   }
   if ("extras" in err && Array.isArray(err.extras)) {
-    if (err.extras.length == 1) {
+    if (!err.err) return <MultiErrors errors={err.extras} level={level ?? 0} />;
+    if (err.extras.length === 0 || !err.extras[0])
+      return <GoDoxyErrorText err={err.err} />;
+    if (err.extras.length === 1) {
       return (
         <Stack gap="1">
           <GoDoxyErrorText err={err.err} level={level ?? 0} />
