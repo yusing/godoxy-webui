@@ -35,4 +35,4 @@ export function overrideHomepage<T extends keyof OverrideHomepageParams>(
 
 type IconProvider = "selfhst" | "walkxcode";
 type IconFormat = "svg" | "png" | "webp";
-export type Icon = `${IconProvider}/${string}.${IconFormat}`;
+export type Icon = `@${IconProvider}/${string}.${IconFormat}`;

@@ -1,13 +1,14 @@
 "use client";
 
 import Endpoints from "@/types/api/endpoints";
-import { Icon } from "@/types/api/homepage";
 import {
-  Button,
+  Flex,
+  FlexProps,
   Group,
   HStack,
   Input,
   InputElement,
+  Spacer,
   Stack,
   StackProps,
   Text,
@@ -17,9 +18,62 @@ import React, { useState } from "react";
 import { MdError } from "react-icons/md";
 import { useAsync } from "react-use";
 import { FavIcon } from "../dashboard/favicon";
+import { Button } from "../ui/button";
 import { CloseButton } from "../ui/close-button";
 import { EmptyState } from "../ui/empty-state";
 import { Field } from "../ui/field";
+import { Tag } from "../ui/tag";
+
+type IconMetadata = {
+  Source: string;
+  Ref: string;
+  SVG: boolean;
+  PNG: boolean;
+  WebP: boolean;
+  Light: boolean;
+  Dark: boolean;
+};
+
+function iconURL(metadata: IconMetadata) {
+  if (metadata.SVG) {
+    return `${metadata.Source}/${metadata.Ref}.svg`;
+  }
+  if (metadata.WebP) {
+    return `${metadata.Source}/${metadata.Ref}.webp`;
+  }
+  return `${metadata.Source}/${metadata.Ref}.png`;
+}
+
+function iconURLVariant(metadata: IconMetadata, variant: "light" | "dark") {
+  return `${metadata.Source}/${metadata.Ref}-${variant}.${metadata.SVG ? "svg" : metadata.WebP ? "webp" : "png"}`;
+}
+
+function asSearchValue(fullValue: string) {
+  return fullValue
+    .replace(/\.(svg|webp|png)$/, "")
+    .replace(/-light|-dark$/, "");
+}
+
+function IconElement({
+  metadata,
+  variant,
+  ...props
+}: {
+  metadata: IconMetadata;
+  variant: "light" | "dark";
+} & FlexProps) {
+  const { theme } = useTheme();
+  return (
+    <Flex
+      bg={theme === variant ? "fg" : undefined}
+      borderRadius={"full"}
+      bgSize={"28px"}
+      {...props}
+    >
+      <FavIcon url={iconURLVariant(metadata, variant)} size="28px" />
+    </Flex>
+  );
+}
 
 export const IconSearcher: React.FC<
   {
@@ -27,22 +81,16 @@ export const IconSearcher: React.FC<
     onChange: (v: string) => void;
   } & Omit<StackProps, "onChange" | "value">
 > = ({ value, onChange, ...rest }) => {
-  const icons = useAsync<() => Promise<Icon[]>>(
-    () =>
-      fetch(Endpoints.searchIcons(value, 10))
-        .then((r) => r.json() as Promise<Icon[]>)
-        .then((r) =>
-          r.toSorted(
-            // @ts-ignore
-            (a, b) => b.includes(oppositeTheme) - a.includes(oppositeTheme),
-          ),
-        ),
-    [value],
-  );
-
-  const { resolvedTheme } = useTheme();
-  const oppositeTheme = resolvedTheme === "light" ? "dark" : "light";
+  const [searchValue, setSearchValue] = useState(asSearchValue(value));
   const [focused, setFocused] = useState(false);
+  const [currentIcon, setCurrentIcon] = useState<IconMetadata | null>(null);
+  const [currentVariant, setCurrentVariant] = useState<"light" | "dark" | null>(
+    null,
+  );
+  const icons = useAsync(async () => {
+    const r = await fetch(Endpoints.searchIcons(searchValue, 10));
+    return await (r.json() as Promise<IconMetadata[]>);
+  }, [searchValue]);
 
   return (
     <Stack gap={focused ? 1 : 0} w="full" {...rest}>
@@ -50,22 +98,50 @@ export const IconSearcher: React.FC<
         <Group w="full">
           <Input
             placeholder="Start typing to fuzzy search an icon, or paste a URL"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
+            value={currentIcon ? iconURL(currentIcon) : searchValue}
+            onChange={(e) => {
+              setCurrentIcon(null);
+              setSearchValue(e.target.value);
+              onChange(e.target.value);
+            }}
             onFocus={() => setFocused(true)}
             onBlur={() => setFocused(false)}
-            variant={"subtle"}
           />
           <InputElement placement="end">
-            <CloseButton variant={"plain"} onClick={() => onChange("")} />
+            <HStack gap="2">
+              {currentIcon?.Light && (
+                <Tag
+                  colorPalette={
+                    currentVariant === "light" ? "green" : undefined
+                  }
+                >
+                  Light
+                </Tag>
+              )}
+              {currentIcon?.Dark && (
+                <Tag
+                  colorPalette={currentVariant === "dark" ? "green" : undefined}
+                >
+                  Dark
+                </Tag>
+              )}
+              <CloseButton
+                variant={"plain"}
+                onClick={() => {
+                  setSearchValue("");
+                  setCurrentIcon(null);
+                  setCurrentVariant(null);
+                  onChange("");
+                }}
+              />
+            </HStack>
           </InputElement>
         </Group>
       </Field>
       <Stack
-        overflow={"scroll"}
+        overflow={"auto"}
         maxH="250px"
         w={"full"}
-        px="3"
         roundedBottom={"md"}
         bg="var(--input-bg)"
       >
@@ -78,13 +154,12 @@ export const IconSearcher: React.FC<
         ) : !icons.value || icons.value.length === 0 ? (
           <EmptyState title={"No result"} />
         ) : (
-          icons.value.map((e) => (
+          icons.value.map((metadata) => (
             <Button
-              bg="inherit"
+              variant={"ghost"}
               p="0"
-              key={e}
-              asChild
-              onClick={() => onChange(e)}
+              justifyContent={"flex-start"}
+              key={`${metadata.Source}:${metadata.Ref}`}
             >
               <HStack
                 color="fg.info"
@@ -92,8 +167,54 @@ export const IconSearcher: React.FC<
                 textAlign={"left"}
                 justify={"left"}
               >
-                <FavIcon url={e} size="28px" />
-                <Text>{e}</Text>
+                <Tag minW="85px">{metadata.Source}</Tag>
+                <Text
+                  onClick={() => {
+                    setCurrentIcon(metadata);
+                    setCurrentVariant(null);
+                    onChange(iconURL(metadata));
+                  }}
+                >
+                  {metadata.Ref}{" "}
+                </Text>
+                <FavIcon
+                  url={iconURL(metadata)}
+                  size="28px"
+                  onClick={() => {
+                    setCurrentIcon(metadata);
+                    setCurrentVariant(null);
+                    onChange(iconURL(metadata));
+                  }}
+                />
+                {metadata.Light && (
+                  <IconElement
+                    metadata={metadata}
+                    variant="light"
+                    onClick={() => {
+                      setCurrentIcon(metadata);
+                      setCurrentVariant("light");
+                      onChange(iconURLVariant(metadata, "light"));
+                    }}
+                  />
+                )}
+                {metadata.Dark && (
+                  <IconElement
+                    metadata={metadata}
+                    variant="dark"
+                    onClick={() => {
+                      setCurrentIcon(metadata);
+                      setCurrentVariant("dark");
+                      onChange(iconURLVariant(metadata, "dark"));
+                    }}
+                  />
+                )}
+                <Spacer
+                  onClick={() => {
+                    setCurrentIcon(metadata);
+                    setCurrentVariant(null);
+                    onChange(iconURL(metadata));
+                  }}
+                />
               </HStack>
             </Button>
           ))
