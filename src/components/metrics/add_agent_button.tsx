@@ -107,7 +107,7 @@ export function AddAgentDialogButton() {
                 {type === "docker" ? (
                   <Code>compose.yml</Code>
                 ) : (
-                  <Text>shell command</Text>
+                  "shell command"
                 )}{" "}
                 below to add the agent to the system.
               </DialogDescription>
