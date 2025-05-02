@@ -17,6 +17,10 @@ export const HTTP_METHODS = [
   "TRACE",
 ] as const;
 
+/**
+ * HTTP Method
+ * @type string
+ */
 export type HTTPMethod = (typeof HTTP_METHODS)[number];
 
 // "string & {}" Prevents skipping schema generation
@@ -41,28 +45,39 @@ export type HTTPQuery = string & {};
  */
 export type HTTPCookie = string & {};
 
-export type StatusCode = number | `${number}`;
+/**
+ * Status code
+ */
+export type StatusCode = number;
+/**
+ * Status code range
+ */
 export type StatusCodeRange = number | `${number}` | `${number}-${number}`;
 
 /**
+ * Domain name
  * @pattern ^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$
  */
 export type DomainName = string & {};
 /**
+ * Domain or wildcard domain
  * @pattern ^(\*\.)?(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$
  */
 export type DomainOrWildcard = string & {};
 /**
+ * Hostname
  * @format hostname
  * @type string
  */
 export type Hostname = string & {};
 /**
+ * IPv4 address
  * @format ipv4
  * @type string
  */
 export type IPv4 = string & {};
 /**
+ * IPv6 address
  * @format ipv6
  * @type string
  */
@@ -78,6 +93,8 @@ export type CIDR =
   | `${string}:${string}::/${number}`;
 
 /**
+ * Port number
+ *
  * @type integer
  * @minimum 0
  * @maximum 65535
@@ -85,42 +102,50 @@ export type CIDR =
 export type Port = number | `${number}`;
 
 /**
+ * Stream port
+ *
  * @pattern ^\d+:\d+$
  * @type string
  */
 export type StreamPort = string & {};
 
 /**
+ * Email address
  * @format email
  * @type string
  */
 export type Email = string & {};
 
 /**
+ * URL
  * @format uri
  * @type string
  */
 export type URL = string & {};
 
 /**
+ * URI
  * @format uri-reference
  * @type string
  */
 export type URI = string & {};
 
 /**
+ * Path pattern
  * @pattern ^(?:([A-Z]+) )?(?:([a-zA-Z0-9.-]+)\\/)?(\\/[^\\s]*)$
  * @type string
  */
 export type PathPattern = string & {};
 
 /**
+ * Duration
  * @pattern ^([0-9]+(ms|s|m|h))+$
  * @type string
  */
 export type Duration = string & {};
 
 /**
+ * Date time
  * @format date-time
  * @type string
  */

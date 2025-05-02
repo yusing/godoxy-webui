@@ -9,7 +9,11 @@ import type {
 } from "../types";
 
 export const REQUEST_LOG_FORMATS = ["combined", "common", "json"] as const;
-
+/**
+ * The format of the access log.
+ *
+ * @default "combined"
+ */
 export type RequestLogFormat = (typeof REQUEST_LOG_FORMATS)[number];
 
 export type AccessLogConfigBase = {
@@ -23,11 +27,17 @@ export type AccessLogConfigBase = {
    */
   stdout?: boolean;
   /**
-   * Retention policy
+   * Retention policy (same as `retention`)
    *
    * @default "30 days"
    */
   keep?: RetentionPolicy;
+  /**
+   * Retention policy (same as `keep`)
+   *
+   * @default "30 days"
+   */
+  retention?: RetentionPolicy;
   /**
    * Rotation interval
    *
@@ -40,20 +50,25 @@ export type LogKeepDays = `${number} ${"days" | "weeks" | "months"}`;
 export type LogKeepLast = `last ${number}`;
 export type LogKeepSize =
   `${number} ${"KB" | "MB" | "GB" | "kb" | "mb" | "gb"}`;
+/**
+ * Retention policy
+ *
+ * @default "30 days"
+ */
 export type RetentionPolicy = LogKeepDays | LogKeepLast | LogKeepSize;
 
 export interface RequestLogConfig extends AccessLogConfigBase {
-  /** The format of the access log.
-   *
+  /**
+   * The format of the access log
    * @default "combined"
    */
   format?: RequestLogFormat;
   /**
-   * The access log filters.
+   * The access log filters
    */
   filters?: RequestAccessLogFilters;
   /**
-   * The access log fields.
+   * The access log fields
    */
   fields?: LogFields;
 }
@@ -67,8 +82,8 @@ export interface ACLLogConfig extends AccessLogConfigBase {
 }
 
 export type RequestAccessLogFilter<T> = {
-  /** Whether the filter is negative.
-   *
+  /**
+   * Whether the filter is negative.
    * @default false
    */
   negative?: boolean;
