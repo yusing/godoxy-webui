@@ -10,7 +10,7 @@ import { useConfigFileState } from "@/hooks/config_file";
 import { type ConfigFile } from "@/types/file";
 import { Box, For, Stack } from "@chakra-ui/react";
 import { FaFile } from "react-icons/fa6";
-import { useEffectOnce } from "react-use";
+import { useMount } from "react-use";
 
 export default function ConfigEditorPage() {
   return (
@@ -77,8 +77,6 @@ function ValidationErrorText() {
 
 function ConfigStateInitializer() {
   const { init } = useConfigFileState();
-  useEffectOnce(() => {
-    init();
-  });
+  useMount(init);
   return null;
 }
