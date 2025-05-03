@@ -64,8 +64,7 @@ export const AutocertUIEditor: React.FC<{
             value={[field.value]}
             onValueChange={({ value }) => {
               cfg.provider = value[0]! as Autocert.AutocertProvider;
-              field.onChange(value[0]! as Autocert.AutocertProvider);
-              if (field.value === "local") {
+              if (cfg.provider === "local") {
                 cfg = { provider: "local" } as Autocert.LocalOptions;
               } else {
                 delete cfg.options;
