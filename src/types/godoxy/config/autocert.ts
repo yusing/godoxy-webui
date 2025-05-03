@@ -18,7 +18,8 @@ export type AutocertConfig =
   | DuckDNSOptions
   | OVHOptionsWithAppKey
   | OVHOptionsWithOAuth2Config
-  | PorkbunOptions;
+  | PorkbunOptions
+  | OtherOptions;
 
 export interface AutocertConfigBase {
   /* ACME email */
@@ -101,4 +102,9 @@ export interface OVHOptionsWithOAuth2Config extends AutocertConfigBase {
       client_secret: string;
     };
   };
+}
+
+export interface OtherOptions extends AutocertConfigBase {
+  provider: string;
+  options: object;
 }
