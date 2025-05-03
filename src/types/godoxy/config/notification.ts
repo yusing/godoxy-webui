@@ -4,6 +4,13 @@ export const NOTIFICATION_PROVIDERS = ["webhook", "gotify", "ntfy"] as const;
 
 export type NotificationProvider = (typeof NOTIFICATION_PROVIDERS)[number];
 
+export const NOTIFICATION_FORMATS = ["markdown", "plain"];
+/* Format of the notification
+ *
+ * @default "markdown"
+ */
+export type NotificationFormat = (typeof NOTIFICATION_FORMATS)[number];
+
 export type NotificationConfig = {
   /* Name of the notification provider */
   name: string;
@@ -15,16 +22,14 @@ export interface GotifyConfig extends NotificationConfig {
   provider: "gotify";
   /* Gotify token */
   token: string;
+  format?: NotificationFormat;
 }
-
-export const NTFY_MSG_STYLES = ["markdown", "plain"];
-export type NtfyStyle = (typeof NTFY_MSG_STYLES)[number];
 
 export interface NtfyConfig extends NotificationConfig {
   provider: "ntfy";
   topic: string;
   token?: string;
-  style?: NtfyStyle;
+  format?: NotificationFormat;
 }
 
 export const WEBHOOK_TEMPLATES = ["", "discord"] as const;

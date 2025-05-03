@@ -268,8 +268,11 @@ export function ConfigUIEditor({
                 mime_type: Notification.WEBHOOK_MIME_TYPES,
                 color_mode: Notification.WEBHOOK_COLOR_MODES,
               },
+              gotify: {
+                format: Notification.NOTIFICATION_FORMATS,
+              },
               ntfy: {
-                style: Notification.NTFY_MSG_STYLES,
+                format: Notification.NOTIFICATION_FORMATS,
               },
             }}
             description={{
