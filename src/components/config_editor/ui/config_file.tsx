@@ -18,9 +18,17 @@ import {
 import { getSchemaDescription } from "@/types/schema";
 import { Stack } from "@chakra-ui/react";
 import React from "react";
-import { FaHome, FaLock } from "react-icons/fa";
-import { FaDocker, FaInbox, FaLink } from "react-icons/fa6";
-import { PiCertificate } from "react-icons/pi";
+import { FaHome } from "react-icons/fa";
+import {
+  FaBell,
+  FaCertificate,
+  FaCloud,
+  FaDocker,
+  FaLink,
+  FaLock,
+  FaMapLocationDot,
+  FaServer,
+} from "react-icons/fa6";
 import { AutocertUIEditor } from "./autocert";
 import { MiddlewareEditor } from "./middlewares";
 
@@ -49,7 +57,7 @@ export function ConfigUIEditor({
     >
       <AccordionItem value="autocert">
         <AccordionItemTrigger>
-          <PiCertificate />
+          <FaCertificate />
           Autocert
         </AccordionItemTrigger>
         <AccordionItemContent>
@@ -119,7 +127,7 @@ export function ConfigUIEditor({
       </AccordionItem>
       <AccordionItem value="entrypoint">
         <AccordionItemTrigger>
-          <FaInbox />
+          <FaCloud />
           Entrypoint
         </AccordionItemTrigger>
         <AccordionItemContent>
@@ -154,10 +162,10 @@ export function ConfigUIEditor({
           </Stack>
         </AccordionItemContent>
       </AccordionItem>
-      <AccordionItem value="providers">
+      <AccordionItem value="route_providers">
         <AccordionItemTrigger>
           <FaDocker />
-          Providers
+          Route Providers
         </AccordionItemTrigger>
         <AccordionItemContent>
           <Stack gap="3">
@@ -195,75 +203,97 @@ export function ConfigUIEditor({
                 onChange(data);
               }}
             />
-            <NamedListInput
-              label="Proxmox"
-              nameField="url"
-              value={data.providers?.proxmox ?? []}
-              onChange={(v) => {
-                if (!data.providers) data.providers = {};
-                data.providers.proxmox = v;
-                onChange(data);
-              }}
-            />
-            <NamedListInput
-              label="Notification"
-              nameField="provider"
-              allowedNames={Notification.NOTIFICATION_PROVIDERS}
-              allowedKeys={{
-                webhook: Object.keys(
-                  ConfigSchema.definitions.WebhookConfig.properties,
-                ),
-                gotify: Object.keys(
-                  ConfigSchema.definitions.GotifyConfig.properties,
-                ),
-                ntfy: Object.keys(
-                  ConfigSchema.definitions.NtfyConfig.properties,
-                ),
-              }}
-              allowedValues={{
-                webhook: {
-                  template: Notification.WEBHOOK_TEMPLATES,
-                  method: Notification.WEBHOOK_METHODS,
-                  mime_type: Notification.WEBHOOK_MIME_TYPES,
-                  color_mode: Notification.WEBHOOK_COLOR_MODES,
-                },
-                ntfy: {
-                  style: Notification.NTFY_MSG_STYLES,
-                },
-              }}
-              description={{
-                webhook: getSchemaDescription(
-                  ConfigSchema.definitions.WebhookConfig.properties,
-                ),
-                gotify: getSchemaDescription(
-                  ConfigSchema.definitions.GotifyConfig.properties,
-                ),
-                ntfy: getSchemaDescription(
-                  ConfigSchema.definitions.NtfyConfig.properties,
-                ),
-              }}
-              //@ts-ignore
-              value={data.providers?.notification ?? []}
-              onChange={(v) => {
-                if (!data.providers) data.providers = {};
-                //@ts-ignore
-                data.providers.notification = v;
-                if (Object.keys(v).length === 0)
-                  delete data.providers.notification;
-                onChange(data);
-              }}
-            />
-            <MapInput
-              label="Maxmind"
-              allowedKeys={Object.keys(MaxmindSchema.properties)}
-              value={data.providers?.maxmind ?? {}}
-              onChange={(v) => {
-                if (!data.providers) data.providers = {};
-                data.providers.maxmind = v;
-                onChange(data);
-              }}
-            />
           </Stack>
+        </AccordionItemContent>
+      </AccordionItem>
+      <AccordionItem value="proxmox">
+        <AccordionItemTrigger>
+          <FaServer />
+          Proxmox
+        </AccordionItemTrigger>
+        <AccordionItemContent>
+          <NamedListInput
+            label="Proxmox"
+            nameField="url"
+            value={data.providers?.proxmox ?? []}
+            onChange={(v) => {
+              if (!data.providers) data.providers = {};
+              data.providers.proxmox = v;
+              onChange(data);
+            }}
+          />
+        </AccordionItemContent>
+      </AccordionItem>
+      <AccordionItem value="maxmind">
+        <AccordionItemTrigger>
+          <FaMapLocationDot />
+          Maxmind
+        </AccordionItemTrigger>
+        <AccordionItemContent>
+          <MapInput
+            label="Maxmind"
+            allowedKeys={Object.keys(MaxmindSchema.properties)}
+            value={data.providers?.maxmind ?? {}}
+            onChange={(v) => {
+              if (!data.providers) data.providers = {};
+              data.providers.maxmind = v;
+              onChange(data);
+            }}
+          />
+        </AccordionItemContent>
+      </AccordionItem>
+      <AccordionItem value="notifications">
+        <AccordionItemTrigger>
+          <FaBell />
+          Notifications
+        </AccordionItemTrigger>
+        <AccordionItemContent>
+          <NamedListInput
+            label="Notification"
+            nameField="provider"
+            allowedNames={Notification.NOTIFICATION_PROVIDERS}
+            allowedKeys={{
+              webhook: Object.keys(
+                ConfigSchema.definitions.WebhookConfig.properties,
+              ),
+              gotify: Object.keys(
+                ConfigSchema.definitions.GotifyConfig.properties,
+              ),
+              ntfy: Object.keys(ConfigSchema.definitions.NtfyConfig.properties),
+            }}
+            allowedValues={{
+              webhook: {
+                template: Notification.WEBHOOK_TEMPLATES,
+                method: Notification.WEBHOOK_METHODS,
+                mime_type: Notification.WEBHOOK_MIME_TYPES,
+                color_mode: Notification.WEBHOOK_COLOR_MODES,
+              },
+              ntfy: {
+                style: Notification.NTFY_MSG_STYLES,
+              },
+            }}
+            description={{
+              webhook: getSchemaDescription(
+                ConfigSchema.definitions.WebhookConfig.properties,
+              ),
+              gotify: getSchemaDescription(
+                ConfigSchema.definitions.GotifyConfig.properties,
+              ),
+              ntfy: getSchemaDescription(
+                ConfigSchema.definitions.NtfyConfig.properties,
+              ),
+            }}
+            //@ts-ignore
+            value={data.providers?.notification ?? []}
+            onChange={(v) => {
+              if (!data.providers) data.providers = {};
+              //@ts-ignore
+              data.providers.notification = v;
+              if (Object.keys(v).length === 0)
+                delete data.providers.notification;
+              onChange(data);
+            }}
+          />
         </AccordionItemContent>
       </AccordionItem>
       <AccordionItem value="match-domains">
