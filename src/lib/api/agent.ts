@@ -39,8 +39,7 @@ export type AddAgentForm = {
   nightly: boolean;
 };
 
-export function newAgent(form: AddAgentForm): Promise<NewAgentResponse> {
-  return fetchEndpoint(Endpoints.NEW_AGENT + buildQuery(form)).then((res) =>
-    res?.json(),
-  );
+export async function newAgent(form: AddAgentForm): Promise<NewAgentResponse> {
+  const res = await fetchEndpoint(Endpoints.NEW_AGENT + buildQuery(form));
+  return res?.json();
 }

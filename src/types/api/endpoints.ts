@@ -130,17 +130,24 @@ export class FetchError extends Error {
     this.status = status;
     this.statusText = statusText;
   }
+
+  statusLine() {
+    if (this.statusText) {
+      return `${this.status} - ${this.statusText}`;
+    }
+    return `${this.status}`;
+  }
 }
 
 export function toastError<T>(error: T) {
   if (error instanceof FetchError) {
     toaster.error({
-      title: `Fetch error ${error.status} - ${error.statusText}`,
+      title: `HTTP Error ${error.statusLine()}`,
       description: error.message,
     });
   } else if (error instanceof Error) {
     toaster.error({
-      title: "Fetch error",
+      title: "HTTP Error",
       description: error.message,
     });
   } else if (error instanceof Event) {

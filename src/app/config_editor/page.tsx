@@ -72,6 +72,7 @@ function ValidationErrorText() {
   if (!valErr) {
     return null;
   }
+  console.log(valErr);
   return <GoDoxyErrorText err={valErr} />;
 }
 

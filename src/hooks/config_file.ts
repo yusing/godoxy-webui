@@ -40,17 +40,14 @@ async function validate(
   file: ConfigFile,
   content: string,
 ): Promise<GoDoxyError | undefined> {
-  return fetchEndpoint(Endpoints.fileValidate(file.type), {
+  const res = await fetch(Endpoints.fileValidate(file.type), {
     method: "POST",
     body: content,
-  })
-    .then(async (r) => {
-      if (r?.ok) {
-        return undefined;
-      }
-      return (await r?.json()) as GoDoxyError | undefined;
-    })
-    .catch(() => undefined);
+  });
+  if (res.ok) {
+    return undefined;
+  }
+  return (await res.json()) as GoDoxyError | undefined;
 }
 
 async function updateRemote(file: ConfigFile, content: string): Promise<void> {
@@ -84,7 +81,8 @@ export const useConfigFileState = create<State>((set, get) => ({
     set({ files, content, hasUnsavedChanges: false });
   },
   setContent: async (content: string | undefined) => {
-    const validateErr = await validate(get().current, content ?? "");
+    const { current } = get();
+    const validateErr = await validate(current, content ?? "");
     set((state) => {
       return {
         ...state,
@@ -103,11 +101,16 @@ export const useConfigFileState = create<State>((set, get) => ({
       });
     }
     const content = await getContent(file);
-    return set({ current: file, content, hasUnsavedChanges: false });
+    return set({
+      current: file,
+      content,
+      hasUnsavedChanges: false,
+      valErr: undefined,
+    });
   },
   updateRemote: async () => {
-    const content = get().content;
-    if (!content) {
+    const { content, valErr } = get();
+    if (!content || valErr) {
       return;
     }
     await updateRemote(get().current, content);
