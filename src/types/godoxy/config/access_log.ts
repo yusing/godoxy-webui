@@ -66,11 +66,11 @@ export interface RequestLogConfig extends AccessLogConfigBase {
   /**
    * The access log filters
    */
-  filters?: RequestAccessLogFilters;
+  filters?: RequestLogFilters;
   /**
    * The access log fields
    */
-  fields?: LogFields;
+  fields?: RequestLogFields;
 }
 
 export interface ACLLogConfig extends AccessLogConfigBase {
@@ -91,7 +91,7 @@ export type RequestAccessLogFilter<T> = {
   values: T[];
 };
 
-export type RequestAccessLogFilters = {
+export type RequestLogFilters = {
   /* Status code filter. */
   status_code?: RequestAccessLogFilter<StatusCodeRange>;
   /* Method filter. */
@@ -108,14 +108,32 @@ export const LOG_FIELD_MODES = ["keep", "drop", "redact"] as const;
 export type LogFieldMode = (typeof LOG_FIELD_MODES)[number];
 
 export type LogField = {
+  /**
+   * Default mode
+   */
   default?: LogFieldMode;
+  /**
+   * Field configuration
+   */
   config: {
     [key: string]: LogFieldMode;
   };
 };
 
-export type LogFields = {
-  header?: LogField;
-  query?: LogField;
-  cookie?: LogField;
-};
+export type RequestLogFields =
+  | {
+      // headers
+      headers?: LogField;
+      // query
+      query?: LogField;
+      // cookies
+      cookies?: LogField;
+    }
+  | {
+      // headers
+      header?: LogField;
+      // query
+      query?: LogField;
+      // cookies
+      cookie?: LogField;
+    };
