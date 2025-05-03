@@ -3,6 +3,7 @@ import * as ACL from "./config/acl";
 import * as Autocert from "./config/autocert";
 import * as Config from "./config/config";
 import * as Entrypoint from "./config/entrypoint";
+import * as Maxmind from "./config/maxmind";
 import * as Notification from "./config/notification";
 import * as Providers from "./config/providers";
 
@@ -22,6 +23,7 @@ import ACLSchema from "./acl.schema.json";
 import ConfigSchema from "./config.schema.json";
 import DockerRoutesSchema from "./docker_routes.schema.json";
 import EntrypointMiddlewaresSchema from "./entrypoint_middlewares.schema.json";
+import MaxmindSchema from "./maxmind.schema.json";
 import MiddlewareComposeSchema from "./middleware_compose.schema.json";
 import RoutesSchema from "./routes.schema.json";
 
@@ -40,6 +42,8 @@ export {
   Homepage,
   IdleWatcher,
   LoadBalance,
+  Maxmind,
+  MaxmindSchema,
   MiddlewareCompose,
   MiddlewareComposeSchema,
   Middlewares,

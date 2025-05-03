@@ -34,23 +34,4 @@ export type ACLConfig = {
    * ACL logger
    */
   log?: ACLLogConfig;
-  /**
-   * Maxmind credentials
-   */
-  maxmind?: MaxmindConfig;
-};
-
-export type MaxmindConfig = {
-  /**
-   * Account ID
-   */
-  account_id: `${number}` | number;
-  /**
-   * License key
-   */
-  license_key: string;
-  /**
-   * Database
-   */
-  database: "geolite" | "geoip2";
 };

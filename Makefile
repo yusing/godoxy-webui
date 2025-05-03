@@ -50,4 +50,8 @@ gen-schema:
 			CLASS=ACLConfig \
 			OUT=acl.schema.json \
 			gen-schema-single
+	make IN=config/maxmind.ts \
+			CLASS=MaxmindConfig \
+			OUT=maxmind.schema.json \
+			gen-schema-single
 	pnpm format:write

@@ -1,5 +1,6 @@
 import { ProxmoxConfig } from "../providers/proxmox";
 import { URI, URL } from "../types";
+import { MaxmindConfig } from "./maxmind";
 import { GotifyConfig, NtfyConfig, WebhookConfig } from "./notification";
 
 export type Providers = {
@@ -29,4 +30,6 @@ export type Providers = {
    * @minItems 1
    */
   notification?: (WebhookConfig | GotifyConfig | NtfyConfig)[];
+  /** Maxmind provider */
+  maxmind?: MaxmindConfig;
 };

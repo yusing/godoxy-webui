@@ -9,13 +9,12 @@ import { Field } from "@/components/ui/field";
 import { Switch } from "@/components/ui/switch";
 import {
   AccessLog,
-  ACLSchema,
   Autocert,
   Config,
   ConfigSchema,
+  MaxmindSchema,
   Notification,
 } from "@/types/godoxy";
-import { MaxmindConfig } from "@/types/godoxy/config/acl";
 import { getSchemaDescription } from "@/types/schema";
 import { Stack } from "@chakra-ui/react";
 import React from "react";
@@ -85,17 +84,6 @@ export function ConfigUIEditor({
                 }}
               />
             </Field>
-            <MapInput
-              label="Maxmind Config"
-              allowedKeys={Object.keys(ACLSchema.properties.maxmind.properties)}
-              // allowedValues={Object.values(ACLSchema.properties.maxmind)}
-              value={data.acl?.maxmind ?? {}}
-              onChange={(v) => {
-                if (!data.acl) data.acl = {};
-                data.acl.maxmind = v as MaxmindConfig;
-                onChange(data);
-              }}
-            />
             <ListInput
               label="Allowed"
               value={data.acl?.allow ?? []}
@@ -262,6 +250,16 @@ export function ConfigUIEditor({
                 data.providers.notification = v;
                 if (Object.keys(v).length === 0)
                   delete data.providers.notification;
+                onChange(data);
+              }}
+            />
+            <MapInput
+              label="Maxmind"
+              allowedKeys={Object.keys(MaxmindSchema.properties)}
+              value={data.providers?.maxmind ?? {}}
+              onChange={(v) => {
+                if (!data.providers) data.providers = {};
+                data.providers.maxmind = v;
                 onChange(data);
               }}
             />
