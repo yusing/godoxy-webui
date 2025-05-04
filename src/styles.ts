@@ -1,8 +1,7 @@
 export const navBarHeight = "3.5rem";
 export const footerHeight = "2rem";
-export const bodyPaddingX = "1rem";
+export const bodyPaddingX = "48px";
 export const bodyHeight = `calc(100vh - ${navBarHeight} - ${footerHeight})`;
-export const bodyWidth = `calc(100vw - ${bodyPaddingX} * 2)`;
 export function bodyHeightPercentage(percentage: number) {
   return `calc(${percentage * 100}vh - ${navBarHeight} - ${footerHeight})`;
 }

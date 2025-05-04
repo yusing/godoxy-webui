@@ -6,13 +6,7 @@ import Navbar from "@/components/navbar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AuthProvider } from "@/hooks/auth";
 import { siteConfig } from "@/site_config";
-import {
-  bodyHeight,
-  bodyPaddingX,
-  bodyWidth,
-  footerHeight,
-  navBarHeight,
-} from "@/styles";
+import { bodyHeight, bodyPaddingX, footerHeight, navBarHeight } from "@/styles";
 import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 
@@ -58,9 +52,9 @@ export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
               as="main"
               position={"fixed"}
               top={navBarHeight}
-              mx={bodyPaddingX}
+              px={bodyPaddingX}
               height={bodyHeight}
-              width={bodyWidth}
+              width={"100%"}
               overflowY={"auto"}
               scrollBehavior={"smooth"}
               scrollbar={"auto"}

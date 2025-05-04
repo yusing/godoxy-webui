@@ -1,5 +1,5 @@
 import { IconButton } from "@chakra-ui/react";
-import React from "react";
+import { ReactNode } from "react";
 import { MdSettings } from "react-icons/md";
 
 import {
@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { ButtonProps } from "./ui/button";
 
 export function SettingsButton({
   title,
@@ -18,9 +19,9 @@ export function SettingsButton({
   iconProps,
 }: Readonly<{
   title: string;
-  children: React.ReactNode;
-  iconProps?: React.ComponentProps<typeof IconButton>;
-}>): React.JSX.Element {
+  children: ReactNode;
+  iconProps?: ButtonProps;
+}>) {
   return (
     <DialogRoot lazyMount unmountOnExit placement={"center"}>
       <DialogTrigger asChild>

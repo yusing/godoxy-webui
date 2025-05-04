@@ -8,10 +8,13 @@ import {
 import {
   Card,
   Editable,
+  Float,
   For,
   HStack,
+  IconButton,
   SimpleGrid,
   Stack,
+  Text,
 } from "@chakra-ui/react";
 import { useCallback, useRef, useState } from "react";
 
@@ -21,8 +24,10 @@ import {
 } from "@/lib/api/homepage_items";
 import { toastError } from "@/types/api/endpoints";
 import { overrideHomepage } from "@/types/api/homepage";
+import { MdInfo } from "react-icons/md";
 import { useAsync } from "react-use";
 import Conditional from "../conditional";
+import { ToggleTip } from "../ui/toggle-tip";
 import { AppCard } from "./app_card";
 import { DashboardSettingsButton, useAllSettings } from "./settings";
 
@@ -175,11 +180,31 @@ export default function AppGroups({
   );
 
   return (
-    <Stack direction={isMobile ? "column" : "row"}>
-      <DashboardSettingsButton
-        size="md"
-        getHiddenApps={() => getHiddenHomepageItems(homepageItems.value ?? {})}
-      />
+    <Stack
+      direction={isMobile ? "column" : "row"}
+      position="relative"
+      align={"flex-start"}
+    >
+      <Float placement={"top-start"} offsetX={-12} offsetY={3}>
+        <ToggleTip
+          content={
+            <Stack fontSize={"sm"}>
+              <Text>Right click on an app to edit/hide.</Text>
+              <Text>Double click on a category to change its name.</Text>
+            </Stack>
+          }
+        >
+          <IconButton variant={"ghost"} aria-label="info">
+            <MdInfo />
+          </IconButton>
+        </ToggleTip>
+        <DashboardSettingsButton
+          size="md"
+          getHiddenApps={() =>
+            getHiddenHomepageItems(homepageItems.value ?? {})
+          }
+        />
+      </Float>
       <Stack gap={categoryGroupGap.val}>
         {/* Categories with two or more items */}
         <For each={others()}>

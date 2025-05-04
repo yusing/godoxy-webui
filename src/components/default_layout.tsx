@@ -1,11 +1,7 @@
-import { bodyHeight, bodyWidth } from "@/styles";
-import { Box } from "@chakra-ui/react";
-import type { FC, PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 
-const DefaultLayout: FC<PropsWithChildren> = ({ children }) => (
-  <Box w={bodyWidth} h={bodyHeight}>
-    {children}
-  </Box>
-);
+function DefaultLayout({ children }: PropsWithChildren) {
+  return <>{children}</>;
+}
 
 export default DefaultLayout;
