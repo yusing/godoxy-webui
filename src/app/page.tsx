@@ -8,7 +8,9 @@ import { Box, Stack } from "@chakra-ui/react";
 import { useWindowSize } from "@uidotdev/usehooks";
 import dynamic from "next/dynamic";
 
-const AppGroups = dynamic(() => import("@/components/dashboard/app_groups"));
+const AppGroups = dynamic(() => import("@/components/dashboard/app_groups"), {
+  ssr: false,
+});
 
 export default function HomePage() {
   const windowSize = useWindowSize();
