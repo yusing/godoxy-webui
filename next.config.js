@@ -10,6 +10,7 @@ const withBundleAnalyzer = (await import("@next/bundle-analyzer")).default({
 const config = {
   experimental: {
     optimizePackageImports: ["@chakra-ui/react", "@/types/godoxy"],
+    reactCompiler: process.env.NODE_ENV === "development",
   },
   transpilePackages: ["geist"],
   output: "standalone",
@@ -23,11 +24,10 @@ const config = {
     if (!dev) {
       config.devtool = false;
       config.optimization.minimize = true;
+      config.optimization.splitChunks = {
+        chunks: "all",
+      };
     }
-    config.optimization.splitChunks = {
-      chunks: "all",
-    };
-    config.optimization.runtimeChunk = "single";
     return config;
   },
   redirects: async () => [
