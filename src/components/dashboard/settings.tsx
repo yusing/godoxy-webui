@@ -1,7 +1,7 @@
 "use client";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tag } from "@/components/ui/tag";
-import { useSetting } from "@/hooks/settings";
+import { SettingsItem, useSetting } from "@/hooks/settings";
 import Endpoints, { toastError } from "@/types/api/endpoints";
 import { overrideHomepage } from "@/types/api/homepage";
 import { type HomepageItem } from "@/types/api/route/homepage_item";
@@ -57,7 +57,7 @@ export function DashboardSettingsButton({
             {/* @ts-ignore */}
             <DashboardFilters portalRef={contentRef} />
             <ViewToggle />
-            <HealthBubbleGapToggle />
+            <HealthBubbleAlignSelect />
             <ItemGapSlider />
             <CategoryFontSizeSlider />
             <CategoryGroupGapSlider />
@@ -76,7 +76,7 @@ export function DashboardSettingsButton({
 export const useAllSettings = () => ({
   gridMode: useSetting("dashboard_grid_mode", true),
   itemGap: useSetting("dashboard_item_gap", 6),
-  healthBubbleAlignEnd: useSetting("dashboard_health_bubble_align_end", false),
+  healthBubbleAlign: useSetting<0 | 1 | 2>("dashboard_health_bubble_align", 0),
   categoryGroupGap: useSetting("dashboard_category_group_gap", 3),
   categoryPaddingX: useSetting("dashboard_category_padding_x", 4),
   categoryPaddingY: useSetting("dashboard_category_padding_y", 4),
@@ -159,12 +159,16 @@ function ViewToggle() {
   );
 }
 
-function HealthBubbleGapToggle() {
-  const { healthBubbleAlignEnd } = useAllSettings();
+function HealthBubbleAlignSelect() {
+  const { healthBubbleAlign } = useAllSettings();
   return (
-    <LocalStorageToggle
-      item={healthBubbleAlignEnd}
-      label="Align Health bubble to the end"
+    <LocalStorageSlider
+      item={healthBubbleAlign as SettingsItem<number>}
+      label="Align Health Bubble"
+      min={0}
+      max={2}
+      step={1}
+      labels={["Default", "Left", "Right most"]}
     />
   );
 }

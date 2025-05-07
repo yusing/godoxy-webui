@@ -77,18 +77,37 @@ const AppCardToolTip = ({ item }: { item: HomepageItem }) => {
   );
 };
 
-const AppCardHealthBubble = ({ item }: { item: HomepageItem }) => {
-  const { healthBubbleAlignEnd } = useAllSettings();
+const AppCardHealthBubbleLeft = ({ item }: { item: HomepageItem }) => {
+  const { healthBubbleAlign } = useAllSettings();
   const health = useHealthInfo(item.alias) ?? healthInfoUnknown;
   if (health.status === "unknown") {
     return null;
   }
+  if (healthBubbleAlign.val === 1) {
+    return <HealthStatus value={health.status} />;
+  }
+  return null;
+};
+
+const AppCardHealthBubbleRight = ({ item }: { item: HomepageItem }) => {
+  const { healthBubbleAlign } = useAllSettings();
+  const health = useHealthInfo(item.alias) ?? healthInfoUnknown;
+  if (health.status === "unknown") {
+    return null;
+  }
+  switch (healthBubbleAlign.val) {
+    case 0:
+      return <HealthStatus value={health.status} />;
+    case 2:
   return (
     <>
-      {healthBubbleAlignEnd.val ? <Spacer /> : null}
+          <Spacer />
       <HealthStatus value={health.status} />
     </>
   );
+    default:
+      return null;
+  }
 };
 
 export const AppCardInner: React.FC<AppCardInnerProps> = ({
@@ -98,6 +117,7 @@ export const AppCardInner: React.FC<AppCardInnerProps> = ({
   const portalRef = React.useRef<HTMLDivElement>(null);
   return (
     <HStack gap="2" w="full" {...rest}>
+      <AppCardHealthBubbleLeft item={item} />
       {item.icon ? (
         <FavIcon url={item.icon} size={"24px"} />
       ) : (
@@ -120,7 +140,7 @@ export const AppCardInner: React.FC<AppCardInnerProps> = ({
           </Tooltip.Positioner>
         </Portal>
       </Tooltip.Root>
-      <AppCardHealthBubble item={item} />
+      <AppCardHealthBubbleRight item={item} />
     </HStack>
   );
 };
