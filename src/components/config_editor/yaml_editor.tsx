@@ -6,6 +6,7 @@ import { useTheme } from "next-themes";
 import { coolGlow, noctisLilac } from "thememirror";
 
 import { useConfigFileState } from "@/hooks/config_file";
+import { useTyping } from "@/hooks/typing";
 import "@/styles/yaml_editor.css";
 import {
   ConfigSchema,
@@ -15,8 +16,8 @@ import {
 import { linter } from "@codemirror/lint";
 import { stateExtensions } from "codemirror-json-schema";
 import { yamlSchemaHover, yamlSchemaLinter } from "codemirror-json-schema/yaml";
-import { useCallback, useEffect, useState } from "react";
-import { useBoolean, useDebounce } from "react-use";
+import { useEffect, useState } from "react";
+import { useDebounce } from "react-use";
 
 function yamlSchema(schema: unknown) {
   return [
@@ -38,27 +39,13 @@ const extensions: { [key: string]: Extension[] } = {
 function YAMLConfigEditor() {
   const { content, current, setContent } = useConfigFileState();
   const [localContent, setLocalContent] = useState(content);
-  const [typing, setTyping] = useBoolean(false);
+  const typing = useTyping();
 
   const cmTheme = useTheme().resolvedTheme === "light" ? noctisLilac : coolGlow;
-
-  const keyDown = useCallback(() => setTyping(true), [setTyping]);
-  const keyUp = useCallback(() => setTyping(false), [setTyping]);
 
   useEffect(() => {
     setLocalContent(content);
   }, [content]);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      window.addEventListener("keydown", keyDown);
-      window.addEventListener("keyup", keyUp);
-    }
-    return () => {
-      window.removeEventListener("keydown", keyDown);
-      window.removeEventListener("keyup", keyUp);
-    };
-  }, [keyDown, keyUp]);
 
   useDebounce(
     () => {
