@@ -33,6 +33,7 @@ export type HealthInfo = {
   status: HealthStatusType;
   uptime: string;
   latency: string;
+  detail: string;
 };
 
 export type HealthMap = Record<string, HealthInfo>;
@@ -41,6 +42,7 @@ export const healthInfoUnknown: HealthInfo = {
   status: "unknown",
   uptime: "n/a",
   latency: "n/a",
+  detail: "n/a",
 };
 
 export function formatHealthInfo(info: HealthInfo) {

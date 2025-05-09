@@ -13,7 +13,7 @@ import {
   MenuItem,
   MenuRoot,
 } from "@/components/ui/menu";
-import { formatHealthInfo, healthInfoUnknown } from "@/types/api/health";
+import { healthInfoUnknown } from "@/types/api/health";
 import { overrideHomepage } from "@/types/api/homepage";
 import { type HomepageItem } from "@/types/api/route/homepage_item";
 import {
@@ -24,7 +24,6 @@ import {
   Link,
   Portal,
   Spacer,
-  Span,
   Stack,
   StackProps,
   Text,
@@ -64,15 +63,23 @@ const AppCardToolTip = ({ item }: { item: HomepageItem }) => {
       bg="bg.subtle"
       color="gray.300"
     >
-      {health.status === "unknown" ? (
-        <Text>{item.url}</Text>
-      ) : (
-        <Text>
-          {formatHealthInfo(health)}
-          <br />
-          <Span>{item.url}</Span>
-        </Text>
+      <DataListRoot size="sm">
+        <DataListItem label="Status" value={health.status} />
+        <DataListItem label="Uptime" value={health.uptime} />
+        <DataListItem label="Latency" value={health.latency} />
+        <DataListItem label="URL" value={item.url} />
+        {health.detail && (
+          <DataListItem
+            label="Detail"
+            value={health.detail}
+            textWrap={"pretty"}
+            whiteSpace={"wrap"}
+            overflow={"hidden"}
+            textOverflow={"ellipsis"}
+            maxLines={3}
+          />
       )}
+      </DataListRoot>
     </Tooltip.Content>
   );
 };
@@ -123,7 +130,7 @@ export const AppCardInner: React.FC<AppCardInnerProps> = ({
       ) : (
         <FavIcon item={item} size={"24px"} />
       )}
-      <Tooltip.Root openDelay={100}>
+      <Tooltip.Root openDelay={100} closeDelay={300}>
         <Tooltip.Trigger asChild>
           <Stack gap={0}>
             <Text fontWeight="medium">{item.name}</Text>
