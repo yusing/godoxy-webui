@@ -1,5 +1,4 @@
 import { toaster } from "@/components/ui/toaster";
-import { StatusCodes } from "http-status-codes";
 import { MetricsPeriod } from "./metrics/metrics";
 import { AggregateType } from "./metrics/system_info";
 
@@ -117,8 +116,6 @@ type FetchArguments = {
   body?: BodyInit;
   signal?: AbortSignal;
   method?: "GET" | "POST" | "PUT" | "DELETE";
-  noRedirectAuth?: boolean;
-  toastAuthError?: boolean;
 };
 
 export class FetchError extends Error {
@@ -170,23 +167,9 @@ export async function fetchEndpoint(
     headers: args.headers,
     method: args.method,
     body: args.body,
+    redirect: "error"
   });
   if (!resp.ok) {
-    if (
-      resp.status === StatusCodes.FORBIDDEN ||
-      resp.status === StatusCodes.UNAUTHORIZED
-    ) {
-      if (args.toastAuthError) {
-        toaster.error({
-          title: "Unauthorized",
-          description: await resp.text(),
-        });
-      }
-      if (!args.noRedirectAuth) {
-        window.location.href = Endpoints.AUTH_REDIRECT;
-        return null;
-      }
-    }
     return Promise.reject(
       new FetchError(resp.status, resp.statusText, await resp.text()),
     );
