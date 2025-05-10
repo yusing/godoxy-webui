@@ -5,6 +5,7 @@ import { SettingsItem, useSetting } from "@/hooks/settings";
 import Endpoints, { toastError } from "@/types/api/endpoints";
 import { overrideHomepage } from "@/types/api/homepage";
 import { type HomepageItem } from "@/types/api/route/homepage_item";
+import { getRouteProviders } from "@/types/api/route_provider";
 import { HStack, Icon, Stack, Tabs } from "@chakra-ui/react";
 import React from "react";
 import { AiOutlineLayout } from "react-icons/ai";
@@ -231,11 +232,7 @@ function CategoryFontSizeSlider() {
 export default function DashboardFilters({
   portalRef,
 }: Readonly<{ portalRef?: React.RefObject<HTMLElement> }>) {
-  const providers = useAsync(async () =>
-    fetch(Endpoints.LIST_ROUTE_PROVIDERS)
-      .then((res) => res.json())
-      .then((res) => res as string[]),
-  );
+  const providers = useAsync(async () => getRouteProviders());
   const categories = useAsync(async () =>
     fetch(Endpoints.LIST_HOMEPAGE_CATEGORIES)
       .then((res) => res.json())
@@ -243,7 +240,8 @@ export default function DashboardFilters({
   );
 
   const providerCollection = React.useMemo(
-    () => createSelectCollection(providers.value ?? []),
+    () =>
+      createSelectCollection(providers.value?.map((p) => p.short_name) ?? []),
     [providers.value],
   );
 

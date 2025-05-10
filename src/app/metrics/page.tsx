@@ -7,6 +7,7 @@ import { Uptime } from "@/components/metrics/uptime";
 
 import { InputGroup } from "@/components/ui/input-group";
 import { Toaster } from "@/components/ui/toaster";
+import { useFragment } from "@/hooks/fragment";
 import { MetricsPeriod } from "@/types/api/metrics/metrics";
 import {
   ClientOnly,
@@ -17,20 +18,15 @@ import {
   Tabs,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { LuCpu, LuHeartPulse } from "react-icons/lu";
-import { useLocation } from "react-use";
 
 export default function MetricsPage() {
   const [filter, setFilter] = useState("");
   const [period, setPeriod] = useState<MetricsPeriod>("1h");
   const router = useRouter();
-  const location = useLocation();
-  const tab = useMemo(
-    () => location.hash?.slice(1) || "uptime",
-    [location.hash],
-  );
+  const tab = useFragment();
 
   return (
     <Stack mx="16" my="8">

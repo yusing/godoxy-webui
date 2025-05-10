@@ -70,12 +70,12 @@ namespace Endpoints {
   export const AUTH_LOGOUT = "/api/auth/logout";
   export const AUTH_REDIRECT = "/api/auth/redirect";
   export const LIST_FILES = "/api/list/files";
-  export const LIST_PROXIES = "/api/list/routes";
+  export const LIST_ROUTES = "/api/list/routes";
+  export const LIST_ROUTES_BY_PROVIDER = "/api/list/routes_by_provider";
   export const LIST_HOMEPAGE_CATEGORIES = "/api/list/homepage_categories";
   export const LIST_ROUTE_PROVIDERS = "/api/list/route_providers";
   export const LIST_AGENTS = "/api/agents";
   export const SEARCH_ICONS = "/api/list/icons";
-  export const MATCH_DOMAIsNS = "/api/list/match_domains";
   export const HOMEPAGE_CFG = "/api/list/homepage_config";
 
   export const STATS = "/api/stats";
@@ -167,7 +167,7 @@ export async function fetchEndpoint(
     headers: args.headers,
     method: args.method,
     body: args.body,
-    redirect: "error"
+    redirect: "error",
   });
   if (!resp.ok) {
     return Promise.reject(

@@ -6,6 +6,7 @@ const wsSubscribers: Record<string, Set<(data: any) => void>> = {};
 
 type Options = {
   json?: boolean;
+  sort?: (a: any, b: any) => number;
 };
 
 export enum ReadyState {
@@ -20,7 +21,7 @@ function getOrCreateWebSocket<T>(
   endpoint: string,
   options: Options,
 ): WebSocket {
-  const { json = false } = options;
+  const { json = false, sort } = options;
   if (!wsConnections[endpoint]) {
     const ws = new WebSocket(endpoint);
     wsConnections[endpoint] = ws;
@@ -38,6 +39,10 @@ function getOrCreateWebSocket<T>(
       let parsed: T | null = null;
       try {
         parsed = json ? JSON.parse(event.data) : event.data;
+        if (sort) {
+          //@ts-ignore
+          parsed = parsed.sort(sort);
+        }
       } catch (e) {
         console.error(e);
       }

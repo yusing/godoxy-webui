@@ -1,47 +1,107 @@
-import { Healthcheck, LoadBalance, Routes } from "@/types/godoxy";
+import {
+  AccessLog,
+  Healthcheck,
+  Homepage,
+  IdleWatcher,
+  LoadBalance,
+  Middlewares,
+} from "@/types/godoxy";
+import { Route } from "@/types/godoxy/providers/routes";
+import { HealthStatusType } from "../health";
 
-type Health = {
+export type RouteResponse = {
+  alias: string;
+  provider: string;
+  scheme: Required<Route>["scheme"];
+  host?: string;
+  port: {
+    listening: number;
+    target: number;
+  };
+  lurl?: string; // listening url
+  purl: string; // proxying url
+  root?: string; // fileserver root
+  no_tls_verify?: boolean;
+  response_header_timeout?: string;
+  path_patterns?: string[];
+  rules?: string[];
+  healthcheck?: Healthcheck.HealthcheckConfig;
+  middlewares?: Middlewares.MiddlewaresMap;
+  homepage?: Homepage.HomepageConfig;
+  access_log?: AccessLog.RequestLogConfig;
+  idlewatcher?: IdlewatcherConfig;
+  container?: {
+    docker_host: string;
+    image: {
+      author: string;
+      name: string;
+      tag: string;
+    };
+    container_name: string;
+    container_id: string;
+    agent?: {
+      name: string;
+      addr: string;
+      version: string;
+    };
+    labels: Record<string, string>;
+    idlewatecher_config: IdlewatcherConfig;
+    mounts: string[];
+    private_ports: PortMapping;
+    public_ports: PortMapping;
+    public_hostname: string;
+    private_hostname: string;
+    aliases: string[];
+    is_excluded: boolean;
+    is_explicit: boolean;
+    is_host_network_mode: boolean;
+    running: boolean;
+  };
+  health?: Health;
+};
+
+export type Health = {
   name: string;
   config: Healthcheck.HealthcheckConfig;
-  started: number;
-  startedStr: string;
-  status: string;
-  // uptime: number;
-  uptimeStr: string;
-  // latency: number;
-  latencyStr: string;
-  // lastSeen: number;
-  lastSeenStr: string;
-  detail: string;
-  url?: string;
+  detail?: string;
   extra?: {
+    // load balancer pool
     config: LoadBalance.LoadBalanceConfig;
     pool: Record<string, Health>;
   };
+  lastSeen: number;
+  lastSeenStr: string;
+  latency: number;
+  latencyStr: string;
+  started: number;
+  startedStr: string;
+  status: HealthStatusType;
+  uptime: string;
+  uptimeStr: string;
+  url: string;
 };
 
-type HealthResult = {
-  health: Health;
-  provider: string;
-  lurl?: string;
-  purl?: string;
-};
-
-type Container = {
-  container: {
-    container_name: string;
+export type IdlewatcherConfig = {
+  proxmox?: {
+    node: string;
+    vmid: number;
   };
+  docker?: {
+    docker_host: string;
+    container_name: string;
+    container_id: string;
+  };
+  idle_timeout: number;
+  wake_timeout: number;
+  stop_timeout: number;
+  stop_method: IdleWatcher.StopMethod;
+  stop_signal?: IdleWatcher.Signal;
+  start_endpoint?: string;
 };
-
-export interface ReverseProxyRoute
-  extends Routes.ReverseProxyRoute,
-    HealthResult,
-    Partial<Container> {}
-export interface StreamRoute
-  extends Routes.StreamRoute,
-    HealthResult,
-    Partial<Container> {}
-export interface FileserverRoute
-  extends Routes.FileServerRoute,
-    HealthResult,
-    Partial<Container> {}
+export type PortMapping = Record<number, ContainerPort>;
+export type ContainerPort = {
+  IP: string;
+  PrivatePort: number;
+  PublicPort: number;
+  Type: string;
+};

@@ -42,7 +42,6 @@ function UIEditorAlert() {
 
 export default function UIEditor() {
   const { content, current, setContent } = useConfigFileState();
-  const data = tryParseYAML(content);
   let Editor: FC<{ data: any; onChange: (v: any) => void }>;
 
   if (current.type == "config") {
@@ -59,7 +58,7 @@ export default function UIEditor() {
         <UIEditorAlert />
       </ClientOnly>
       <Editor
-        data={data}
+        data={tryParseYAML(content)}
         onChange={(v) => setContent(stringifyYAML(v, { stringKeys: true }))}
       />
     </Stack>
