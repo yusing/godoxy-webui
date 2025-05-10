@@ -31,6 +31,7 @@ export default function MetricsPage() {
   return (
     <Stack mx="16" my="8">
       <Tabs.Root
+        defaultValue={"uptime"}
         value={tab}
         onValueChange={({ value }) => router.push(`#${value}`)}
         variant={"enclosed"}
