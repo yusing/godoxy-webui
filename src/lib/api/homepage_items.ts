@@ -34,9 +34,6 @@ export async function getHomepageItems({
     const data = (await response.json()) as HomepageItems;
     // sort by length of name and then alphabetically
     for (const category of Object.values(data)) {
-      category.sort((a: HomepageItem, b: HomepageItem) => {
-        return a.name.length - b.name.length || a.name.localeCompare(b.name);
-      });
       for (const item of category) {
         try {
           new URL(item.url);

@@ -11,6 +11,7 @@ interface HomepageItem extends HomepageItemMetadata {
   icon: string;
   category: string;
   description: string;
+  sort_order?: number;
   widget_config?: {};
 }
 

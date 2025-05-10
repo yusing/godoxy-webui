@@ -30,7 +30,7 @@ import {
   Tooltip,
   useDialog,
 } from "@chakra-ui/react";
-import React, { useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { HealthStatus } from "../health_status";
 import { Button } from "../ui/button";
 import { Field } from "../ui/field";
@@ -39,6 +39,8 @@ import { FavIcon } from "./favicon";
 
 import { useHealthInfo } from "@/hooks/health_map";
 import { toastError } from "@/types/api/endpoints";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
   FieldErrors,
   useController,
@@ -79,7 +81,7 @@ const AppCardToolTip = ({ item }: { item: HomepageItem }) => {
             textOverflow={"ellipsis"}
             maxLines={3}
           />
-      )}
+        )}
       </DataListRoot>
     </Tooltip.Content>
   );
@@ -107,21 +109,18 @@ const AppCardHealthBubbleRight = ({ item }: { item: HomepageItem }) => {
     case 0:
       return <HealthStatus value={health.status} />;
     case 2:
-  return (
-    <>
+      return (
+        <>
           <Spacer />
-      <HealthStatus value={health.status} />
-    </>
-  );
+          <HealthStatus value={health.status} />
+        </>
+      );
     default:
       return null;
   }
 };
 
-export const AppCardInner: React.FC<AppCardInnerProps> = ({
-  item,
-  ...rest
-}) => {
+export const AppCardInner = memo<AppCardInnerProps>(({ item, ...rest }) => {
   const portalRef = React.useRef<HTMLDivElement>(null);
   return (
     <HStack gap="2" w="full" {...rest}>
@@ -151,15 +150,39 @@ export const AppCardInner: React.FC<AppCardInnerProps> = ({
       <AppCardHealthBubbleRight item={item} />
     </HStack>
   );
-};
+});
+
+AppCardInner.displayName = "AppCardInner";
 
 interface AppCardProps extends AppCardInnerProps {
-  containerRef: React.RefObject<HTMLDivElement | null>;
+  containerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
-export const AppCard: React.FC<AppCardProps> = ({ containerRef, ...rest }) => {
+export const AppCard = memo<AppCardProps>(({ containerRef, ...rest }) => {
   const [curItem, setCurItem] = React.useState(rest.item);
   const [menuOpen, setMenuOpen] = React.useState(false);
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: curItem.alias,
+  });
+
+  const style = useMemo(
+    () => ({
+      transform: CSS.Transform.toString(transform),
+      transition,
+      opacity: isDragging ? 0.5 : 1,
+      zIndex: isDragging ? 100 : undefined,
+      boxShadow: isDragging ? "rgba(0, 0, 0, 0.2) 0px 8px 24px" : undefined,
+    }),
+    [transform, transition, isDragging],
+  );
 
   if (curItem.skeleton) {
     return (
@@ -184,6 +207,10 @@ export const AppCard: React.FC<AppCardProps> = ({ containerRef, ...rest }) => {
     >
       <MenuContextTrigger asChild>
         <Link
+          ref={setNodeRef}
+          style={style}
+          {...attributes}
+          {...listeners}
           className="transform transition-transform hover:scale-105"
           href={`${curItem.url}`}
           target="_blank"
@@ -227,7 +254,9 @@ export const AppCard: React.FC<AppCardProps> = ({ containerRef, ...rest }) => {
       </MenuContent>
     </MenuRoot>
   );
-};
+});
+
+AppCard.displayName = "AppCard";
 
 const FieldInput = ({
   label,
@@ -270,6 +299,7 @@ function EditItemButton({
 
   if (!item_.icon) {
     item_.icon = item_.name
+      .split(".")[0]! // fqdn -> name
       .toLowerCase()
       .replaceAll(" ", "-")
       .replaceAll("_", "-");
