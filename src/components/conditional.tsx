@@ -1,6 +1,26 @@
-import { ComponentProps, ElementType, ReactNode, createElement } from "react";
+import {
+  ComponentProps,
+  ElementType,
+  ReactNode,
+  createElement,
+  memo,
+  useMemo,
+} from "react";
 
-export default function Conditional<
+interface ConditionalProps<
+  TTrue extends ElementType,
+  TFalse extends ElementType,
+> {
+  condition: boolean;
+  whenTrue: TTrue;
+  trueProps?: ComponentProps<TTrue>;
+  whenFalse: TFalse;
+  falseProps?: ComponentProps<TFalse>;
+  common?: ComponentProps<TTrue> & ComponentProps<TFalse>;
+  children?: ReactNode;
+}
+
+const ConditionalImpl = <
   TTrue extends ElementType,
   TFalse extends ElementType,
 >({
@@ -11,16 +31,21 @@ export default function Conditional<
   falseProps,
   common,
   children,
-}: {
-  condition: boolean;
-  whenTrue: TTrue;
-  trueProps?: ComponentProps<TTrue>;
-  whenFalse: TFalse;
-  falseProps?: ComponentProps<TFalse>;
-  common?: ComponentProps<TTrue> & ComponentProps<TFalse>;
-  children?: ReactNode;
-}) {
+}: ConditionalProps<TTrue, TFalse>) => {
+  const truePropsWithCommon = useMemo(
+    () => ({ ...common, ...trueProps }),
+    [common, trueProps],
+  );
+
+  const falsePropsWithCommon = useMemo(
+    () => ({ ...common, ...falseProps }),
+    [common, falseProps],
+  );
+
   return condition
-    ? createElement(whenTrue, { ...trueProps, ...common }, children)
-    : createElement(whenFalse, { ...falseProps, ...common }, children);
-}
+    ? createElement(whenTrue, truePropsWithCommon, children)
+    : createElement(whenFalse, falsePropsWithCommon, children);
+};
+
+const Conditional = memo(ConditionalImpl) as typeof ConditionalImpl;
+export default Conditional;
