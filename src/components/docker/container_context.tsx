@@ -1,12 +1,13 @@
+import { useFragment } from "@/hooks/fragment";
 import useWebsocket from "@/hooks/ws";
 import Endpoints from "@/types/api/endpoints";
+import { useRouter } from "next/navigation";
 import {
   createContext,
   FC,
   PropsWithChildren,
   useContext,
   useMemo,
-  useState,
 } from "react";
 
 export type Container = {
@@ -34,22 +35,30 @@ export const useContainerContext = () => {
 };
 
 export const ContainerProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [container, setContainer] = useState<Container | null>(null);
+  // const [container, setContainer] = useState<Container | null>(null);
+  const containerID = useFragment();
+  const router = useRouter();
   const { data: containers } = useWebsocket<Container[]>(
     Endpoints.DOCKER_CONTAINERS,
     {
       json: true,
     },
   );
+  const container = useMemo(() => {
+    return containers?.find((c) => c.id === containerID) ?? null;
+  }, [containers, containerID]);
+
   return (
     <ContainerContext.Provider
       value={useMemo(
         () => ({
           containers: containers ?? [],
           container,
-          setContainer,
+          setContainer: (container) => {
+            router.push(`#${container?.id}`);
+          },
         }),
-        [containers, container, setContainer],
+        [containers, container, containerID, router],
       )}
     >
       {children}
