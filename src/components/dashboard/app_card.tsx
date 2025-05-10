@@ -163,125 +163,127 @@ export const AppCardInner = memo<AppCardInnerProps>(
 
 AppCardInner.displayName = "AppCardInner";
 
-export const AppCard = memo<AppCardInnerProps>(({ ...rest }) => {
-  const [curItem, setCurItem] = React.useState(rest.item);
-  const [menuOpen, setMenuOpen] = React.useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<HomepageItem | null>(null);
+export const AppCard = memo<Omit<AppCardInnerProps, "dragging">>(
+  ({ ...rest }) => {
+    const [curItem, setCurItem] = React.useState(rest.item);
+    const [menuOpen, setMenuOpen] = React.useState(false);
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+    const [editingItem, setEditingItem] = useState<HomepageItem | null>(null);
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
-    id: curItem.alias,
-  });
-
-  const style = useMemo(
-    () => ({
-      transform: CSS.Transform.toString(transform),
+    const {
+      attributes,
+      listeners,
+      setNodeRef,
+      transform,
       transition,
-      opacity: isDragging ? 0.5 : 1,
-      zIndex: isDragging ? 100 : undefined,
-      boxShadow: isDragging ? "rgba(0, 0, 0, 0.2) 0px 8px 24px" : undefined,
-    }),
-    [transform, transition, isDragging],
-  );
+      isDragging,
+    } = useSortable({
+      id: curItem.alias,
+    });
 
-  if (curItem.skeleton) {
-    return (
-      <HStack {...rest}>
-        <SkeletonCircle size="24px" />
-        <SkeletonText noOfLines={1} width="120px" />
-      </HStack>
+    const style = useMemo(
+      () => ({
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+        zIndex: isDragging ? 100 : undefined,
+        boxShadow: isDragging ? "rgba(0, 0, 0, 0.2) 0px 8px 24px" : undefined,
+      }),
+      [transform, transition, isDragging],
     );
-  }
 
-  if (!curItem.show) {
-    return null;
-  }
+    if (curItem.skeleton) {
+      return (
+        <HStack {...rest}>
+          <SkeletonCircle size="24px" />
+          <SkeletonText noOfLines={1} width="120px" />
+        </HStack>
+      );
+    }
 
-  return (
-    <>
-      <MenuRoot
-        open={menuOpen}
-        onOpenChange={({ open }) => setMenuOpen(open)}
-        lazyMount
-        unmountOnExit
-        closeOnSelect
-      >
-        <MenuContextTrigger asChild>
-          <Link
-            ref={setNodeRef}
-            style={style}
-            {...attributes}
-            {...listeners}
-            className="transform transition-transform hover:scale-105"
-            href={`${curItem.url}`}
-            target="_blank"
-            variant={"plain"}
-            aria-label={curItem.name}
-          >
-            <HealthProvider>
-              <AppCardInner item={curItem} dragging={isDragging} />
-            </HealthProvider>
-          </Link>
-        </MenuContextTrigger>
-        <MenuContent>
-          <MenuItem
-            value="edit"
-            aria-label="Edit app"
-            onClick={(e) => {
-              e.preventDefault();
-              setEditingItem(curItem);
-              setIsEditDialogOpen(true);
-              setMenuOpen(false);
+    if (!curItem.show) {
+      return null;
+    }
+
+    return (
+      <>
+        <MenuRoot
+          open={menuOpen}
+          onOpenChange={({ open }) => setMenuOpen(open)}
+          lazyMount
+          unmountOnExit
+          closeOnSelect
+        >
+          <MenuContextTrigger asChild>
+            <Link
+              ref={setNodeRef}
+              style={style}
+              {...attributes}
+              {...listeners}
+              className="transform transition-transform hover:scale-105"
+              href={`${curItem.url}`}
+              target="_blank"
+              variant={"plain"}
+              aria-label={curItem.name}
+            >
+              <HealthProvider>
+                <AppCardInner item={curItem} dragging={isDragging} />
+              </HealthProvider>
+            </Link>
+          </MenuContextTrigger>
+          <MenuContent>
+            <MenuItem
+              value="edit"
+              aria-label="Edit app"
+              onClick={(e) => {
+                e.preventDefault();
+                setEditingItem(curItem);
+                setIsEditDialogOpen(true);
+                setMenuOpen(false);
+              }}
+            >
+              <HStack gap="2">
+                <LuPencil />
+                Edit App
+              </HStack>
+            </MenuItem>
+            <MenuItem
+              value="hide"
+              aria-label="Hide app"
+              onClick={() => {
+                curItem.show = false;
+                overrideHomepage("item_visible", [curItem.alias], false)
+                  .then(() => {
+                    setCurItem({ ...curItem, show: false });
+                    setMenuOpen(false);
+                  })
+                  .catch(toastError);
+              }}
+            >
+              <LuEyeOff />
+              Hide App
+            </MenuItem>
+          </MenuContent>
+        </MenuRoot>
+        {isEditDialogOpen && editingItem && (
+          <EditItemDialog
+            item={editingItem}
+            isOpen={isEditDialogOpen}
+            onUpdate={(updatedItem) => {
+              setCurItem(updatedItem);
+              setIsEditDialogOpen(false);
+              setEditingItem(null);
             }}
-          >
-            <HStack gap="2">
-              <LuPencil />
-              Edit App
-            </HStack>
-          </MenuItem>
-          <MenuItem
-            value="hide"
-            aria-label="Hide app"
-            onClick={() => {
-              curItem.show = false;
-              overrideHomepage("item_visible", [curItem.alias], false)
-                .then(() => {
-                  setCurItem({ ...curItem, show: false });
-                  setMenuOpen(false);
-                })
-                .catch(toastError);
+            onClose={() => {
+              setIsEditDialogOpen(false);
+              setEditingItem(null);
             }}
-          >
-            <LuEyeOff />
-            Hide App
-          </MenuItem>
-        </MenuContent>
-      </MenuRoot>
-      {isEditDialogOpen && editingItem && (
-        <EditItemDialog
-          item={editingItem}
-          isOpen={isEditDialogOpen}
-          onUpdate={(updatedItem) => {
-            setCurItem(updatedItem);
-            setIsEditDialogOpen(false);
-            setEditingItem(null);
-          }}
-          onClose={() => {
-            setIsEditDialogOpen(false);
-            setEditingItem(null);
-          }}
-        />
-      )}
-    </>
-  );
-});
+          />
+        )}
+      </>
+    );
+  },
+);
 
 AppCard.displayName = "AppCard";
 
