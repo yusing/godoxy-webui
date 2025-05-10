@@ -10,8 +10,9 @@ import {
   Icon,
   IconButton,
   Stack,
+  StackProps,
 } from "@chakra-ui/react";
-import { FC, memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
 import { LogLine } from "../config_editor/logline";
 import { EmptyState } from "../ui/empty-state";
@@ -27,10 +28,12 @@ import {
 } from "./server_list_drawer";
 import { ServerOverview } from "./server_overview";
 
-const Logs: FC<{
+interface LogsProps extends StackProps {
   server: string;
-  container: Container;
-}> = ({ server, container }) => {
+  containerInfo: Container;
+}
+
+function Logs({ server, containerInfo, ...props }: LogsProps) {
   const [lines, setLines] = useState<LogLineWithId[]>([]);
   const [readyState, setReadyState] = useState<ReadyState>(
     ReadyState.UNINITIALIZED,
@@ -62,7 +65,7 @@ const Logs: FC<{
   useEffect(() => {
     idRef.current = 0;
     const ws = new WebSocket(
-      Endpoints.DOCKER_LOGS({ server, container: container.id }),
+      Endpoints.DOCKER_LOGS({ server, container: containerInfo.id }),
     );
     setReadyState(ReadyState.CONNECTING);
     setLines([]);
@@ -83,10 +86,10 @@ const Logs: FC<{
     return () => {
       ws.close();
     };
-  }, [server, container.id]);
+  }, [server, containerInfo.id]);
 
   return (
-    <Stack w="full" h={bodyHeight}>
+    <Stack w="full" h={bodyHeight} {...props}>
       <Float placement="bottom-end" bottom="12" right="12">
         <IconButton
           variant="solid"
@@ -105,11 +108,11 @@ const Logs: FC<{
           {/* TODO: fix scroll to bottom */}
         </IconButton>
       </Float>
-      <HStack position={"sticky"} top="0">
+      <HStack position={"sticky"} top="0" mx={-3}>
         <ServerListDrawerButton />
-        <Label>{container.name.slice(1)}</Label>
-        <Tag>{container.image}</Tag>
-        <ContainerStatusIndicator status={container.state} withText />
+        <Label>{containerInfo.name.slice(1)}</Label>
+        <Tag>{containerInfo.image}</Tag>
+        <ContainerStatusIndicator status={containerInfo.state} withText />
       </HStack>
       <Stack gap="1" overflowY="auto" ref={logsRef}>
         <Box ref={topRef} />
@@ -133,7 +136,7 @@ const Logs: FC<{
       </Stack>
     </Stack>
   );
-};
+}
 
 interface LogLineWithId extends LogLineType {
   id: number;
@@ -148,20 +151,22 @@ const LogEntry = memo(({ line }: { line: LogLineWithId }) => (
   </HStack>
 ));
 
-export function DockerLogs() {
+export function DockerLogs({ ...props }: StackProps) {
   const { container } = useContainerContext();
   if (!container) {
     return (
-      <Stack direction={"row"}>
+      <Stack direction={"row"} {...props}>
         <SearchInputProvider>
           <Stack gap="4">
             <SearchInput position={"fixed"} top="4" />
-            <ServerList onItemClick={() => {}} />
+            <ServerList onItemClick={() => {}} pr="4" />
           </Stack>
         </SearchInputProvider>
         <ServerOverview />
       </Stack>
     );
   }
-  return <Logs server={container.server} container={container} />;
+  return (
+    <Logs server={container.server} containerInfo={container} {...props} />
+  );
 }
