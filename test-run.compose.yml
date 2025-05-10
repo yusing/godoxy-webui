@@ -2,7 +2,7 @@ services:
   frontend:
     image: godoxy-webui
     build: .
-    container_name: godoxy-frontend
+    container_name: godoxy-frontend-next
     restart: unless-stopped
     network_mode: host # do not change this
     env_file: .env
@@ -16,5 +16,5 @@ services:
       HOSTNAME: 127.0.0.1
       PORT: 3003
     labels:
-      proxy.aliases: godoxy-dev
+      proxy.aliases: godoxy-next
       proxy.#1.port: 3003
