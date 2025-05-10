@@ -54,6 +54,7 @@ import { useAllSettings } from "./settings";
 
 interface AppCardInnerProps extends StackProps {
   item: HomepageItem;
+  dragging: boolean;
 }
 
 const AppCardToolTip = ({ item }: { item: HomepageItem }) => {
@@ -76,9 +77,8 @@ const AppCardToolTip = ({ item }: { item: HomepageItem }) => {
             value={health.detail}
             textWrap={"pretty"}
             whiteSpace={"wrap"}
-            overflow={"hidden"}
-            textOverflow={"ellipsis"}
             maxLines={3}
+            overflowY="auto"
           />
         )}
       </DataListRoot>
@@ -119,37 +119,47 @@ const AppCardHealthBubbleRight = ({ item }: { item: HomepageItem }) => {
   }
 };
 
-export const AppCardInner = memo<AppCardInnerProps>(({ item, ...rest }) => {
-  const portalRef = React.useRef<HTMLDivElement>(null);
-  return (
-    <HStack gap="2" w="full" {...rest}>
-      <AppCardHealthBubbleLeft item={item} />
-      {item.icon ? (
-        <FavIcon url={item.icon} size={"24px"} />
-      ) : (
-        <FavIcon item={item} size={"24px"} />
-      )}
-      <Tooltip.Root openDelay={100} closeDelay={300}>
-        <Tooltip.Trigger asChild>
-          <Stack gap={0}>
-            <Text fontWeight="medium">{item.name}</Text>
-            {item.description && (
-              <Text fontSize="sm" fontWeight="light" color="fg.muted">
-                {item.description}
-              </Text>
-            )}
-          </Stack>
-        </Tooltip.Trigger>
-        <Portal container={portalRef}>
-          <Tooltip.Positioner>
-            <AppCardToolTip item={item} />
-          </Tooltip.Positioner>
-        </Portal>
-      </Tooltip.Root>
-      <AppCardHealthBubbleRight item={item} />
-    </HStack>
-  );
-});
+export const AppCardInner = memo<AppCardInnerProps>(
+  ({ item, dragging, ...rest }) => {
+    const portalRef = React.useRef<HTMLDivElement>(null);
+    return (
+      <HStack gap="2" w="full" {...rest}>
+        <AppCardHealthBubbleLeft item={item} />
+        {item.icon ? (
+          <FavIcon url={item.icon} size={"24px"} />
+        ) : (
+          <FavIcon item={item} size={"24px"} />
+        )}
+        <Tooltip.Root
+          openDelay={100}
+          closeDelay={300}
+          interactive
+          closeOnClick={false}
+          closeOnPointerDown={false}
+          closeOnScroll={false}
+          disabled={dragging}
+        >
+          <Tooltip.Trigger asChild>
+            <Stack gap={0}>
+              <Text fontWeight="medium">{item.name}</Text>
+              {item.description && (
+                <Text fontSize="sm" fontWeight="light" color="fg.muted">
+                  {item.description}
+                </Text>
+              )}
+            </Stack>
+          </Tooltip.Trigger>
+          <Portal container={portalRef}>
+            <Tooltip.Positioner>
+              <AppCardToolTip item={item} />
+            </Tooltip.Positioner>
+          </Portal>
+        </Tooltip.Root>
+        <AppCardHealthBubbleRight item={item} />
+      </HStack>
+    );
+  },
+);
 
 AppCardInner.displayName = "AppCardInner";
 
@@ -216,7 +226,7 @@ export const AppCard = memo<AppCardInnerProps>(({ ...rest }) => {
             aria-label={curItem.name}
           >
             <HealthProvider>
-              <AppCardInner item={curItem} />
+              <AppCardInner item={curItem} dragging={isDragging} />
             </HealthProvider>
           </Link>
         </MenuContextTrigger>
