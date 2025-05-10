@@ -6,7 +6,7 @@ type HomepageItemMetadata = {
 };
 
 interface HomepageItem extends HomepageItemMetadata {
-  show: boolean;
+  show?: boolean;
   name: string;
   icon: string;
   category: string;

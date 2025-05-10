@@ -36,7 +36,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
 } from "@dnd-kit/sortable";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useState } from "react";
 
 import {
   getHiddenHomepageItems,
@@ -76,11 +76,7 @@ function Category({
     categoryPaddingY,
   } = useAllSettings();
 
-  const containerRef = useRef<HTMLDivElement>(null);
-
   const [categoryName, setCategoryName] = useState(category);
-
-  if (items.every((item) => !item.show)) return null;
 
   return (
     <Card.Root
@@ -123,7 +119,6 @@ function Category({
         </Editable.Root>
       </Card.Header>
       <Card.Body pb={categoryPaddingY.val}>
-        <div ref={containerRef} />
         <Conditional
           condition={gridMode.val}
           whenTrue={SimpleGrid}
@@ -152,13 +147,7 @@ function Category({
           }}
         >
           <For each={items}>
-            {(item) => (
-              <AppCard
-                key={item.alias}
-                item={item}
-                containerRef={containerRef}
-              />
-            )}
+            {(item) => <AppCard key={item.alias} item={item} />}
           </For>
         </Conditional>
       </Card.Body>
@@ -416,7 +405,7 @@ export default function AppGroups({
   const lessThanTwo = useCallback(
     () =>
       Object.entries(localHomepageItems ?? {}).filter(
-        ([_, items]) => items.length <= 2,
+        ([_, items]) => items.length <= 2 && items.some((item) => item.show),
       ),
     [localHomepageItems],
   );
@@ -424,7 +413,7 @@ export default function AppGroups({
   const others = useCallback(
     () =>
       Object.entries(localHomepageItems ?? dummyItems()).filter(
-        ([_, items]) => items.length > 2,
+        ([_, items]) => items.length > 2 && items.some((item) => item.show),
       ),
     [localHomepageItems],
   );

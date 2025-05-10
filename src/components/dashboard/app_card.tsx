@@ -5,7 +5,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   MenuContent,
@@ -30,7 +29,7 @@ import {
   Tooltip,
   useDialog,
 } from "@chakra-ui/react";
-import React, { memo, useMemo } from "react";
+import React, { memo, useMemo, useState } from "react";
 import { HealthStatus } from "../health_status";
 import { Button } from "../ui/button";
 import { Field } from "../ui/field";
@@ -154,13 +153,11 @@ export const AppCardInner = memo<AppCardInnerProps>(({ item, ...rest }) => {
 
 AppCardInner.displayName = "AppCardInner";
 
-interface AppCardProps extends AppCardInnerProps {
-  containerRef?: React.RefObject<HTMLDivElement | null>;
-}
-
-export const AppCard = memo<AppCardProps>(({ containerRef, ...rest }) => {
+export const AppCard = memo<AppCardInnerProps>(({ ...rest }) => {
   const [curItem, setCurItem] = React.useState(rest.item);
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<HomepageItem | null>(null);
 
   const {
     attributes,
@@ -198,61 +195,81 @@ export const AppCard = memo<AppCardProps>(({ containerRef, ...rest }) => {
   }
 
   return (
-    <MenuRoot
-      open={menuOpen}
-      onOpenChange={({ open }) => setMenuOpen(open)}
-      lazyMount
-      unmountOnExit
-      closeOnSelect={false}
-    >
-      <MenuContextTrigger asChild>
-        <Link
-          ref={setNodeRef}
-          style={style}
-          {...attributes}
-          {...listeners}
-          className="transform transition-transform hover:scale-105"
-          href={`${curItem.url}`}
-          target="_blank"
-          variant={"plain"}
-          aria-label={curItem.name}
-        >
-          <HealthProvider>
-            <AppCardInner item={curItem} />
-          </HealthProvider>
-        </Link>
-      </MenuContextTrigger>
-      <MenuContent>
-        <MenuItem value="edit" aria-label="Edit app">
-          <EditItemButton
-            item={curItem}
-            containerRef={containerRef}
-            onUpdate={(e) => {
-              // rest.item.category = e.category;
-              setCurItem(e);
+    <>
+      <MenuRoot
+        open={menuOpen}
+        onOpenChange={({ open }) => setMenuOpen(open)}
+        lazyMount
+        unmountOnExit
+        closeOnSelect
+      >
+        <MenuContextTrigger asChild>
+          <Link
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            {...listeners}
+            className="transform transition-transform hover:scale-105"
+            href={`${curItem.url}`}
+            target="_blank"
+            variant={"plain"}
+            aria-label={curItem.name}
+          >
+            <HealthProvider>
+              <AppCardInner item={curItem} />
+            </HealthProvider>
+          </Link>
+        </MenuContextTrigger>
+        <MenuContent>
+          <MenuItem
+            value="edit"
+            aria-label="Edit app"
+            onClick={(e) => {
+              e.preventDefault();
+              setEditingItem(curItem);
+              setIsEditDialogOpen(true);
               setMenuOpen(false);
             }}
-            onClose={() => setMenuOpen(false)}
-          />
-        </MenuItem>
-        <MenuItem
-          value="hide"
-          aria-label="Hide app"
-          onClick={() => {
-            curItem.show = false;
-            overrideHomepage("item_visible", [curItem.alias], false)
-              .then(() => {
-                setCurItem({ ...curItem, show: false });
-                setMenuOpen(false);
-              })
-              .catch(toastError);
+          >
+            <HStack gap="2">
+              <LuPencil />
+              Edit App
+            </HStack>
+          </MenuItem>
+          <MenuItem
+            value="hide"
+            aria-label="Hide app"
+            onClick={() => {
+              curItem.show = false;
+              overrideHomepage("item_visible", [curItem.alias], false)
+                .then(() => {
+                  setCurItem({ ...curItem, show: false });
+                  setMenuOpen(false);
+                })
+                .catch(toastError);
+            }}
+          >
+            <LuEyeOff />
+            Hide App
+          </MenuItem>
+        </MenuContent>
+      </MenuRoot>
+      {isEditDialogOpen && editingItem && (
+        <EditItemDialog
+          item={editingItem}
+          isOpen={isEditDialogOpen}
+          onUpdate={(updatedItem) => {
+            setCurItem(updatedItem);
+            setIsEditDialogOpen(false);
+            setEditingItem(null);
           }}
-        >
-          <LuEyeOff />
-          Hide App
-        </MenuItem>
-      </MenuContent>
-    </MenuRoot>
+          onClose={() => {
+            setIsEditDialogOpen(false);
+            setEditingItem(null);
+          }}
+        />
+      )}
+    </>
   );
 });
 
@@ -282,24 +299,36 @@ const FieldInput = ({
   </Field>
 );
 
-function EditItemButton({
+// Rename EditItemButton to EditItemDialog and refactor
+function EditItemDialog({
   item,
+  isOpen,
   onUpdate,
   onClose,
-  containerRef,
 }: Readonly<{
-  item: HomepageItem;
+  item: HomepageItem | null;
+  isOpen: boolean;
   onUpdate: (newItem: HomepageItem) => void;
   onClose: () => void;
-  containerRef: React.RefObject<HTMLElement | null>;
 }>) {
-  const dialog = useDialog();
+  if (!item) {
+    return null;
+  }
+
+  const dialog = useDialog({
+    open: isOpen,
+    onOpenChange: ({ open }) => {
+      if (!open) {
+        onClose();
+      }
+    },
+  });
 
   const item_ = useMemo(() => structuredClone(item), [item]);
 
   if (!item_.icon) {
     item_.icon = item_.name
-      .split(".")[0]! // fqdn -> name
+      .split(".")[0]!
       .toLowerCase()
       .replaceAll(" ", "-")
       .replaceAll("_", "-");
@@ -327,28 +356,18 @@ function EditItemButton({
       .then(() => overrideHomepage("item_visible", [data.alias], true))
       .then(() => {
         onUpdate(data);
-        dialog.setOpen(false);
       })
       .catch(toastError);
   };
 
   return (
     <DialogRootProvider
+      placement={"center"}
       value={dialog}
-      size="lg"
-      placement="center"
-      motionPreset="slide-in-bottom"
       lazyMount
       unmountOnExit
-      onExitComplete={onClose}
     >
-      <DialogTrigger asChild>
-        <HStack gap="2">
-          <LuPencil />
-          Edit App
-        </HStack>
-      </DialogTrigger>
-      <DialogContent portalRef={containerRef} portalled>
+      <DialogContent>
         <DialogHeader>
           <DialogTitle fontSize={"md"} fontWeight={"medium"}>
             Edit App
