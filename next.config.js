@@ -12,7 +12,6 @@ const config = {
     optimizePackageImports: ["@chakra-ui/react", "@/types/godoxy"],
     reactCompiler: process.env.NODE_ENV === "development",
   },
-  transpilePackages: ["geist"],
   output: "standalone",
   typescript: {
     ignoreBuildErrors: true,
