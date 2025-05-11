@@ -454,6 +454,7 @@ export default function AppGroups({
         direction={isMobile ? "column" : "row"}
         position="relative"
         align={"flex-start"}
+        w="full"
       >
         <Float placement={"top-start"} offsetX={-12} offsetY={3}>
           <ToggleTip
