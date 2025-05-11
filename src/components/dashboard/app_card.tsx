@@ -92,7 +92,7 @@ const AppCardHealthBubbleLeft = ({ item }: { item: HomepageItem }) => {
   if (health.status === "unknown") {
     return null;
   }
-  if (healthBubbleAlign.val === 1) {
+  if (healthBubbleAlign.val === 0) {
     return <HealthStatus value={health.status} />;
   }
   return null;
@@ -105,7 +105,7 @@ const AppCardHealthBubbleRight = ({ item }: { item: HomepageItem }) => {
     return null;
   }
   switch (healthBubbleAlign.val) {
-    case 0:
+    case 1:
       return <HealthStatus value={health.status} />;
     case 2:
       return (

@@ -113,7 +113,7 @@ function HiddenApps({
             }}
           >
             <HStack>
-              <AppCardInner item={app} />
+              <AppCardInner item={app} dragging={false} />
               {app.category && <Tag>{app.category}</Tag>}
             </HStack>
           </Checkbox>
@@ -169,7 +169,7 @@ function HealthBubbleAlignSelect() {
       min={0}
       max={2}
       step={1}
-      labels={["Default", "Left", "Right most"]}
+      labels={["Left", "Right", "End"]}
     />
   );
 }
