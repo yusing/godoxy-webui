@@ -1,7 +1,7 @@
 # this docker compose file is for development only
 services:
   frontend:
-    container_name: godoxy-frontend-next
+    container_name: godoxy-frontend-next-dev
     restart: no
     network_mode: host
     image: godoxy-frontend
