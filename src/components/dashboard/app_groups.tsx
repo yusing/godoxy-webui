@@ -484,6 +484,7 @@ export default function AppGroups({
           <For each={others()}>
             {([category, items]) => (
               <SortableContext
+                key={category}
                 items={items.map((i) => i.alias)}
                 strategy={rectSortingStrategy}
               >
@@ -500,7 +501,6 @@ export default function AppGroups({
                   m={activeId && dropTargets[category] ? -2 : 0}
                 >
                   <Category
-                    key={category}
                     isMobile={isMobile}
                     category={category}
                     items={items}
@@ -515,6 +515,7 @@ export default function AppGroups({
             <For each={lessThanTwo()}>
               {([category, items]) => (
                 <SortableContext
+                  key={category}
                   items={items.map((i) => i.alias)}
                   strategy={rectSortingStrategy}
                 >
@@ -531,7 +532,6 @@ export default function AppGroups({
                     m={activeId && dropTargets[category] ? -2 : 0}
                   >
                     <Category
-                      key={category}
                       isMobile={isMobile}
                       category={category}
                       items={items}
