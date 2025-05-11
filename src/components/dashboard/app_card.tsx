@@ -122,24 +122,26 @@ const AppCardHealthBubbleRight = ({ item }: { item: HomepageItem }) => {
 export const AppCardInner = memo<AppCardInnerProps>(
   ({ item, dragging, ...rest }) => {
     const portalRef = React.useRef<HTMLDivElement>(null);
+    const icon = useMemo(() => {
+      if (item.icon) {
+        return <FavIcon url={item.icon} size={"24px"} />;
+      }
+      return <FavIcon item={item} size={"24px"} />;
+    }, [item.icon]);
     return (
-      <HStack gap="2" w="full" {...rest}>
-        <AppCardHealthBubbleLeft item={item} />
-        {item.icon ? (
-          <FavIcon url={item.icon} size={"24px"} />
-        ) : (
-          <FavIcon item={item} size={"24px"} />
-        )}
-        <Tooltip.Root
-          openDelay={100}
-          closeDelay={300}
-          interactive
-          closeOnClick={false}
-          closeOnPointerDown={false}
-          closeOnScroll={false}
-          disabled={dragging}
-        >
-          <Tooltip.Trigger asChild>
+      <Tooltip.Root
+        openDelay={100}
+        closeDelay={300}
+        interactive
+        closeOnClick={false}
+        closeOnPointerDown={false}
+        closeOnScroll={false}
+        disabled={dragging}
+      >
+        <Tooltip.Trigger asChild>
+          <HStack gap="2" {...rest}>
+            <AppCardHealthBubbleLeft item={item} />
+            {icon}
             <Stack gap={0}>
               <Text fontWeight="medium">{item.name}</Text>
               {item.description && (
@@ -148,15 +150,15 @@ export const AppCardInner = memo<AppCardInnerProps>(
                 </Text>
               )}
             </Stack>
-          </Tooltip.Trigger>
-          <Portal container={portalRef}>
-            <Tooltip.Positioner>
-              <AppCardToolTip item={item} />
-            </Tooltip.Positioner>
-          </Portal>
-        </Tooltip.Root>
-        <AppCardHealthBubbleRight item={item} />
-      </HStack>
+            <AppCardHealthBubbleRight item={item} />
+          </HStack>
+        </Tooltip.Trigger>
+        <Portal container={portalRef}>
+          <Tooltip.Positioner>
+            <AppCardToolTip item={item} />
+          </Tooltip.Positioner>
+        </Portal>
+      </Tooltip.Root>
     );
   },
 );
