@@ -14,7 +14,7 @@ services:
       - all
     environment:
       HOSTNAME: 127.0.0.1
-      PORT: 3003
+      PORT: 3004
     labels:
       proxy.aliases: godoxy-next
-      proxy.#1.port: 3003
+      proxy.#1.port: 3004
