@@ -34,7 +34,7 @@ export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
           <script src="https://unpkg.com/react-scan/dist/auto.global.js"></script>
         </head>
       )}
-      <body>
+      <body suppressHydrationWarning>
         <Provider
           defaultTheme="dark"
           enableSystem
