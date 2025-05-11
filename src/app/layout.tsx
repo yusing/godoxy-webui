@@ -7,11 +7,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { AuthProvider } from "@/hooks/auth";
 import { siteConfig } from "@/site_config";
 import { bodyHeight, bodyPaddingX, footerHeight, navBarHeight } from "@/styles";
-import { GeistMono } from "geist/font/mono";
-import { GeistSans } from "geist/font/sans";
-
 import dynamic from "next/dynamic";
+import { Geist } from "next/font/google";
 import { type ReactNode } from "react";
+
+const geist = Geist({
+  subsets: ["latin"],
+});
 
 export const metadata = siteConfig.metadata;
 
@@ -25,7 +27,7 @@ export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
     <html
       suppressHydrationWarning
       lang="en"
-      className={`${GeistSans.className} ${GeistMono.variable} antialiased`}
+      className={`${geist.className} antialiased`}
     >
       {process.env.NODE_ENV === "development" && (
         <head>
