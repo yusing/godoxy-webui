@@ -29,18 +29,6 @@ const config = {
     }
     return config;
   },
-  redirects: async () => [
-    {
-      source: "/auth/callback",
-      destination: "/api/auth/callback",
-      permanent: false,
-    },
-    {
-      source: "/v1/:path*",
-      destination: "/api/:path*",
-      permanent: false,
-    },
-  ],
   rewrites: async () => [
     {
       source: "/wiki/:path*",

@@ -64,11 +64,12 @@ namespace Endpoints {
   export const NEW_AGENT = "/api/agents/new";
   export const VERIFY_NEW_AGENT = "/api/agents/verify";
 
+  export const AUTH = "/auth/callback";
+  export const AUTH_CHECK = "/auth/check";
+  export const AUTH_LOGOUT = "/auth/logout";
+  export const AUTH_REDIRECT = "/auth/redirect";
+
   export const VERSION = "/api/version";
-  export const AUTH = "/api/auth/callback";
-  export const AUTH_CHECK = "/api/auth/check";
-  export const AUTH_LOGOUT = "/api/auth/logout";
-  export const AUTH_REDIRECT = "/api/auth/redirect";
   export const LIST_FILES = "/api/list/files";
   export const LIST_ROUTES = "/api/list/routes";
   export const LIST_ROUTES_BY_PROVIDER = "/api/list/routes_by_provider";
