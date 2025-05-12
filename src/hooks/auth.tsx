@@ -13,7 +13,7 @@ export function AuthProvider() {
       method: "HEAD",
       redirect: "follow",
     }).then(async (r) => {
-      if (r.redirected) {
+      if (r.redirected && window.location.pathname !== "/login") {
         window.location.href = r.url;
       }
     });
