@@ -14,7 +14,7 @@ export const healthStatusColorPalettes: Record<HealthStatusType, ColorPalette> =
   {
     healthy: "green",
     napping: "yellow",
-    unhealthy: "red",
+    unhealthy: "orange",
     starting: "blue",
     error: "red",
     unknown: "gray",
@@ -23,7 +23,7 @@ export const healthStatusColorPalettes: Record<HealthStatusType, ColorPalette> =
 export const healthStatusColors: Record<HealthStatusType, string> = {
   healthy: "var(--color-success)",
   napping: "#FFFF00cc",
-  unhealthy: "var(--color-error)",
+  unhealthy: "var(--color-warning)",
   starting: "#0000FF",
   error: "var(--color-error)",
   unknown: "#808080",

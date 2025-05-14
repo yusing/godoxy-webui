@@ -63,6 +63,8 @@
   --on-bg-color: var(--chakra-colors-bg);
   --on-bg-emphasized: var(--chakra-colors-bg-emphasized);
   --color-success: #00e000;
+  --color-warning: #ff6200;
+  --color-error: #ea0000;
   --hover-bg: var(--chakra-colors-gray-100);
   .chakra-card__root {
     box-shadow: var(--chakra-shadows-xs);
@@ -75,6 +77,7 @@
   --on-bg-color: #191a1c;
   --on-bg-emphasized: #1c1e20;
   --color-success: #00e000;
+  --color-warning: #ff6200;
   --color-error: #ea0000;
   --hover-bg: #26282b;
   body {
