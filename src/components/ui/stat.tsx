@@ -4,8 +4,13 @@ import {
   Stat as ChakraStat,
   FormatNumber,
 } from "@chakra-ui/react";
+import { Geist_Mono } from "next/font/google";
 import * as React from "react";
 import { InfoTip } from "./toggle-tip";
+
+const GeistMono = Geist_Mono({
+  subsets: ["latin"],
+});
 
 interface StatLabelProps extends ChakraStat.LabelProps {
   info?: React.ReactNode;
@@ -34,7 +39,7 @@ export const StatValueText = React.forwardRef<
 >(function StatValueText(props, ref) {
   const { value, formatOptions, children, ...rest } = props;
   return (
-    <ChakraStat.ValueText {...rest} ref={ref}>
+    <ChakraStat.ValueText {...rest} ref={ref} className={GeistMono.className}>
       {children ??
         (value != null && <FormatNumber value={value} {...formatOptions} />)}
     </ChakraStat.ValueText>
