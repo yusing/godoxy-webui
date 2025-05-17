@@ -1,6 +1,7 @@
-import { RequestLogConfig } from "../config/access_log";
-import { MiddlewaresMap } from "../middlewares/middlewares";
-import {
+import type { RequestLogConfig } from "../config/access_log";
+import type { RuleDo, RuleOn } from "../config/rules";
+import type { MiddlewaresMap } from "../middlewares/middlewares";
+import type {
   Duration,
   Hostname,
   IPv4,
@@ -9,16 +10,23 @@ import {
   Port,
   StreamPort,
 } from "../types";
-import { HealthcheckConfig } from "./healthcheck";
-import { HomepageConfig } from "./homepage";
-import { LoadBalanceConfig } from "./loadbalance";
+import type { HealthcheckConfig } from "./healthcheck";
+import type { HomepageConfig } from "./homepage";
+import type { LoadBalanceConfig } from "./loadbalance";
 export const PROXY_SCHEMES = ["http", "https"] as const;
 export const STREAM_SCHEMES = ["tcp", "udp"] as const;
 
 export type ProxyScheme = (typeof PROXY_SCHEMES)[number];
 export type StreamScheme = (typeof STREAM_SCHEMES)[number];
 
-export type Route = ReverseProxyRoute | FileServerRoute | StreamRoute;
+export type RouteRule = {
+  name?: string;
+  on: RuleOn;
+  do: RuleDo;
+};
+export type Route = (ReverseProxyRoute | FileServerRoute | StreamRoute) & {
+  rules?: RouteRule[];
+};
 export type Routes = {
   [key: string]: Route;
 };

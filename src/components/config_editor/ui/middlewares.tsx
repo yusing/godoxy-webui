@@ -11,11 +11,11 @@ import React from "react";
 import { LuPlus } from "react-icons/lu";
 
 const middlewareOptionsMap =
-  MiddlewareComposeSchema.definitions.MiddlewareComposeMap.anyOf.reduce(
+  MiddlewareComposeSchema.definitions.MiddlewareComposeItem.anyOf.reduce(
     (acc, m) => {
-      m.properties.use.enum.forEach((u) => {
-        acc[u] = Object.keys(m.properties);
-      });
+      if (m.properties.use.title) {
+        acc[m.properties.use.title] = Object.keys(m.properties);
+      }
       return acc;
     },
     {} as { [key: string]: string[] },

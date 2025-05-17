@@ -67,7 +67,6 @@
     "babel-plugin-react-compiler": "~19.1.0-rc.2",
     "eslint": "^9.27.0",
     "eslint-config-next": "^15.3.2",
-    "godoxy-typescript-json-schema": "^0.65.1",
     "postcss": "^8.5.3",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",

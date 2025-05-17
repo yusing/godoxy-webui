@@ -139,10 +139,8 @@ export type PathPattern = string & {};
 
 /**
  * Duration
- * @pattern ^([0-9]+(ms|s|m|h))+$
- * @type string
  */
-export type Duration = string & {};
+export type Duration = `${number}${"us" | "ms" | "s" | "m" | "h"}`;
 
 /**
  * Date time
@@ -150,3 +148,10 @@ export type Duration = string & {};
  * @type string
  */
 export type DateTime = string & {};
+
+/**
+ * Glob pattern
+ * @pattern ^[a-zA-Z0-9\-\_\.\*]+$
+ * @type string
+ */
+export type Glob = string & {};

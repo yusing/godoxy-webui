@@ -232,7 +232,9 @@ export function ConfigUIEditor({
         <AccordionItemContent>
           <MapInput
             label="Maxmind"
-            allowedKeys={Object.keys(MaxmindSchema.properties)}
+            allowedKeys={Object.keys(
+              MaxmindSchema.definitions.MaxmindConfig.properties,
+            )}
             value={data.providers?.maxmind ?? {}}
             onChange={(v) => {
               if (!data.providers) data.providers = {};

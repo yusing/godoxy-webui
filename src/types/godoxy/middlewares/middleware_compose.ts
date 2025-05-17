@@ -1,4 +1,4 @@
-import { MiddlewareComposeMap } from "./middlewares";
+import { MiddlewareComposeItem } from "./middlewares";
 
-export type MiddlewareCompose = { [key: string]: MiddlewareComposeMap[] };
-export type EntrypointMiddlewares = MiddlewareComposeMap[];
+export type MiddlewareCompose = { [key: string]: MiddlewareComposeItem[] };
+export type EntrypointMiddlewares = MiddlewareComposeItem[];
