@@ -17,6 +17,8 @@ export type HealthcheckConfig = {
   /**
    * Use GET instead of HEAD
    *
+   * @title Use GET
+   *
    * @default false
    */
   use_get?: boolean;

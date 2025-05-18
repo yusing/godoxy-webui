@@ -7,13 +7,13 @@ export const Label: FC<PropsWithChildren<TextProps>> = ({
 }) => {
   return (
     <Text
-      fontSize={"sm"}
-      fontWeight={"medium"}
-      textOverflow={"ellipsis"}
-      textWrap={"nowrap"}
-      whiteSpace={"nowrap"}
-      display={"inline-block"}
-      overflow={"hidden"}
+      fontSize={props.fontSize ?? "sm"}
+      fontWeight={props.fontWeight ?? "medium"}
+      textOverflow={props.textOverflow ?? "ellipsis"}
+      textWrap={props.textWrap ?? "nowrap"}
+      whiteSpace={props.whiteSpace ?? "nowrap"}
+      display={props.display ?? "inline-block"}
+      overflow={props.overflow ?? "hidden"}
       {...props}
     >
       {children}

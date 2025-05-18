@@ -17,7 +17,7 @@ export const STOP_SIGNALS = [
 export type Signal = (typeof STOP_SIGNALS)[number];
 
 export type IdleWatcherConfig = {
-  /* Idle timeout */
+  /** Idle timeout */
   idle_timeout?: Duration;
   /** Wake timeout
    *
@@ -34,8 +34,11 @@ export type IdleWatcherConfig = {
    * @default stop
    */
   stop_method?: StopMethod;
-  /* Stop signal */
+  /** Stop signal */
   stop_signal?: Signal;
-  /* Start endpoint (any path can wake the container if not specified) */
+  /** Start endpoint (any path can wake the container if not specified)
+   *
+   * @title Start Endpoint
+   */
   start_endpoint?: URI;
 };

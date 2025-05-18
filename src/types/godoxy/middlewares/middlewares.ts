@@ -17,7 +17,13 @@ export const ALL_MIDDLEWARES = [
 ] as const;
 
 export type MiddlewareBase = {
+  /**
+   * Bypass rules
+   */
   bypass?: RuleOn[];
+  /**
+   * Priority
+   */
   priority?: number;
 };
 
@@ -56,10 +62,16 @@ type _LooseUseInternal<Str extends string> = (
 )[];
 
 // Expands all variations of the string to a union
-type LooseUse<Use extends string> = _LooseUseInternal<Use>[number];
+// type LooseUse<Use extends string> = _LooseUseInternal<Use>[number];
+type LooseUse<Use extends string> = Use;
 
 type KeyOptMapping<T extends MiddlewareComposeBase> = {
   [key in T["use"]]: OmitUse<T>;
+} & {
+  /**
+   * Bypass rules
+   */
+  bypass?: RuleOn[];
 };
 
 export interface MiddlewaresMap
@@ -90,20 +102,19 @@ export type MiddlewareComposeItem = (
   | RealIP
   | UseMiddlewareFileRef
 ) & {
+  /**
+   * Bypass rules
+   */
   bypass?: RuleOn[];
 };
 
 export type CustomErrorPage = {
-  /**
-   * @title CustomErrorPage
-   */
+  /** error_page */
   use: LooseUse<"error_page" | "custom_error_page">;
 };
 
 export type RedirectHTTP = {
-  /**
-   * @title RedirectHTTP
-   */
+  /** redirect_http */
   use: LooseUse<"redirect_http">;
   /** Bypass redirect */
   // bypass?: {
@@ -113,37 +124,31 @@ export type RedirectHTTP = {
 };
 
 export type SetXForwarded = {
-  /**
-   * @title SetXForwarded
-   */
+  /** set_x_forwarded */
   use: LooseUse<"set_x_forwarded">;
 };
 
 export type HideXForwarded = {
-  /**
-   * @title HideXForwarded
-   */
+  /** hide_x_forwarded */
   use: LooseUse<"hide_x_forwarded">;
 };
 
 export type CIDRWhitelist = {
-  /**
-   * @title CIDRWhitelist
-   */
+  /** cidr_whitelist */
   use: LooseUse<"cidr_whitelist">;
   /* Allowed CIDRs/IPs */
   allow: CIDR[];
-  /** HTTP status code when blocked
+  /** HTTP status code
    *
    * @default 403
    */
   status_code?: StatusCode;
-  /** HTTP status code when blocked (alias of status_code)
+  /** HTTP status code
    *
    * @default 403
    */
   status?: StatusCode;
-  /** Error message when blocked
+  /** Block message
    *
    * @default "IP not allowed"
    */
@@ -151,16 +156,12 @@ export type CIDRWhitelist = {
 };
 
 export type CloudflareRealIP = {
-  /**
-   * @title CloudflareRealIP
-   */
+  /** cloudflare_real_ip */
   use: LooseUse<"cloudflare_real_ip">;
 };
 
 export type ModifyRequest = {
-  /**
-   * @title ModifyRequest
-   */
+  /** modify_request */
   use: LooseUse<"modify_request" | "request">;
   /** Set HTTP headers */
   set_headers?: Record<HTTPHeader, string>;
@@ -173,9 +174,7 @@ export type ModifyRequest = {
 };
 
 export type ModifyResponse = {
-  /**
-   * @title ModifyResponse
-   */
+  /** modify_response */
   use: LooseUse<"modify_response" | "response">;
   /** Set HTTP headers */
   set_headers?: Record<HTTPHeader, string>;
@@ -186,9 +185,7 @@ export type ModifyResponse = {
 };
 
 export type OIDC = {
-  /**
-   * @title OIDC
-   */
+  /** oidc */
   use: LooseUse<"oidc">;
   /** Allowed users
    *
@@ -203,13 +200,15 @@ export type OIDC = {
 };
 
 export type hCaptcha = {
-  /**
-   * @title hCaptcha
-   */
+  /** h_captcha */
   use: LooseUse<"h_captcha">;
-  // site key
+  /**
+   * Site key
+   */
   site_key: string;
-  // secret key
+  /**
+   * Secret key
+   */
   secret_key: string;
   /** Session expiration
    *
@@ -219,9 +218,7 @@ export type hCaptcha = {
 };
 
 export type RateLimit = {
-  /**
-   * @title RateLimit
-   */
+  /** rate_limit */
   use: LooseUse<"rate_limit">;
   /** Average number of requests allowed in a period
    *
@@ -241,9 +238,7 @@ export type RateLimit = {
 };
 
 export type RealIP = {
-  /**
-   * @title RealIP
-   */
+  /** real_ip */
   use: LooseUse<"real_ip">;
   /** Header to get the client IP from
    *

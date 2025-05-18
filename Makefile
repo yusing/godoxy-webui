@@ -24,6 +24,9 @@ gen-schema-single:
 	pnpx ts-json-schema-generator --minify --no-type-check -e all --no-ref-encode -f ./tsconfig.json -o "${SCHEMA_DIR}/${OUT}" -p "${SCHEMA_DIR}/${IN}" -t ${CLASS}
 	# minify
 	# python3 -c "import json; f=open('${SCHEMA_DIR}/${OUT}', 'r'); j=json.load(f); f.close(); f=open('${SCHEMA_DIR}/${OUT}', 'w'); json.dump(j, f, separators=(',', ':'));"
+	# deference
+	node ${SCHEMA_DIR}/deref.ts ${SCHEMA_DIR}/${OUT} > ${SCHEMA_DIR}/${OUT}.deref.json
+	mv ${SCHEMA_DIR}/${OUT}.deref.json ${SCHEMA_DIR}/${OUT}
 
 gen-schema:
 	make IN=config/config.ts \

@@ -8,14 +8,16 @@ import {
 import { Field } from "@/components/ui/field";
 import { Switch } from "@/components/ui/switch";
 import {
-  AccessLog,
+  ACLSchema,
   Autocert,
   Config,
   ConfigSchema,
   MaxmindSchema,
-  Notification,
 } from "@/types/godoxy";
-import { getSchemaDescription } from "@/types/schema";
+import { RequestLogConfig } from "@/types/godoxy/config/access_log";
+import { ACLMatcher } from "@/types/godoxy/config/acl";
+import { MaxmindConfig } from "@/types/godoxy/config/maxmind";
+import { JSONSchema } from "@/types/schema";
 import { Stack } from "@chakra-ui/react";
 import React from "react";
 import { FaHome } from "react-icons/fa";
@@ -94,7 +96,7 @@ export function ConfigUIEditor({
             </Field>
             <ListInput
               label="Allowed"
-              value={data.acl?.allow ?? []}
+              value={data.acl?.allow ?? ([] as ACLMatcher[])}
               onChange={(v) => {
                 if (!data.acl) data.acl = {};
                 data.acl.allow = v;
@@ -112,9 +114,7 @@ export function ConfigUIEditor({
             />
             <MapInput
               label="Log"
-              allowedKeys={Object.keys(
-                ConfigSchema.definitions.ACLLogConfig.properties,
-              )}
+              schema={ACLSchema.definitions.ACLLogConfig}
               value={data.acl?.log ?? {}}
               onChange={(v) => {
                 if (!data.acl) data.acl = {};
@@ -143,22 +143,17 @@ export function ConfigUIEditor({
             />
             <MapInput
               label="Access Log"
-              allowedKeys={Object.keys(
-                ConfigSchema.definitions.RequestLogConfig.properties,
-              )}
-              description={getSchemaDescription(
-                ConfigSchema.definitions.RequestLogConfig.properties,
-              )}
-              allowedValues={{
-                format: AccessLog.REQUEST_LOG_FORMATS,
-              }}
-              value={data.entrypoint?.access_log ?? {}}
+              schema={
+                ConfigSchema.definitions
+                  .RequestLogConfig as unknown as JSONSchema
+              }
+              value={data.entrypoint?.access_log ?? ({} as RequestLogConfig)}
               onChange={(v) => {
                 if (!data.entrypoint) data.entrypoint = {};
                 data.entrypoint.access_log = v;
                 onChange(data);
               }}
-            ></MapInput>
+            />
           </Stack>
         </AccordionItemContent>
       </AccordionItem>
@@ -214,7 +209,9 @@ export function ConfigUIEditor({
         <AccordionItemContent>
           <NamedListInput
             label="Proxmox"
+            keyField="url"
             nameField="url"
+            schema={ConfigSchema.definitions.ProxmoxConfig}
             value={data.providers?.proxmox ?? []}
             onChange={(v) => {
               if (!data.providers) data.providers = {};
@@ -232,10 +229,8 @@ export function ConfigUIEditor({
         <AccordionItemContent>
           <MapInput
             label="Maxmind"
-            allowedKeys={Object.keys(
-              MaxmindSchema.definitions.MaxmindConfig.properties,
-            )}
-            value={data.providers?.maxmind ?? {}}
+            schema={MaxmindSchema.definitions.MaxmindConfig as JSONSchema}
+            value={data.providers?.maxmind ?? ({} as MaxmindConfig)}
             onChange={(v) => {
               if (!data.providers) data.providers = {};
               data.providers.maxmind = v;
@@ -252,42 +247,11 @@ export function ConfigUIEditor({
         <AccordionItemContent>
           <NamedListInput
             label="Notification"
-            nameField="provider"
-            allowedNames={Notification.NOTIFICATION_PROVIDERS}
-            allowedKeys={{
-              webhook: Object.keys(
-                ConfigSchema.definitions.WebhookConfig.properties,
-              ),
-              gotify: Object.keys(
-                ConfigSchema.definitions.GotifyConfig.properties,
-              ),
-              ntfy: Object.keys(ConfigSchema.definitions.NtfyConfig.properties),
-            }}
-            allowedValues={{
-              webhook: {
-                template: Notification.WEBHOOK_TEMPLATES,
-                method: Notification.WEBHOOK_METHODS,
-                mime_type: Notification.WEBHOOK_MIME_TYPES,
-                color_mode: Notification.WEBHOOK_COLOR_MODES,
-              },
-              gotify: {
-                format: Notification.NOTIFICATION_FORMATS,
-              },
-              ntfy: {
-                format: Notification.NOTIFICATION_FORMATS,
-              },
-            }}
-            description={{
-              webhook: getSchemaDescription(
-                ConfigSchema.definitions.WebhookConfig.properties,
-              ),
-              gotify: getSchemaDescription(
-                ConfigSchema.definitions.GotifyConfig.properties,
-              ),
-              ntfy: getSchemaDescription(
-                ConfigSchema.definitions.NtfyConfig.properties,
-              ),
-            }}
+            keyField="provider"
+            nameField="name"
+            schema={
+              ConfigSchema.definitions.Providers.properties.notification.items
+            }
             //@ts-ignore
             value={data.providers?.notification ?? []}
             onChange={(v) => {

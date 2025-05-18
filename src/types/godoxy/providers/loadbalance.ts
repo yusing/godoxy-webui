@@ -8,12 +8,12 @@ export const LOAD_BALANCE_MODES = [
 export type LoadBalanceMode = (typeof LOAD_BALANCE_MODES)[number];
 
 export type LoadBalanceConfigBase = {
-  /** Alias (subdomain or FDN) of load-balancer
+  /** Load-balancer alias
    *
    * @minLength 1
    */
   link: string;
-  /** Load-balance weight (reserved for future use)
+  /** Load-balance weight
    *
    * @minimum 0
    * @maximum 100
@@ -31,7 +31,7 @@ export type LoadBalanceConfig = LoadBalanceConfigBase &
 
 export type IPHashLoadBalanceConfig = {
   mode: "ip_hash";
-  /** Real IP config, header to get client IP from */
+  /** Real IP config */
   config: RealIP;
 };
 

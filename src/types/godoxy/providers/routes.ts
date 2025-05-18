@@ -20,11 +20,15 @@ export type ProxyScheme = (typeof PROXY_SCHEMES)[number];
 export type StreamScheme = (typeof STREAM_SCHEMES)[number];
 
 export type RouteRule = {
+  /** Rule name */
   name?: string;
+  /** Rule criteria */
   on: RuleOn;
+  /** Rule do */
   do: RuleDo;
 };
 export type Route = (ReverseProxyRoute | FileServerRoute | StreamRoute) & {
+  /** Route Rules */
   rules?: RouteRule[];
 };
 export type Routes = {

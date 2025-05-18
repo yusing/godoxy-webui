@@ -1,25 +1,10 @@
 import { NamedListInput } from "@/components/input";
 import { Button } from "@/components/ui/button";
 import { CloseButton } from "@/components/ui/close-button";
-import {
-  MiddlewareCompose,
-  MiddlewareComposeSchema,
-  Middlewares,
-} from "@/types/godoxy";
+import { MiddlewareCompose, MiddlewareComposeSchema } from "@/types/godoxy";
 import { Tabs } from "@chakra-ui/react";
 import React from "react";
 import { LuPlus } from "react-icons/lu";
-
-const middlewareOptionsMap =
-  MiddlewareComposeSchema.definitions.MiddlewareComposeItem.anyOf.reduce(
-    (acc, m) => {
-      if (m.properties.use.title) {
-        acc[m.properties.use.title] = Object.keys(m.properties);
-      }
-      return acc;
-    },
-    {} as { [key: string]: string[] },
-  );
 
 export const MiddlewareEditor: React.FC<{
   label?: React.ReactNode;
@@ -30,8 +15,9 @@ export const MiddlewareEditor: React.FC<{
     <NamedListInput
       label={label}
       nameField="use"
-      allowedNames={Middlewares.ALL_MIDDLEWARES}
-      allowedKeys={middlewareOptionsMap}
+      keyField="use"
+      //@ts-ignore
+      schema={MiddlewareComposeSchema.definitions.MiddlewareComposeItem}
       value={data}
       onChange={(v) => {
         data = v as MiddlewareCompose.MiddlewareCompose;

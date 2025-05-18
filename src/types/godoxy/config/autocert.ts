@@ -22,21 +22,21 @@ export type AutocertConfig =
   | OtherOptions;
 
 export interface AutocertConfigBase {
-  /* ACME email */
+  /** ACME email */
   email: Email;
-  /* ACME domains */
+  /** ACME domains */
   domains: DomainOrWildcard[];
-  /* ACME certificate path */
+  /** ACME certificate path */
   cert_path?: string;
-  /* ACME key path */
+  /** ACME key path */
   key_path?: string;
 }
 
 export interface LocalOptions {
   provider: "local";
-  /* ACME certificate path */
+  /** ACME certificate path */
   cert_path?: string;
-  /* ACME key path */
+  /**  ACME key path */
   key_path?: string;
   options?: {} | null;
 }

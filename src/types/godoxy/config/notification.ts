@@ -12,24 +12,34 @@ export const NOTIFICATION_FORMATS = ["markdown", "plain"];
 export type NotificationFormat = (typeof NOTIFICATION_FORMATS)[number];
 
 export type NotificationConfig = {
-  /* Name of the notification provider */
+  /** Provider name */
   name: string;
-  /* URL of the notification provider */
+  /** Provider URL */
   url: URL;
+  /** Message format
+   *
+   * @default "markdown"
+   */
+  format?: NotificationFormat;
 };
 
 export interface GotifyConfig extends NotificationConfig {
+  /** Provider type */
   provider: "gotify";
-  /* Gotify token */
+  /** Gotify token */
   token: string;
-  format?: NotificationFormat;
 }
 
 export interface NtfyConfig extends NotificationConfig {
+  /** Provider type */
   provider: "ntfy";
+  /** Topic */
   topic: string;
+  /** Ntfy token
+   *
+   * @default null
+   */
   token?: string;
-  format?: NotificationFormat;
 }
 
 export const WEBHOOK_TEMPLATES = ["", "discord"] as const;
@@ -50,32 +60,34 @@ export type WebhookColorMode = (typeof WEBHOOK_COLOR_MODES)[number];
 export interface WebhookConfig extends NotificationConfig {
   provider: "webhook";
   /**
-   * Webhook template
+   * Template
    *
    * @default "discord"
    */
   template?: WebhookTemplate;
-  /* Webhook token */
+  /** Token */
   token?: string;
   /**
-   * Webhook message (usally JSON),
+   * Message (usually JSON),
    * required when template is not defined
+   *
+   * @title Webhook payload
    */
   payload?: string;
   /**
-   * Webhook method
+   * Request method
    *
    * @default "POST"
    */
   method?: WebhookMethod;
   /**
-   * Webhook mime type
+   * MIME type
    *
    * @default "application/json"
    */
   mime_type?: WebhookMimeType;
   /**
-   * Webhook color mode
+   * Color mode
    *
    * @default "hex"
    */

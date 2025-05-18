@@ -14,7 +14,7 @@ import { useMount } from "react-use";
 
 export default function ConfigEditorPage() {
   return (
-    <Stack gap="0" direction="row" h="full">
+    <Stack gap="0" direction="row" h="full" w="full">
       <Stack align={"flex-start"} px="4">
         <Stack gap="0">
           <NewFileButton fileExtension=".yml" />
@@ -31,7 +31,7 @@ export default function ConfigEditorPage() {
       >
         <UIEditor />
       </Box>
-      <Stack minW="40%" overflow="auto" fontSize="sm">
+      <Stack w="40%" minW="800px" overflow="auto" fontSize="sm">
         <YAMLConfigEditor />
         <ValidationErrorText />
       </Stack>

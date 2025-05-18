@@ -10,7 +10,7 @@ import type {
 
 export const REQUEST_LOG_FORMATS = ["combined", "common", "json"] as const;
 /**
- * The format of the access log.
+ * Access log format
  *
  * @default "combined"
  */
@@ -18,7 +18,7 @@ export type RequestLogFormat = (typeof REQUEST_LOG_FORMATS)[number];
 
 export type AccessLogConfigBase = {
   /**
-   * The path to the access log file.
+   * Access log file path
    */
   path?: URI;
   /**
@@ -27,13 +27,13 @@ export type AccessLogConfigBase = {
    */
   stdout?: boolean;
   /**
-   * Retention policy (same as `retention`)
+   * Retention policy
    *
    * @default "30 days"
    */
   keep?: RetentionPolicy;
   /**
-   * Retention policy (same as `keep`)
+   * Retention policy
    *
    * @default "30 days"
    */
@@ -59,23 +59,23 @@ export type RetentionPolicy = LogKeepDays | LogKeepLast | LogKeepSize;
 
 export interface RequestLogConfig extends AccessLogConfigBase {
   /**
-   * The format of the access log
+   * Access log format
    * @default "combined"
    */
   format?: RequestLogFormat;
   /**
-   * The access log filters
+   * Access log filters
    */
   filters?: RequestLogFilters;
   /**
-   * The access log fields
+   * Access log fields
    */
   fields?: RequestLogFields;
 }
 
 export interface ACLLogConfig extends AccessLogConfigBase {
   /**
-   * Whether log allowed IPs
+   * Log allowed IPs?
    * @default false
    */
   log_allowed?: boolean;
@@ -83,24 +83,36 @@ export interface ACLLogConfig extends AccessLogConfigBase {
 
 export type RequestAccessLogFilter<T> = {
   /**
-   * Whether the filter is negative.
+   * Negative filter?
    * @default false
    */
   negative?: boolean;
-  /* The values to filter. */
+  /**
+   * Filter values
+   */
   values: T[];
 };
 
 export type RequestLogFilters = {
-  /* Status code filter. */
+  /**
+   * Status code filter
+   */
   status_code?: RequestAccessLogFilter<StatusCodeRange>;
-  /* Method filter. */
+  /**
+   * Method filter
+   */
   method?: RequestAccessLogFilter<HTTPMethod>;
-  /* Host filter. */
+  /**
+   * Host filter
+   */
   host?: RequestAccessLogFilter<Hostname>;
-  /* Header filter. */
+  /**
+   * Header filter
+   */
   headers?: RequestAccessLogFilter<HTTPHeader>;
-  /* CIDR filter. */
+  /**
+   * CIDR filter
+   */
   cidr?: RequestAccessLogFilter<CIDR>;
 };
 
@@ -122,18 +134,30 @@ export type LogField = {
 
 export type RequestLogFields =
   | {
-      // headers
+      /**
+       * Headers
+       */
       headers?: LogField;
-      // query
+      /**
+       * Query
+       */
       query?: LogField;
-      // cookies
+      /**
+       * Cookies
+       */
       cookies?: LogField;
     }
   | {
-      // headers
+      /**
+       * Headers
+       */
       header?: LogField;
-      // query
+      /**
+       * Query
+       */
       query?: LogField;
-      // cookies
+      /**
+       * Cookies
+       */
       cookie?: LogField;
     };

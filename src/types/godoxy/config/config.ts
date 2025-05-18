@@ -14,12 +14,13 @@ export type Config = {
   entrypoint?: EntrypointConfig;
   /** Providers configuration (include file, docker, notification) */
   providers: Providers;
-  /** Optional list of domains to match
+  /** List of domains to match
    *
    * @minItems 1
+   * @default []
    */
   match_domains?: DomainName[];
-  /* Optional homepage configuration */
+  /** Homepage configuration */
   homepage?: HomepageConfig;
   /**
    * Optional timeout before shutdown
