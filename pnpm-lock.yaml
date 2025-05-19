@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@chakra-ui/charts':
+        specifier: ^3.19.1
+        version: 3.19.1(@chakra-ui/react@3.19.1(@emotion/react@11.14.0(@types/react@19.1.4)(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(recharts@2.15.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0))
       '@chakra-ui/react':
         specifier: ^3.19.1
         version: 3.19.1(@emotion/react@11.14.0(@types/react@19.1.4)(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -89,9 +92,6 @@ importers:
       recharts:
         specifier: ^2.15.3
         version: 2.15.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      tailwind-merge:
-        specifier: ^3.3.0
-        version: 3.3.0
       tailwindcss-animate:
         specifier: ^1.0.7
         version: 1.0.7(tailwindcss@4.1.7)
@@ -232,6 +232,14 @@ packages:
   '@babel/types@7.27.1':
     resolution: {integrity: sha512-+EzkxvLNfiUeKMgy/3luqfsCWFRXLb7U6wNQTk60tovuckwB15B191tJWvpp4HjiQWdJkCxO3Wbvc6jlk3Xb2Q==}
     engines: {node: '>=6.9.0'}
+
+  '@chakra-ui/charts@3.19.1':
+    resolution: {integrity: sha512-NqiZyZBl7bx++Mcnp6G2ml6tu51ukGi3GZ7axCjozIRxkKLcYcnX8fqPCqEwBa3U2BjN9agVsBtryU56BH+Ezw==}
+    peerDependencies:
+      '@chakra-ui/react': '>=3'
+      react: '>=18'
+      react-dom: '>=18'
+      recharts: '>=2'
 
   '@chakra-ui/react@3.19.1':
     resolution: {integrity: sha512-NxmJUIxy9Uqs2/2WbMBQjU2TdK2AdCO1AfoMz/kI3ia4ig1FJ5NzXRGSEnTGrdOfrqL8GJp4ztbPfc4yspqWsQ==}
@@ -2903,9 +2911,6 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  tailwind-merge@3.3.0:
-    resolution: {integrity: sha512-fyW/pEfcQSiigd5SNn0nApUOxx0zB/dm6UDU/rEwc2c3sX2smWUNbapHv+QRqLGVp9GWX3THIa7MUGPo+YkDzQ==}
-
   tailwindcss-animate@1.0.7:
     resolution: {integrity: sha512-bl6mpH3T7I3UFxuvDEXLxy/VuFxBk5bbzplh7tXI68mwMokNYd1t9qPBHlnyTwfa4JGC4zP516I1hYYtQ/vspA==}
     peerDependencies:
@@ -3256,6 +3261,13 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.27.1
+
+  '@chakra-ui/charts@3.19.1(@chakra-ui/react@3.19.1(@emotion/react@11.14.0(@types/react@19.1.4)(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(recharts@2.15.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0))':
+    dependencies:
+      '@chakra-ui/react': 3.19.1(@emotion/react@11.14.0(@types/react@19.1.4)(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+      recharts: 2.15.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
 
   '@chakra-ui/react@3.19.1(@emotion/react@11.14.0(@types/react@19.1.4)(react@19.1.0))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
     dependencies:
@@ -6453,8 +6465,6 @@ snapshots:
       has-flag: 4.0.0
 
   supports-preserve-symlinks-flag@1.0.0: {}
-
-  tailwind-merge@3.3.0: {}
 
   tailwindcss-animate@1.0.7(tailwindcss@4.1.7):
     dependencies:

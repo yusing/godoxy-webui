@@ -4,11 +4,11 @@ import { useTemperatureUnit } from "@/components/metrics/settings";
 import { EmptyState } from "@/components/ui/empty-state";
 import useWebsocket from "@/hooks/ws";
 import { formatByte, toFahrenheit } from "@/lib/format";
-import { cn } from "@/lib/utils";
 import { Agent } from "@/types/api/agent";
 import Endpoints from "@/types/api/endpoints";
 import { MetricsPeriod } from "@/types/api/metrics/metrics";
 import type { AggregateType } from "@/types/api/metrics/system_info";
+import { Chart as ChakraChart, useChart } from "@chakra-ui/charts";
 import { Box, Heading, HStack, Stack, Text } from "@chakra-ui/react";
 import React, { useState } from "react";
 import { LuGlobe } from "react-icons/lu";
@@ -16,12 +16,19 @@ import { useEffectOnce } from "react-use";
 import {
   Area,
   AreaChart,
+  CartesianGrid,
+  Legend,
   Tooltip as RechartsTooltip,
-  ResponsiveContainer,
   XAxis,
   YAxis,
 } from "recharts";
 import { Label } from "../ui/label";
+
+const byteSizeFormatter = (value: number) => formatByte(value, 0);
+const speedFormatter = (value: number) => `${byteSizeFormatter(value)}/s`;
+const iopsFormatter = (value: number) => `${value} IOPS`;
+const percentageFormatter = (value: number) =>
+  `${Math.round(value * 100) / 100}%`;
 
 export const SystemInfoGraphsPage: React.FC<{
   agent: Agent;
@@ -31,11 +38,6 @@ export const SystemInfoGraphsPage: React.FC<{
     temperatureUnit === "celsius"
       ? (value: number) => `${value}°C`
       : (value: number) => `${toFahrenheit(value)}°F`;
-  const byteSizeFormatter = (value: number) => formatByte(value, 0);
-  const speedFormatter = (value: number) => `${byteSizeFormatter(value)}/s`;
-  const iopsFormatter = (value: number) => `${value} IOPS`;
-  const percentageFormatter = (value: number) =>
-    `${Math.round(value * 100) / 100}%`;
   const [period, setPeriod] = useState<MetricsPeriod>("1h");
   return (
     <Stack gap="4">
@@ -221,22 +223,33 @@ const ChartInner: React.FC<{
   useEffectOnce(() => {
     setKeys(Object.keys(data[0]!).filter((key) => key !== "timestamp"));
   });
+  const chart = useChart({
+    data,
+    series: keys.map((key) => ({
+      name: key,
+      color: color(key),
+      stackId: key,
+    })),
+  });
 
   return (
-    <ResponsiveContainer
-      className={cn(
-        "[&_.recharts-cartesian-axis-tick_text]:fill-muted-foreground [&_.recharts-cartesian-grid_line[stroke='#ccc']]:stroke-border/50 [&_.recharts-curve.recharts-tooltip-cursor]:stroke-border [&_.recharts-polar-grid_[stroke='#ccc']]:stroke-border [&_.recharts-radial-bar-background-sector]:fill-muted [&_.recharts-rectangle.recharts-tooltip-cursor]:fill-muted [&_.recharts-reference-line_[stroke='#ccc']]:stroke-border flex aspect-video justify-center text-xs [&_.recharts-dot[stroke='#fff']]:stroke-transparent [&_.recharts-layer]:outline-hidden [&_.recharts-sector]:outline-hidden [&_.recharts-sector[stroke='#fff']]:stroke-transparent [&_.recharts-surface]:outline-hidden",
-        "max-h-[200px] w-full",
-      )}
-    >
-      <AreaChart accessibilityLayer data={data}>
+    <ChakraChart.Root chart={chart} maxH={`${280 + keys.length * 10}px`}>
+      <AreaChart accessibilityLayer data={chart.data}>
+        <CartesianGrid
+          stroke={chart.color("border")}
+          vertical={false}
+          strokeDasharray="3 3"
+        />
         <RechartsTooltip
+          cursor={false}
+          animationDuration={100}
+          accessibilityLayer
           content={(props) => {
             const { active, payload } = props;
             if (!active || !payload?.length) return null;
             return (
               <Stack bg="bg.muted" p="2" borderRadius="lg">
-                <Text fontSize="sm" fontWeight="medium">
+                <Label fontSize="xs">
                   {new Date(
                     (payload[0]!.payload as Record<string, any>).timestamp *
                       1000,
@@ -246,8 +259,8 @@ const ChartInner: React.FC<{
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
-                </Text>
-                <Stack gap="0.5">
+                </Label>
+                <Stack gap="1">
                   {payload.reduce((acc, { dataKey }, index) => {
                     if (dataKey === "timestamp") return acc;
                     const item = payload[index];
@@ -262,9 +275,11 @@ const ChartInner: React.FC<{
                             bg={color(dataKey as string)}
                             borderRadius="full"
                           />
-                          <Label>{dataKey}</Label>
+                          <Label fontSize="xs">{dataKey}</Label>
                         </HStack>
-                        <Label>{yAxisFormatter(item.value)}</Label>
+                        <Label fontSize="xs">
+                          {yAxisFormatter(item.value)}
+                        </Label>
                       </HStack>,
                     );
                     return acc;
@@ -274,25 +289,48 @@ const ChartInner: React.FC<{
             );
           }}
         />
-        {keys.map((key) => (
-          <Area
-            key={key}
-            dataKey={key}
-            fill={color(key)}
-            radius={4}
-            type="monotone"
-          />
-        ))}
         <XAxis
-          dataKey="timestamp"
+          dataKey={chart.key("timestamp")}
           tickLine={false}
           tickMargin={10}
           axisLine={false}
           tickFormatter={formatTimestamp}
           ticks={getTimestampTicks(data)}
+          stroke={chart.color("border")}
         />
         <YAxis tickFormatter={yAxisFormatter} axisLine={true} />
+        {keys.length > 1 && <Legend content={<ChakraChart.Legend />} />}
+        {chart.series.map((item) => (
+          <defs key={item.name}>
+            <ChakraChart.Gradient
+              id={`${item.name}-gradient`}
+              stops={[
+                { offset: "0%", color: item.color, opacity: 0.5 },
+                { offset: "100%", color: item.color, opacity: 0.05 },
+              ]}
+            />
+          </defs>
+        ))}
+        {chart.series.map((item) => (
+          <Area
+            key={item.name}
+            dataKey={chart.key(item.name)}
+            animationEasing="ease"
+            animationDuration={500}
+            hide={
+              chart.highlightedSeries !== null &&
+              item.name !== chart.highlightedSeries
+            }
+            fill={`url(#${item.name}-gradient)`}
+            fillOpacity={0.8}
+            stroke={chart.color(item.color)}
+            strokeWidth={2}
+            radius={4}
+            type="monotone"
+            stackId={item.stackId}
+          />
+        ))}
       </AreaChart>
-    </ResponsiveContainer>
+    </ChakraChart.Root>
   );
 };
