@@ -54,7 +54,7 @@ import { useAllSettings } from "./settings";
 
 interface AppCardInnerProps extends StackProps {
   item: HomepageItem;
-  dragging: boolean;
+  disableTooltip: boolean;
 }
 
 const AppCardToolTip = ({ item }: { item: HomepageItem }) => {
@@ -120,7 +120,7 @@ const AppCardHealthBubbleRight = ({ item }: { item: HomepageItem }) => {
 };
 
 export const AppCardInner = memo<AppCardInnerProps>(
-  ({ item, dragging, ...rest }) => {
+  ({ item, disableTooltip, ...rest }) => {
     const portalRef = React.useRef<HTMLDivElement>(null);
     const icon = useMemo(() => {
       if (item.icon) {
@@ -136,7 +136,7 @@ export const AppCardInner = memo<AppCardInnerProps>(
         closeOnClick={false}
         closeOnPointerDown={false}
         closeOnScroll={false}
-        disabled={dragging}
+        disabled={disableTooltip}
       >
         <Tooltip.Trigger asChild>
           <HStack gap="2" {...rest}>
@@ -229,7 +229,10 @@ export const AppCard = memo<Omit<AppCardInnerProps, "dragging">>(
               aria-label={curItem.name}
             >
               <HealthProvider>
-                <AppCardInner item={curItem} dragging={isDragging} />
+                <AppCardInner
+                  item={curItem}
+                  disableTooltip={isDragging || menuOpen}
+                />
               </HealthProvider>
             </Link>
           </MenuContextTrigger>
