@@ -19,7 +19,8 @@ export type AutocertConfig =
   | OVHOptionsWithAppKey
   | OVHOptionsWithOAuth2Config
   | PorkbunOptions
-  | OtherOptions;
+  | OtherOptions
+  | CustomAutocertConfig;
 
 export interface AutocertConfigBase {
   /** ACME email */
@@ -107,4 +108,10 @@ export interface OVHOptionsWithOAuth2Config extends AutocertConfigBase {
 export interface OtherOptions extends AutocertConfigBase {
   provider: string;
   options: object;
+}
+
+export interface CustomAutocertConfig extends AutocertConfigBase {
+  provider: "custom";
+  ca_dir_url: string;
+  ca_certs: string[];
 }
