@@ -55,7 +55,9 @@ export default function DashboardStats({
             <Stack align={"flex-start"}>
               <For each={uptimeSplit}>
                 {(uptime, index) => (
-                  <StatValueText key={index}>{uptime}</StatValueText>
+                  <StatValueText key={index} whiteSpace={"nowrap"}>
+                    {uptime}
+                  </StatValueText>
                 )}
               </For>
             </Stack>
