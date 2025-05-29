@@ -1,6 +1,7 @@
 "use client";
 
 import Endpoints from "@/types/api/endpoints";
+import { StatusCodes } from "http-status-codes";
 import { useMount } from "react-use";
 
 // weird redirect behavior with fetch
@@ -11,10 +12,12 @@ export function AuthProvider() {
   useMount(() => {
     fetch(Endpoints.AUTH_CHECK, {
       method: "HEAD",
-      redirect: "follow",
     }).then(async (r) => {
-      if (r.redirected && window.location.pathname !== "/login") {
-        window.location.href = r.url;
+      if (r.status === StatusCodes.FORBIDDEN) {
+        const redirectURL = r.headers.get("x-redirect-to");
+        if (redirectURL) {
+          window.location.href = redirectURL;
+        }
       }
     });
   });
