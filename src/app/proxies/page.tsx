@@ -21,29 +21,10 @@ import { type RouteResponse } from "@/types/api/route/route";
 import { type RouteProviderResponse } from "@/types/api/route_provider";
 import { getRoutes } from "@/types/api/routes";
 import { useRouter } from "next/navigation";
+import { useMemo } from "react";
 import { useAsync } from "react-use";
 
 export const Columns = [
-  {
-    label: "Alias",
-    getter: (route: RouteResponse) => route.alias,
-    w: 10,
-  },
-  {
-    label: "Load Balancer",
-    getter: (route: RouteResponse) => route.health?.extra?.config?.link,
-    w: 10,
-  },
-  {
-    label: "Listening",
-    getter: (route: RouteResponse) => route.lurl,
-    w: 12.5,
-  },
-  {
-    label: "Target",
-    getter: (route: RouteResponse) => route.purl,
-    w: 12.5,
-  },
   {
     label: "Status",
     getter: (route: RouteResponse) => (
@@ -54,22 +35,41 @@ export const Columns = [
         </Text>
       </HStack>
     ),
-    w: 10,
   },
   {
-    label: "Detail",
-    getter: (route: RouteResponse) => route.health?.detail,
-    w: 20,
+    label: "Alias",
+    getter: (route: RouteResponse) => route.alias,
+  },
+  {
+    label: "Container",
+    getter: (route: RouteResponse) =>
+      route.container?.container_name != route.alias
+        ? route.container?.container_name
+        : "<",
+  },
+  {
+    label: "Provider",
+    getter: (route: RouteResponse) => route.provider,
+  },
+  {
+    label: "Listening",
+    getter: (route: RouteResponse) => route.lurl,
+  },
+  {
+    label: "Target",
+    getter: (route: RouteResponse) => route.purl,
   },
   {
     label: "Uptime",
-    getter: (route: RouteResponse) => route.health?.uptimeStr,
-    w: 15,
+    getter: (route: RouteResponse) => formatUptime(route.health?.uptime ?? 0),
   },
   {
     label: "Latency",
     getter: (route: RouteResponse) => route.health?.latencyStr,
-    w: 10,
+  },
+  {
+    label: "Detail",
+    getter: (route: RouteResponse) => route.health?.detail,
   },
 ] as const;
 
@@ -82,6 +82,19 @@ function RenderTable({
     async () => getRoutes(provider?.short_name ?? ""),
     [provider],
   );
+
+  const sortedRoutes = useMemo(() => {
+    return routes.value?.toSorted((a, b) => {
+      const providerA = a.provider ?? "";
+      const providerB = b.provider ?? "";
+
+      const providerComparison = providerA.localeCompare(providerB);
+      if (providerComparison !== 0) {
+        return providerComparison;
+      }
+      return a.alias.localeCompare(b.alias);
+    });
+  }, [routes.value]);
 
   if (routes.error) {
     return (
@@ -108,6 +121,8 @@ function RenderTable({
     <Table.Root
       interactive
       stickyHeader
+      striped
+      native
       // sortDescriptor={list.sortDescriptor}
       // onSortChange={list.sort}
     >
@@ -115,7 +130,7 @@ function RenderTable({
         <Table.Row bg="bg.emphasized">
           <For each={Columns}>
             {(col) => (
-              <Table.ColumnHeader key={`${col.label}`} w={`${col.w}%`}>
+              <Table.ColumnHeader key={`${col.label}`}>
                 {col.label}
               </Table.ColumnHeader>
             )}
@@ -123,16 +138,15 @@ function RenderTable({
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        <For
-          each={(routes.value ?? []).toSorted((a, b) =>
-            a.alias.localeCompare(b.alias),
-          )}
-        >
+        <For each={sortedRoutes ?? []}>
           {(item) => (
             <Table.Row key={`${item.alias}`}>
               <For each={Columns}>
                 {(col) => (
-                  <Table.Cell key={`${item.alias}_${col.label}`}>
+                  <Table.Cell
+                    key={`${item.alias}_${col.label}`}
+                    textWrap={col.label !== "Detail" ? "nowrap" : "wrap"}
+                  >
                     {col.getter(item)}
                   </Table.Cell>
                 )}
@@ -146,10 +160,6 @@ function RenderTable({
 }
 
 export default function ProxiesPage() {
-  if (Columns.reduce((acc, col) => acc + col.w, 0) !== 100) {
-    throw new Error("Columns width sum is not 100");
-  }
-
   const fragment = useFragment();
   const router = useRouter();
   const providers = useWebsocket<RouteProviderResponse[]>(
@@ -212,4 +222,29 @@ export default function ProxiesPage() {
       )}
     </Tabs.Root>
   );
+}
+
+const units = [
+  ["y", 31556952],
+  ["M", 2629746],
+  ["w", 604800],
+  ["d", 86400],
+  ["h", 3600],
+  ["m", 60],
+  ["s", 1],
+] as const;
+
+function formatUptime(uptime: number) {
+  if (uptime === 0) {
+    return undefined;
+  }
+
+  let result = "";
+  for (const [unit, value] of units) {
+    if (uptime >= value) {
+      result += `${Math.floor(uptime / value)}${unit}`;
+      uptime %= value;
+    }
+  }
+  return result;
 }
