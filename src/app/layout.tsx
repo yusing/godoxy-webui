@@ -27,7 +27,7 @@ export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
     <html
       suppressHydrationWarning
       lang="en"
-      className={`${geist.className} antialiased`}
+      className={geist.className}
     >
       {process.env.NODE_ENV === "development" && (
         <head>
