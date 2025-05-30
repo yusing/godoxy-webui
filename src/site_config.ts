@@ -13,7 +13,7 @@ export const siteConfig = {
     { label: "Wiki", href: "/wiki/Home" },
   ],
   links: {
-    github: "https://github.com/yusing/go-proxy",
+    github: "https://github.com/yusing/godoxy",
     discord: "https://discord.gg/umReR62nRd",
   },
 } as const;
