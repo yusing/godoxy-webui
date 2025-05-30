@@ -15,7 +15,7 @@ export function AuthProvider() {
     }).then(async (r) => {
       if (r.status === StatusCodes.FORBIDDEN) {
         const redirectURL = r.headers.get("x-redirect-to");
-        if (redirectURL) {
+        if (redirectURL && redirectURL !== window.location.pathname) {
           window.location.href = redirectURL;
         }
       }
