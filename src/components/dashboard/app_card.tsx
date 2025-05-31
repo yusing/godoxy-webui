@@ -139,7 +139,7 @@ export const AppCardInner = memo<AppCardInnerProps>(
         disabled={disableTooltip}
       >
         <Tooltip.Trigger asChild>
-          <HStack gap="2" {...rest}>
+          <HStack gap="2" {...rest} w="full">
             <AppCardHealthBubbleLeft item={item} />
             {icon}
             <Stack gap={0}>
