@@ -49,7 +49,6 @@ import {
 import { LuEyeOff, LuPencil } from "react-icons/lu";
 import { IconSearcher } from "../config_editor/icon_searcher";
 import { DataListItem, DataListRoot } from "../ui/data-list";
-import HealthProvider from "./health_provider";
 import { useAllSettings } from "./settings";
 
 interface AppCardInnerProps extends StackProps {
@@ -230,12 +229,10 @@ export const AppCard = memo<Omit<AppCardInnerProps, "dragging">>(
               variant={"plain"}
               aria-label={curItem.name}
             >
-              <HealthProvider>
-                <AppCardInner
-                  item={curItem}
-                  disableTooltip={isDragging || menuOpen}
-                />
-              </HealthProvider>
+              <AppCardInner
+                item={curItem}
+                disableTooltip={isDragging || menuOpen}
+              />
             </Link>
           </MenuContextTrigger>
           <MenuContent>

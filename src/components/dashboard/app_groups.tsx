@@ -49,113 +49,8 @@ import { useAsync } from "react-use";
 import Conditional from "../conditional";
 import { ToggleTip } from "../ui/toggle-tip";
 import { AppCard } from "./app_card";
+import HealthProvider from "./health_provider";
 import { DashboardSettingsButton, useAllSettings } from "./settings";
-
-function dummyItems(): HomepageItems {
-  const items = [];
-  for (let i = 0; i < 15; i++) {
-    items.push(DummyHomepageItem());
-  }
-  return { Docker: items, Others: items };
-}
-
-function Category({
-  category,
-  items,
-  isMobile,
-}: Readonly<{
-  category: string;
-  items: HomepageItem[];
-  isMobile: boolean;
-}>) {
-  const {
-    gridMode,
-    itemGap,
-    categoryFontSize,
-    categoryPaddingX,
-    categoryPaddingY,
-  } = useAllSettings();
-
-  const [categoryName, setCategoryName] = useState(category);
-
-  return (
-    <Card.Root
-      size="sm"
-      variant={"subtle"}
-      px={categoryPaddingX.val}
-      pt={categoryPaddingY.val}
-    >
-      <Card.Header pt={0} mx={-1}>
-        <Editable.Root
-          value={categoryName}
-          required
-          autoCapitalize="words"
-          fontWeight="medium"
-          fontSize={categoryFontSize.val}
-          activationMode="dblclick"
-          onValueChange={({ value }) => {
-            setCategoryName(value);
-          }}
-          onValueCommit={({ value }) => {
-            items.forEach((item) => (item.category = value));
-            overrideHomepage(
-              "items_batch",
-              null,
-              items.reduce(
-                (acc, item) => {
-                  acc[item.alias] = item;
-                  return acc;
-                },
-                {} as Record<string, HomepageItem>,
-              ),
-            ).catch((e) => {
-              toastError(e);
-              setCategoryName(category);
-            });
-          }}
-        >
-          <Editable.Preview placeSelf="flex-start" w="fit" />
-          <Editable.Input mt="-1" w="fit" />
-        </Editable.Root>
-      </Card.Header>
-      <Card.Body pb={categoryPaddingY.val}>
-        <Conditional
-          condition={gridMode.val}
-          whenTrue={SimpleGrid}
-          trueProps={{
-            columns: isMobile
-              ? 1
-              : items.length <= 2
-                ? {
-                    base: 2,
-                    lgDown: 1,
-                  }
-                : {
-                    "2xl": 6,
-                    xl: 5,
-                    lg: 4,
-                    md: 3,
-                    sm: 1,
-                  },
-          }}
-          whenFalse={HStack}
-          falseProps={{
-            wrap: "wrap",
-          }}
-          common={{
-            gap: itemGap.val,
-          }}
-        >
-          <For each={items}>
-            {(item) => (
-              <AppCard key={item.alias} item={item} disableTooltip={false} />
-            )}
-          </For>
-        </Conditional>
-      </Card.Body>
-    </Card.Root>
-  );
-}
 
 export default function AppGroups({
   isMobile,
@@ -172,24 +67,23 @@ export default function AppGroups({
       await getHomepageItems({
         category: categoryFilter.val,
         provider: providerFilter.val,
-      }).catch((error) => {
-        toastError(error);
-        return dummyItems();
-      }),
+      })
+        .then((items) => {
+          setLocalHomepageItems(items);
+          localStorage.setItem("homepageItems", JSON.stringify(items));
+          return items;
+        })
+        .catch((error) => {
+          toastError(error);
+          return dummyItems();
+        }),
     [categoryFilter.val, providerFilter.val],
   );
 
   // State to manage the items for drag and drop
   const [localHomepageItems, setLocalHomepageItems] = useState<HomepageItems>(
-    homepageItems.value ?? dummyItems(),
+    getCachedHomepageItems(),
   );
-
-  // Update localHomepageItems when homepageItems.value changes (e.g. after fetching)
-  useAsync(async () => {
-    if (homepageItems.value) {
-      setLocalHomepageItems(homepageItems.value);
-    }
-  }, [homepageItems.value]);
 
   // Optimized sensors with activation constraints to improve performance
   const sensors = useSensors(
@@ -406,7 +300,7 @@ export default function AppGroups({
 
   const lessThanTwo = useCallback(
     () =>
-      Object.entries(localHomepageItems ?? {}).filter(
+      Object.entries(localHomepageItems).filter(
         ([_, items]) => items.length <= 2 && items.some((item) => item.show),
       ),
     [localHomepageItems],
@@ -414,7 +308,7 @@ export default function AppGroups({
 
   const others = useCallback(
     () =>
-      Object.entries(localHomepageItems ?? dummyItems()).filter(
+      Object.entries(localHomepageItems).filter(
         ([_, items]) => items.length > 2 && items.some((item) => item.show),
       ),
     [localHomepageItems],
@@ -481,40 +375,11 @@ export default function AppGroups({
             }
           />
         </Float>
-        <Stack gap={categoryGroupGap.val} w="full">
-          {/* Categories with two or more items */}
-          <For each={others()}>
-            {([category, items]) => (
-              <SortableContext
-                key={category}
-                items={items.map((i) => i.alias)}
-                strategy={rectSortingStrategy}
-              >
-                <Box
-                  position="relative"
-                  outline={
-                    activeId && dropTargets[category]
-                      ? "2px dashed #3182ce"
-                      : "none"
-                  }
-                  borderRadius="md"
-                  transition="outline 0.2s ease-in-out"
-                  p={activeId && dropTargets[category] ? 2 : 0}
-                  m={activeId && dropTargets[category] ? -2 : 0}
-                >
-                  <Category
-                    isMobile={isMobile}
-                    category={category}
-                    items={items}
-                  />
-                </Box>
-              </SortableContext>
-            )}
-          </For>
 
-          {/* Categories with <= 2 items */}
-          <SimpleGrid columns={{ mdDown: 2, base: 2 }} gap={4}>
-            <For each={lessThanTwo()}>
+        <HealthProvider>
+          <Stack gap={categoryGroupGap.val} w="full">
+            {/* Categories with two or more items */}
+            <For each={others()}>
               {([category, items]) => (
                 <SortableContext
                   key={category}
@@ -542,8 +407,40 @@ export default function AppGroups({
                 </SortableContext>
               )}
             </For>
-          </SimpleGrid>
-        </Stack>
+
+            {/* Categories with <= 2 items */}
+            <SimpleGrid columns={{ mdDown: 2, base: 2 }} gap={4}>
+              <For each={lessThanTwo()}>
+                {([category, items]) => (
+                  <SortableContext
+                    key={category}
+                    items={items.map((i) => i.alias)}
+                    strategy={rectSortingStrategy}
+                  >
+                    <Box
+                      position="relative"
+                      outline={
+                        activeId && dropTargets[category]
+                          ? "2px dashed #3182ce"
+                          : "none"
+                      }
+                      borderRadius="md"
+                      transition="outline 0.2s ease-in-out"
+                      p={activeId && dropTargets[category] ? 2 : 0}
+                      m={activeId && dropTargets[category] ? -2 : 0}
+                    >
+                      <Category
+                        isMobile={isMobile}
+                        category={category}
+                        items={items}
+                      />
+                    </Box>
+                  </SortableContext>
+                )}
+              </For>
+            </SimpleGrid>
+          </Stack>
+        </HealthProvider>
       </Stack>
 
       {/* Custom drag overlay - shows a preview of the dragged item */}
@@ -564,4 +461,123 @@ export default function AppGroups({
       </DragOverlay>
     </DndContext>
   );
+}
+
+function Category({
+  category,
+  items,
+  isMobile,
+}: Readonly<{
+  category: string;
+  items: HomepageItem[];
+  isMobile: boolean;
+}>) {
+  const {
+    gridMode,
+    itemGap,
+    categoryFontSize,
+    categoryPaddingX,
+    categoryPaddingY,
+  } = useAllSettings();
+
+  const [categoryName, setCategoryName] = useState(category);
+
+  return (
+    <Card.Root
+      size="sm"
+      variant={"subtle"}
+      px={categoryPaddingX.val}
+      pt={categoryPaddingY.val}
+    >
+      <Card.Header pt={0} mx={-1}>
+        <Editable.Root
+          value={categoryName}
+          required
+          autoCapitalize="words"
+          fontWeight="medium"
+          fontSize={categoryFontSize.val}
+          activationMode="dblclick"
+          onValueChange={({ value }) => {
+            setCategoryName(value);
+          }}
+          onValueCommit={({ value }) => {
+            items.forEach((item) => (item.category = value));
+            overrideHomepage(
+              "items_batch",
+              null,
+              items.reduce(
+                (acc, item) => {
+                  acc[item.alias] = item;
+                  return acc;
+                },
+                {} as Record<string, HomepageItem>,
+              ),
+            ).catch((e) => {
+              toastError(e);
+              setCategoryName(category);
+            });
+          }}
+        >
+          <Editable.Preview placeSelf="flex-start" w="fit" />
+          <Editable.Input mt="-1" w="fit" />
+        </Editable.Root>
+      </Card.Header>
+      <Card.Body pb={categoryPaddingY.val}>
+        <Conditional
+          condition={gridMode.val}
+          whenTrue={SimpleGrid}
+          trueProps={{
+            columns: isMobile
+              ? 1
+              : items.length <= 2
+                ? {
+                    base: 2,
+                    lgDown: 1,
+                  }
+                : {
+                    "2xl": 6,
+                    xl: 5,
+                    lg: 4,
+                    md: 3,
+                    sm: 1,
+                  },
+          }}
+          whenFalse={HStack}
+          falseProps={{
+            wrap: "wrap",
+          }}
+          common={{
+            gap: itemGap.val,
+          }}
+        >
+          <For each={items}>
+            {(item) => (
+              <AppCard key={item.alias} item={item} disableTooltip={false} />
+            )}
+          </For>
+        </Conditional>
+      </Card.Body>
+    </Card.Root>
+  );
+}
+
+function getCachedHomepageItems() {
+  const cached = localStorage.getItem("homepageItems");
+  if (cached) {
+    try {
+      return JSON.parse(cached) as HomepageItems;
+    } catch (e) {
+      console.error(e);
+      return dummyItems();
+    }
+  }
+  return dummyItems();
+}
+
+function dummyItems(): HomepageItems {
+  const items = [];
+  for (let i = 0; i < 15; i++) {
+    items.push(DummyHomepageItem());
+  }
+  return { Docker: items, Others: items };
 }
