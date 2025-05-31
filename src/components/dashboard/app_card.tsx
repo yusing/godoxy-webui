@@ -136,7 +136,7 @@ export const AppCardInner = memo<AppCardInnerProps>(
         closeOnClick={false}
         closeOnPointerDown={false}
         closeOnScroll={false}
-        disabled={disableTooltip}
+        open={disableTooltip ? false : undefined}
         positioning={{ placement: "bottom-end" }}
       >
         <Tooltip.Trigger asChild>
