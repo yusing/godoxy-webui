@@ -29,7 +29,7 @@ export default function MetricsPage() {
   const tab = useFragment();
 
   return (
-    <Stack mx="16" my="8">
+    <Stack>
       <Tabs.Root
         defaultValue={"uptime"}
         value={tab}

@@ -147,7 +147,9 @@ function Category({
           }}
         >
           <For each={items}>
-            {(item) => <AppCard key={item.alias} item={item} />}
+            {(item) => (
+              <AppCard key={item.alias} item={item} disableTooltip={false} />
+            )}
           </For>
         </Conditional>
       </Card.Body>
@@ -479,7 +481,7 @@ export default function AppGroups({
             }
           />
         </Float>
-        <Stack gap={categoryGroupGap.val}>
+        <Stack gap={categoryGroupGap.val} w="full">
           {/* Categories with two or more items */}
           <For each={others()}>
             {([category, items]) => (
@@ -556,7 +558,7 @@ export default function AppGroups({
             maxWidth="300px"
             zIndex={1000}
           >
-            <AppCard item={activeItem} />
+            <AppCard item={activeItem} disableTooltip={true} />
           </Box>
         ) : null}
       </DragOverlay>

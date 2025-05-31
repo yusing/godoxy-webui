@@ -3,8 +3,6 @@ import "@/styles/globals.css";
 import { Box, VStack } from "@chakra-ui/react";
 
 import Footer from "@/components/footer";
-import Navbar from "@/components/navbar";
-import { Skeleton } from "@/components/ui/skeleton";
 import { AuthProvider } from "@/hooks/auth";
 import { siteConfig } from "@/site_config";
 import { bodyHeight, bodyPaddingX, navBarHeight } from "@/styles";
@@ -18,18 +16,14 @@ const geist = Geist({
 
 export const metadata = siteConfig.metadata;
 
-const VersionText = dynamic(() => import("@/components/version_text"), {
-  loading: () => <Skeleton w="30px"></Skeleton>,
+const Navbar = dynamic(() => import("@/components/navbar"), {
+  loading: () => null,
 });
 
 export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
   const { children } = props;
   return (
-    <html
-      suppressHydrationWarning
-      lang="en"
-      className={geist.className}
-    >
+    <html suppressHydrationWarning lang="en" className={geist.className}>
       {process.env.NODE_ENV === "development" && (
         <head>
           <script src="https://unpkg.com/react-scan/dist/auto.global.js"></script>
@@ -39,18 +33,13 @@ export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
         <Provider
           defaultTheme="dark"
           enableSystem
+          enableColorScheme
           storageKey={"__theme"}
           attribute={["class", "data-theme", "data-color-mode"]}
         >
           <AuthProvider />
           <VStack w="100vw" h="100vh">
-            <Navbar
-              h={navBarHeight}
-              position={"fixed"}
-              top={0}
-              pt="0"
-              px="20"
-            />
+            <Navbar h={navBarHeight} position={"fixed"} top={0} />
             <Box
               as="main"
               position={"fixed"}

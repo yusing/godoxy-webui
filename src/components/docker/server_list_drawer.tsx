@@ -5,7 +5,6 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { providerName } from "@/lib/format";
-import { bodyHeight } from "@/styles";
 import {
   Collapsible,
   DrawerBackdrop,
@@ -21,6 +20,7 @@ import {
 import {
   createContext,
   FC,
+  RefObject,
   useContext,
   useEffect,
   useMemo,
@@ -47,7 +47,11 @@ function useSearchInput() {
   return useContext(SearchInputContext);
 }
 
-export function SearchInput(props: Readonly<InputProps>) {
+interface SearchInputProps extends InputProps {
+  ref?: RefObject<HTMLDivElement | null>;
+}
+
+export function SearchInput(props: Readonly<SearchInputProps>) {
   const { keyword, setKeyword } = useSearchInput();
   return (
     <InputGroup flex="1" startElement={<FaSearch />} {...props}>
@@ -140,7 +144,7 @@ export function ServerList(
     };
   }, []);
   return (
-    <Stack overflow="auto" h={bodyHeight} ref={ref} minW="200px" {...props}>
+    <Stack overflow="auto" ref={ref} minW="200px" {...props}>
       <Text
         key="overview"
         color={"fg.info"}

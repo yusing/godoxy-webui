@@ -187,7 +187,6 @@ export default function ProxiesPage() {
       defaultValue={"#all"}
       value={fragment}
       onValueChange={(e) => router.push(`#${e.value}`)}
-      px="4"
       lazyMount
       unmountOnExit
     >

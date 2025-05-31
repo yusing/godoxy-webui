@@ -14,8 +14,8 @@ import { useMount } from "react-use";
 
 export default function ConfigEditorPage() {
   return (
-    <Stack gap="0" direction="row" h="full" w="full">
-      <Stack align={"flex-start"} px="4">
+    <Stack gap="6" direction="row" h="full" w="full">
+      <Stack align={"flex-start"}>
         <Stack gap="0">
           <NewFileButton fileExtension=".yml" />
           <SaveButton />

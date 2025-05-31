@@ -74,7 +74,7 @@ export function NewFileButton({ fileExtension }: FormProps) {
           text="New File"
           aria-label="New File"
           colorPalette="fg"
-          p={1}
+          px={0}
         />
       </PopoverTrigger>
       <PopoverContent>
@@ -139,7 +139,7 @@ export function SaveButton() {
   const { hasUnsavedChanges, updateRemote } = useConfigFileState();
   return (
     <ListboxItem
-      p={1}
+      px={0}
       colorPalette={hasUnsavedChanges ? "green" : "fg"}
       disabled={!hasUnsavedChanges}
       aria-label="Save File"

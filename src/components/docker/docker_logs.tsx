@@ -1,6 +1,6 @@
 import { ReadyState } from "@/hooks/ws";
 import { parseLogLine, type LogLine as LogLineType } from "@/lib/logline";
-import { bodyHeight } from "@/styles";
+import { bodyHeight, navBarHeight } from "@/styles";
 import Endpoints from "@/types/api/endpoints";
 import {
   Box,
@@ -152,14 +152,19 @@ const LogEntry = memo(({ line }: { line: LogLineWithId }) => (
 ));
 
 export function DockerLogs({ ...props }: StackProps) {
+  const searchInputRef = useRef<HTMLDivElement | null>(null);
   const { container } = useContainerContext();
   if (!container) {
     return (
       <Stack direction={"row"} {...props}>
         <SearchInputProvider>
-          <Stack gap="4">
-            <SearchInput position={"fixed"} top="4" />
-            <ServerList onItemClick={() => {}} pr="4" />
+          <Stack gap="2">
+            <SearchInput position={"sticky"} top={0} ref={searchInputRef} />
+            <ServerList
+              onItemClick={() => {}}
+              pr={4}
+              h={`calc(100vh - ${navBarHeight} - ${searchInputRef.current?.clientHeight ?? 0}px)`}
+            />
           </Stack>
         </SearchInputProvider>
         <ServerOverview />
