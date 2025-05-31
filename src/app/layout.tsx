@@ -1,12 +1,13 @@
 import { Provider } from "@/components/ui/provider";
 import "@/styles/globals.css";
-import { Box, Link, Text, VStack } from "@chakra-ui/react";
+import { Box, VStack } from "@chakra-ui/react";
 
+import Footer from "@/components/footer";
 import Navbar from "@/components/navbar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AuthProvider } from "@/hooks/auth";
 import { siteConfig } from "@/site_config";
-import { bodyHeight, bodyPaddingX, footerHeight, navBarHeight } from "@/styles";
+import { bodyHeight, bodyPaddingX, navBarHeight } from "@/styles";
 import dynamic from "next/dynamic";
 import { Geist } from "next/font/google";
 import { type ReactNode } from "react";
@@ -63,21 +64,7 @@ export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
             >
               {children}
             </Box>
-            <Link
-              position={"fixed"}
-              bottom={0}
-              h={footerHeight}
-              href={siteConfig.links.github}
-              target="_blank"
-              title="GoDoxy Homepage"
-              colorPalette={"teal"}
-              w="full"
-              justifyContent={"center"}
-            >
-              <Text>Powered by</Text>
-              <Text color="fg.success">GoDoxy</Text>
-              <VersionText />
-            </Link>
+            <Footer />
           </VStack>
         </Provider>
       </body>
