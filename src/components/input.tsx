@@ -12,6 +12,7 @@ import {
 import {
   Box,
   Code,
+  Field,
   Fieldset,
   For,
   Group,
@@ -24,7 +25,6 @@ import { Plus, Trash } from "lucide-react";
 import React, { useCallback, useMemo } from "react";
 import { Button } from "./ui/button";
 import { Checkbox } from "./ui/checkbox";
-import { Field } from "./ui/field";
 import { Label } from "./ui/label";
 import {
   SelectContent,
@@ -92,16 +92,11 @@ function ListInput_<T extends string>({
   );
 
   return (
-    <Field
-      label={
-        <HStack gap={0}>
-          <Label minW="min-content">{label}</Label>
-          <AddButton showLabel={false} />
-        </HStack>
-      }
-      required={required}
-      title={description}
-    >
+    <Field.Root required={required} title={description}>
+      <Field.Label>
+        <Label minW="min-content">{label}</Label>
+        <AddButton showLabel={false} />
+      </Field.Label>
       <Stack gap="3" w="full">
         {value.map((item, index) => (
           <Group attached key={`${label}_${index}`}>
@@ -120,7 +115,7 @@ function ListInput_<T extends string>({
         ))}
         {value.length > 5 && <AddButton showLabel />}
       </Stack>
-    </Field>
+    </Field.Root>
   );
 }
 
@@ -130,8 +125,8 @@ type NamedListInputProps<T extends Record<string, unknown>> = {
   label: React.ReactNode;
   placeholder?: { key?: string; value?: string };
   schema?: JSONSchema;
-  keyField?: string;
-  nameField?: string;
+  keyField?: keyof T;
+  nameField?: keyof T;
   value: T[];
   onChange: (v: T[]) => void;
 };
@@ -148,7 +143,7 @@ function NamedListInput_<T extends Record<string, unknown>>({
   if (!(value instanceof Array)) value = [];
 
   const defaultValue = useMemo(
-    () => getDefaultValue(schema?.properties?.[keyField]),
+    () => getDefaultValue(schema?.properties?.[keyField as string]),
     [schema, keyField],
   );
 
@@ -181,45 +176,46 @@ function NamedListInput_<T extends Record<string, unknown>>({
   }, [value, onChange, keyField, nameField, defaultValue]);
 
   return (
-    <Fieldset.Root>
-      <Fieldset.Legend>{label}</Fieldset.Legend>
-      <Fieldset.Content>
-        {value.map((item, index) => {
-          //@ts-ignore
-          const name = item[nameField] as string;
-          const key = item[keyField] as string;
-          return (
-            <Stack gap="3" key={`${index}_map`}>
-              <MapInput
-                label={name}
-                placeholder={placeholder}
-                keyField={keyField}
-                nameField={nameField}
-                schema={
-                  schema && {
-                    ...schema,
-                    properties: getPropertySchema(schema, { keyField, key }),
-                  }
+    <Field.Root>
+      <Field.Label>{label}</Field.Label>
+      {value.map((item, index) => {
+        //@ts-ignore
+        const name = item[nameField] as string;
+        const key = item[keyField] as string;
+        return (
+          <Stack gap="3" key={`${index}_map`} w="full">
+            <MapInput
+              label={name}
+              placeholder={placeholder}
+              keyField={keyField}
+              nameField={nameField}
+              schema={
+                schema && {
+                  ...schema,
+                  properties: getPropertySchema(schema, {
+                    keyField: keyField as string,
+                    key: key,
+                  }),
                 }
-                value={item}
-                onChange={(e) => handleItemChange(index, e)}
-              />
-              <Button
-                size={"xs"}
-                bg={"red.500"}
-                color={"whiteAlpha.900"}
-                onClick={() => handleDeleteItem(index)}
-              >
-                {`Delete ${name?.length ? name : `Item ${index + 1}`}`}
-              </Button>
-            </Stack>
-          );
-        })}
-        <Button size={"xs"} onClick={handleAddItem}>
-          New item
-        </Button>
-      </Fieldset.Content>
-    </Fieldset.Root>
+              }
+              value={item}
+              onChange={(e) => handleItemChange(index, e)}
+            />
+            <Button
+              size={"xs"}
+              bg={"red.500"}
+              color={"whiteAlpha.900"}
+              onClick={() => handleDeleteItem(index)}
+            >
+              {`Delete ${name?.length ? name : `Item ${index + 1}`}`}
+            </Button>
+          </Stack>
+        );
+      })}
+      <Button size={"xs"} onClick={handleAddItem} w="full">
+        New item
+      </Button>
+    </Field.Root>
   );
 }
 
@@ -232,8 +228,8 @@ type MapInputProps<T extends Record<string, unknown>> = {
   placeholder?: { key?: string; value?: string };
   value: T;
   allowDelete?: boolean;
-  keyField?: string;
-  nameField?: string;
+  keyField?: keyof T;
+  nameField?: keyof T;
   schema?: JSONSchema;
   onChange: (v: T) => void;
 };
@@ -262,7 +258,7 @@ function MapInput_<T extends Record<string, unknown>>({
   if (keyField && Object.keys(value).length === 0) {
     value = {
       ...value,
-      [keyField]: getDefaultValue(schema?.properties?.[keyField]),
+      [keyField]: getDefaultValue(schema?.properties?.[keyField as string]),
     };
   }
 
@@ -292,64 +288,76 @@ function MapInput_<T extends Record<string, unknown>>({
   }, [schema, value]);
 
   return (
-    <Box>
-      <Label>{label}</Label>
-      <Stack pt="3" gap="3" w="full">
-        <For
-          each={Object.entries({ ...value, ...defaultValues }).sort(
-            ([key1], [key2]) => {
-              if (key1 === keyField || key1 === nameField) return -1;
-              if (key2 === keyField || key2 === nameField) return 1;
-              return key1.localeCompare(key2);
-            },
-          )}
-        >
-          {([k, v], index) => {
-            const vSchema = schema.properties?.[k];
-            return vSchema?.type === "array" || Array.isArray(v) ? (
-              <ListInput
-                key={`${index}_list`}
-                label={`${label}.${k}`}
-                value={(v as string[] | undefined) ?? []}
-                description={vSchema?.description}
-                onChange={(e) => {
-                  onChange({ ...value, [k]: e });
-                }}
-              />
-            ) : vSchema?.type === "object" || typeof v === "object" ? (
-              <MapInput
-                key={`${index}_map`}
-                label={`${label}.${k}`}
-                value={(v as Record<string, unknown> | undefined) ?? {}}
-                schema={vSchema?.properties}
-                onChange={(e) => {
-                  onChange({ ...value, [k]: e });
-                }}
-              />
-            ) : (
-              <FieldInput
-                key={`${index}_field`}
-                fieldKey={k}
-                fieldValue={(v as Record<string, unknown> | undefined) ?? {}}
-                schema={schema}
-                placeholder={placeholder}
-                allowDelete={allowDelete}
-                onKeyChange={(e) => {
-                  delete value[k];
-                  onChange({
-                    ...value,
-                    [e]: v ? v : getDefaultValue(schema?.properties?.[e]),
-                  });
-                }}
-                onChange={(e) => {
-                  onChange({ ...value, [k]: e });
-                }}
-              />
-            );
-          }}
-        </For>
-      </Stack>
-    </Box>
+    <Fieldset.Root>
+      <Fieldset.Legend>{label}</Fieldset.Legend>
+      <Fieldset.Content>
+        <Stack gap="3" w="full">
+          <For
+            each={Object.entries({ ...value, ...defaultValues }).sort(
+              ([key1], [key2]) => {
+                if (key1 === keyField || key1 === nameField) return -1;
+                if (key2 === keyField || key2 === nameField) return 1;
+                return key1.localeCompare(key2);
+              },
+            )}
+          >
+            {([k, v], index) => {
+              const vSchema = schema.properties?.[k];
+              return vSchema?.type === "array" || Array.isArray(v) ? (
+                <ListInput
+                  key={`${index}_list`}
+                  label={`${label}.${k}`}
+                  value={(v as string[] | undefined) ?? []}
+                  description={vSchema?.description}
+                  onChange={(e) => {
+                    onChange({ ...value, [k]: e });
+                  }}
+                />
+              ) : vSchema?.type === "object" || typeof v === "object" ? (
+                <MapInput
+                  key={`${index}_map`}
+                  label={`${label}.${k}`}
+                  value={(v as Record<string, unknown> | undefined) ?? {}}
+                  schema={vSchema?.properties}
+                  onChange={(e) => {
+                    if (e === undefined || e === null) {
+                      delete value[k];
+                      onChange({ ...value });
+                      return;
+                    }
+                    onChange({ ...value, [k]: e });
+                  }}
+                />
+              ) : (
+                <FieldInput
+                  key={`${index}_field`}
+                  fieldKey={k}
+                  fieldValue={(v as Record<string, unknown> | undefined) ?? {}}
+                  schema={schema}
+                  placeholder={placeholder}
+                  allowDelete={allowDelete}
+                  onKeyChange={(e) => {
+                    delete value[k];
+                    onChange({
+                      ...value,
+                      [e]: v ? v : getDefaultValue(schema?.properties?.[e]),
+                    });
+                  }}
+                  onChange={(e) => {
+                    if (e === undefined || e === null) {
+                      delete value[k];
+                      onChange({ ...value });
+                      return;
+                    }
+                    onChange({ ...value, [k]: e });
+                  }}
+                />
+              );
+            }}
+          </For>
+        </Stack>
+      </Fieldset.Content>
+    </Fieldset.Root>
   );
 }
 
@@ -379,36 +387,43 @@ function PureMapInput<T extends Record<string, unknown>>({
     [label, onChange, value],
   );
   return (
-    <>
-      <HStack>
-        <Label>{label}</Label>
+    <Fieldset.Root>
+      <Fieldset.Legend>
+        {label}
         <AddButton showLabel={false} />
-      </HStack>
-      <Stack pt="3" gap="3" w="full">
-        <For each={keys}>
-          {(k, index) => {
-            return (
-              <FieldInput
-                key={`${label}_${index}_field`}
-                fieldKey={k}
-                fieldValue={value[k] as T}
-                schema={undefined}
-                placeholder={placeholder}
-                onKeyChange={(newK, newV) => {
-                  delete value[k];
-                  onChange({ ...value, [newK]: newV });
-                }}
-                onChange={(e) => {
-                  onChange({ ...value, [k]: e });
-                }}
-                allowDelete={true}
-              />
-            );
-          }}
-        </For>
-        {keys.length > 5 && <AddButton showLabel />}
-      </Stack>
-    </>
+      </Fieldset.Legend>
+      <Fieldset.Content>
+        <Stack gap="3" w="full">
+          <For each={keys}>
+            {(k, index) => {
+              return (
+                <FieldInput
+                  key={`${label}_${index}_field`}
+                  fieldKey={k}
+                  fieldValue={value[k] as T}
+                  schema={undefined}
+                  placeholder={placeholder}
+                  onKeyChange={(newK, newV) => {
+                    delete value[k];
+                    onChange({ ...value, [newK]: newV });
+                  }}
+                  onChange={(e) => {
+                    if (e === undefined || e === null) {
+                      delete value[k];
+                      onChange({ ...value });
+                      return;
+                    }
+                    onChange({ ...value, [k]: e });
+                  }}
+                  allowDelete={true}
+                />
+              );
+            }}
+          </For>
+          {keys.length > 5 && <AddButton showLabel />}
+        </Stack>
+      </Fieldset.Content>
+    </Fieldset.Root>
   );
 }
 
