@@ -111,9 +111,8 @@ const DesktopNav: React.FC<FlexProps> = (props) => {
             const IconComponent = iconComponents[navItem.label]!;
             const isActive = pathname === navItem.href;
             return (
-              <Stack gap={0}>
+              <Stack gap={0} key={navItem.label}>
                 <Link
-                  key={navItem.label}
                   href={navItem.href}
                   fontSize="sm"
                   fontWeight="medium"
