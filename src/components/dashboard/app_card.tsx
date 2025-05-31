@@ -137,6 +137,7 @@ export const AppCardInner = memo<AppCardInnerProps>(
         closeOnPointerDown={false}
         closeOnScroll={false}
         disabled={disableTooltip}
+        positioning={{ placement: "bottom-end" }}
       >
         <Tooltip.Trigger asChild>
           <HStack gap="2" {...rest} w="full">
@@ -222,7 +223,8 @@ export const AppCard = memo<Omit<AppCardInnerProps, "dragging">>(
               style={style}
               {...attributes}
               {...listeners}
-              className="transform transition-transform hover:scale-105"
+              transition={"transform 0.1s ease-in-out"}
+              _hover={{ transform: "scale(1.02)" }}
               href={`${curItem.url}`}
               target="_blank"
               variant={"plain"}
