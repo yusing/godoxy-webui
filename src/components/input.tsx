@@ -107,6 +107,7 @@ function ListInput_<T extends string>({
             />
             <IconButton
               variant={"ghost"}
+              color="red.500"
               onClick={() => handleItemDelete(index)}
             >
               <Trash />
@@ -536,7 +537,11 @@ const FieldInput = React.memo(
           />
         ) : null}
         {allowDelete && !required && (
-          <IconButton variant={"ghost"} onClick={() => onChange(undefined)}>
+          <IconButton
+            variant={"ghost"}
+            color="red.500"
+            onClick={() => onChange(undefined)}
+          >
             <Trash />
           </IconButton>
         )}
