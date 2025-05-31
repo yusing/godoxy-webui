@@ -1,14 +1,14 @@
-import { Provider } from "@/components/ui/provider";
 import "@/styles/globals.css";
-import { Box, VStack } from "@chakra-ui/react";
 
 import Footer from "@/components/footer";
+import { Provider } from "@/components/ui/provider";
 import { AuthProvider } from "@/hooks/auth";
 import { siteConfig } from "@/site_config";
 import { bodyHeight, bodyPaddingX, navBarHeight } from "@/styles";
+import { Box, VStack } from "@chakra-ui/react";
 import dynamic from "next/dynamic";
 import { Geist } from "next/font/google";
-import { type ReactNode } from "react";
+import { type PropsWithChildren } from "react";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -20,7 +20,7 @@ const Navbar = dynamic(() => import("@/components/navbar"), {
   loading: () => null,
 });
 
-export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
+export default function RootLayout(props: PropsWithChildren) {
   const { children } = props;
   return (
     <html suppressHydrationWarning lang="en" className={geist.className}>

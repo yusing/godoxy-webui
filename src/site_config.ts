@@ -7,6 +7,7 @@ export const siteConfig = {
   navItems: [
     { label: "Dashboard", href: "/" },
     { label: "Config Editor", href: "/config_editor" },
+    { label: "Compose Editor", href: "/compose_editor" },
     { label: "Proxies", href: "/proxies" },
     { label: "Metrics", href: "/metrics", bg: "unset" },
     { label: "Docker", href: "/docker" },
