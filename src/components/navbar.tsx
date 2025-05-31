@@ -2,12 +2,14 @@
 
 import { siteConfig } from "@/site_config";
 import {
+  Box,
   ClientOnly,
   Flex,
   FlexProps,
   For,
   Group,
   Link,
+  Stack,
 } from "@chakra-ui/react";
 import { usePathname } from "next/navigation";
 import React, { useMemo } from "react";
@@ -109,26 +111,31 @@ const DesktopNav: React.FC<FlexProps> = (props) => {
             const IconComponent = iconComponents[navItem.label]!;
             const isActive = pathname === navItem.href;
             return (
-              <Link
-                key={navItem.label}
-                href={navItem.href}
-                fontSize="sm"
-                fontWeight="medium"
-                color={isActive ? activeLinkColor : linkColor}
-                _hover={{
-                  textDecoration: "none",
-                  color: linkHoverColor,
-                }}
-                p={2}
-                display="flex"
-                alignItems="center"
-                borderBottom={isActive ? "2px" : "none"}
-                borderColor={isActive ? activeLinkBorderColor : "transparent"}
-                transition="color 0.2s, border-color 0.2s"
-              >
-                <IconComponent size={20} color={iconColor} />
-                {navItem.label}
-              </Link>
+              <Stack gap={0}>
+                <Link
+                  key={navItem.label}
+                  href={navItem.href}
+                  fontSize="sm"
+                  fontWeight="medium"
+                  color={isActive ? activeLinkColor : linkColor}
+                  _hover={{
+                    textDecoration: "none",
+                    color: linkHoverColor,
+                  }}
+                  p={2}
+                  display="flex"
+                  alignItems="center"
+                  transition="color 0.2s, border-color 0.2s"
+                >
+                  <IconComponent size={20} color={iconColor} />
+                  {navItem.label}
+                </Link>
+                <Box
+                  h={isActive ? "2px" : "0"}
+                  w="full"
+                  bg={activeLinkBorderColor}
+                />
+              </Stack>
             );
           }}
         </For>
