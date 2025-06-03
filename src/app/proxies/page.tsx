@@ -52,6 +52,10 @@ export const Columns = [
     getter: (route: RouteResponse) => route.provider,
   },
   {
+    label: "Proxied",
+    getter: (route: RouteResponse) => (!route.excluded ? "Yes" : "No"),
+  },
+  {
     label: "Listening",
     getter: (route: RouteResponse) => route.lurl,
   },
@@ -85,6 +89,12 @@ function RenderTable({
 
   const sortedRoutes = useMemo(() => {
     return routes.value?.toSorted((a, b) => {
+      if (a.excluded && !b.excluded) {
+        return 1;
+      }
+      if (!a.excluded && b.excluded) {
+        return -1;
+      }
       const providerA = a.provider ?? "";
       const providerB = b.provider ?? "";
 

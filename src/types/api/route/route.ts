@@ -12,6 +12,7 @@ import { HealthStatusType } from "../health";
 export type RouteResponse = {
   alias: string;
   provider?: string; // not available for load balancer routes
+  excluded: boolean;
   scheme: Required<Route>["scheme"];
   host?: string;
   port: {
