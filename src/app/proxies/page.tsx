@@ -24,14 +24,25 @@ import { useRouter } from "next/navigation";
 import { useMemo } from "react";
 import { useAsync } from "react-use";
 
+function getStatus(route: RouteResponse) {
+  const health = route.health;
+  if (!health || health.status === "unknown") {
+    if (route.container?.running === false) {
+      return "stopped";
+    }
+    return "unknown";
+  }
+  return health.status;
+}
+
 export const Columns = [
   {
     label: "Status",
     getter: (route: RouteResponse) => (
       <HStack>
-        <HealthStatus value={route.health?.status ?? "unknown"} />
+        <HealthStatus value={getStatus(route)} />
         <Text fontSize="sm" color="text.subtle">
-          {route.health?.status ?? "unknown"}
+          {getStatus(route)}
         </Text>
       </HStack>
     ),

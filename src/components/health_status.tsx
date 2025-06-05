@@ -15,7 +15,10 @@ const HealthStatus_: React.FC<HealthStatusProps> = ({
   value = "unknown",
 }) => {
   return (
-    <ChakraStatus.Root colorPalette={healthStatusColorPalettes[value]}>
+    <ChakraStatus.Root
+      colorPalette={healthStatusColorPalettes[value]}
+      opacity={value === "stopped" ? 0.3 : 1}
+    >
       <ChakraStatus.Indicator />
       {children}
     </ChakraStatus.Root>

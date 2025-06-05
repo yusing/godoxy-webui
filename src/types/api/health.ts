@@ -7,6 +7,7 @@ export const healthStatuses = [
   "napping",
   "starting",
   "unknown",
+  "stopped",
 ] as const;
 export type HealthStatusType = (typeof healthStatuses)[number];
 
@@ -18,6 +19,7 @@ export const healthStatusColorPalettes: Record<HealthStatusType, ColorPalette> =
     starting: "blue",
     error: "red",
     unknown: "gray",
+    stopped: "gray",
   } as const;
 
 export const healthStatusColors: Record<HealthStatusType, string> = {
@@ -27,6 +29,7 @@ export const healthStatusColors: Record<HealthStatusType, string> = {
   starting: "#0000FF",
   error: "var(--color-error)",
   unknown: "#808080",
+  stopped: "#808080",
 } as const;
 
 export type HealthInfo = {
