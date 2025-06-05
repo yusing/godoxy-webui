@@ -26,7 +26,7 @@ export default function MetricsPage() {
   const [filter, setFilter] = useState("");
   const [period, setPeriod] = useState<MetricsPeriod>("1h");
   const router = useRouter();
-  const tab = useFragment();
+  const tab = useFragment() ?? "uptime";
 
   return (
     <Stack>
