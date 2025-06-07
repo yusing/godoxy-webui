@@ -2,7 +2,7 @@ import { Select, SelectRootProps } from "@chakra-ui/react";
 
 import { Fieldset } from "@chakra-ui/react";
 
-import { restartPolicyCollection } from "@/lib/docekr-compose/service";
+import { restartPolicyCollection } from "@/lib/docker-compose/service";
 
 export default function RestartPolicyField({
   ...props

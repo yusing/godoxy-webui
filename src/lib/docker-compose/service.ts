@@ -2,7 +2,7 @@ import {
   parseLabels,
   processStringKVs,
   toLabels,
-} from "@/lib/docekr-compose/labels";
+} from "@/lib/docker-compose/labels";
 import { type Routes } from "@/types/godoxy";
 import { createListCollection } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";

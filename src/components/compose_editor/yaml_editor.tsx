@@ -1,6 +1,6 @@
 "use client";
 
-import { getDockerComposeSchema } from "@/lib/docekr-compose/schema";
+import { getDockerComposeSchema } from "@/lib/docker-compose/schema";
 import { useState } from "react";
 import { useAsync } from "react-use";
 import YAMLEditor from "../yaml_editor";

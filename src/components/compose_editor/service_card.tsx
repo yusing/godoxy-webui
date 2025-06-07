@@ -4,7 +4,7 @@ import {
   serviceGoDoxySchemaResolver,
   toDockerComposeService,
   type DockerComposeService,
-} from "@/lib/docekr-compose/service";
+} from "@/lib/docker-compose/service";
 import {
   Box,
   Button,

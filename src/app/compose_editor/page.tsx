@@ -4,7 +4,7 @@ import ServiceCard from "@/components/compose_editor/service_card";
 import ComposeEditor, {
   demoCompose,
 } from "@/components/compose_editor/yaml_editor";
-import { DockerCompose } from "@/lib/docekr-compose/compose";
+import { DockerCompose } from "@/lib/docker-compose/compose";
 import { Box, Heading, HStack, Stack } from "@chakra-ui/react";
 import { parse as parseYAML } from "yaml";
 
