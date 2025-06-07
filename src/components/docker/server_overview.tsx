@@ -64,17 +64,19 @@ export const ServerOverview: FC = () => {
 
   if (!servers) {
     switch (readyState) {
+      case ReadyState.UNINITIALIZED:
       case ReadyState.CONNECTING:
+      case ReadyState.OPEN:
         return (
-          <Center>
+          <Center w="full" h="full">
             <Spinner />
           </Center>
         );
-      case ReadyState.OPEN:
-        return <EmptyState title="No servers found" />;
       default:
         return <EmptyState title="Failed to get server info" />;
     }
+  } else if (servers.length === 0) {
+    return <EmptyState icon={<LuServer />} title="No servers found" />;
   }
 
   return (
