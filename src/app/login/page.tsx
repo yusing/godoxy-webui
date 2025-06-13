@@ -14,7 +14,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 interface FormValues {
@@ -29,8 +29,13 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
+    setFocus,
     formState: { errors },
   } = useForm<FormValues>();
+
+  useEffect(() => {
+    setFocus("username");
+  }, [setFocus]);
 
   function toggleVisibility() {
     setIsVisible(!isVisible);
