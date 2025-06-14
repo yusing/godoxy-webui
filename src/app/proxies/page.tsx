@@ -172,6 +172,7 @@ function RenderTable({
                   <Table.Cell
                     key={`${item.alias}_${col.label}`}
                     textWrap={col.label !== "Detail" ? "nowrap" : "wrap"}
+                    whiteSpace={col.label === "Detail" ? "pre-wrap" : "normal"}
                   >
                     {col.getter(item)}
                   </Table.Cell>
