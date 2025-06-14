@@ -2,12 +2,17 @@
 
 import {
   Center,
+  CollapsibleContent,
+  CollapsibleRoot,
+  CollapsibleTrigger,
   For,
+  Group,
   HStack,
   Spinner,
   Table,
   Tabs,
   Text,
+  useCollapsible,
 } from "@chakra-ui/react";
 
 import { EmptyState } from "@/components/ui/empty-state";
@@ -22,6 +27,7 @@ import { type RouteProviderResponse } from "@/types/api/route_provider";
 import { getRoutes } from "@/types/api/routes";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
+import { LuChevronDown, LuChevronRight } from "react-icons/lu";
 import { useAsync } from "react-use";
 
 function getStatus(route: RouteResponse) {
@@ -85,13 +91,65 @@ export const Columns = [
   {
     label: "Detail",
     getter: (route: RouteResponse) => {
-      if (route.health?.detail && route.container?.errors) {
-        return `${route.container?.errors}\n${route.health?.detail}`;
-      }
-      return route.health?.detail ?? route.container?.errors?.toString();
+      return joinMultiple([
+        route.container?.errors
+          ? `Errors: ${route.container?.errors}`
+          : undefined,
+        route.health?.detail,
+      ]);
     },
   },
 ] as const;
+
+function joinMultiple(values: (string | undefined)[]) {
+  const { open, setOpen } = useCollapsible();
+  return (
+    <For each={values.filter(Boolean) as string[]}>
+      {(value, index) => {
+        value = value.trim();
+        let idxNewline = -1;
+        let numLines = 0;
+        let numLongestLine = 0;
+        for (const line of value.split("\n")) {
+          if (idxNewline === -1) {
+            idxNewline = line.length;
+          }
+          if (line.length > numLongestLine) {
+            numLongestLine = line.length;
+          }
+          numLines++;
+        }
+        numLongestLine = Math.min(50, numLongestLine);
+        const triggerText = "Click to " + (open ? "collapse" : "expand");
+        if (numLines > 2) {
+          return (
+            <CollapsibleRoot
+              key={index}
+              open={open}
+              onOpenChange={({ open }) => setOpen(open)}
+            >
+              <CollapsibleTrigger>
+                {/*  prevents UI shift when open/close */}
+                <Group w={`${numLongestLine + triggerText.length}ch`}>
+                  {open ? <LuChevronDown /> : <LuChevronRight />}
+                  <Text key={index} textAlign={"left"}>
+                    {triggerText}
+                  </Text>
+                </Group>
+              </CollapsibleTrigger>
+              <CollapsibleContent
+                w={`${numLongestLine + triggerText.length}ch`}
+              >
+                <Text key={index}>{value}</Text>
+              </CollapsibleContent>
+            </CollapsibleRoot>
+          );
+        }
+        return <Text key={index}>{value}</Text>;
+      }}
+    </For>
+  );
+}
 
 function RenderTable({
   provider,
@@ -118,6 +176,14 @@ function RenderTable({
       if (providerComparison !== 0) {
         return providerComparison;
       }
+
+      const networkA = a.container?.network ?? "";
+      const networkB = b.container?.network ?? "";
+      const networkComparison = networkA.localeCompare(networkB);
+      if (networkComparison !== 0) {
+        return networkComparison;
+      }
+
       return a.alias.localeCompare(b.alias);
     });
   }, [routes.value]);

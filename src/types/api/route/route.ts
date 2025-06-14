@@ -48,6 +48,7 @@ export type RouteResponse = {
     labels: Record<string, string>;
     idlewatecher_config: IdlewatcherConfig;
     mounts: string[];
+    network?: string;
     private_ports: PortMapping;
     public_ports: PortMapping;
     public_hostname: string;
