@@ -84,7 +84,12 @@ export const Columns = [
   },
   {
     label: "Detail",
-    getter: (route: RouteResponse) => route.health?.detail,
+    getter: (route: RouteResponse) => {
+      if (route.health?.detail && route.container?.errors) {
+        return `${route.container?.errors}\n${route.health?.detail}`;
+      }
+      return route.health?.detail ?? route.container?.errors?.toString();
+    },
   },
 ] as const;
 
@@ -161,7 +166,7 @@ function RenderTable({
       <Table.Body>
         <For each={sortedRoutes ?? []}>
           {(item) => (
-            <Table.Row key={`${item.alias}`}>
+            <Table.Row key={`${item.provider}_${item.alias}`}>
               <For each={Columns}>
                 {(col) => (
                   <Table.Cell

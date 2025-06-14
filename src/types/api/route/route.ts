@@ -57,6 +57,7 @@ export type RouteResponse = {
     is_explicit: boolean;
     is_host_network_mode: boolean;
     running: boolean;
+    errors?: string;
   };
   health?: Health;
 };
