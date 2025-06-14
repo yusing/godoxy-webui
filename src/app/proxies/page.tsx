@@ -48,6 +48,10 @@ export const Columns = [
     ),
   },
   {
+    label: "Provider",
+    getter: (route: RouteResponse) => route.provider,
+  },
+  {
     label: "Alias",
     getter: (route: RouteResponse) => route.alias,
   },
@@ -57,10 +61,6 @@ export const Columns = [
       route.container?.container_name != route.alias
         ? route.container?.container_name
         : "<",
-  },
-  {
-    label: "Provider",
-    getter: (route: RouteResponse) => route.provider,
   },
   {
     label: "Proxied",
