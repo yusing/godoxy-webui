@@ -329,21 +329,30 @@ const ReverseProxyRouteForm: React.FC<{
             <Field label="Load Balancer">
               <Input {...register("load_balance.link")} />
             </Field>
-            <SelectRoot
-              collection={loadbalanceModes}
-              {...register("load_balance.mode")}
-            >
-              <SelectTrigger clearable>
-                <SelectValueText placeholder="Load Balance Mode" />
-              </SelectTrigger>
-              <SelectContent portalRef={advConfigRef}>
-                {loadbalanceModes.items.map((item) => (
-                  <SelectItem item={item} key={item}>
-                    {item}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </SelectRoot>
+            <Field label="Load Balance Mode">
+              <Controller
+                control={control}
+                name="load_balance.mode"
+                render={({ field }) => (
+                  <SelectRoot
+                    collection={loadbalanceModes}
+                    value={field.value ? [field.value] : undefined}
+                    onValueChange={({ value }) => field.onChange(value?.[0])}
+                  >
+                    <SelectTrigger clearable>
+                      <SelectValueText placeholder="Load Balance Mode" />
+                    </SelectTrigger>
+                    <SelectContent portalRef={advConfigRef}>
+                      {loadbalanceModes.items.map((item) => (
+                        <SelectItem item={item} key={item}>
+                          {item}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </SelectRoot>
+                )}
+              />
+            </Field>
             <HealthcheckSettings control={control} />
             <HomepageSettings control={control} register={register} />
           </Stack>
