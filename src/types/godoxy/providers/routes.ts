@@ -57,6 +57,8 @@ export type ReverseProxyRoute = {
    * @default 80
    */
   port?: Port;
+  /** Agent */
+  agent?: string;
   /** Skip TLS verification
    *
    * @default false
@@ -119,6 +121,8 @@ export type StreamRoute = {
   host?: Hostname | IPv4 | IPv6;
   /* Stream port */
   port: StreamPort;
+  /** Agent */
+  agent?: string;
   /** Healthcheck config */
   healthcheck?: HealthcheckConfig;
 };

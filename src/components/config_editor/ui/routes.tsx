@@ -21,6 +21,9 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
+import { Tag } from "@/components/ui/tag";
+import { Agent } from "@/types/api/agent";
+import Endpoints, { fetchEndpoint, toastError } from "@/types/api/endpoints";
 import { Homepage, LoadBalance, Routes } from "@/types/godoxy";
 import {
   Badge,
@@ -40,9 +43,11 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Pencil, Trash } from "lucide-react";
-import React from "react";
+import { useMemo, useRef, useState } from "react";
 import { Control, Controller, useForm, UseFormRegister } from "react-hook-form";
+import { useAsync } from "react-use";
 import { IconSearcher } from "../icon_searcher";
+
 const routeTypes = [
   {
     label: "Reverse Proxy",
@@ -61,10 +66,13 @@ const routeTypes = [
   },
 ] as const;
 
-export const RoutesEditor: React.FC<{
+export function RoutesEditor({
+  data,
+  onChange,
+}: {
   data: Routes.Routes;
   onChange: (v: Routes.Routes) => void;
-}> = ({ data, onChange }) => {
+}) {
   return (
     <Stack gap="4">
       <DialogRoot lazyMount unmountOnExit motionPreset="slide-in-bottom">
@@ -165,12 +173,15 @@ export const RoutesEditor: React.FC<{
       </For>
     </Stack>
   );
-};
+}
 
-const RouteEditor: React.FC<{
+function RouteEditor({
+  route,
+  onChange,
+}: {
   route: Routes.Route;
   onChange: (v: Routes.Route) => void;
-}> = ({ route, onChange }) => {
+}) {
   let t: string;
   switch (route.scheme ?? "http") {
     case "http":
@@ -188,7 +199,7 @@ const RouteEditor: React.FC<{
       t = "rp";
       break;
   }
-  const [type, setType] = React.useState(t);
+  const [type, setType] = useState(t);
   return (
     <Stack gap="4">
       <RadioCardRoot
@@ -225,12 +236,15 @@ const RouteEditor: React.FC<{
       )}
     </Stack>
   );
-};
+}
 
-const ReverseProxyRouteForm: React.FC<{
+function ReverseProxyRouteForm({
+  value,
+  onSubmit,
+}: {
   value: Routes.ReverseProxyRoute;
   onSubmit: (route: Routes.ReverseProxyRoute) => void;
-}> = ({ value, onSubmit }) => {
+}) {
   const {
     control,
     register,
@@ -250,7 +264,7 @@ const ReverseProxyRouteForm: React.FC<{
     reValidateMode: "onChange",
   });
 
-  const advConfigRef = React.useRef<HTMLDivElement>(null);
+  const advConfigRef = useRef<HTMLDivElement>(null);
   const submit = () => onSubmit(getValues());
   const loadbalanceModes = createListCollection({
     items: LoadBalance.LOAD_BALANCE_MODES,
@@ -320,6 +334,13 @@ const ReverseProxyRouteForm: React.FC<{
           </HStack>
         )}
       />
+      <Controller
+        control={control}
+        name="agent"
+        render={({ field }) => (
+          <AgentSelector value={field.value} onChange={field.onChange} />
+        )}
+      />
       <Collapsible.Root lazyMount unmountOnExit>
         <Collapsible.Trigger asChild>
           <Button variant={"subtle"}>Show Advanced Options</Button>
@@ -361,12 +382,15 @@ const ReverseProxyRouteForm: React.FC<{
       <FormFooter isValid={isValid} onSubmit={submit} />
     </Stack>
   );
-};
+}
 
-const FileServerRouteForm: React.FC<{
+function FileServerRouteForm({
+  value,
+  onSubmit,
+}: {
   value: Routes.FileServerRoute;
   onSubmit: (route: Routes.FileServerRoute) => void;
-}> = ({ value, onSubmit }) => {
+}) {
   const {
     control,
     register,
@@ -417,12 +441,15 @@ const FileServerRouteForm: React.FC<{
       <FormFooter isValid={isValid} onSubmit={submit} />
     </Stack>
   );
-};
+}
 
-const StreamRouteForm: React.FC<{
+function StreamRouteForm({
+  value,
+  onSubmit,
+}: {
   value: Routes.StreamRoute;
   onSubmit: (route: Routes.StreamRoute) => void;
-}> = ({ value, onSubmit }) => {
+}) {
   const {
     control,
     register,
@@ -485,11 +512,18 @@ const StreamRouteForm: React.FC<{
       >
         <Input placeholder="Listening:Target" {...register("port")} />
       </Field>
+      <Controller
+        control={control}
+        name="agent"
+        render={({ field }) => (
+          <AgentSelector value={field.value} onChange={field.onChange} />
+        )}
+      />
       <HealthcheckSettings control={control} />
       <FormFooter isValid={isValid} onSubmit={submit} />
     </Stack>
   );
-};
+}
 
 type WithHomepage = { homepage?: Homepage.HomepageConfig };
 function HomepageSettings({
@@ -553,6 +587,61 @@ function HealthcheckSettings({
         </Checkbox>
       )}
     />
+  );
+}
+
+function AgentSelector({
+  value,
+  onChange,
+}: {
+  value: string | undefined;
+  onChange: (value: string | undefined) => void;
+}) {
+  const fieldRef = useRef<HTMLDivElement>(null);
+  const agents = useAsync(async () => {
+    return fetchEndpoint(Endpoints.LIST_AGENTS)
+      .then((res) => res?.json() as Promise<Agent[]>)
+      .catch(toastError);
+  }, []);
+
+  const collection = useMemo(
+    () =>
+      createListCollection({
+        items:
+          agents.value?.map((a) => ({
+            label: (
+              <HStack w="full">
+                <Text>{a.name}</Text>
+                <Tag colorPalette={"blue"}>{a.addr}</Tag>
+                <Spacer />
+                <Tag colorPalette={"gray"}>{a.version}</Tag>
+              </HStack>
+            ),
+            value: a.name,
+          })) ?? [],
+      }),
+    [agents.value],
+  );
+
+  return (
+    <Field label="Agent" ref={fieldRef}>
+      <SelectRoot
+        collection={collection}
+        value={value ? [value] : undefined}
+        onValueChange={({ value }) => onChange(value?.[0])}
+      >
+        <SelectTrigger clearable>
+          <SelectValueText placeholder="Agent" />
+        </SelectTrigger>
+        <SelectContent portalRef={fieldRef}>
+          {collection.items.map((item) => (
+            <SelectItem item={item} key={item.value}>
+              {item.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </SelectRoot>
+    </Field>
   );
 }
 
