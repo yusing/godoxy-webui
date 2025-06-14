@@ -30,6 +30,8 @@ export type RouteRule = {
 export type Route = (ReverseProxyRoute | FileServerRoute | StreamRoute) & {
   /** Route Rules */
   rules?: RouteRule[];
+  /** Route agent */
+  agent?: string;
 };
 export type Routes = {
   [key: string]: Route;
