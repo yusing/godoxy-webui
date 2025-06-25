@@ -317,9 +317,6 @@ export default function ProxiesPage() {
 }
 
 const units = [
-  ["y", 31556952],
-  ["M", 2629746],
-  ["w", 604800],
   ["d", 86400],
   ["h", 3600],
   ["m", 60],
