@@ -267,6 +267,32 @@ function RenderTable({
   );
 }
 
+function StyledTabTrigger({ children, ...props }: Tabs.TriggerProps) {
+  return (
+    <Tabs.Trigger
+      {...props}
+      px={4}
+      py={2}
+      rounded="lg"
+      fontWeight="medium"
+      fontSize="sm"
+      transition="all 0.2s"
+      _hover={{
+        bg: "bg.emphasized",
+        color: "fg.emphasized",
+      }}
+      _selected={{
+        bg: "white",
+        color: "fg.default",
+        shadow: "xs",
+        fontWeight: "semibold",
+      }}
+    >
+      {children}
+    </Tabs.Trigger>
+  );
+}
+
 export default function ProxiesPage() {
   const fragment = useFragment();
   const router = useRouter();
@@ -298,18 +324,28 @@ export default function ProxiesPage() {
       lazyMount
       unmountOnExit
     >
-      <Tabs.List gap={6} rounded="l3" p="1">
-        <Tabs.Trigger key={"#all"} value={"#all"}>
+      <Tabs.List
+        gap={2}
+        rounded="xl"
+        p="1"
+        bg="bg.muted"
+        border="1px solid"
+        borderColor="border.muted"
+        shadow="sm"
+      >
+        <StyledTabTrigger key={"#all"} value={"#all"}>
           All
-        </Tabs.Trigger>
+        </StyledTabTrigger>
         <For each={providers.data ?? []}>
           {(provider) => (
-            <Tabs.Trigger key={provider.full_name} value={provider.full_name}>
+            <StyledTabTrigger
+              key={provider.full_name}
+              value={provider.full_name}
+            >
               {provider.short_name}
-            </Tabs.Trigger>
+            </StyledTabTrigger>
           )}
         </For>
-        <Tabs.Indicator rounded="l2" />
       </Tabs.List>
       <Tabs.Content value={"#all"}>
         <RenderTable provider={null} />
