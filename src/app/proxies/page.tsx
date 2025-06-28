@@ -1,34 +1,37 @@
 "use client";
 
 import {
+  Badge,
   Center,
-  CollapsibleContent,
-  CollapsibleRoot,
-  CollapsibleTrigger,
+  Flex,
   For,
-  Group,
   HStack,
   Spinner,
+  Stack,
   Table,
   Tabs,
   Text,
-  useCollapsible,
 } from "@chakra-ui/react";
 
+import { HealthStatusBadge } from "@/components/health_status";
+import { Actions } from "@/components/proxies/actions";
 import { EmptyState } from "@/components/ui/empty-state";
-import useWebsocket, { ReadyState } from "@/hooks/ws";
-import { MdError } from "react-icons/md";
-
-import { HealthStatus } from "@/components/health_status";
 import { useFragment } from "@/hooks/fragment";
+import useWebsocket, { ReadyState } from "@/hooks/ws";
+import "@/styles/yaml_editor.css";
 import Endpoints from "@/types/api/endpoints";
 import { type RouteResponse } from "@/types/api/route/route";
 import { type RouteProviderResponse } from "@/types/api/route_provider";
 import { getRoutes } from "@/types/api/routes";
+import { Geist_Mono } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useMemo } from "react";
-import { LuChevronDown, LuChevronRight } from "react-icons/lu";
+import { MdError } from "react-icons/md";
 import { useAsync } from "react-use";
+
+const GeistMono = Geist_Mono({
+  subsets: ["latin"],
+});
 
 function getStatus(route: RouteResponse) {
   const health = route.health;
@@ -41,115 +44,132 @@ function getStatus(route: RouteResponse) {
   return health.status;
 }
 
+function Alias({ route }: { route: RouteResponse }) {
+  return (
+    <HStack>
+      <Text>{route.alias}</Text>
+      <Badge
+        variant={"subtle"}
+        colorPalette={route.excluded ? "gray" : "green"}
+      >
+        {route.excluded ? "Excluded" : "Proxied"}
+      </Badge>
+      {route.health?.extra && (
+        <Badge variant={"subtle"} colorPalette={"gray"} fontSize={"xs"}>
+          Load-Balancer
+        </Badge>
+      )}
+    </HStack>
+  );
+}
+
 export const Columns = [
+  {
+    label: "Service",
+    getter: (route: RouteResponse) =>
+      route.container?.container_name != route.alias ? (
+        <Stack gap={1}>
+          <Alias route={route} />
+          {route.container?.container_name ? (
+            <Text color="fg.muted">{route.container?.container_name}</Text>
+          ) : (
+            Object.values(route.health?.extra?.pool ?? {}).map((health) => (
+              <Text color="fg.muted">{health.name}</Text>
+            ))
+          )}
+        </Stack>
+      ) : (
+        <Alias route={route} />
+      ),
+  },
   {
     label: "Status",
     getter: (route: RouteResponse) => (
-      <HStack>
-        <HealthStatus value={getStatus(route)} />
-        <Text fontSize="sm" color="text.subtle">
-          {getStatus(route)}
-        </Text>
-      </HStack>
+      <Stack>
+        <HealthStatusBadge status={getStatus(route)} />
+        {route.health?.detail && (
+          <Text
+            fontSize={"xs"}
+            color="fg.muted"
+            maxW={"20ch"}
+            textOverflow={"ellipsis"}
+            overflow={"hidden"}
+            whiteSpace={"nowrap"}
+          >
+            {route.health.detail}
+          </Text>
+        )}
+      </Stack>
     ),
   },
   {
     label: "Provider",
-    getter: (route: RouteResponse) => route.provider,
-  },
-  {
-    label: "Alias",
-    getter: (route: RouteResponse) => route.alias,
-  },
-  {
-    label: "Container",
     getter: (route: RouteResponse) =>
-      route.container?.container_name != route.alias
-        ? route.container?.container_name
-        : "<",
-  },
-  {
-    label: "Proxied",
-    getter: (route: RouteResponse) => (!route.excluded ? "Yes" : "No"),
-  },
-  {
-    label: "Listening",
-    getter: (route: RouteResponse) => route.lurl,
+      route.provider && (
+        <Badge variant={"surface"} colorPalette={"bg"} fontSize="sm">
+          {route.provider}
+        </Badge>
+      ),
   },
   {
     label: "Target",
-    getter: (route: RouteResponse) => route.purl,
+    getter: (route: RouteResponse) => (
+      <>
+        <Text className={GeistMono.className} fontSize={"sm"}>
+          {route.purl}
+        </Text>
+        {route.lurl && (
+          <Text
+            className={GeistMono.className}
+            fontSize={"xs"}
+            color="fg.muted"
+          >
+            Listening on {route.lurl}
+          </Text>
+        )}
+      </>
+    ),
   },
   {
     label: "Uptime",
-    getter: (route: RouteResponse) => formatUptime(route.health?.uptime ?? 0),
+    getter: (route: RouteResponse) =>
+      route.health?.uptime && (
+        <Text className={GeistMono.className} fontSize={"sm"}>
+          {formatUptime(route.health.uptime)}
+        </Text>
+      ),
   },
   {
     label: "Latency",
-    getter: (route: RouteResponse) => route.health?.latencyStr,
+    getter: (route: RouteResponse) => (
+      <Text className={GeistMono.className} fontSize={"sm"}>
+        {route.health?.latencyStr}
+      </Text>
+    ),
   },
   {
-    label: "Detail",
-    getter: (route: RouteResponse) => {
-      return joinMultiple([
-        route.container?.errors
-          ? `Errors: ${route.container?.errors}`
-          : undefined,
-        route.health?.detail,
-      ]);
-    },
+    label: "Exposed Ports",
+    getter: (route: RouteResponse) => (
+      <Flex flexWrap={"wrap"} gap={1}>
+        {Object.entries(route.container?.public_ports ?? {}).map(
+          ([_, portInfo]) => (
+            <Badge
+              key={portInfo.PublicPort}
+              variant={"outline"}
+              fontSize={"xs"}
+            >
+              {portInfo.PublicPort}
+            </Badge>
+          ),
+        )}
+      </Flex>
+    ),
+  },
+  {
+    label: "Actions",
+    getter: (route: RouteResponse) => <Actions route={route} />,
   },
 ] as const;
-
-function joinMultiple(values: (string | undefined)[]) {
-  const { open, setOpen } = useCollapsible();
-  return (
-    <For each={values.filter(Boolean) as string[]}>
-      {(value, index) => {
-        value = value.trim();
-        let idxNewline = -1;
-        let numLines = 0;
-        let numLongestLine = 0;
-        for (const line of value.split("\n")) {
-          if (idxNewline === -1) {
-            idxNewline = line.length;
-          }
-          if (line.length > numLongestLine) {
-            numLongestLine = line.length;
-          }
-          numLines++;
-        }
-        numLongestLine = Math.min(50, numLongestLine);
-        const triggerText = "Click to " + (open ? "collapse" : "expand");
-        if (numLines > 2) {
-          return (
-            <CollapsibleRoot
-              key={index}
-              open={open}
-              onOpenChange={({ open }) => setOpen(open)}
-            >
-              <CollapsibleTrigger>
-                {/*  prevents UI shift when open/close */}
-                <Group w={`${numLongestLine + triggerText.length}ch`}>
-                  {open ? <LuChevronDown /> : <LuChevronRight />}
-                  <Text key={index} textAlign={"left"}>
-                    {triggerText}
-                  </Text>
-                </Group>
-              </CollapsibleTrigger>
-              <CollapsibleContent
-                w={`${numLongestLine + triggerText.length}ch`}
-              >
-                <Text key={index}>{value}</Text>
-              </CollapsibleContent>
-            </CollapsibleRoot>
-          );
-        }
-        return <Text key={index}>{value}</Text>;
-      }}
-    </For>
-  );
-}
 
 function RenderTable({
   provider,
@@ -213,7 +233,6 @@ function RenderTable({
     <Table.Root
       interactive
       stickyHeader
-      striped
       native
       // sortDescriptor={list.sortDescriptor}
       // onSortChange={list.sort}
@@ -235,11 +254,7 @@ function RenderTable({
             <Table.Row key={`${item.provider}_${item.alias}`}>
               <For each={Columns}>
                 {(col) => (
-                  <Table.Cell
-                    key={`${item.alias}_${col.label}`}
-                    textWrap={col.label !== "Detail" ? "nowrap" : "wrap"}
-                    whiteSpace={col.label === "Detail" ? "pre-wrap" : "normal"}
-                  >
+                  <Table.Cell key={`${item.alias}_${col.label}`}>
                     {col.getter(item)}
                   </Table.Cell>
                 )}
