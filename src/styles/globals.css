@@ -41,9 +41,6 @@
   --color-warning: #ff6200;
   --color-error: #ea0000;
   --hover-bg: var(--chakra-colors-gray-100);
-  .chakra-card__root {
-    box-shadow: var(--chakra-shadows-xs);
-  }
 }
 
 [data-theme="dark"] {
@@ -67,9 +64,6 @@
   }
   [data-scope="checkbox"][data-part="control"][data-state="unchecked"] {
     background-color: var(--on-bg-emphasized);
-  }
-  .chakra-progress__track {
-    background-color: #26282b;
   }
   [aria-selected="true"] {
     background-color: var(--on-bg-emphasized);
