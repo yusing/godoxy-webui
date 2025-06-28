@@ -6,15 +6,20 @@ import YAMLConfigEditor from "@/components/config_editor/yaml_editor";
 import { GoDoxyErrorText } from "@/components/godoxy_error";
 import { ListboxSection } from "@/components/listbox/listbox_section";
 import { Toaster } from "@/components/ui/toaster";
-import { useConfigFileState } from "@/hooks/config_file";
+import {
+  initUseConfigFileState,
+  useConfigFileState,
+} from "@/hooks/config_file";
 import { type ConfigFile } from "@/types/file";
 import { Box, For, Stack } from "@chakra-ui/react";
 import { FaFile } from "react-icons/fa6";
 import { useMount } from "react-use";
+import { useShallow } from "zustand/react/shallow";
 
 export default function ConfigEditorPage() {
   return (
     <Stack gap="6" direction="row" h="full" w="full">
+      <ConfigStateInitializer />
       <Stack align={"flex-start"}>
         <Stack gap="0">
           <NewFileButton fileExtension=".yml" />
@@ -35,14 +40,19 @@ export default function ConfigEditorPage() {
         <YAMLConfigEditor />
         <ValidationErrorText />
       </Stack>
-      <ConfigStateInitializer />
       <Toaster />
     </Stack>
   );
 }
 
 function FileList() {
-  const { files, current, setCurrent } = useConfigFileState();
+  const { files, current, setCurrent } = useConfigFileState(
+    useShallow((state) => ({
+      files: state.files,
+      current: state.current,
+      setCurrent: state.setCurrent,
+    })),
+  );
   return (
     <Box gap="3" overflowY="auto" scrollbar={"hidden"}>
       <For each={Object.entries(files)}>
@@ -68,16 +78,14 @@ function FileList() {
 }
 
 function ValidationErrorText() {
-  const { valErr } = useConfigFileState();
+  const valErr = useConfigFileState((state) => state.valErr);
   if (!valErr) {
     return null;
   }
-  console.log(valErr);
   return <GoDoxyErrorText err={valErr} />;
 }
 
 function ConfigStateInitializer() {
-  const { init } = useConfigFileState();
-  useMount(init);
+  useMount(initUseConfigFileState);
   return null;
 }

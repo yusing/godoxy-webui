@@ -21,6 +21,7 @@ import { ConfigFile } from "@/types/file";
 import { Group, Input, InputAddon } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
 import { GrCloudSoftware, GrDocumentConfig } from "react-icons/gr";
+import { useShallow } from "zustand/react/shallow";
 
 interface FormProps {
   fileExtension: string;
@@ -31,7 +32,12 @@ export function NewFileButton({ fileExtension }: FormProps) {
   const [filename, setFilename] = useState("");
   const [fileType, setFileType] = useState<ConfigFileType>("provider");
   const [isOpen, setIsOpen] = useState(false);
-  const { files, setCurrent } = useConfigFileState();
+  const { files, setCurrent } = useConfigFileState(
+    useShallow((state) => ({
+      files: state.files,
+      setCurrent: state.setCurrent,
+    })),
+  );
 
   const checkExists = useCallback(
     (t: ConfigFileType, v: string) => {
@@ -136,7 +142,12 @@ export function NewFileButton({ fileExtension }: FormProps) {
 }
 
 export function SaveButton() {
-  const { hasUnsavedChanges, updateRemote } = useConfigFileState();
+  const { hasUnsavedChanges, updateRemote } = useConfigFileState(
+    useShallow((state) => ({
+      hasUnsavedChanges: state.hasUnsavedChanges,
+      updateRemote: state.updateRemote,
+    })),
+  );
   return (
     <ListboxItem
       px={0}

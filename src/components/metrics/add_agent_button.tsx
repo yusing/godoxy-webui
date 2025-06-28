@@ -62,7 +62,7 @@ export function AddAgentDialogButton() {
   const [explicitOnly, setExplicitOnly] = useState(false);
   const [addToConfig, setAddToConfig] = useState(true);
   const [agent, setAgent] = useState<NewAgentResponse | null>(null);
-  const { addAgent } = useConfigFileState();
+  const addAgent = useConfigFileState((state) => state.addAgent);
 
   return (
     <Dialog.Root

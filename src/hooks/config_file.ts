@@ -7,22 +7,22 @@ import Endpoints, {
   toastError,
 } from "@/types/api/endpoints";
 import { ConfigFile, getConfigFiles, godoxyConfig } from "@/types/file";
+import { Config } from "@/types/godoxy";
+import { parse as parseYAML, stringify as stringifyYAML } from "yaml";
 import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
+
 type State = {
   files: Record<ConfigFileType, ConfigFile[]>;
   content: string | undefined;
   current: ConfigFile;
   hasUnsavedChanges: boolean;
   valErr: GoDoxyError | undefined;
-  init: () => Promise<void>;
   setCurrent: (file: ConfigFile) => Promise<void>;
   setContent: (content: string | undefined) => Promise<void>;
   updateRemote: () => void;
   addAgent: (host: string, port: number) => Promise<void>;
 };
-
-import { Config } from "@/types/godoxy";
-import { parse as parseYAML, stringify as stringifyYAML } from "yaml";
 
 async function getContent(file: ConfigFile): Promise<string | undefined> {
   if (file.isNewFile) {
@@ -75,14 +75,12 @@ export const useConfigFileState = create<State>((set, get) => ({
   current: godoxyConfig,
   hasUnsavedChanges: false,
   valErr: undefined,
-  init: async () => {
-    const files = await getConfigFiles();
-    const content = await getContent(godoxyConfig);
-    set({ files, content, hasUnsavedChanges: false });
-  },
   setContent: async (content: string | undefined) => {
+    if (!content || content.length === 0) {
+      return;
+    }
     const { current } = get();
-    const validateErr = await validate(current, content ?? "");
+    const validateErr = await validate(current, content);
     set((state) => {
       return {
         ...state,
@@ -154,3 +152,25 @@ export const useConfigFileState = create<State>((set, get) => ({
     return;
   },
 }));
+
+export function useConfigFileContent() {
+  return useConfigFileState(
+    useShallow((state) => {
+      return {
+        content: state.content,
+        current: state.current,
+        setContent: state.setContent,
+      };
+    }),
+  );
+}
+
+export async function initUseConfigFileState() {
+  const files = await getConfigFiles();
+  const content = await getContent(godoxyConfig);
+  useConfigFileState.setState({
+    files,
+    content,
+    hasUnsavedChanges: false,
+  });
+}

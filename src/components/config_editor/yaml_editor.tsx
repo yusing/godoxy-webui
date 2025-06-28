@@ -1,13 +1,13 @@
 "use client";
 
-import { useConfigFileState } from "@/hooks/config_file";
+import { useConfigFileContent } from "@/hooks/config_file";
 import { useTyping } from "@/hooks/typing";
 import {
   ConfigSchema,
   MiddlewareComposeSchema,
   RoutesSchema,
 } from "@/types/godoxy";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDebounce } from "react-use";
 import YAMLEditor from "../yaml_editor";
 
@@ -18,13 +18,9 @@ const schemas: Record<string, unknown> = {
 };
 
 function YAMLConfigEditor() {
-  const { content, current, setContent } = useConfigFileState();
   const [localContent, setLocalContent] = useState<string | undefined>();
   const typing = useTyping();
-
-  useEffect(() => {
-    setLocalContent(content);
-  }, [content]);
+  const { content, current, setContent } = useConfigFileContent();
 
   useDebounce(
     () => {

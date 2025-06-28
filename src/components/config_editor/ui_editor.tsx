@@ -1,7 +1,7 @@
 "use client";
 
 import { CloseButton } from "@/components/ui/close-button";
-import { useConfigFileState } from "@/hooks/config_file";
+import { useConfigFileContent } from "@/hooks/config_file";
 import { useSetting } from "@/hooks/settings";
 import { Alert, ClientOnly, Stack } from "@chakra-ui/react";
 import { FC } from "react";
@@ -41,7 +41,7 @@ function UIEditorAlert() {
 }
 
 export default function UIEditor() {
-  const { content, current, setContent } = useConfigFileState();
+  const { content, current, setContent } = useConfigFileContent();
   let Editor: FC<{ data: any; onChange: (v: any) => void }>;
 
   if (current.type == "config") {
