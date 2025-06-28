@@ -294,6 +294,10 @@ function StyledTabTrigger({ children, ...props }: Tabs.TriggerProps) {
         color: "fg.default",
         shadow: "xs",
         fontWeight: "semibold",
+        _dark: {
+          bg: "bg.muted",
+          color: "fg.default",
+        },
       }}
     >
       {children}
