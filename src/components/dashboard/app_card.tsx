@@ -224,7 +224,7 @@ export const AppCard = memo<Omit<AppCardInnerProps, "dragging">>(
               {...listeners}
               transition={"transform 0.1s ease-in-out"}
               _hover={{ transform: "scale(1.02)" }}
-              href={`${curItem.url}`}
+              href={curItem.url}
               target="_blank"
               variant={"plain"}
               aria-label={curItem.name}

@@ -113,7 +113,7 @@ function HiddenApps({
             }}
           >
             <HStack>
-              <AppCardInner item={app} dragging={false} />
+              <AppCardInner item={app} disableTooltip />
               {app.category && <Tag>{app.category}</Tag>}
             </HStack>
           </Checkbox>

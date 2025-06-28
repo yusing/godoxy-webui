@@ -103,7 +103,7 @@ export type IdlewatcherConfig = {
 };
 export type PortMapping = Record<number, ContainerPort>;
 export type ContainerPort = {
-  IP: string;
+  IP?: string;
   PrivatePort: number;
   PublicPort: number;
   Type: string;
