@@ -2,6 +2,7 @@
 
 import {
   Badge,
+  Box,
   Center,
   Flex,
   For,
@@ -18,7 +19,6 @@ import { Actions } from "@/components/proxies/actions";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useFragment } from "@/hooks/fragment";
 import useWebsocket, { ReadyState } from "@/hooks/ws";
-import "@/styles/yaml_editor.css";
 import Endpoints from "@/types/api/endpoints";
 import { type RouteResponse } from "@/types/api/route/route";
 import { type RouteProviderResponse } from "@/types/api/route_provider";
@@ -219,6 +219,14 @@ function RenderTable({
     );
   }
 
+  if (routes.loading) {
+    return (
+      <Center>
+        <Spinner />
+      </Center>
+    );
+  }
+
   if (routes.value?.length === 0) {
     return (
       <EmptyState
@@ -347,22 +355,67 @@ export default function ProxiesPage() {
           )}
         </For>
       </Tabs.List>
-      <Tabs.Content value={"#all"}>
-        <RenderTable provider={null} />
-      </Tabs.Content>
-      {providers.data ? (
-        providers.data.map((provider) => (
-          <Tabs.Content key={provider.full_name} value={provider.full_name}>
-            <RenderTable provider={provider} />
-          </Tabs.Content>
-        ))
-      ) : (
-        <Tabs.Content value="loading">
-          <Center>
-            <Spinner />
-          </Center>
+      <Box pos="relative" minH="400px" width="full">
+        <Tabs.Content
+          value={"#all"}
+          position="absolute"
+          inset="0"
+          _open={{
+            animationName: "fade-in, scale-in",
+            animationDuration: "300ms",
+            animationTimingFunction: "ease-out",
+          }}
+          _closed={{
+            animationName: "fade-out, scale-out",
+            animationDuration: "200ms",
+            animationTimingFunction: "ease-in",
+          }}
+        >
+          <RenderTable provider={null} />
         </Tabs.Content>
-      )}
+        {providers.data ? (
+          providers.data.map((provider) => (
+            <Tabs.Content
+              key={provider.full_name}
+              value={provider.full_name}
+              position="absolute"
+              inset="0"
+              _open={{
+                animationName: "fade-in, scale-in",
+                animationDuration: "300ms",
+                animationTimingFunction: "ease-out",
+              }}
+              _closed={{
+                animationName: "fade-out, scale-out",
+                animationDuration: "200ms",
+                animationTimingFunction: "ease-in",
+              }}
+            >
+              <RenderTable provider={provider} />
+            </Tabs.Content>
+          ))
+        ) : (
+          <Tabs.Content
+            value="loading"
+            position="absolute"
+            inset="0"
+            _open={{
+              animationName: "fade-in, scale-in",
+              animationDuration: "300ms",
+              animationTimingFunction: "ease-out",
+            }}
+            _closed={{
+              animationName: "fade-out, scale-out",
+              animationDuration: "200ms",
+              animationTimingFunction: "ease-in",
+            }}
+          >
+            <Center>
+              <Spinner />
+            </Center>
+          </Tabs.Content>
+        )}
+      </Box>
     </Tabs.Root>
   );
 }
