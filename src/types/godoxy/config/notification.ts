@@ -58,6 +58,7 @@ export type WebhookMimeType = (typeof WEBHOOK_MIME_TYPES)[number];
 export type WebhookColorMode = (typeof WEBHOOK_COLOR_MODES)[number];
 
 export interface WebhookConfig extends NotificationConfig {
+  /** Provider type */
   provider: "webhook";
   /**
    * Template
