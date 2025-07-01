@@ -7,7 +7,7 @@ import {
   MiddlewareComposeSchema,
   RoutesSchema,
 } from "@/types/godoxy";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDebounce } from "react-use";
 import YAMLEditor from "../yaml_editor";
 
@@ -21,6 +21,10 @@ function YAMLConfigEditor() {
   const [localContent, setLocalContent] = useState<string | undefined>();
   const typing = useTyping();
   const { content, current, setContent } = useConfigFileContent();
+
+  useEffect(() => {
+    setLocalContent(content);
+  }, [content]);
 
   useDebounce(
     () => {
