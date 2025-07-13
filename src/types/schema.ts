@@ -10,7 +10,13 @@ export type Schema =
   | typeof RoutesSchema
   | typeof MiddlewareComposeSchema;
 
-type PropertyType = "string" | "number" | "boolean" | "object" | "array";
+type PropertyType =
+  | "string"
+  | "number"
+  | "boolean"
+  | "object"
+  | "array"
+  | (string & {});
 
 export type JSONSchema = {
   title?: string;
@@ -25,7 +31,7 @@ export type JSONSchema = {
   required?: string[];
   pattern?: string;
   format?: string;
-  default?: string;
+  default?: string | number | boolean | null | object | [];
   minimum?: number;
   maximum?: number;
   exclusiveMinimum?: boolean;
@@ -42,14 +48,18 @@ export type JSONSchema = {
   $id?: string;
 };
 
-export type PropertySchema = Record<string, JSONSchema>;
+export type PropertySchema = { [key: string]: JSONSchema };
 
 function distinctSchema(schema: PropertySchema): PropertySchema {
   // select one for multiple fields with same description or title
   const distinctSchema: Record<string, JSONSchema & { key?: string }> = {};
   Object.entries(schema).forEach(([key, value]) => {
     const distinctKey = value.title ?? value.description;
-    if (distinctKey && !distinctSchema[distinctKey]) {
+    if (!distinctKey) {
+      console.error("No distinct key found for " + key);
+      return;
+    }
+    if (!distinctSchema[distinctKey]) {
       distinctSchema[distinctKey] = {
         ...value,
         key,

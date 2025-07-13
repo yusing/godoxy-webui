@@ -14,6 +14,7 @@ export const ALL_MIDDLEWARES = [
   "RateLimit",
   "RealIP",
   "hCaptcha",
+  "ModifyHTML",
 ] as const;
 
 export type MiddlewareBase = {
@@ -86,6 +87,7 @@ export interface MiddlewaresMap
     KeyOptMapping<OIDC>,
     KeyOptMapping<RateLimit>,
     KeyOptMapping<RealIP>,
+    KeyOptMapping<ModifyHTML>,
     KeyOptMapping<UseMiddlewareFileRef> {}
 
 export type MiddlewareComposeItem = (
@@ -100,6 +102,7 @@ export type MiddlewareComposeItem = (
   | OIDC
   | RateLimit
   | RealIP
+  | ModifyHTML
   | UseMiddlewareFileRef
 ) & {
   /**
@@ -251,4 +254,18 @@ export type RealIP = {
    * @default false
    */
   recursive?: boolean;
+};
+
+export type ModifyHTML = {
+  /** modify_html */
+  use: LooseUse<"modify_html">;
+  /** CSS Selector */
+  target: string;
+  /** HTML to modify */
+  html: string;
+  /** Replace HTML
+   *
+   * @default false
+   */
+  replace?: boolean;
 };
