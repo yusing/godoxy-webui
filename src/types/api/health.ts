@@ -1,6 +1,7 @@
+import type { RoutesHealthInfo } from "@/lib/api";
 import { type ColorPalette } from "@chakra-ui/react";
 
-export const healthStatuses = [
+export const healthStatuses: HealthStatusType[] = [
   "healthy",
   "error",
   "unhealthy",
@@ -9,7 +10,7 @@ export const healthStatuses = [
   "unknown",
   "stopped",
 ] as const;
-export type HealthStatusType = (typeof healthStatuses)[number];
+export type HealthStatusType = RoutesHealthInfo["status"] | "stopped";
 
 export const healthStatusColorPalettes: Record<HealthStatusType, ColorPalette> =
   {
@@ -32,23 +33,16 @@ export const healthStatusColors: Record<HealthStatusType, string> = {
   stopped: "gray.500",
 } as const;
 
-export type HealthInfo = {
-  status: HealthStatusType;
-  uptime: string;
-  latency: string;
-  detail: string;
-};
+export type HealthMap = Record<string, RoutesHealthInfo>;
 
-export type HealthMap = Record<string, HealthInfo>;
-
-export const healthInfoUnknown: HealthInfo = {
+export const healthInfoUnknown: RoutesHealthInfo = {
   status: "unknown",
-  uptime: "n/a",
-  latency: "n/a",
-  detail: "n/a",
+  uptime: -1,
+  latency: -1,
+  detail: "",
 };
 
-export function formatHealthInfo(info: HealthInfo) {
+export function formatHealthInfo(info: RoutesHealthInfo) {
   if (info.status === "unknown") {
     return info.status;
   }

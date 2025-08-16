@@ -1,19 +1,4 @@
-type HomepageItemMetadata = {
-  alias: string;
-  provider: string;
-  url: string;
-  skeleton?: boolean;
-};
-
-interface HomepageItem extends HomepageItemMetadata {
-  show?: boolean;
-  name: string;
-  icon: string;
-  category: string;
-  description: string;
-  sort_order?: number;
-  widget_config?: {};
-}
+import type { HomepageItem } from "@/lib/api";
 
 const randName = (length: number) => {
   let result = "";
@@ -34,17 +19,16 @@ export const DummyHomepageItem = (): HomepageItem => {
     icon: "",
     category: randName(10),
     description: "",
-    widget_config: {},
+    widget_config: null,
     url: "",
-    skeleton: true,
+    origin_url: "",
+    sort_order: 0,
   };
 };
-
-type HomepageItems = Record<string, HomepageItem[]>;
 
 type HomepageItemsFilter = {
   category: string;
   provider: string;
 };
 
-export type { HomepageItem, HomepageItems, HomepageItemsFilter };
+export type { HomepageItemsFilter };
