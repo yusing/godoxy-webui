@@ -1,0 +1,2391 @@
+/* eslint-disable */
+/* tslint:disable */
+// @ts-nocheck
+/*
+ * ---------------------------------------------------------------
+ * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
+ * ##                                                           ##
+ * ## AUTHOR: acacode                                           ##
+ * ## SOURCE: https://github.com/acacode/swagger-typescript-api ##
+ * ---------------------------------------------------------------
+ */
+
+export interface AccesslogFieldConfig {
+  config: Record<string, AccesslogFieldMode>;
+  default: "keep" | "drop" | "redact";
+}
+
+export type AccesslogFieldMode = "keep" | "drop" | "redact";
+
+export interface AccesslogFields {
+  cookies: AccesslogFieldConfig;
+  headers: AccesslogFieldConfig;
+  query: AccesslogFieldConfig;
+}
+
+export interface AccesslogFilters {
+  cidr: LogFilterCIDR;
+  /** header exists or header == value */
+  headers: LogFilterHTTPHeader;
+  host: LogFilterHost;
+  method: LogFilterHTTPMethod;
+  status_codes: LogFilterStatusCodeRange;
+}
+
+export interface Agent {
+  addr: string;
+  name: string;
+  version: string;
+}
+
+export interface AuthUserPassAuthCallbackRequest {
+  password: string;
+  username: string;
+}
+
+export interface CIDR {
+  /** network number */
+  ip: number[];
+  /** network mask */
+  mask: number[];
+}
+
+export interface CertInfo {
+  dns_names: string[];
+  email_addresses: string[];
+  issuer: string;
+  not_after: number;
+  not_before: number;
+  subject: string;
+}
+
+export interface Container {
+  agent: Agent;
+  aliases: string[];
+  container_id: string;
+  container_name: string;
+  docker_host: string;
+  errors: string;
+  idlewatcher_config: IdlewatcherConfig;
+  image: ContainerImage;
+  is_excluded: boolean;
+  is_explicit: boolean;
+  is_host_network_mode: boolean;
+  /** for displaying in UI */
+  labels: Record<string, string>;
+  /** source:destination */
+  mounts: Record<string, string>;
+  network: string;
+  private_hostname: string;
+  /** privatePort:types.Port */
+  private_ports: TypesPortMapping;
+  public_hostname: string;
+  /** non-zero publicPort:types.Port */
+  public_ports: TypesPortMapping;
+  running: boolean;
+}
+
+export interface ContainerImage {
+  sha256: string;
+  author: string;
+  name: string;
+  tag: string;
+  version: string;
+}
+
+export interface ContainerPort {
+  /** Host IP address that the container's port is mapped to */
+  IP: string;
+  /**
+   * Port on the container
+   * Required: true
+   */
+  PrivatePort: number;
+  /** Port exposed on the host */
+  PublicPort: number;
+  /**
+   * type
+   * Required: true
+   */
+  Type: string;
+}
+
+export interface ContainerResponse {
+  id: string;
+  image: string;
+  name: string;
+  server: string;
+  state: ContainerState;
+}
+
+export type ContainerState =
+  | "created"
+  | "running"
+  | "paused"
+  | "restarting"
+  | "removing"
+  | "exited"
+  | "dead";
+
+export interface ContainerStats {
+  paused: number;
+  running: number;
+  stopped: number;
+  total: number;
+}
+
+export type ContainerStopMethod = "pause" | "stop" | "kill";
+
+export interface DiskIOCountersStat {
+  /** godoxy */
+  iops: number;
+  /**
+   * ReadCount        uint64 `json:"readCount"`
+   * MergedReadCount  uint64 `json:"mergedReadCount"`
+   * WriteCount       uint64 `json:"writeCount"`
+   * MergedWriteCount uint64 `json:"mergedWriteCount"`
+   * ReadBytes        uint64 `json:"readBytes"`
+   * WriteBytes       uint64 `json:"writeBytes"`
+   * ReadTime         uint64 `json:"readTime"`
+   * WriteTime        uint64 `json:"writeTime"`
+   * IopsInProgress   uint64 `json:"iopsInProgress"`
+   * IoTime           uint64 `json:"ioTime"`
+   * WeightedIO       uint64 `json:"weightedIO"`
+   */
+  name: string;
+  /**
+   * SerialNumber     string `json:"serialNumber"`
+   * Label            string `json:"label"`
+   */
+  read_bytes: number;
+  read_count: number;
+  /** godoxy */
+  read_speed: number;
+  write_bytes: number;
+  write_count: number;
+  /** godoxy */
+  write_speed: number;
+}
+
+export interface DiskUsageStat {
+  free: number;
+  fstype: string;
+  path: string;
+  total: number;
+  used: number;
+  used_percent: number;
+}
+
+export interface DockerConfig {
+  container_id: string;
+  container_name: string;
+  docker_host: string;
+}
+
+export interface ErrorResponse {
+  error?: string | null;
+  message: string;
+}
+
+export type FileType = "config" | "provider" | "middleware";
+
+export interface HTTPHeader {
+  key: string;
+  value: string;
+}
+
+export interface HealthCheckConfig {
+  disable: boolean;
+  interval: number;
+  path: string;
+  /** <0: immediate, >=0: threshold */
+  retries: number;
+  timeout: number;
+  use_get: boolean;
+}
+
+export type HealthMap = Record<string, RoutesHealthInfo>;
+
+export interface HomepageFetchResult {
+  errMsg: string;
+  icon: number[];
+  statusCode: number;
+}
+
+export interface HomepageIconMetaSearch {
+  Dark: boolean;
+  Light: boolean;
+  PNG: boolean;
+  Ref: string;
+  SVG: boolean;
+  Source: HomepageIconSource;
+  WebP: boolean;
+}
+
+export type HomepageIconSource =
+  | "https://"
+  | "@target"
+  | "@walkxcode"
+  | "@selfhst";
+
+export interface HomepageItem {
+  alias: string;
+  category: string;
+  description: string;
+  icon: string;
+  /** display name */
+  name: string;
+  origin_url: string;
+  provider: string;
+  show: boolean;
+  sort_order: number;
+  url: string;
+  widget_config?: WidgetsConfig | null;
+}
+
+export interface HomepageItemConfig {
+  category: string;
+  description: string;
+  icon: string;
+  /** display name */
+  name: string;
+  show: boolean;
+  sort_order: number;
+  url: string;
+}
+
+export type HomepageItems = Record<string, HomepageItem[]>;
+
+export interface HomepageOverrideCategoryOrderParams {
+  value: number;
+  which: string;
+}
+
+export interface HomepageOverrideItemParams {
+  value: HomepageItemConfig;
+  which: string;
+}
+
+export interface HomepageOverrideItemVisibleParams {
+  value: boolean;
+  which: string[];
+}
+
+export interface HomepageOverrideItemsBatchParams {
+  value: Record<string, HomepageItemConfig>;
+}
+
+export interface IdlewatcherConfig {
+  depends_on: string[];
+  docker: DockerConfig;
+  /**
+   * 0: no idle watcher.
+   * Positive: idle watcher with idle timeout.
+   * Negative: idle watcher as a dependency.	IdleTimeout time.Duration `json:"idle_timeout" json_ext:"duration"`
+   */
+  idle_timeout: TimeDuration;
+  proxmox: ProxmoxConfig;
+  /** Optional path that must be hit to start container */
+  start_endpoint: string;
+  stop_method: ContainerStopMethod;
+  stop_signal: string;
+  stop_timeout: TimeDuration;
+  wake_timeout: TimeDuration;
+}
+
+export interface ListFilesResponse {
+  config: string[];
+  middleware: string[];
+  provider: string[];
+}
+
+export interface LoadBalancerConfig {
+  link: string;
+  mode: LoadBalancerMode;
+  options: Record<string, any>;
+  weight: number;
+}
+
+export type LoadBalancerMode = "" | "roundrobin" | "leastconn" | "iphash";
+
+export interface LogFilterCIDR {
+  negative: boolean;
+  values: CIDR[];
+}
+
+export interface LogFilterHTTPHeader {
+  negative: boolean;
+  values: HTTPHeader[];
+}
+
+export interface LogFilterHTTPMethod {
+  negative: boolean;
+  values: string[];
+}
+
+export interface LogFilterHost {
+  negative: boolean;
+  values: string[];
+}
+
+export interface LogFilterStatusCodeRange {
+  negative: boolean;
+  values: StatusCodeRange[];
+}
+
+export interface LogRetention {
+  days: number;
+  keep_size: number;
+  last: number;
+}
+
+export interface MemVirtualMemoryStat {
+  /**
+   * RAM available for programs to allocate
+   *
+   * This value is computed from the kernel specific values.
+   */
+  available: number;
+  /**
+   * This is the kernel's notion of free memory; RAM chips whose bits nobody
+   * cares about the value of right now. For a human consumable number,
+   * Available is what you really want.
+   */
+  free: number;
+  /** Total amount of RAM on this system */
+  total: number;
+  /**
+   * RAM used by programs
+   *
+   * This value is computed from the kernel specific values.
+   */
+  used: number;
+  /**
+   * Percentage of RAM used by programs
+   *
+   * This value is computed from the kernel specific values.
+   */
+  used_percent: number;
+}
+
+export type MetricsPeriod = "5m" | "15m" | "1h" | "1d" | "1mo";
+
+export interface NetIOCountersStat {
+  /** number of bytes received */
+  bytes_recv: number;
+  /** Name      string `json:"name"`       // interface name */
+  bytes_sent: number;
+  /** godoxy */
+  download_speed: number;
+  /** godoxy */
+  upload_speed: number;
+}
+
+export interface NewAgentRequest {
+  host: string;
+  name: string;
+  nightly: boolean;
+  /**
+   * @min 1
+   * @max 65535
+   */
+  port: number;
+  type: "docker" | "system";
+}
+
+export interface NewAgentResponse {
+  ca: PEMPairResponse;
+  client: PEMPairResponse;
+  compose: string;
+}
+
+export interface PEMPairResponse {
+  /** @format base64 */
+  cert: string;
+  /** @format base64 */
+  key: string;
+}
+
+export interface ProviderStats {
+  reverse_proxies: RouteStats;
+  streams: RouteStats;
+  total: number;
+  type: ProviderType;
+}
+
+export type ProviderType = "docker" | "file" | "agent";
+
+export interface ProxmoxConfig {
+  node: string;
+  vmid: number;
+}
+
+export interface ProxyStats {
+  providers: Record<string, ProviderStats>;
+  reverse_proxies: RouteStats;
+  streams: RouteStats;
+  total: number;
+}
+
+export interface RequestLoggerConfig {
+  /** Deprecated: buffer size is adjusted dynamically */
+  buffer_size: number;
+  fields: AccesslogFields;
+  filters: AccesslogFilters;
+  format: "common" | "combined" | "json";
+  path: string;
+  retention: LogRetention;
+  rotate_interval: number;
+  stdout: boolean;
+}
+
+export interface Route {
+  access_log?: RequestLoggerConfig | null;
+  agent: string;
+  alias: string;
+  /** Docker only */
+  container?: Container | null;
+  disable_compression: boolean;
+  excluded: boolean;
+  healthcheck: HealthCheckConfig;
+  homepage: HomepageItemConfig;
+  host: string;
+  idlewatcher?: IdlewatcherConfig | null;
+  load_balance?: LoadBalancerConfig | null;
+  /** private fields */
+  lurl?: string | null;
+  middlewares?: Record<string, TypesLabelMap>;
+  no_tls_verify: boolean;
+  path_patterns?: string[] | null;
+  port: RoutePort;
+  /** for backward compatibility */
+  provider?: string | null;
+  purl: string;
+  response_header_timeout: number;
+  root: string;
+  /** @uniqueItems true */
+  rules: RulesRule[];
+  scheme: RouteScheme;
+}
+
+export type RouteApiRoutesByProvider = Record<string, RouteRoute[]>;
+
+export interface RoutePort {
+  listening: number;
+  proxy: number;
+}
+
+export interface RouteProvider {
+  full_name: string;
+  short_name: string;
+}
+
+export interface RouteRoute {
+  access_log?: RequestLoggerConfig | null;
+  agent: string;
+  alias: string;
+  /** Docker only */
+  container?: Container | null;
+  disable_compression: boolean;
+  excluded: boolean;
+  healthcheck: HealthCheckConfig;
+  homepage: HomepageItemConfig;
+  host: string;
+  idlewatcher?: IdlewatcherConfig | null;
+  load_balance?: LoadBalancerConfig | null;
+  /** private fields */
+  lurl?: string | null;
+  middlewares?: Record<string, TypesLabelMap>;
+  no_tls_verify: boolean;
+  path_patterns?: string[] | null;
+  port: RoutePort;
+  /** for backward compatibility */
+  provider?: string | null;
+  purl: string;
+  response_header_timeout: number;
+  root: string;
+  /** @uniqueItems true */
+  rules: RulesRule[];
+  scheme: RouteScheme;
+}
+
+export type RouteScheme = "http" | "https" | "tcp" | "udp" | "fileserver";
+
+export interface RouteStats {
+  error: number;
+  healthy: number;
+  napping: number;
+  total: number;
+  unhealthy: number;
+  unknown: number;
+}
+
+export interface RouteStatus {
+  latency: number;
+  status: "healthy" | "unhealthy" | "unknown" | "napping" | "starting";
+  timestamp: number;
+}
+
+export interface RouteStatusesByAlias {
+  statuses: Record<string, RoutesHealthInfo>;
+  timestamp: number;
+}
+
+export interface RouteUptimeAggregate {
+  alias: string;
+  avg_latency: number;
+  display_name: string;
+  downtime: number;
+  idle: number;
+  statuses: RouteStatus[];
+  uptime: number;
+}
+
+export interface RoutesHealthInfo {
+  detail: string;
+  /** latency in microseconds */
+  latency: number;
+  status:
+    | "healthy"
+    | "unhealthy"
+    | "napping"
+    | "starting"
+    | "error"
+    | "unknown";
+  /** uptime in milliseconds */
+  uptime: number;
+}
+
+export type RulesCommand = object;
+
+export interface RulesRule {
+  do: RulesCommand;
+  name: string;
+  on: RulesRuleOn;
+}
+
+export type RulesRuleOn = object;
+
+export interface SensorsTemperatureStat {
+  critical: number;
+  high: number;
+  name: string;
+  temperature: number;
+}
+
+export interface ServerInfo {
+  containers: ContainerStats;
+  images: number;
+  memory: string;
+  n_cpu: number;
+  name: string;
+  version: string;
+}
+
+export interface StatsResponse {
+  proxies: ProxyStats;
+  uptime: string;
+}
+
+export interface StatusCodeRange {
+  end: number;
+  start: number;
+}
+
+export interface SuccessResponse {
+  details?: Record<string, any>;
+  message: string;
+}
+
+export interface SystemInfo {
+  cpu_average: number;
+  /** disk usage by partition */
+  disks: Record<string, DiskUsageStat>;
+  /** disk IO by device */
+  disks_io: Record<string, DiskIOCountersStat>;
+  memory: MemVirtualMemoryStat;
+  network: NetIOCountersStat;
+  /** sensor temperature by key */
+  sensors: SensorsTemperatureStat[];
+  timestamp: number;
+}
+
+export interface SystemInfoAggregate {
+  data: Record<string, any>[];
+  total: number;
+}
+
+export type SystemInfoAggregateMode =
+  | "cpu_average"
+  | "memory_usage"
+  | "memory_usage_percent"
+  | "disks_read_speed"
+  | "disks_write_speed"
+  | "disks_iops"
+  | "disk_usage"
+  | "network_speed"
+  | "network_transfer"
+  | "sensor_temperature";
+
+export type TimeDuration =
+  | -9223372036854776000
+  | 9223372036854776000
+  | 1
+  | 1000
+  | 1000000
+  | 1000000000
+  | 60000000000
+  | 3600000000000;
+
+export type TypesLabelMap = Record<string, any>;
+
+export type TypesPortMapping = Record<string, ContainerPort>;
+
+export interface UptimeAggregate {
+  data: RouteUptimeAggregate[];
+  total: number;
+}
+
+export interface VerifyNewAgentRequest {
+  ca: PEMPairResponse;
+  client: PEMPairResponse;
+  host: string;
+}
+
+export interface WidgetsConfig {
+  config: any;
+  provider: string;
+}
+
+export namespace Agent {
+  /**
+   * @description Create a new agent and return the docker compose file, encrypted CA and client PEMs The returned PEMs are encrypted with a random key and will be used for verification when adding a new agent
+   * @tags agent
+   * @name Create
+   * @summary Create a new agent
+   * @request POST:/agent/create
+   * @response `200` `NewAgentResponse` OK
+   * @response `400` `ErrorResponse` Bad Request
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `409` `ErrorResponse` Conflict
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Create {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = NewAgentRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = NewAgentResponse;
+  }
+
+  /**
+   * @description List agents
+   * @tags agent, websocket
+   * @name List
+   * @summary List agents
+   * @request GET:/agent/list
+   * @response `200` `(Agent)[]` OK
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace List {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Agent[];
+  }
+
+  /**
+   * @description Verify a new agent and return the number of routes added
+   * @tags agent
+   * @name Verify
+   * @summary Verify a new agent
+   * @request POST:/agent/verify
+   * @response `200` `SuccessResponse` OK
+   * @response `400` `ErrorResponse` Bad Request
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Verify {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = VerifyNewAgentRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
+  }
+}
+
+export namespace Auth {
+  /**
+   * @description Handles the callback from the provider after successful authentication
+   * @tags auth
+   * @name Callback
+   * @summary Post Auth Callback
+   * @request POST:/auth/callback
+   * @response `200` `string` Userpass: OK
+   * @response `302` `string` OIDC: Redirects to home page
+   * @response `400` `string` Userpass: invalid request / credentials
+   * @response `500` `string` Internal server error
+   */
+  export namespace Callback {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = AuthUserPassAuthCallbackRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = string;
+  }
+
+  /**
+   * @description Checks if the user is authenticated by validating their token
+   * @tags auth
+   * @name Check
+   * @summary Check authentication status
+   * @request HEAD:/auth/check
+   * @response `200` `string` OK
+   * @response `403` `string` Forbidden: use X-Redirect-To header to redirect to login page
+   */
+  export namespace Check {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = string;
+  }
+
+  /**
+   * @description Initiates the login process by redirecting the user to the provider's login page
+   * @tags auth
+   * @name Login
+   * @summary Login
+   * @request POST:/auth/login
+   * @response `302` `string` Redirects to login page or IdP
+   * @response `403` `string` Forbidden(webui): follow X-Redirect-To header
+   * @response `429` `string` Too Many Requests
+   */
+  export namespace Login {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = any;
+  }
+
+  /**
+   * @description Logs out the user by invalidating the token
+   * @tags auth
+   * @name Logout
+   * @summary Logout
+   * @request POST:/auth/logout
+   * @response `302` `string` Redirects to home page
+   */
+  export namespace Logout {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = any;
+  }
+}
+
+export namespace Cert {
+  /**
+   * @description Get cert info
+   * @tags cert
+   * @name Info
+   * @summary Get cert info
+   * @request GET:/cert/info
+   * @response `200` `CertInfo` OK
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `404` `ErrorResponse` Not Found
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Info {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = CertInfo;
+  }
+
+  /**
+   * @description Renew cert
+   * @tags cert
+   * @name Renew
+   * @summary Renew cert
+   * @request POST:/cert/renew
+   * @response `200` `SuccessResponse` OK
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Renew {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
+  }
+}
+
+export namespace Docker {
+  /**
+   * @description Get containers
+   * @tags docker
+   * @name Containers
+   * @summary Get containers
+   * @request GET:/docker/containers
+   * @response `200` `(ContainerResponse)[]` OK
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Containers {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ContainerResponse[];
+  }
+
+  /**
+   * @description Get docker info
+   * @tags docker
+   * @name Info
+   * @summary Get docker info
+   * @request GET:/docker/info
+   * @response `200` `(ServerInfo)[]` OK
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Info {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ServerInfo[];
+  }
+
+  /**
+   * @description Get docker container logs
+   * @tags docker, websocket
+   * @name Logs
+   * @summary Get docker container logs
+   * @request GET:/docker/logs/{server}/{container}
+   * @response `200` `void` OK
+   * @response `400` `ErrorResponse` Bad Request
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `404` `ErrorResponse` Not Found
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Logs {
+    export type RequestParams = {
+      /** container id */
+      container: string;
+      /** server name */
+      server: string;
+    };
+    export type RequestQuery = {
+      /** from timestamp */
+      from?: string;
+      /** levels */
+      levels?: string;
+      /** show stderr */
+      stderr?: boolean;
+      /** show stdout */
+      stdout?: boolean;
+      /** to timestamp */
+      to?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = void;
+  }
+}
+
+export namespace Favicon {
+  /**
+   * @description Get favicon
+   * @tags v1
+   * @name Favicon
+   * @summary Get favicon
+   * @request GET:/favicon
+   * @response `200` `(HomepageFetchResult)[]` OK
+   * @response `400` `ErrorResponse` Bad Request: alias is empty or route is not HTTPRoute
+   * @response `403` `ErrorResponse` Forbidden: unauthorized
+   * @response `404` `ErrorResponse` Not Found: route or icon not found
+   * @response `500` `ErrorResponse` Internal Server Error: internal error
+   */
+  export namespace Favicon {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Alias of the route */
+      alias?: string;
+      /** URL of the route */
+      url?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = HomepageFetchResult[];
+  }
+}
+
+export namespace File {
+  /**
+   * @description Get file content
+   * @tags file
+   * @name Get
+   * @summary Get file content
+   * @request GET:/file/content
+   * @response `200` `string` OK
+   * @response `400` `ErrorResponse` Bad Request
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Get {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** @format filename */
+      filename: string;
+      type: "config" | "provider" | "middleware";
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = string;
+  }
+
+  /**
+   * @description Set file content
+   * @tags file
+   * @name Set
+   * @summary Set file content
+   * @request PUT:/file/content
+   * @response `200` `SuccessResponse` OK
+   * @response `400` `ErrorResponse` Bad Request
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Set {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Filename */
+      filename: string;
+      /** Type */
+      type: "config" | "provider" | "middleware";
+    };
+    export type RequestBody = string;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
+  }
+
+  /**
+   * @description List files
+   * @tags file
+   * @name List
+   * @summary List files
+   * @request GET:/file/list
+   * @response `200` `ListFilesResponse` OK
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace List {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ListFilesResponse;
+  }
+
+  /**
+   * @description Validate file
+   * @tags file
+   * @name Validate
+   * @summary Validate file
+   * @request POST:/file/validate
+   * @response `200` `SuccessResponse` File validated
+   * @response `400` `ErrorResponse` Bad request
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `417` `any` Validation failed
+   * @response `500` `ErrorResponse` Internal server error
+   */
+  export namespace Validate {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Type */
+      type: "config" | "provider" | "middleware";
+    };
+    export type RequestBody = string;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
+  }
+}
+
+export namespace Health {
+  /**
+   * @description Get health info by route name
+   * @tags v1, websocket
+   * @name Health
+   * @summary Get routes health info
+   * @request GET:/health
+   * @response `200` `HealthMap` Health info by route name
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Health {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = HealthMap;
+  }
+}
+
+export namespace Homepage {
+  /**
+   * @description List homepage categories
+   * @tags homepage
+   * @name Categories
+   * @summary List homepage categories
+   * @request GET:/homepage/categories
+   * @response `200` `(string)[]` OK
+   * @response `403` `ErrorResponse` Forbidden
+   */
+  export namespace Categories {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = string[];
+  }
+
+  /**
+   * @description Homepage items
+   * @tags homepage
+   * @name Items
+   * @summary Homepage items
+   * @request GET:/homepage/items
+   * @response `200` `HomepageItems` OK
+   * @response `400` `ErrorResponse` Bad Request
+   * @response `403` `ErrorResponse` Forbidden
+   */
+  export namespace Items {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Category filter */
+      category?: string;
+      /** Provider filter */
+      provider?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = HomepageItems;
+  }
+
+  /**
+   * @description Set homepage category order.
+   * @tags homepage
+   * @name SetCategoryOrder
+   * @summary Set homepage category order
+   * @request POST:/homepage/set/category_order
+   * @response `200` `SuccessResponse` OK
+   * @response `400` `ErrorResponse` Bad Request
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace SetCategoryOrder {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = HomepageOverrideCategoryOrderParams;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
+  }
+
+  /**
+   * @description Override single homepage item.
+   * @tags homepage
+   * @name SetItem
+   * @summary Override single homepage item
+   * @request POST:/homepage/set/item
+   * @response `200` `SuccessResponse` OK
+   * @response `400` `ErrorResponse` Bad Request
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace SetItem {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = HomepageOverrideItemParams;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
+  }
+
+  /**
+   * @description POST list of item ids and visibility value.
+   * @tags homepage
+   * @name SetItemVisible
+   * @summary Set homepage item visibility
+   * @request POST:/homepage/set/item_visible
+   * @response `200` `SuccessResponse` OK
+   * @response `400` `ErrorResponse` Bad Request
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace SetItemVisible {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = HomepageOverrideItemVisibleParams;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
+  }
+
+  /**
+   * @description Override multiple homepage items.
+   * @tags homepage
+   * @name SetItemsBatch
+   * @summary Override multiple homepage items
+   * @request POST:/homepage/set/items_batch
+   * @response `200` `SuccessResponse` OK
+   * @response `400` `ErrorResponse` Bad Request
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace SetItemsBatch {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = HomepageOverrideItemsBatchParams;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
+  }
+}
+
+export namespace Icons {
+  /**
+   * @description List icons
+   * @tags v1
+   * @name Icons
+   * @summary List icons
+   * @request GET:/icons
+   * @response `200` `(HomepageIconMetaSearch)[]` OK
+   * @response `400` `ErrorResponse` Bad Request
+   * @response `403` `ErrorResponse` Forbidden
+   */
+  export namespace Icons {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Keyword */
+      keyword?: string;
+      /** Limit */
+      limit?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = HomepageIconMetaSearch[];
+  }
+}
+
+export namespace Metrics {
+  /**
+   * @description Get system info
+   * @tags metrics, websocket
+   * @name SystemInfo
+   * @summary Get system info
+   * @request GET:/metrics/system_info
+   * @response `200` `SystemInfoAggregate` period specified
+   * @response `400` `ErrorResponse` Bad Request
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `404` `ErrorResponse` Not Found
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace SystemInfo {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      agentAddr?: string;
+      aggregate?:
+        | "cpu_average"
+        | "memory_usage"
+        | "memory_usage_percent"
+        | "disks_read_speed"
+        | "disks_write_speed"
+        | "disks_iops"
+        | "disk_usage"
+        | "network_speed"
+        | "network_transfer"
+        | "sensor_temperature";
+      period?: "5m" | "15m" | "1h" | "1d" | "1mo";
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SystemInfoAggregate;
+  }
+
+  /**
+   * @description Get uptime
+   * @tags metrics, websocket
+   * @name Uptime
+   * @summary Get uptime
+   * @request GET:/metrics/uptime
+   * @response `200` `UptimeAggregate` period specified
+   * @response `204` `ErrorResponse` No Content
+   * @response `400` `ErrorResponse` Bad Request
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Uptime {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** @example "1m" */
+      interval?: "5m" | "15m" | "1h" | "1d" | "1mo";
+      /** @example "" */
+      keyword?: string;
+      /** @example 10 */
+      limit?: number;
+      /** @example "10" */
+      offset?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UptimeAggregate;
+  }
+}
+
+export namespace Reload {
+  /**
+   * @description Reload config
+   * @tags v1
+   * @name Reload
+   * @summary Reload config
+   * @request POST:/reload
+   * @response `200` `SuccessResponse` OK
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Reload {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
+  }
+}
+
+export namespace Route {
+  /**
+   * @description List routes by provider
+   * @tags route
+   * @name ByProvider
+   * @summary List routes by provider
+   * @request GET:/route/by_provider
+   * @response `200` `RouteApiRoutesByProvider` OK
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace ByProvider {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = RouteApiRoutesByProvider;
+  }
+
+  /**
+   * @description List routes
+   * @tags route, websocket
+   * @name Routes
+   * @summary List routes
+   * @request GET:/route/list
+   * @response `200` `(Route)[]` OK
+   * @response `403` `ErrorResponse` Forbidden
+   */
+  export namespace Routes {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Provider */
+      provider?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Route[];
+  }
+
+  /**
+   * @description List route providers
+   * @tags route, websocket
+   * @name Providers
+   * @summary List route providers
+   * @request GET:/route/providers
+   * @response `200` `(RouteProvider)[]` OK
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Providers {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = RouteProvider[];
+  }
+
+  /**
+   * @description List route
+   * @tags route
+   * @name Route
+   * @summary List route
+   * @request GET:/route/{which}
+   * @response `200` `Route` OK
+   * @response `400` `ErrorResponse` Bad Request
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `404` `ErrorResponse` Not Found
+   */
+  export namespace Route {
+    export type RequestParams = {
+      /** Route name */
+      which: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Route;
+  }
+}
+
+export namespace Stats {
+  /**
+   * @description Get stats
+   * @tags v1, websocket
+   * @name Stats
+   * @summary Get GoDoxy stats
+   * @request GET:/stats
+   * @response `200` `StatsResponse` OK
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Stats {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = StatsResponse;
+  }
+}
+
+export namespace Version {
+  /**
+   * @description Get the version of the GoDoxy
+   * @tags v1
+   * @name Version
+   * @summary Get version
+   * @request GET:/version
+   * @response `200` `string` version
+   */
+  export namespace Version {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = string;
+  }
+}
+
+import type {
+  AxiosInstance,
+  AxiosRequestConfig,
+  AxiosResponse,
+  HeadersDefaults,
+  ResponseType,
+} from "axios";
+import axios from "axios";
+
+export type QueryParamsType = Record<string | number, any>;
+
+export interface FullRequestParams
+  extends Omit<AxiosRequestConfig, "data" | "params" | "url" | "responseType"> {
+  /** set parameter to `true` for call `securityWorker` for this request */
+  secure?: boolean;
+  /** request path */
+  path: string;
+  /** content type of request body */
+  type?: ContentType;
+  /** query params */
+  query?: QueryParamsType;
+  /** format of response (i.e. response.json() -> format: "json") */
+  format?: ResponseType;
+  /** request body */
+  body?: unknown;
+}
+
+export type RequestParams = Omit<
+  FullRequestParams,
+  "body" | "method" | "query" | "path"
+>;
+
+export interface ApiConfig<SecurityDataType = unknown>
+  extends Omit<AxiosRequestConfig, "data" | "cancelToken"> {
+  securityWorker?: (
+    securityData: SecurityDataType | null,
+  ) => Promise<AxiosRequestConfig | void> | AxiosRequestConfig | void;
+  secure?: boolean;
+  format?: ResponseType;
+}
+
+export enum ContentType {
+  Json = "application/json",
+  JsonApi = "application/vnd.api+json",
+  FormData = "multipart/form-data",
+  UrlEncoded = "application/x-www-form-urlencoded",
+  Text = "text/plain",
+}
+
+export class HttpClient<SecurityDataType = unknown> {
+  public instance: AxiosInstance;
+  private securityData: SecurityDataType | null = null;
+  private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
+  private secure?: boolean;
+  private format?: ResponseType;
+
+  constructor({
+    securityWorker,
+    secure,
+    format,
+    ...axiosConfig
+  }: ApiConfig<SecurityDataType> = {}) {
+    this.instance = axios.create({
+      ...axiosConfig,
+      baseURL: axiosConfig.baseURL || "",
+    });
+    this.secure = secure;
+    this.format = format;
+    this.securityWorker = securityWorker;
+  }
+
+  public setSecurityData = (data: SecurityDataType | null) => {
+    this.securityData = data;
+  };
+
+  protected mergeRequestParams(
+    params1: AxiosRequestConfig,
+    params2?: AxiosRequestConfig,
+  ): AxiosRequestConfig {
+    const method = params1.method || (params2 && params2.method);
+
+    return {
+      ...this.instance.defaults,
+      ...params1,
+      ...(params2 || {}),
+      headers: {
+        ...((method &&
+          this.instance.defaults.headers[
+            method.toLowerCase() as keyof HeadersDefaults
+          ]) ||
+          {}),
+        ...(params1.headers || {}),
+        ...((params2 && params2.headers) || {}),
+      },
+    };
+  }
+
+  protected stringifyFormItem(formItem: unknown) {
+    if (typeof formItem === "object" && formItem !== null) {
+      return JSON.stringify(formItem);
+    } else {
+      return `${formItem}`;
+    }
+  }
+
+  protected createFormData(input: Record<string, unknown>): FormData {
+    if (input instanceof FormData) {
+      return input;
+    }
+    return Object.keys(input || {}).reduce((formData, key) => {
+      const property = input[key];
+      const propertyContent: any[] =
+        property instanceof Array ? property : [property];
+
+      for (const formItem of propertyContent) {
+        const isFileType = formItem instanceof Blob || formItem instanceof File;
+        formData.append(
+          key,
+          isFileType ? formItem : this.stringifyFormItem(formItem),
+        );
+      }
+
+      return formData;
+    }, new FormData());
+  }
+
+  public request = async <T = any, _E = any>({
+    secure,
+    path,
+    type,
+    query,
+    format,
+    body,
+    ...params
+  }: FullRequestParams): Promise<AxiosResponse<T>> => {
+    const secureParams =
+      ((typeof secure === "boolean" ? secure : this.secure) &&
+        this.securityWorker &&
+        (await this.securityWorker(this.securityData))) ||
+      {};
+    const requestParams = this.mergeRequestParams(params, secureParams);
+    const responseFormat = format || this.format || undefined;
+
+    if (
+      type === ContentType.FormData &&
+      body &&
+      body !== null &&
+      typeof body === "object"
+    ) {
+      body = this.createFormData(body as Record<string, unknown>);
+    }
+
+    if (
+      type === ContentType.Text &&
+      body &&
+      body !== null &&
+      typeof body !== "string"
+    ) {
+      body = JSON.stringify(body);
+    }
+
+    return this.instance.request({
+      ...requestParams,
+      headers: {
+        ...(requestParams.headers || {}),
+        ...(type ? { "Content-Type": type } : {}),
+      },
+      params: query,
+      responseType: responseFormat,
+      data: body,
+      url: path,
+    });
+  };
+}
+
+/**
+ * @title No title
+ * @contact
+ */
+export class Api<
+  SecurityDataType extends unknown,
+> extends HttpClient<SecurityDataType> {
+  agent = {
+    /**
+     * @description Create a new agent and return the docker compose file, encrypted CA and client PEMs The returned PEMs are encrypted with a random key and will be used for verification when adding a new agent
+     *
+     * @tags agent
+     * @name Create
+     * @summary Create a new agent
+     * @request POST:/agent/create
+     * @response `200` `NewAgentResponse` OK
+     * @response `400` `ErrorResponse` Bad Request
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `409` `ErrorResponse` Conflict
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    create: (request: NewAgentRequest, params: RequestParams = {}) =>
+      this.request<NewAgentResponse, ErrorResponse>({
+        path: `/agent/create`,
+        method: "POST",
+        body: request,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description List agents
+     *
+     * @tags agent, websocket
+     * @name List
+     * @summary List agents
+     * @request GET:/agent/list
+     * @response `200` `(Agent)[]` OK
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    list: (params: RequestParams = {}) =>
+      this.request<Agent[], ErrorResponse>({
+        path: `/agent/list`,
+        method: "GET",
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Verify a new agent and return the number of routes added
+     *
+     * @tags agent
+     * @name Verify
+     * @summary Verify a new agent
+     * @request POST:/agent/verify
+     * @response `200` `SuccessResponse` OK
+     * @response `400` `ErrorResponse` Bad Request
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    verify: (request: VerifyNewAgentRequest, params: RequestParams = {}) =>
+      this.request<SuccessResponse, ErrorResponse>({
+        path: `/agent/verify`,
+        method: "POST",
+        body: request,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+  };
+  auth = {
+    /**
+     * @description Handles the callback from the provider after successful authentication
+     *
+     * @tags auth
+     * @name Callback
+     * @summary Post Auth Callback
+     * @request POST:/auth/callback
+     * @response `200` `string` Userpass: OK
+     * @response `302` `string` OIDC: Redirects to home page
+     * @response `400` `string` Userpass: invalid request / credentials
+     * @response `500` `string` Internal server error
+     */
+    callback: (
+      body: AuthUserPassAuthCallbackRequest,
+      params: RequestParams = {},
+    ) =>
+      this.request<string, string>({
+        path: `/auth/callback`,
+        method: "POST",
+        body: body,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * @description Checks if the user is authenticated by validating their token
+     *
+     * @tags auth
+     * @name Check
+     * @summary Check authentication status
+     * @request HEAD:/auth/check
+     * @response `200` `string` OK
+     * @response `403` `string` Forbidden: use X-Redirect-To header to redirect to login page
+     */
+    check: (params: RequestParams = {}) =>
+      this.request<string, string>({
+        path: `/auth/check`,
+        method: "HEAD",
+        ...params,
+      }),
+
+    /**
+     * @description Initiates the login process by redirecting the user to the provider's login page
+     *
+     * @tags auth
+     * @name Login
+     * @summary Login
+     * @request POST:/auth/login
+     * @response `302` `string` Redirects to login page or IdP
+     * @response `403` `string` Forbidden(webui): follow X-Redirect-To header
+     * @response `429` `string` Too Many Requests
+     */
+    login: (params: RequestParams = {}) =>
+      this.request<any, string>({
+        path: `/auth/login`,
+        method: "POST",
+        ...params,
+      }),
+
+    /**
+     * @description Logs out the user by invalidating the token
+     *
+     * @tags auth
+     * @name Logout
+     * @summary Logout
+     * @request POST:/auth/logout
+     * @response `302` `string` Redirects to home page
+     */
+    logout: (params: RequestParams = {}) =>
+      this.request<any, string>({
+        path: `/auth/logout`,
+        method: "POST",
+        ...params,
+      }),
+  };
+  cert = {
+    /**
+     * @description Get cert info
+     *
+     * @tags cert
+     * @name Info
+     * @summary Get cert info
+     * @request GET:/cert/info
+     * @response `200` `CertInfo` OK
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `404` `ErrorResponse` Not Found
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    info: (params: RequestParams = {}) =>
+      this.request<CertInfo, ErrorResponse>({
+        path: `/cert/info`,
+        method: "GET",
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Renew cert
+     *
+     * @tags cert
+     * @name Renew
+     * @summary Renew cert
+     * @request POST:/cert/renew
+     * @response `200` `SuccessResponse` OK
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    renew: (params: RequestParams = {}) =>
+      this.request<SuccessResponse, ErrorResponse>({
+        path: `/cert/renew`,
+        method: "POST",
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+  };
+  docker = {
+    /**
+     * @description Get containers
+     *
+     * @tags docker
+     * @name Containers
+     * @summary Get containers
+     * @request GET:/docker/containers
+     * @response `200` `(ContainerResponse)[]` OK
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    containers: (params: RequestParams = {}) =>
+      this.request<ContainerResponse[], ErrorResponse>({
+        path: `/docker/containers`,
+        method: "GET",
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get docker info
+     *
+     * @tags docker
+     * @name Info
+     * @summary Get docker info
+     * @request GET:/docker/info
+     * @response `200` `(ServerInfo)[]` OK
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    info: (params: RequestParams = {}) =>
+      this.request<ServerInfo[], ErrorResponse>({
+        path: `/docker/info`,
+        method: "GET",
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get docker container logs
+     *
+     * @tags docker, websocket
+     * @name Logs
+     * @summary Get docker container logs
+     * @request GET:/docker/logs/{server}/{container}
+     * @response `200` `void` OK
+     * @response `400` `ErrorResponse` Bad Request
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `404` `ErrorResponse` Not Found
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    logs: (
+      server: string,
+      container: string,
+      query?: {
+        /** from timestamp */
+        from?: string;
+        /** levels */
+        levels?: string;
+        /** show stderr */
+        stderr?: boolean;
+        /** show stdout */
+        stdout?: boolean;
+        /** to timestamp */
+        to?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<void, ErrorResponse>({
+        path: `/docker/logs/${server}/${container}`,
+        method: "GET",
+        query: query,
+        type: ContentType.Json,
+        ...params,
+      }),
+  };
+  favicon = {
+    /**
+     * @description Get favicon
+     *
+     * @tags v1
+     * @name Favicon
+     * @summary Get favicon
+     * @request GET:/favicon
+     * @response `200` `(HomepageFetchResult)[]` OK
+     * @response `400` `ErrorResponse` Bad Request: alias is empty or route is not HTTPRoute
+     * @response `403` `ErrorResponse` Forbidden: unauthorized
+     * @response `404` `ErrorResponse` Not Found: route or icon not found
+     * @response `500` `ErrorResponse` Internal Server Error: internal error
+     */
+    favicon: (
+      query?: {
+        /** Alias of the route */
+        alias?: string;
+        /** URL of the route */
+        url?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<HomepageFetchResult[], ErrorResponse>({
+        path: `/favicon`,
+        method: "GET",
+        query: query,
+        type: ContentType.Json,
+        format: "blob",
+        ...params,
+      }),
+  };
+  file = {
+    /**
+     * @description Get file content
+     *
+     * @tags file
+     * @name Get
+     * @summary Get file content
+     * @request GET:/file/content
+     * @response `200` `string` OK
+     * @response `400` `ErrorResponse` Bad Request
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    get: (
+      query: {
+        /** @format filename */
+        filename: string;
+        type: "config" | "provider" | "middleware";
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<string, ErrorResponse>({
+        path: `/file/content`,
+        method: "GET",
+        query: query,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Set file content
+     *
+     * @tags file
+     * @name Set
+     * @summary Set file content
+     * @request PUT:/file/content
+     * @response `200` `SuccessResponse` OK
+     * @response `400` `ErrorResponse` Bad Request
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    set: (
+      query: {
+        /** Filename */
+        filename: string;
+        /** Type */
+        type: "config" | "provider" | "middleware";
+      },
+      file: string,
+      params: RequestParams = {},
+    ) =>
+      this.request<SuccessResponse, ErrorResponse>({
+        path: `/file/content`,
+        method: "PUT",
+        query: query,
+        body: file,
+        type: ContentType.Text,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description List files
+     *
+     * @tags file
+     * @name List
+     * @summary List files
+     * @request GET:/file/list
+     * @response `200` `ListFilesResponse` OK
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    list: (params: RequestParams = {}) =>
+      this.request<ListFilesResponse, ErrorResponse>({
+        path: `/file/list`,
+        method: "GET",
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Validate file
+     *
+     * @tags file
+     * @name Validate
+     * @summary Validate file
+     * @request POST:/file/validate
+     * @response `200` `SuccessResponse` File validated
+     * @response `400` `ErrorResponse` Bad request
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `417` `any` Validation failed
+     * @response `500` `ErrorResponse` Internal server error
+     */
+    validate: (
+      query: {
+        /** Type */
+        type: "config" | "provider" | "middleware";
+      },
+      file: string,
+      params: RequestParams = {},
+    ) =>
+      this.request<SuccessResponse, ErrorResponse>({
+        path: `/file/validate`,
+        method: "POST",
+        query: query,
+        body: file,
+        type: ContentType.Text,
+        format: "json",
+        ...params,
+      }),
+  };
+  health = {
+    /**
+     * @description Get health info by route name
+     *
+     * @tags v1, websocket
+     * @name Health
+     * @summary Get routes health info
+     * @request GET:/health
+     * @response `200` `HealthMap` Health info by route name
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    health: (params: RequestParams = {}) =>
+      this.request<HealthMap, ErrorResponse>({
+        path: `/health`,
+        method: "GET",
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+  };
+  homepage = {
+    /**
+     * @description List homepage categories
+     *
+     * @tags homepage
+     * @name Categories
+     * @summary List homepage categories
+     * @request GET:/homepage/categories
+     * @response `200` `(string)[]` OK
+     * @response `403` `ErrorResponse` Forbidden
+     */
+    categories: (params: RequestParams = {}) =>
+      this.request<string[], ErrorResponse>({
+        path: `/homepage/categories`,
+        method: "GET",
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Homepage items
+     *
+     * @tags homepage
+     * @name Items
+     * @summary Homepage items
+     * @request GET:/homepage/items
+     * @response `200` `HomepageItems` OK
+     * @response `400` `ErrorResponse` Bad Request
+     * @response `403` `ErrorResponse` Forbidden
+     */
+    items: (
+      query?: {
+        /** Category filter */
+        category?: string;
+        /** Provider filter */
+        provider?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<HomepageItems, ErrorResponse>({
+        path: `/homepage/items`,
+        method: "GET",
+        query: query,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Set homepage category order.
+     *
+     * @tags homepage
+     * @name SetCategoryOrder
+     * @summary Set homepage category order
+     * @request POST:/homepage/set/category_order
+     * @response `200` `SuccessResponse` OK
+     * @response `400` `ErrorResponse` Bad Request
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    setCategoryOrder: (
+      request: HomepageOverrideCategoryOrderParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<SuccessResponse, ErrorResponse>({
+        path: `/homepage/set/category_order`,
+        method: "POST",
+        body: request,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Override single homepage item.
+     *
+     * @tags homepage
+     * @name SetItem
+     * @summary Override single homepage item
+     * @request POST:/homepage/set/item
+     * @response `200` `SuccessResponse` OK
+     * @response `400` `ErrorResponse` Bad Request
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    setItem: (
+      request: HomepageOverrideItemParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<SuccessResponse, ErrorResponse>({
+        path: `/homepage/set/item`,
+        method: "POST",
+        body: request,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description POST list of item ids and visibility value.
+     *
+     * @tags homepage
+     * @name SetItemVisible
+     * @summary Set homepage item visibility
+     * @request POST:/homepage/set/item_visible
+     * @response `200` `SuccessResponse` OK
+     * @response `400` `ErrorResponse` Bad Request
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    setItemVisible: (
+      request: HomepageOverrideItemVisibleParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<SuccessResponse, ErrorResponse>({
+        path: `/homepage/set/item_visible`,
+        method: "POST",
+        body: request,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Override multiple homepage items.
+     *
+     * @tags homepage
+     * @name SetItemsBatch
+     * @summary Override multiple homepage items
+     * @request POST:/homepage/set/items_batch
+     * @response `200` `SuccessResponse` OK
+     * @response `400` `ErrorResponse` Bad Request
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    setItemsBatch: (
+      request: HomepageOverrideItemsBatchParams,
+      params: RequestParams = {},
+    ) =>
+      this.request<SuccessResponse, ErrorResponse>({
+        path: `/homepage/set/items_batch`,
+        method: "POST",
+        body: request,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+  };
+  icons = {
+    /**
+     * @description List icons
+     *
+     * @tags v1
+     * @name Icons
+     * @summary List icons
+     * @request GET:/icons
+     * @response `200` `(HomepageIconMetaSearch)[]` OK
+     * @response `400` `ErrorResponse` Bad Request
+     * @response `403` `ErrorResponse` Forbidden
+     */
+    icons: (
+      query?: {
+        /** Keyword */
+        keyword?: string;
+        /** Limit */
+        limit?: number;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<HomepageIconMetaSearch[], ErrorResponse>({
+        path: `/icons`,
+        method: "GET",
+        query: query,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+  };
+  metrics = {
+    /**
+     * @description Get system info
+     *
+     * @tags metrics, websocket
+     * @name SystemInfo
+     * @summary Get system info
+     * @request GET:/metrics/system_info
+     * @response `200` `SystemInfoAggregate` period specified
+     * @response `400` `ErrorResponse` Bad Request
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `404` `ErrorResponse` Not Found
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    systemInfo: (
+      query?: {
+        agentAddr?: string;
+        aggregate?:
+          | "cpu_average"
+          | "memory_usage"
+          | "memory_usage_percent"
+          | "disks_read_speed"
+          | "disks_write_speed"
+          | "disks_iops"
+          | "disk_usage"
+          | "network_speed"
+          | "network_transfer"
+          | "sensor_temperature";
+        period?: "5m" | "15m" | "1h" | "1d" | "1mo";
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<SystemInfoAggregate, ErrorResponse>({
+        path: `/metrics/system_info`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Get uptime
+     *
+     * @tags metrics, websocket
+     * @name Uptime
+     * @summary Get uptime
+     * @request GET:/metrics/uptime
+     * @response `200` `UptimeAggregate` period specified
+     * @response `204` `ErrorResponse` No Content
+     * @response `400` `ErrorResponse` Bad Request
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    uptime: (
+      query?: {
+        /** @example "1m" */
+        interval?: "5m" | "15m" | "1h" | "1d" | "1mo";
+        /** @example "" */
+        keyword?: string;
+        /** @example 10 */
+        limit?: number;
+        /** @example "10" */
+        offset?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<UptimeAggregate, ErrorResponse>({
+        path: `/metrics/uptime`,
+        method: "GET",
+        query: query,
+        format: "json",
+        ...params,
+      }),
+  };
+  reload = {
+    /**
+     * @description Reload config
+     *
+     * @tags v1
+     * @name Reload
+     * @summary Reload config
+     * @request POST:/reload
+     * @response `200` `SuccessResponse` OK
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    reload: (params: RequestParams = {}) =>
+      this.request<SuccessResponse, ErrorResponse>({
+        path: `/reload`,
+        method: "POST",
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+  };
+  route = {
+    /**
+     * @description List routes by provider
+     *
+     * @tags route
+     * @name ByProvider
+     * @summary List routes by provider
+     * @request GET:/route/by_provider
+     * @response `200` `RouteApiRoutesByProvider` OK
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    byProvider: (params: RequestParams = {}) =>
+      this.request<RouteApiRoutesByProvider, ErrorResponse>({
+        path: `/route/by_provider`,
+        method: "GET",
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description List routes
+     *
+     * @tags route, websocket
+     * @name Routes
+     * @summary List routes
+     * @request GET:/route/list
+     * @response `200` `(Route)[]` OK
+     * @response `403` `ErrorResponse` Forbidden
+     */
+    routes: (
+      query?: {
+        /** Provider */
+        provider?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<Route[], ErrorResponse>({
+        path: `/route/list`,
+        method: "GET",
+        query: query,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description List route providers
+     *
+     * @tags route, websocket
+     * @name Providers
+     * @summary List route providers
+     * @request GET:/route/providers
+     * @response `200` `(RouteProvider)[]` OK
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    providers: (params: RequestParams = {}) =>
+      this.request<RouteProvider[], ErrorResponse>({
+        path: `/route/providers`,
+        method: "GET",
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description List route
+     *
+     * @tags route
+     * @name Route
+     * @summary List route
+     * @request GET:/route/{which}
+     * @response `200` `Route` OK
+     * @response `400` `ErrorResponse` Bad Request
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `404` `ErrorResponse` Not Found
+     */
+    route: (which: string, params: RequestParams = {}) =>
+      this.request<Route, ErrorResponse>({
+        path: `/route/${which}`,
+        method: "GET",
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+  };
+  stats = {
+    /**
+     * @description Get stats
+     *
+     * @tags v1, websocket
+     * @name Stats
+     * @summary Get GoDoxy stats
+     * @request GET:/stats
+     * @response `200` `StatsResponse` OK
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    stats: (params: RequestParams = {}) =>
+      this.request<StatsResponse, ErrorResponse>({
+        path: `/stats`,
+        method: "GET",
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+  };
+  version = {
+    /**
+     * @description Get the version of the GoDoxy
+     *
+     * @tags v1
+     * @name Version
+     * @summary Get version
+     * @request GET:/version
+     * @response `200` `string` version
+     */
+    version: (params: RequestParams = {}) =>
+      this.request<string, any>({
+        path: `/version`,
+        method: "GET",
+        type: ContentType.Json,
+        ...params,
+      }),
+  };
+}
