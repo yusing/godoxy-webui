@@ -1,4 +1,4 @@
-import { DomainOrWildcard, Email } from "../types";
+import type { DomainOrWildcard, Email } from "../types";
 
 export const AUTOCERT_PROVIDERS = [
   "local",

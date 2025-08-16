@@ -42,25 +42,25 @@ interface MiddlewareComposeBase extends MiddlewareBase {
 type OmitUse<T extends MiddlewareComposeBase> = Omit<T, "use">;
 
 // Helper type to capitalize the first letter of a string
-type Title<S extends string> = S extends `${infer First}${infer Rest}`
-  ? `${Uppercase<First>}${Rest}`
-  : S;
+// type Title<S extends string> = S extends `${infer First}${infer Rest}`
+//   ? `${Uppercase<First>}${Rest}`
+//   : S;
 
 // Helper type to convert snake_case to camelCase or PascalCase
 // This version preserves the case of the first part before an underscore (e.g., FOO_BAR -> FOOBar)
-type SnakeToCamel<S extends string> = S extends `${infer T}_${infer U}`
-  ? `${T}${Title<SnakeToCamel<U>> | Uppercase<SnakeToCamel<U>>}`
-  : S;
+// type SnakeToCamel<S extends string> = S extends `${infer T}_${infer U}`
+//   ? `${T}${Title<SnakeToCamel<U>> | Uppercase<SnakeToCamel<U>>}`
+//   : S;
 
 // Helper type to convert snake_case to PascalCase (e.g., foo_bar -> FooBar, FOO_BAR -> FOOBar)
-type SnakeToPascal<S extends string> = Title<SnakeToCamel<S>>;
+// type SnakeToPascal<S extends string> = Title<SnakeToCamel<S>>;
 
 // Core logic for generating all variations
-type _LooseUseInternal<Str extends string> = (
-  | SnakeToCamel<Str>
-  | SnakeToPascal<Str>
-  | Str
-)[];
+// type _LooseUseInternal<Str extends string> = (
+//   | SnakeToCamel<Str>
+//   | SnakeToPascal<Str>
+//   | Str
+// )[];
 
 // Expands all variations of the string to a union
 // type LooseUse<Use extends string> = _LooseUseInternal<Use>[number];

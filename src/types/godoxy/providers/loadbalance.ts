@@ -1,4 +1,4 @@
-import { RealIP } from "../middlewares/middlewares";
+import type { RealIP } from "../middlewares/middlewares";
 
 export const LOAD_BALANCE_MODES = [
   "round_robin",

@@ -1,4 +1,4 @@
-import { Duration, URI } from "../types";
+import type { Duration, URI } from "../types";
 
 export const STOP_METHODS = ["pause", "stop", "kill"] as const;
 export type StopMethod = (typeof STOP_METHODS)[number];

@@ -1,7 +1,7 @@
-import { ProxmoxConfig } from "../providers/proxmox";
-import { URI, URL } from "../types";
-import { MaxmindConfig } from "./maxmind";
-import { GotifyConfig, NtfyConfig, WebhookConfig } from "./notification";
+import type { ProxmoxConfig } from "../providers/proxmox";
+import type { URI, URL } from "../types";
+import type { MaxmindConfig } from "./maxmind";
+import type { GotifyConfig, NtfyConfig, WebhookConfig } from "./notification";
 
 export type Providers = {
   /** List of route definition files to include

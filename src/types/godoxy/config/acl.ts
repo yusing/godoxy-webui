@@ -1,5 +1,5 @@
-import { CIDR, IPv4, IPv6 } from "../types";
-import { ACLLogConfig } from "./access_log";
+import type { CIDR, IPv4, IPv6 } from "../types";
+import type { ACLLogConfig } from "./access_log";
 
 export type ACLMatcher =
   | IPMatcher

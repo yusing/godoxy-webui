@@ -1,4 +1,4 @@
-import { Duration, URI } from "../types";
+import type { Duration, URI } from "../types";
 
 /**
  * @additionalProperties false

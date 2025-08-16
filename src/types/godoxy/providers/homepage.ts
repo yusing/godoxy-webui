@@ -1,4 +1,4 @@
-import { URL } from "../types";
+import type { URL } from "../types";
 
 /** Homepage config
  * @additionalProperties false

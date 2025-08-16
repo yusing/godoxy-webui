@@ -1,9 +1,9 @@
-import { DomainName } from "../types";
-import { ACLConfig } from "./acl";
-import { AutocertConfig } from "./autocert";
-import { EntrypointConfig } from "./entrypoint";
-import { HomepageConfig } from "./homepage";
-import { Providers } from "./providers";
+import type { DomainName } from "../types";
+import type { ACLConfig } from "./acl";
+import type { AutocertConfig } from "./autocert";
+import type { EntrypointConfig } from "./entrypoint";
+import type { HomepageConfig } from "./homepage";
+import type { Providers } from "./providers";
 
 export type Config = {
   /** Optional access control configuration */

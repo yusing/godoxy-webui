@@ -1,4 +1,4 @@
-import { URL } from "../types";
+import type { URL } from "../types";
 
 export const NOTIFICATION_PROVIDERS = ["webhook", "gotify", "ntfy"] as const;
 
