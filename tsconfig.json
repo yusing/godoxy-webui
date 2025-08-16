@@ -12,6 +12,11 @@
     /* Strictness */
     "strict": true,
     "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true,
     "checkJs": true,
 
     /* Bundled projects */
@@ -19,6 +24,7 @@
     "noEmit": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "verbatimModuleSyntax": true,
     "jsx": "preserve",
     "plugins": [{ "name": "next" }],
     "incremental": true,
