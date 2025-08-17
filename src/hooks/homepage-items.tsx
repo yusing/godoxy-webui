@@ -25,9 +25,9 @@ export function useHomepageItems(): [
     }).then(({ data, error }) => {
       if (error) {
         toastError(error);
-        setLocalValue(dummyItems());
+      } else {
+        setLocalValue(data);
       }
-      setLocalValue(data ?? dummyItems());
     });
   }, [categoryFilter.val, providerFilter.val, setLocalValue]);
 
