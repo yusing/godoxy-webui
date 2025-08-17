@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 const level = process.env.NODE_ENV === "production" ? "info" : "debug";
 
 const LEVELS = {

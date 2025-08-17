@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Tag } from "@/components/ui/tag";
 import { api } from "@/lib/api-client";
-import { Homepage, LoadBalance, Routes } from "@/types/godoxy";
+import { LoadBalance, Routes, type Homepage } from "@/types/godoxy";
 import {
   Badge,
   Card,

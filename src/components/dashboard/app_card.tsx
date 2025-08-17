@@ -278,7 +278,7 @@ export const AppCard = memo<Omit<AppCardInnerProps, "dragging">>(
             </MenuItem>
           </MenuContent>
         </MenuRoot>
-        {isEditDialogOpen && (
+        {isEditDialogOpen && curItem && (
           <EditItemDialog
             item={curItem}
             isOpen={isEditDialogOpen}
@@ -337,15 +337,11 @@ function EditItemDialog({
   onUpdate,
   onClose,
 }: Readonly<{
-  item: HomepageItem | null;
+  item: HomepageItem;
   isOpen: boolean;
   onUpdate: (newItem: HomepageItem) => void;
   onClose: () => void;
 }>) {
-  if (!item) {
-    return null;
-  }
-
   const dialog = useDialog({
     open: isOpen,
     onOpenChange: ({ open }) => {

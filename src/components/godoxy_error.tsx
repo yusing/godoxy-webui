@@ -1,6 +1,6 @@
 import "@/styles/logs.css";
 import { Box, Collapsible, HStack, Icon, List, Text } from "@chakra-ui/react";
-import React from "react";
+import { useMemo, useState } from "react";
 import { MdKeyboardArrowDown, MdKeyboardArrowRight } from "react-icons/md";
 
 export type GoDoxyError =
@@ -208,11 +208,11 @@ export function GoDoxyErrorText({
 }) {
   if (!err) return null;
   const baseLevel = level ?? 0;
-  const rows = React.useMemo(
+  const rows = useMemo(
     () => flattenGoDoxyError(err, baseLevel),
     [err, baseLevel],
   );
-  const [open, setOpen] = React.useState<Record<string, boolean>>({});
+  const [open, setOpen] = useState<Record<string, boolean>>({});
 
   return (
     <List.Root as="ul" listStyle="disc">

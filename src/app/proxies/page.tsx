@@ -67,9 +67,13 @@ export const Columns = [
           {route.container?.container_name ? (
             <Text color="fg.muted">{route.container?.container_name}</Text>
           ) : (
-            Object.values(route.health?.extra?.pool ?? {}).map((health) => (
-              <Text color="fg.muted">{health.name}</Text>
-            ))
+            Object.values(route.health?.extra?.pool ?? {}).map(
+              (health, index) => (
+                <Text color="fg.muted" key={index}>
+                  {health.name}
+                </Text>
+              ),
+            )
           )}
         </Stack>
       ) : (

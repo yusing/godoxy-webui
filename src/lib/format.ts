@@ -55,7 +55,7 @@ export function formatDuration(
   }
 
   // >= 1 s
-  let totalSeconds = Math.floor(ns / 1e6);
+  const totalSeconds = Math.floor(ns / 1e6);
   const days = Math.floor(totalSeconds / (24 * 3600));
   const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
   const minutes = Math.floor((totalSeconds % 3600) / 60);

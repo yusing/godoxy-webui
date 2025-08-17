@@ -1,4 +1,4 @@
-import {
+import type {
   ConfigSchema,
   MiddlewareComposeSchema,
   RoutesSchema,
@@ -164,7 +164,7 @@ export function getAllowedValues(
   }
   if (schema.properties?.[keyField]) {
     const field = schema.properties[keyField];
-    let items: string[] = required ? [] : [""];
+    const items: string[] = required ? [] : [""];
     items.push(...getAllowedValuesFromProperty(field));
     if (items.length === 1 && items[0] === "") {
       return undefined;

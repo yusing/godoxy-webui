@@ -1,18 +1,20 @@
 "use client";
 
 import { MoonFilledIcon, SunFilledIcon } from "@/components/icons";
-import React from "react";
+import { useCallback } from "react";
 import { useColorMode } from "./ui/color-mode";
 
-export const ThemeSwitch: React.FC = () => {
+export function ThemeSwitch() {
   const { colorMode, setColorMode } = useColorMode();
-  const onChange = () => {
-    colorMode === "light" ? setColorMode("dark") : setColorMode("light");
-  };
+  const onChange = useCallback(
+    () =>
+      colorMode === "light" ? setColorMode("dark") : setColorMode("light"),
+    [colorMode, setColorMode],
+  );
 
   return colorMode === "light" ? (
     <SunFilledIcon size={22} onClick={onChange} />
   ) : (
     <MoonFilledIcon size={22} onClick={onChange} />
   );
-};
+}

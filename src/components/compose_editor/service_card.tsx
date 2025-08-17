@@ -142,7 +142,7 @@ function ServiceCardEditFields({
 
   useEffect(() => {
     const sub = watch(() => handleSubmit(console.log)());
-    return sub.unsubscribe;
+    return () => sub.unsubscribe();
   }, [handleSubmit, watch]);
 
   return (

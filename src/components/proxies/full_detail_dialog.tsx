@@ -58,7 +58,7 @@ export function FullDetailDialog({
   const filteredRoute = useMemo(() => {
     if (!searchTerm) return route;
 
-    const filterObject = (obj: any): any => {
+    const filterObject = (obj: unknown): unknown | null => {
       if (typeof obj === "string") {
         return obj.toLowerCase().includes(searchTerm.toLowerCase())
           ? obj

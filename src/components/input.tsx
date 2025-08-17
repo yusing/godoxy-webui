@@ -455,7 +455,7 @@ type FieldInputProps<T> = {
   allowDelete: boolean;
 };
 
-function FieldInput_<T extends unknown>({
+function FieldInput_<T>({
   fieldKey,
   fieldValue,
   schema,

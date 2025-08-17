@@ -61,7 +61,7 @@ export function NewFileButton({ fileExtension }: FormProps) {
         setError(null);
       }
     },
-    [checkExists],
+    [checkExists, fileExtension],
   );
 
   return (

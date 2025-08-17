@@ -48,27 +48,26 @@ function Logs({ server, containerInfo, ...props }: LogsProps) {
   const [autoScroll, toggle] = useBoolean(true);
 
   useEffect(() => {
+    const logs = logsRef.current;
     const calcChevronShouldUp = () => {
-      if (!logsRef.current) {
+      if (!logs) {
         return;
       }
       setChevronDirection(
-        logsRef.current.scrollTop >= logsRef.current.scrollHeight / 2
-          ? "up"
-          : "down",
+        logs.scrollTop >= logs.scrollHeight / 2 ? "up" : "down",
       );
     };
-    logsRef.current?.addEventListener("scroll", calcChevronShouldUp);
+    logs?.addEventListener("scroll", calcChevronShouldUp);
 
     return () => {
-      logsRef.current?.removeEventListener("scroll", calcChevronShouldUp);
+      logs?.removeEventListener("scroll", calcChevronShouldUp);
     };
-  }, [logsRef.current]);
+  }, [setChevronDirection]);
 
   useEffect(() => {
     idRef.current = 0;
     reset();
-  }, [containerInfo.id, server]);
+  }, [containerInfo.id, server, reset]);
 
   const { readyState, connectionError } = useWebSocketApi<string>({
     endpoint: `/docker/logs/${server}/${containerInfo.id}`,
@@ -90,7 +89,7 @@ function Logs({ server, containerInfo, ...props }: LogsProps) {
         content: connectionError,
       });
     }
-  }, [connectionError]);
+  }, [connectionError, push, reset]);
 
   return (
     <Stack w="full" h={bodyHeight} {...props}>
@@ -158,6 +157,8 @@ const LogEntry = memo(({ line }: { line: LogLineWithId }) => (
     <LogLine line={line.content} />
   </HStack>
 ));
+
+LogEntry.displayName = "LogEntry";
 
 export function DockerLogs({ ...props }: StackProps) {
   const searchInputRef = useRef<HTMLDivElement | null>(null);

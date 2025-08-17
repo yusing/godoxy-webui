@@ -133,15 +133,16 @@ export function ServerList(
   // memoize the scroll position
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (ref.current && scrollPosition > 0) {
-      ref.current.scrollTo(0, scrollPosition);
+    const cur = ref.current;
+    if (cur && scrollPosition > 0) {
+      cur.scrollTo(0, scrollPosition);
     }
     const handleScroll = () => {
-      scrollPosition = ref.current?.scrollTop ?? 0;
+      scrollPosition = cur?.scrollTop ?? 0;
     };
-    ref.current?.addEventListener("scroll", handleScroll);
+    cur?.addEventListener("scroll", handleScroll);
     return () => {
-      ref.current?.removeEventListener("scroll", handleScroll);
+      cur?.removeEventListener("scroll", handleScroll);
     };
   }, []);
   return (

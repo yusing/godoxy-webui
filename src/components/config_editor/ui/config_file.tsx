@@ -9,15 +9,15 @@ import { Field } from "@/components/ui/field";
 import { Switch } from "@/components/ui/switch";
 import {
   ACLSchema,
-  Autocert,
+  type Autocert,
   Config,
   ConfigSchema,
   MaxmindSchema,
 } from "@/types/godoxy";
-import { RequestLogConfig } from "@/types/godoxy/config/access_log";
-import { ACLMatcher } from "@/types/godoxy/config/acl";
-import { MaxmindConfig } from "@/types/godoxy/config/maxmind";
-import { JSONSchema } from "@/types/schema";
+import type { RequestLogConfig } from "@/types/godoxy/config/access_log";
+import type { ACLMatcher } from "@/types/godoxy/config/acl";
+import type { MaxmindConfig } from "@/types/godoxy/config/maxmind";
+import type { JSONSchema } from "@/types/schema";
 import { Stack } from "@chakra-ui/react";
 import React from "react";
 import { FaHome } from "react-icons/fa";

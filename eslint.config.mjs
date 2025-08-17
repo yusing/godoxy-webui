@@ -1,9 +1,11 @@
+import { FlatCompat } from "@eslint/eslintrc";
+import js from "@eslint/js";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 import tsParser from "@typescript-eslint/parser";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,11 +17,13 @@ const compat = new FlatCompat({
 
 export default [...compat.extends(
     "next/core-web-vitals",
-    "plugin:@typescript-eslint/recommended-type-checked",
-    "plugin:@typescript-eslint/stylistic-type-checked",
+    "next/typescript",
+    "prettier",
 ), {
     plugins: {
         "@typescript-eslint": typescriptEslint,
+        "react-refresh": reactRefresh,
+        "react-hooks": reactHooks,
     },
 
     languageOptions: {
@@ -52,5 +56,7 @@ export default [...compat.extends(
                 attributes: false,
             },
         }],
+
+        "@typescript-eslint/no-empty-object-type": "off", // chakra snippets does this
     },
 }];

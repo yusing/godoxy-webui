@@ -14,7 +14,7 @@ function tryParseYAML(str: string | null) {
   if (!str) return {};
   try {
     return parseYAML(str);
-  } catch (e) {
+  } catch {
     return {};
   }
 }

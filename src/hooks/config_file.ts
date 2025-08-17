@@ -5,7 +5,7 @@ import { api, callApi } from "@/lib/api-client";
 import { toastError } from "@/lib/toast";
 import type { ConfigFile, ConfigFiles } from "@/types/file";
 import { godoxyConfig } from "@/types/file";
-import { Config } from "@/types/godoxy";
+import type { Config } from "@/types/godoxy";
 import { AxiosError } from "axios";
 import { parse as parseYAML, stringify as stringifyYAML } from "yaml";
 import { create } from "zustand";
@@ -19,7 +19,7 @@ type State = {
   valErr: GoDoxyError | null;
   setCurrent: (file: ConfigFile) => Promise<void>;
   setContent: (content: string | null) => Promise<void>;
-  updateRemote: () => void;
+  updateRemote: () => Promise<void>;
   addAgent: (host: string, port: number) => Promise<void>;
 };
 

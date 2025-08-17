@@ -29,7 +29,7 @@ export function useHomepageItems(): [
       }
       setLocalValue(data ?? dummyItems());
     });
-  }, [categoryFilter.val, providerFilter.val]);
+  }, [categoryFilter.val, providerFilter.val, setLocalValue]);
 
   return [localValue!, setLocalValue];
 }

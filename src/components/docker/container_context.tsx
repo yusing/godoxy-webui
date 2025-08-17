@@ -44,7 +44,7 @@ export function ContainerProvider({ children }: { children: React.ReactNode }) {
             router.push(`#${container?.id}`);
           },
         }),
-        [containers, container, containerID, router],
+        [containers, container, router],
       )}
     >
       {children}

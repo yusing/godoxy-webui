@@ -39,7 +39,7 @@ export interface LocalOptions {
   cert_path?: string;
   /**  ACME key path */
   key_path?: string;
-  options?: {} | null;
+  options?: object | null;
 }
 
 export interface CloudflareOptions extends AutocertConfigBase {

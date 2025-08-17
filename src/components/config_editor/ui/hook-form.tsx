@@ -1,4 +1,9 @@
-import { FieldValues, Path, RegisterOptions, useForm } from "react-hook-form";
+import {
+  type FieldValues,
+  type Path,
+  type RegisterOptions,
+  useForm,
+} from "react-hook-form";
 
 type HookFormProps<T> = {
   value: T;

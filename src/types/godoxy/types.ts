@@ -3,7 +3,7 @@
  */
 export type Null = null;
 export type Nullable<T> = T | Null;
-export type NullOrEmptyMap = {} | Null;
+export type NullOrEmptyMap = object | Null;
 
 export const HTTP_METHODS = [
   "GET",

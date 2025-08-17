@@ -6,7 +6,7 @@ import type { HomepageItem } from "@/lib/api";
 import { api } from "@/lib/api-client";
 import { toastError } from "@/lib/toast";
 import { HStack, Icon, Stack, Tabs } from "@chakra-ui/react";
-import React from "react";
+import { type RefObject, useMemo, useRef } from "react";
 import { AiOutlineLayout } from "react-icons/ai";
 import { IoMdApps } from "react-icons/io";
 import { MdViewComfy, MdViewCompact } from "react-icons/md";
@@ -32,7 +32,7 @@ export function DashboardSettingsButton({
   size?: "sm" | "md" | "lg";
   getHiddenApps: () => HomepageItem[];
 }>) {
-  const contentRef = React.useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   return (
     <SettingsButton title="Settings" iconProps={{ size: size ?? "sm" }}>
@@ -54,7 +54,6 @@ export function DashboardSettingsButton({
         </Tabs.List>
         <Tabs.Content value="layout" ref={contentRef}>
           <Stack gap={3}>
-            {/* @ts-ignore */}
             <DashboardFilters portalRef={contentRef} />
             <ViewToggle />
             <HealthBubbleAlignSelect />
@@ -234,11 +233,11 @@ function CategoryFontSizeSlider() {
 
 export default function DashboardFilters({
   portalRef,
-}: Readonly<{ portalRef?: React.RefObject<HTMLDivElement> }>) {
+}: Readonly<{ portalRef?: RefObject<HTMLDivElement | null> }>) {
   const providers = useAsync(api.route.providers);
   const categories = useAsync(api.homepage.categories);
 
-  const providerCollection = React.useMemo(
+  const providerCollection = useMemo(
     () =>
       createSelectCollection(
         providers.value?.data.map((p) => p.short_name) ?? [],
@@ -246,7 +245,7 @@ export default function DashboardFilters({
     [providers.value],
   );
 
-  const categoryCollection = React.useMemo(
+  const categoryCollection = useMemo(
     () => createSelectCollection(categories.value?.data ?? []),
     [categories.value],
   );

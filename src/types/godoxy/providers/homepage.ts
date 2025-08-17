@@ -21,7 +21,7 @@ export type HomepageConfig = {
   category?: string;
   /** Widget config */
   widget_config?: {
-    [key: string]: any;
+    [key: string]: unknown;
   };
 };
 

@@ -14,11 +14,11 @@ import {
   createListCollection,
   HStack,
   type ListCollection,
-  Select,
+  type Select,
   Text,
   type TextProps,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { type RefObject } from "react";
 import { Label } from "./ui/label";
 import {
   SegmentedControl,
@@ -96,7 +96,7 @@ interface LocalStorageSelectProps<T = string>
   item: SettingsItem<T>;
   collection: ListCollection<T>;
   label: string;
-  portalRef?: React.RefObject<HTMLDivElement>;
+  portalRef?: RefObject<HTMLDivElement | null>;
 }
 
 export const LocalStorageSelectShowAll = "Show All";

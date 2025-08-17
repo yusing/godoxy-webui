@@ -164,7 +164,7 @@ interface RouteUptimeProps extends CardRootProps {
   metrics: RouteUptimeAggregate;
 }
 
-const RouteUptime: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
+function RouteUptime({ metrics, ...props }: RouteUptimeProps) {
   return (
     <Card.Root size="sm" minW="300px" maxW="full" maxH="180px" {...props}>
       <Card.Header>
@@ -202,9 +202,9 @@ const RouteUptime: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
       </Card.Footer>
     </Card.Root>
   );
-};
+}
 
-const RouteUptimeSquare: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
+function RouteUptimeSquare({ metrics, ...props }: RouteUptimeProps) {
   const squareCardSize = useSquareCardSize();
   return (
     <Card.Root
@@ -246,9 +246,9 @@ const RouteUptimeSquare: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
       </Card.Body>
     </Card.Root>
   );
-};
+}
 
-const RouteUptimeMinimal: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
+function RouteUptimeMinimal({ metrics, ...props }: RouteUptimeProps) {
   return (
     <Card.Root size="sm" maxH="180px" {...props}>
       <Card.Body>
@@ -292,7 +292,7 @@ const RouteUptimeMinimal: FC<RouteUptimeProps> = ({ metrics, ...props }) => {
       </Card.Footer>
     </Card.Root>
   );
-};
+}
 
 function fillStatuses(statuses: RouteStatus[], count: number): RouteStatus[] {
   if (statuses.length >= count) {
@@ -310,10 +310,13 @@ function fillStatuses(statuses: RouteStatus[], count: number): RouteStatus[] {
   return [...dummy, ...statuses];
 }
 
-const UptimeTracker: React.FC<{ alias: string; statuses: RouteStatus[] }> = ({
+function UptimeTracker({
   alias,
   statuses,
-}) => {
+}: {
+  alias: string;
+  statuses: RouteStatus[];
+}) {
   const { width } = useWindowSize();
   const colsCount = useColsCount();
   const count = useMemo(
@@ -332,7 +335,7 @@ const UptimeTracker: React.FC<{ alias: string; statuses: RouteStatus[] }> = ({
       ))}
     </HStack>
   );
-};
+}
 
 const UptimeStatus = memo<{ status: RouteStatus }>(
   ({ status }) => {
@@ -357,3 +360,5 @@ const UptimeStatus = memo<{ status: RouteStatus }>(
     prev.status.latency === next.status.latency &&
     prev.status.status === next.status.status,
 );
+
+UptimeStatus.displayName = "UptimeStatus";

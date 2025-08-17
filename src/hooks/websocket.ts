@@ -4,7 +4,7 @@ import { useLocation } from "react-use";
 import useWebSocket, { ReadyState } from "react-use-websocket";
 
 // Generic WebSocket API hook
-export type WebSocketApiOptions<TMessage, TSubscription = any> = {
+export type WebSocketApiOptions<TMessage, TSubscription = unknown> = {
   /** WebSocket endpoint path (e.g., '/feed/subscribe') */
   endpoint: string;
   /** Query parameters to append to the endpoint */
@@ -204,7 +204,14 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
     if (readyState === ReadyState.CLOSED || readyState === ReadyState.CLOSING) {
       setDataSent(false);
     }
-  }, [readyState, subscriptionData, sendJsonMessage, endpoint, dataSent]);
+  }, [
+    readyState,
+    subscriptionData,
+    sendJsonMessage,
+    endpoint,
+    dataSent,
+    handleError,
+  ]);
 
   // heartbeat
   useEffect(() => {
