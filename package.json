@@ -5,12 +5,10 @@
   "type": "module",
   "scripts": {
     "build": "next build --turbopack",
-    "build": "next build --turbopack",
     "check": "next lint && tsc --noEmit",
     "dev": "next dev --turbo",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
-    "preview": "next build --turbopack && next start",
     "preview": "next build --turbopack && next start",
     "start": "next start",
     "typecheck": "tsc --noEmit",
