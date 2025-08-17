@@ -24,6 +24,7 @@ export function middleware(request: NextRequest) {
   const headers = new Headers(request.headers);
   headers.set("X-Forwarded-Host", request.nextUrl.host);
   headers.set("X-Forwarded-Proto", proto);
+  headers.set("Origin", request.nextUrl.origin);
 
   return NextResponse.rewrite(url, {
     request: {
