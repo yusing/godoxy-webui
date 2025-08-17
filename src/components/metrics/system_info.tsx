@@ -142,6 +142,9 @@ const SystemInfoRow: React.FC<{ agent: Agent }> = ({ agent }) => {
   const [systemInfo, setSystemInfo] = useState<SystemInfo>();
   useWebSocketApi<SystemInfo>({
     endpoint: "/metrics/system_info",
+    query: {
+      agent_addr: agent.addr,
+    },
     onMessage: (data) => setSystemInfo(data),
   });
   const router = useRouter();
