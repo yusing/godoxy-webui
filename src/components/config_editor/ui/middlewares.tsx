@@ -9,14 +9,18 @@ import { Tabs } from "@chakra-ui/react";
 import React from "react";
 import { LuPlus } from "react-icons/lu";
 
-export function MiddlewareEditor({
+export function MiddlewareEditor<
+  T extends
+    | MiddlewareCompose.EntrypointMiddlewares
+    | MiddlewareCompose.MiddlewareCompose,
+>({
   label,
   data,
   onChange,
 }: {
   label?: React.ReactNode;
-  data: MiddlewareCompose.MiddlewareCompose;
-  onChange: (v: MiddlewareCompose.MiddlewareCompose) => void;
+  data: T;
+  onChange: (v: T) => void;
 }) {
   return (
     <NamedListInput
@@ -25,9 +29,23 @@ export function MiddlewareEditor({
       keyField="use"
       //@ts-ignore
       schema={MiddlewareComposeSchema.definitions.MiddlewareComposeItem}
-      value={data}
+      value={
+        Array.isArray(data)
+          ? data.map((item) => ({
+              ...item,
+              use: middlewareUseToSnakeCase(item.use),
+            }))
+          : Object.entries(data).reduce((acc, [k, v]) => {
+              acc.push({
+                ...v,
+                //@ts-expect-error
+                use: middlewareUseToSnakeCase(k),
+              });
+              return acc;
+            }, [] as MiddlewareCompose.EntrypointMiddlewares)
+      }
       onChange={(v) => {
-        data = v as MiddlewareCompose.MiddlewareCompose;
+        data = v as T;
         onChange(data);
       }}
     />
@@ -92,7 +110,7 @@ export function MiddlewareComposeEditor({
           onClick={() => {
             let i = Object.keys(data).length + 1;
             for (; data[i]; i++);
-            data[i] = [];
+            data[i] = {};
             onChange(data);
           }}
         >
@@ -116,3 +134,46 @@ export function MiddlewareComposeEditor({
     </Tabs.Root>
   );
 }
+
+function middlewareUseToSnakeCase(use: string) {
+  if (!use) return "";
+  if (use in middlewareSnakeCaseMap) {
+    return middlewareSnakeCaseMap[use as keyof typeof middlewareSnakeCaseMap];
+  }
+  return use;
+}
+
+const middlewareSnakeCaseMap = {
+  customErrorPage: "error_page",
+  CustomErrorPage: "error_page",
+  errorPage: "error_page",
+  ErrorPage: "error_page",
+  redirectHTTP: "redirect_http",
+  RedirectHTTP: "redirect_http",
+  setXForwarded: "set_x_forwarded",
+  SetXForwarded: "set_x_forwarded",
+  hideXForwarded: "hide_x_forwarded",
+  HideXForwarded: "hide_x_forwarded",
+  cidrWhitelist: "cidr_whitelist",
+  CIDRWhitelist: "cidr_whitelist",
+  cloudflareRealIP: "cloudflare_real_ip",
+  CloudflareRealIP: "cloudflare_real_ip",
+  realIP: "real_ip",
+  RealIP: "real_ip",
+  request: "request",
+  Request: "request",
+  modifyRequest: "request",
+  ModifyRequest: "request",
+  response: "response",
+  Response: "response",
+  modifyResponse: "response",
+  ModifyResponse: "response",
+  oidc: "oidc",
+  OIDC: "oidc",
+  rateLimit: "rate_limit",
+  RateLimit: "rate_limit",
+  hcaptcha: "h_captcha",
+  hCaptcha: "h_captcha",
+  modifyHTML: "modify_html",
+  ModifyHTML: "modify_html",
+} as const;
