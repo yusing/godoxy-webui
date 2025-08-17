@@ -6,7 +6,7 @@ import {
   MiddlewareComposeSchema,
 } from "@/types/godoxy";
 import { Tabs } from "@chakra-ui/react";
-import React from "react";
+import React, { useEffect } from "react";
 import { LuPlus } from "react-icons/lu";
 
 export function MiddlewareEditor<
@@ -59,7 +59,15 @@ export function MiddlewareComposeEditor({
   data: Record<string, MiddlewareCompose.MiddlewareCompose>;
   onChange: (v: Record<string, MiddlewareCompose.MiddlewareCompose>) => void;
 }) {
-  const [selectedTab, setSelectedTab] = React.useState(Object.keys(data)[0]);
+  const [selectedTab, setSelectedTab] = React.useState<string | undefined>(
+    undefined,
+  );
+
+  useEffect(() => {
+    if (Object.keys(data).length > 0) {
+      setSelectedTab(Object.keys(data)[0]);
+    }
+  }, [data]);
 
   return (
     <Tabs.Root
