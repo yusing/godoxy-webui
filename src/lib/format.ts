@@ -11,6 +11,74 @@ function formatPrecision(value: number, precision: number) {
   return Math.round(value * factor) / factor;
 }
 
+export function formatDuration(
+  dur: number,
+  options?: { unit?: "us" | "ms" | "s" },
+): string {
+  const { unit = "s" } = options ?? {};
+  if (dur < 0) {
+    return "n/a";
+  }
+  // Convert input to microseconds
+  let ns: number;
+  switch (unit) {
+    case "us":
+      ns = dur;
+      break;
+    case "ms":
+      ns = dur * 1e3;
+      break;
+    case "s":
+    default:
+      ns = dur * 1e6;
+      break;
+  }
+
+  let negative = false;
+  if (ns < 0) {
+    negative = true;
+    ns = -ns;
+  }
+
+  if (ns === 0) {
+    return "0s";
+  }
+
+  if (ns < 1e3) {
+    // < 1 ms
+    return `${negative ? "-" : ""}${ns}us`;
+  }
+  if (ns < 1e6) {
+    // < 1 s
+    const ms = Math.floor(ns / 1e3);
+    return `${negative ? "-" : ""}${ms}ms`;
+  }
+
+  // >= 1 s
+  let totalSeconds = Math.floor(ns / 1e6);
+  const days = Math.floor(totalSeconds / (24 * 3600));
+  const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  const parts: string[] = [];
+  if (days > 0) {
+    parts.push(`${days}d`);
+  }
+  if (hours > 0) {
+    parts.push(`${hours}h`);
+  }
+  if (minutes > 0) {
+    parts.push(`${minutes}m`);
+  }
+  if (seconds > 0 && totalSeconds < 3600) {
+    parts.push(`${seconds}s`);
+  }
+
+  const result = parts.join(" ");
+  return (negative ? "-" : "") + result;
+}
+
 const units = ["B", "KB", "MB", "GB", "TB"];
 
 export function formatByte(value: number, precision = 2) {

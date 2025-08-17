@@ -1,12 +1,14 @@
 "use client";
 
 import { StatLabel, StatRoot, StatValueText } from "@/components/ui/stat";
-import { skeletonStats, Stats } from "@/types/api/stats";
+import { skeletonStats } from "@/types/api/stats";
 import { Box, For, SimpleGrid, Stack } from "@chakra-ui/react";
 
-import useWebsocket from "@/hooks/ws";
-import Endpoints from "@/types/api/endpoints";
+import { useWebSocketApi } from "@/hooks/websocket";
+import type { StatsResponse } from "@/lib/api";
+import { toastError } from "@/lib/toast";
 import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 import Conditional from "../conditional";
 import { Skeleton, SkeletonText } from "../ui/skeleton";
 import { RouteStats } from "./stats";
@@ -18,11 +20,23 @@ const ProvidersGrid = dynamic(() => import("./providers_grid"), {
 export default function DashboardStats({
   isMobile,
 }: Readonly<{ isMobile: boolean }>) {
-  const { data } = useWebsocket<Stats>(Endpoints.STATS, {
-    json: true,
+  const [stats, setStats] = useState<StatsResponse & { skeleton?: boolean }>(
+    skeletonStats,
+  );
+  const { connectionError } = useWebSocketApi<StatsResponse>({
+    endpoint: "/stats",
+    onMessage: (data) => {
+      setStats(data as StatsResponse);
+    },
   });
 
-  const stats = data ?? skeletonStats;
+  useEffect(() => {
+    if (connectionError) {
+      setStats(skeletonStats);
+      toastError(connectionError);
+    }
+  }, [connectionError]);
+
   const rps = stats.proxies.reverse_proxies;
   const streams = stats.proxies.streams;
   const total = stats.proxies.total;
@@ -72,10 +86,20 @@ export default function DashboardStats({
           </StatRoot>
         </Box>
         <Box hidden={rps.total === 0 && !stats.skeleton}>
-          <RouteStats key="rps" label="Reverse Proxies" stats={rps} />
+          <RouteStats
+            key="rps"
+            label="Reverse Proxies"
+            stats={rps}
+            skeleton={stats.skeleton}
+          />
         </Box>
         <Box hidden={streams.total === 0 && !stats.skeleton}>
-          <RouteStats key="streams" label="Streams" stats={streams} />
+          <RouteStats
+            key="streams"
+            label="Streams"
+            stats={streams}
+            skeleton={stats.skeleton}
+          />
         </Box>
         <StatRoot>
           <StatLabel>Providers</StatLabel>
@@ -84,7 +108,7 @@ export default function DashboardStats({
             whenTrue={StatValueText}
             trueProps={{ value: stats.proxies.total }}
             whenFalse={ProvidersGrid}
-            falseProps={{ stats: stats }}
+            falseProps={{ stats }}
           />
         </StatRoot>
       </Stack>

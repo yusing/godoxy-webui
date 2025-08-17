@@ -1,4 +1,4 @@
-import { RouteResponse } from "@/types/api/route/route";
+import type { Route } from "@/lib/api";
 import {
   HStack,
   IconButton,
@@ -11,7 +11,7 @@ import { MoreHorizontal } from "lucide-react";
 import { EyeFilledIcon } from "../icons";
 import { FullDetailDialog } from "./full_detail_dialog";
 
-export function Actions({ route }: { route: RouteResponse }) {
+export function Actions({ route }: { route: Route }) {
   const detailDialog = useDialog();
 
   return (

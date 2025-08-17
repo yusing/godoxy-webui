@@ -2,12 +2,13 @@
 import { PeriodsSelect } from "@/components/metrics/periods_select";
 import { useTemperatureUnit } from "@/components/metrics/settings";
 import { EmptyState } from "@/components/ui/empty-state";
-import useWebsocket from "@/hooks/ws";
+import { useWebSocketApi } from "@/hooks/websocket";
+import type {
+  MetricsPeriod,
+  SystemInfoAggregate,
+  SystemInfoAggregateMode,
+} from "@/lib/api";
 import { formatByte, toFahrenheit } from "@/lib/format";
-import { Agent } from "@/types/api/agent";
-import Endpoints from "@/types/api/endpoints";
-import { MetricsPeriod } from "@/types/api/metrics/metrics";
-import type { AggregateType } from "@/types/api/metrics/system_info";
 import { Chart as ChakraChart, useChart } from "@chakra-ui/charts";
 import { Box, Heading, HStack, Stack, Text } from "@chakra-ui/react";
 import React, { useState } from "react";
@@ -24,15 +25,18 @@ import {
 } from "recharts";
 import { Label } from "../ui/label";
 
+type Agent = {
+  name: string;
+  addr?: string;
+};
+
 const byteSizeFormatter = (value: number) => formatByte(value, 0);
 const speedFormatter = (value: number) => `${byteSizeFormatter(value)}/s`;
 const iopsFormatter = (value: number) => `${value} IOPS`;
 const percentageFormatter = (value: number) =>
   `${Math.round(value * 100) / 100}%`;
 
-export const SystemInfoGraphsPage: React.FC<{
-  agent: Agent;
-}> = ({ agent }) => {
+export function SystemInfoGraphsPage({ agent }: { agent: Agent }) {
   const { val: temperatureUnit } = useTemperatureUnit();
   const temperatureFormatter =
     temperatureUnit === "celsius"
@@ -129,7 +133,7 @@ export const SystemInfoGraphsPage: React.FC<{
       />
     </Stack>
   );
-};
+}
 
 const formatTimestamp = (timestamp: number) => {
   return new Date(timestamp * 1000).toLocaleTimeString(undefined, {
@@ -138,11 +142,15 @@ const formatTimestamp = (timestamp: number) => {
   });
 };
 
-const ChartOuter: React.FC<{
+function ChartOuter({
+  label,
+  description,
+  children,
+}: {
   label: string;
   description: string;
   children: React.ReactNode;
-}> = ({ label, description, children }) => {
+}) {
   return (
     <Stack gap="6" p="6" bg="var(--on-bg-color)" borderRadius="lg" shadow="xs">
       <Stack gap="1">
@@ -156,7 +164,7 @@ const ChartOuter: React.FC<{
       {children}
     </Stack>
   );
-};
+}
 
 const colorMap: Record<string, string> = {
   download: "hsl(var(--chart-1))",
@@ -184,23 +192,29 @@ const getTimestampTicks = (data: Record<string, any>[]) => {
 
 const Chart: React.FC<{
   period: MetricsPeriod;
-  type: AggregateType;
+  type: SystemInfoAggregateMode;
   label: string;
   description: string;
   agent: Agent;
   yAxisFormatter: (value: any) => string;
 }> = ({ period, type, label, description, yAxisFormatter, agent }) => {
-  const { data } = useWebsocket<{ data: Record<string, any>[] }>(
-    Endpoints.metricsSystemInfo({
+  const [data, setData] = useState<SystemInfoAggregate>({
+    data: [],
+    total: 0,
+  });
+
+  useWebSocketApi<SystemInfoAggregate>({
+    endpoint: `/metrics/system_info`,
+    query: {
       period,
       aggregate: type,
-      agent_addr: agent?.addr,
+      agent_addr: agent.addr ?? "",
       interval: "5s",
-    }),
-    { json: true },
-  );
+    },
+    onMessage: (data) => setData(data),
+  });
 
-  if (!data || !data.data?.length) {
+  if (!data.data?.length) {
     return (
       <ChartOuter label={label} description={description}>
         <EmptyState title="No enough data for the period" />
@@ -243,7 +257,6 @@ const ChartInner: React.FC<{
         <RechartsTooltip
           cursor={false}
           animationDuration={100}
-          accessibilityLayer
           content={(props) => {
             const { active, payload } = props;
             if (!active || !payload?.length) return null;

@@ -204,6 +204,28 @@ export interface HealthCheckConfig {
   use_get: boolean;
 }
 
+export interface HealthExtra {
+  config: LoadBalancerConfig;
+  pool: Record<string, any>;
+}
+
+export interface HealthJSON {
+  config: HealthCheckConfig;
+  detail: string;
+  extra?: HealthExtra | null;
+  lastSeen: number;
+  lastSeenStr: string;
+  latency: number;
+  latencyStr: string;
+  name: string;
+  started: number;
+  startedStr: string;
+  status: string;
+  uptime: number;
+  uptimeStr: string;
+  url: string;
+}
+
 export type HealthMap = Record<string, RoutesHealthInfo>;
 
 export interface HomepageFetchResult {
@@ -447,6 +469,8 @@ export interface Route {
   container?: Container | null;
   disable_compression: boolean;
   excluded: boolean;
+  /** for swagger */
+  health: HealthJSON;
   healthcheck: HealthCheckConfig;
   homepage: HomepageItemConfig;
   host: string;
@@ -488,6 +512,8 @@ export interface RouteRoute {
   container?: Container | null;
   disable_compression: boolean;
   excluded: boolean;
+  /** for swagger */
+  health: HealthJSON;
   healthcheck: HealthCheckConfig;
   homepage: HomepageItemConfig;
   host: string;
@@ -810,10 +836,10 @@ export namespace Cert {
 
   /**
    * @description Renew cert
-   * @tags cert
+   * @tags cert, websocket
    * @name Renew
    * @summary Renew cert
-   * @request POST:/cert/renew
+   * @request GET:/cert/renew
    * @response `200` `SuccessResponse` OK
    * @response `403` `ErrorResponse` Forbidden
    * @response `500` `ErrorResponse` Internal Server Error
@@ -852,7 +878,7 @@ export namespace Docker {
    * @name Info
    * @summary Get docker info
    * @request GET:/docker/info
-   * @response `200` `(ServerInfo)[]` OK
+   * @response `200` `ServerInfo` OK
    * @response `403` `ErrorResponse` Forbidden
    * @response `500` `ErrorResponse` Internal Server Error
    */
@@ -861,7 +887,7 @@ export namespace Docker {
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = ServerInfo[];
+    export type ResponseBody = ServerInfo;
   }
 
   /**
@@ -1721,7 +1747,6 @@ export class Api<
       this.request<CertInfo, ErrorResponse>({
         path: `/cert/info`,
         method: "GET",
-        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -1729,10 +1754,10 @@ export class Api<
     /**
      * @description Renew cert
      *
-     * @tags cert
+     * @tags cert, websocket
      * @name Renew
      * @summary Renew cert
-     * @request POST:/cert/renew
+     * @request GET:/cert/renew
      * @response `200` `SuccessResponse` OK
      * @response `403` `ErrorResponse` Forbidden
      * @response `500` `ErrorResponse` Internal Server Error
@@ -1740,9 +1765,7 @@ export class Api<
     renew: (params: RequestParams = {}) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/cert/renew`,
-        method: "POST",
-        type: ContentType.Json,
-        format: "json",
+        method: "GET",
         ...params,
       }),
   };
@@ -1762,7 +1785,6 @@ export class Api<
       this.request<ContainerResponse[], ErrorResponse>({
         path: `/docker/containers`,
         method: "GET",
-        type: ContentType.Json,
         format: "json",
         ...params,
       }),
@@ -1774,15 +1796,14 @@ export class Api<
      * @name Info
      * @summary Get docker info
      * @request GET:/docker/info
-     * @response `200` `(ServerInfo)[]` OK
+     * @response `200` `ServerInfo` OK
      * @response `403` `ErrorResponse` Forbidden
      * @response `500` `ErrorResponse` Internal Server Error
      */
     info: (params: RequestParams = {}) =>
-      this.request<ServerInfo[], ErrorResponse>({
+      this.request<ServerInfo, ErrorResponse>({
         path: `/docker/info`,
         method: "GET",
-        type: ContentType.Json,
         format: "json",
         ...params,
       }),

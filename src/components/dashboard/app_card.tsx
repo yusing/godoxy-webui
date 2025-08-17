@@ -13,8 +13,6 @@ import {
   MenuRoot,
 } from "@/components/ui/menu";
 import { healthInfoUnknown } from "@/types/api/health";
-import { overrideHomepage } from "@/types/api/homepage";
-import { type HomepageItem } from "@/types/api/route/homepage_item";
 import {
   DialogRootProvider,
   Group,
@@ -24,7 +22,7 @@ import {
   Portal,
   Spacer,
   Stack,
-  StackProps,
+  type StackProps,
   Text,
   Tooltip,
   useDialog,
@@ -33,20 +31,22 @@ import React, { memo, useMemo, useState } from "react";
 import { HealthStatus } from "../health_status";
 import { Button } from "../ui/button";
 import { Field } from "../ui/field";
-import { SkeletonCircle, SkeletonText } from "../ui/skeleton";
 import { FavIcon } from "./favicon";
 
 import { useHealthInfo } from "@/hooks/health_map";
-import { toastError } from "@/types/api/endpoints";
+import type { HomepageItem } from "@/lib/api";
+import { api } from "@/lib/api-client";
+import { formatDuration } from "@/lib/format";
+import { toastError } from "@/lib/toast";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import {
-  FieldErrors,
+  type FieldErrors,
   useController,
   useForm,
-  UseFormRegister,
+  type UseFormRegister,
 } from "react-hook-form";
-import { LuEyeOff, LuPencil } from "react-icons/lu";
+import { LuEyeOff, LuInfo, LuPencil } from "react-icons/lu";
 import { IconSearcher } from "../config_editor/icon_searcher";
 import { DataListItem, DataListRoot } from "../ui/data-list";
 import { useAllSettings } from "./settings";
@@ -141,7 +141,11 @@ export const AppCardInner = memo<AppCardInnerProps>(
         <Tooltip.Trigger asChild>
           <HStack gap="2" {...rest} w="full">
             <AppCardHealthBubbleLeft item={item} />
-            {icon}
+            {item.icon ? (
+              <FavIcon url={item.icon} size={"24px"} />
+            ) : (
+              <FavIcon item={item} size={"24px"} />
+            )}
             <Stack gap={0}>
               <Text fontWeight="medium">{item.name}</Text>
               {item.description && (
@@ -170,7 +174,7 @@ export const AppCard = memo<Omit<AppCardInnerProps, "dragging">>(
     const [curItem, setCurItem] = React.useState(rest.item);
     const [menuOpen, setMenuOpen] = React.useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-    const [editingItem, setEditingItem] = useState<HomepageItem | null>(null);
+    const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
 
     const {
       attributes,
@@ -193,15 +197,6 @@ export const AppCard = memo<Omit<AppCardInnerProps, "dragging">>(
       }),
       [transform, transition, isDragging],
     );
-
-    if (curItem.skeleton) {
-      return (
-        <HStack {...rest}>
-          <SkeletonCircle size="24px" />
-          <SkeletonText noOfLines={1} width="120px" />
-        </HStack>
-      );
-    }
 
     if (!curItem.show) {
       return null;
@@ -241,7 +236,6 @@ export const AppCard = memo<Omit<AppCardInnerProps, "dragging">>(
               aria-label="Edit app"
               onClick={(e) => {
                 e.preventDefault();
-                setEditingItem(curItem);
                 setIsEditDialogOpen(true);
                 setMenuOpen(false);
               }}
@@ -255,8 +249,11 @@ export const AppCard = memo<Omit<AppCardInnerProps, "dragging">>(
               value="hide"
               aria-label="Hide app"
               onClick={() => {
-                curItem.show = false;
-                overrideHomepage("item_visible", [curItem.alias], false)
+                api.homepage
+                  .setItemVisible({
+                    which: [curItem.alias],
+                    value: false,
+                  })
                   .then(() => {
                     setCurItem({ ...curItem, show: false });
                     setMenuOpen(false);
@@ -269,18 +266,19 @@ export const AppCard = memo<Omit<AppCardInnerProps, "dragging">>(
             </MenuItem>
           </MenuContent>
         </MenuRoot>
-        {isEditDialogOpen && editingItem && (
+        {isEditDialogOpen && (
           <EditItemDialog
-            item={editingItem}
+            item={curItem}
             isOpen={isEditDialogOpen}
             onUpdate={(updatedItem) => {
               setCurItem(updatedItem);
               setIsEditDialogOpen(false);
-              setEditingItem(null);
             }}
             onClose={() => {
               setIsEditDialogOpen(false);
-              setEditingItem(null);
+            }}
+          />
+        )}
             }}
           />
         )}
@@ -364,14 +362,21 @@ function EditItemDialog({
     name: "icon",
   });
 
-  const onSubmit = (data: HomepageItem) => {
-    if (data.icon == "") {
-      data.icon = item.icon;
-    }
-    overrideHomepage("item", data.alias, data)
-      .then(() => overrideHomepage("item_visible", [data.alias], true))
+  const onSubmit = (newItem: HomepageItem) => {
+    newItem.icon ??= item.icon;
+    api.homepage
+      .setItem({
+        which: newItem.alias,
+        value: newItem,
+      })
+      .then(() =>
+        api.homepage.setItemVisible({
+          which: [newItem.alias],
+          value: true,
+        }),
+      )
       .then(() => {
-        onUpdate(data);
+        onUpdate(newItem);
       })
       .catch(toastError);
   };
@@ -394,7 +399,10 @@ function EditItemDialog({
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack gap="6" p="2">
               <HStack gap="6">
-                <FavIcon url={iconField.value || item.icon} size="36px" />
+                <FavIcon
+                  item={{ ...item, icon: iconField.value || item.icon }}
+                  size="36px"
+                />
                 <Group gap="4" w="full">
                   <FieldInput
                     required

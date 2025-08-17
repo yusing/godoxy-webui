@@ -1,20 +1,20 @@
 "use client";
 
-import Endpoints from "@/types/api/endpoints";
+import { api } from "@/lib/api-client";
 import {
   Flex,
-  FlexProps,
+  type FlexProps,
   Group,
   HStack,
   Input,
   InputElement,
   Spacer,
   Stack,
-  StackProps,
+  type StackProps,
   Text,
 } from "@chakra-ui/react";
 import { useTheme } from "next-themes";
-import React, { useState } from "react";
+import { useState } from "react";
 import { MdError } from "react-icons/md";
 import { useAsync } from "react-use";
 import { FavIcon } from "../dashboard/favicon";
@@ -75,22 +75,27 @@ function IconElement({
   );
 }
 
-export const IconSearcher: React.FC<
-  {
-    value: string;
-    onChange: (v: string) => void;
-  } & Omit<StackProps, "onChange" | "value">
-> = ({ value, onChange, ...rest }) => {
+export function IconSearcher({
+  value,
+  onChange,
+  ...rest
+}: {
+  value: string;
+  onChange: (v: string) => void;
+} & Omit<StackProps, "onChange" | "value">) {
   const [searchValue, setSearchValue] = useState(asSearchValue(value));
   const [focused, setFocused] = useState(false);
   const [currentIcon, setCurrentIcon] = useState<IconMetadata | null>(null);
   const [currentVariant, setCurrentVariant] = useState<"light" | "dark" | null>(
     null,
   );
-  const icons = useAsync(async () => {
-    const r = await fetch(Endpoints.searchIcons(searchValue, 10));
-    return await (r.json() as Promise<IconMetadata[]>);
-  }, [searchValue]);
+  const icons = useAsync(
+    async () =>
+      await api.icons
+        .icons({ keyword: searchValue, limit: 10 })
+        .then((e) => e.data),
+    [searchValue],
+  );
 
   return (
     <Stack gap={focused ? 1 : 0} w="full" {...rest}>
@@ -222,4 +227,4 @@ export const IconSearcher: React.FC<
       </Stack>
     </Stack>
   );
-};
+}

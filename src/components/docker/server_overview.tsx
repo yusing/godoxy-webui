@@ -1,28 +1,15 @@
-import useWebsocket, { ReadyState } from "@/hooks/ws";
+import { useWebSocketApi } from "@/hooks/websocket";
+import type { ServerInfo } from "@/lib/api";
 import { providerName } from "@/lib/format";
-import Endpoints from "@/types/api/endpoints";
 import { Box, Center, HStack, Span, Spinner, Stack } from "@chakra-ui/react";
-import { FC } from "react";
+import { useState } from "react";
 import { FaDocker } from "react-icons/fa6";
 import { LuContainer, LuCpu, LuMemoryStick, LuServer } from "react-icons/lu";
+import { ReadyState } from "react-use-websocket";
 import { EmptyState } from "../ui/empty-state";
 import { IconLabel } from "../ui/label";
 
-type ServerInfoType = {
-  name: string;
-  version: string;
-  containers: {
-    total: number;
-    running: number;
-    paused: number;
-    stopped: number;
-  };
-  images: number;
-  n_cpu: number;
-  memory: string;
-};
-
-export const ServerInfo: FC<{ server: ServerInfoType }> = ({ server }) => {
+export function ServerInfo({ server }: { server: ServerInfo }) {
   return (
     <Box
       py="2"
@@ -54,17 +41,18 @@ export const ServerInfo: FC<{ server: ServerInfoType }> = ({ server }) => {
       </Stack>
     </Box>
   );
-};
+}
 
-export const ServerOverview: FC = () => {
-  const { data: servers, readyState } = useWebsocket<ServerInfoType[]>(
-    Endpoints.DOCKER_INFO,
-    { json: true },
-  );
+export function ServerOverview() {
+  const [servers, setServers] = useState<ServerInfo[]>([]);
+  const { readyState } = useWebSocketApi<ServerInfo[]>({
+    endpoint: "/docker/info",
+    onMessage: (data) => setServers(data),
+  });
 
   if (!servers) {
     switch (readyState) {
-      case ReadyState.UNINITIALIZED:
+      case ReadyState.UNINSTANTIATED:
       case ReadyState.CONNECTING:
       case ReadyState.OPEN:
         return (
@@ -76,7 +64,13 @@ export const ServerOverview: FC = () => {
         return <EmptyState title="Failed to get server info" />;
     }
   } else if (servers.length === 0) {
-    return <EmptyState icon={<LuServer />} title="No servers found" />;
+    return (
+      <Center w="full" h="full">
+        <Spinner />
+      </Center>
+    );
+    // NOTE: There are always servers, just wait for first message
+    // return <EmptyState icon={<LuServer />} title="No servers found" />;
   }
 
   return (
@@ -86,4 +80,4 @@ export const ServerOverview: FC = () => {
       ))}
     </Stack>
   );
-};
+}

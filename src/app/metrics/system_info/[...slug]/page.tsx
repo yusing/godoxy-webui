@@ -9,7 +9,9 @@ export default async function MetricsPage({
   const slug = (await params).slug.map(decodeURIComponent);
   return (
     <ClientOnly>
-      <SystemInfoGraphsPage agent={{ name: slug[0]!, addr: slug[1] }} />
+      <SystemInfoGraphsPage
+        agent={{ name: slug[0]!, addr: slug[1] ?? "", version: "" }}
+      />
     </ClientOnly>
   );
 }

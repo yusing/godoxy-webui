@@ -1,8 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
-import Endpoints from "@/types/api/endpoints";
-import { HomepageItem } from "@/types/api/route/homepage_item";
+import type { HomepageItem } from "@/lib/api";
 import { memo, useState } from "react";
-import { Avatar, AvatarProps } from "../ui/avatar";
+import { Avatar, type AvatarProps } from "../ui/avatar";
 
 interface FavIconProps extends Omit<AvatarProps, "size"> {
   size?: number | string;
@@ -20,11 +19,15 @@ function FavIcon_({ size, item, url, ...props }: FavIconProps) {
       loading={loading}
     >
       <Avatar
-        name={item?.name ?? url ?? item?.alias ?? ""}
+        name={item ? (item.name ?? item.alias) : url}
         shape={props.shape ?? "full"}
         borderless
-        src={Endpoints.favIcon(item?.alias, url)}
-        onStatusChange={() => setLoading(false)}
+        src={`/api/v1/favicon?alias=${item?.alias ?? ""}&url=${url ?? ""}`}
+        onStatusChange={(detail) => {
+          if (detail.status === "loaded") {
+            setLoading(false);
+          }
+        }}
         {...props}
       />
     </Skeleton>

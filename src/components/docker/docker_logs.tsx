@@ -1,24 +1,28 @@
-import { ReadyState } from "@/hooks/ws";
+import { useWebSocketApi } from "@/hooks/websocket";
+import type { ContainerResponse } from "@/lib/api";
 import { parseLogLine, type LogLine as LogLineType } from "@/lib/logline";
 import { bodyHeight, navBarHeight } from "@/styles";
-import Endpoints from "@/types/api/endpoints";
 import {
   Box,
   Float,
   For,
+  Group,
   HStack,
   Icon,
   IconButton,
   Stack,
-  StackProps,
+  type StackProps,
 } from "@chakra-ui/react";
 import { memo, useEffect, useRef, useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
+import { useBoolean, useList } from "react-use";
+import { ReadyState } from "react-use-websocket";
 import { LogLine } from "../config_editor/logline";
 import { EmptyState } from "../ui/empty-state";
 import { Label } from "../ui/label";
+import { Switch } from "../ui/switch";
 import { Tag } from "../ui/tag";
-import { Container, useContainerContext } from "./container_context";
+import { useContainerContext } from "./container_context";
 import { ContainerStatusIndicator } from "./container_status_indicator";
 import {
   SearchInput,
@@ -34,10 +38,7 @@ interface LogsProps extends StackProps {
 }
 
 function Logs({ server, containerInfo, ...props }: LogsProps) {
-  const [lines, setLines] = useState<LogLineWithId[]>([]);
-  const [readyState, setReadyState] = useState<ReadyState>(
-    ReadyState.UNINITIALIZED,
-  );
+  const [lines, { push, reset }] = useList<LogLineWithId>();
   const topRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const logsRef = useRef<HTMLDivElement>(null);
@@ -64,29 +65,28 @@ function Logs({ server, containerInfo, ...props }: LogsProps) {
 
   useEffect(() => {
     idRef.current = 0;
-    const ws = new WebSocket(
-      Endpoints.DOCKER_LOGS({ server, container: containerInfo.id }),
-    );
-    setReadyState(ReadyState.CONNECTING);
-    setLines([]);
-    ws.onopen = () => {
-      setReadyState(ReadyState.OPEN);
-    };
-    ws.onmessage = (event) => {
-      setLines((prev) => {
-        const parsed = parseLogLine(event.data);
-        const newLine = { ...parsed, id: idRef.current++ };
-        const newLines = [...prev, newLine];
-        return newLines.slice(-100);
+    reset();
+  }, [containerInfo.id, server]);
+
+  const { readyState, connectionError } = useWebSocketApi<string>({
+    endpoint: `/docker/logs/${server}/${containerInfo.id}`,
+    json: false,
+    onMessage: (data) => {
+      push({ ...parseLogLine(data), id: idRef.current++ });
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (connectionError) {
+      idRef.current = 0;
+      push({
+        id: idRef.current++,
+        time: new Date().toISOString(),
+        content: connectionError,
       });
-    };
-    ws.onclose = () => {
-      setReadyState(ReadyState.CLOSED);
-    };
-    return () => {
-      ws.close();
-    };
-  }, [server, containerInfo.id]);
+    }
+  }, [connectionError]);
 
   return (
     <Stack w="full" h={bodyHeight} {...props}>
@@ -132,7 +132,7 @@ function Logs({ server, containerInfo, ...props }: LogsProps) {
         >
           {(line) => <LogEntry key={line.id} line={line} />}
         </For>
-        <Box ref={bottomRef} />
+        <div ref={bottomRef} />
       </Stack>
     </Stack>
   );

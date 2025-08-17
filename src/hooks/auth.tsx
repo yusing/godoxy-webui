@@ -1,7 +1,7 @@
 "use client";
 
-import Endpoints from "@/types/api/endpoints";
-import { StatusCodes } from "http-status-codes";
+import { api, callApi } from "@/lib/api-client";
+import { HttpStatusCode } from "axios";
 import { useMount } from "react-use";
 
 // weird redirect behavior with fetch
@@ -10,11 +10,9 @@ import { useMount } from "react-use";
 // https://github.com/whatwg/fetch/issues/763
 export function AuthProvider() {
   useMount(() => {
-    fetch(Endpoints.AUTH_CHECK, {
-      method: "HEAD",
-    }).then(async (r) => {
-      if (r.status === StatusCodes.FORBIDDEN) {
-        const redirectURL = r.headers.get("x-redirect-to");
+    callApi(api.auth.check).then(({ code, headers }) => {
+      if (code == HttpStatusCode.Forbidden) {
+        const redirectURL = headers["x-redirect-to"];
         if (redirectURL && redirectURL !== window.location.pathname) {
           window.location.href = redirectURL;
         }

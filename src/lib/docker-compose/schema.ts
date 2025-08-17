@@ -1,6 +1,6 @@
 "use server";
 
-import { JSONSchema } from "@/types/schema";
+import type { JSONSchema } from "@/types/schema";
 
 const dockerComposeSchemaURL =
   "https://raw.githubusercontent.com/compose-spec/compose-spec/refs/heads/main/schema/compose-spec.json";

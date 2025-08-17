@@ -1,13 +1,16 @@
 "use client";
 
-import Endpoints from "@/types/api/endpoints";
-import { Link } from "@chakra-ui/react";
+import { api } from "@/lib/api-client";
+import { useRouter } from "next/navigation";
 import { FaSignOutAlt } from "react-icons/fa";
 
 export default function LogoutButton() {
+  const router = useRouter();
   return (
-    <Link aria-label="Logout" href={Endpoints.AUTH_LOGOUT}>
-      <FaSignOutAlt size="22" />
-    </Link>
+    <FaSignOutAlt
+      size="22"
+      aria-label="Logout"
+      onClick={() => api.auth.logout().then(() => router.replace("/login"))}
+    />
   );
 }

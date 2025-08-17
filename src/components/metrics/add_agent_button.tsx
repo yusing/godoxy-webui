@@ -1,14 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { DialogDescription } from "@/components/ui/dialog";
 import { useConfigFileState } from "@/hooks/config_file";
-import {
-  AddAgentForm,
-  AgentType,
-  newAgent,
-  NewAgentResponse,
-  verifyNewAgent,
-} from "@/lib/api/agent";
-import { toastError } from "@/types/api/endpoints";
+import { type NewAgentRequest, type NewAgentResponse } from "@/lib/api";
+import { api } from "@/lib/api-client";
+import { toastError } from "@/lib/toast";
 import {
   Code,
   Dialog,
@@ -50,7 +45,7 @@ export function AddAgentDialogButton() {
   const [open, setOpen] = useState(false);
   const [copyLoading, setCopyLoading] = useState(false);
   const [addLoading, setAddLoading] = useState(false);
-  const { control, register, handleSubmit } = useForm<AddAgentForm>({
+  const { control, register, handleSubmit } = useForm<NewAgentRequest>({
     defaultValues: {
       name: "",
       host: "",
@@ -58,7 +53,7 @@ export function AddAgentDialogButton() {
       nightly: false,
     },
   });
-  const [type, setType] = useState<AgentType>("docker");
+  const [type, setType] = useState<NewAgentRequest["type"]>("docker");
   const [explicitOnly, setExplicitOnly] = useState(false);
   const [addToConfig, setAddToConfig] = useState(true);
   const [agent, setAgent] = useState<NewAgentResponse | null>(null);
@@ -90,7 +85,9 @@ export function AddAgentDialogButton() {
                 mt={2}
                 w="full"
                 value={type}
-                onValueChange={({ value }) => setType(value as AgentType)}
+                onValueChange={({ value }) =>
+                  setType((value ?? "docker") as NewAgentRequest["type"])
+                }
                 items={Object.entries(agentTypes).map(([key, value]) => ({
                   label: (
                     <HStack gap="2">
@@ -214,13 +211,14 @@ export function AddAgentDialogButton() {
                   form.name += "!";
                 }
                 setCopyLoading(true);
-                newAgent({ ...form, type })
-                  .then(async (e) => {
-                    await navigator.clipboard.writeText(e.compose);
+                api.agent
+                  .create({ ...form, type })
+                  .then(async ({ data }) => {
+                    await navigator.clipboard.writeText(data.compose!);
                     toaster.create({
                       title: "Copied to clipboard",
                     });
-                    setAgent(e);
+                    setAgent(data);
                   })
                   .catch(toastError)
                   .finally(() => setCopyLoading(false));
@@ -236,24 +234,24 @@ export function AddAgentDialogButton() {
               onClick={handleSubmit((form) => {
                 if (!agent) return;
                 setAddLoading(true);
-                verifyNewAgent({
-                  host: form.host,
-                  port: form.port,
-                  ca: agent.ca,
-                  client: agent.client,
-                })
+                api.agent
+                  .verify({
+                    host: `${form.host}:${form.port}`,
+                    ca: agent.ca,
+                    client: agent.client,
+                  })
                   .then(async (e) => {
                     if (addToConfig) {
                       await addAgent(form.host, form.port);
                     }
                     return e;
                   })
-                  .then(async (e) => {
+                  .then(async ({ data }) => {
                     setAgent(null);
                     setOpen(false);
                     toaster.create({
                       title: "Agent added",
-                      description: await e?.text(),
+                      description: data.message,
                     });
                   })
                   .catch(toastError)

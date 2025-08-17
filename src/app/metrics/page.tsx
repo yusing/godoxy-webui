@@ -8,7 +8,7 @@ import { Uptime } from "@/components/metrics/uptime";
 import { InputGroup } from "@/components/ui/input-group";
 import { Toaster } from "@/components/ui/toaster";
 import { useFragment } from "@/hooks/fragment";
-import { MetricsPeriod } from "@/types/api/metrics/metrics";
+import type { MetricsPeriod } from "@/lib/api";
 import {
   ClientOnly,
   HStack,

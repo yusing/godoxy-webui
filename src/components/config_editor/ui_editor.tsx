@@ -4,13 +4,13 @@ import { CloseButton } from "@/components/ui/close-button";
 import { useConfigFileContent } from "@/hooks/config_file";
 import { useSetting } from "@/hooks/settings";
 import { Alert, ClientOnly, Stack } from "@chakra-ui/react";
-import { FC } from "react";
+import type { FC } from "react";
 import { parse as parseYAML, stringify as stringifyYAML } from "yaml";
 import { ConfigUIEditor } from "./ui/config_file";
 import { MiddlewareComposeEditor } from "./ui/middlewares";
 import { RoutesEditor } from "./ui/routes";
 
-function tryParseYAML(str?: string) {
+function tryParseYAML(str: string | null) {
   if (!str) return {};
   try {
     return parseYAML(str);

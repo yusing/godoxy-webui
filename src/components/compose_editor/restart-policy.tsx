@@ -1,4 +1,4 @@
-import { Select, SelectRootProps } from "@chakra-ui/react";
+import { Select, type SelectRootProps } from "@chakra-ui/react";
 
 import { Fieldset } from "@chakra-ui/react";
 

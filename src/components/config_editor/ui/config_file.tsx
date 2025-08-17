@@ -250,17 +250,19 @@ export function ConfigUIEditor({
             keyField="provider"
             nameField="name"
             schema={
-              ConfigSchema.definitions.Providers.properties.notification.items
+              ConfigSchema.definitions.Providers.properties.notification
+                .items as unknown as JSONSchema
             }
-            //@ts-ignore
             value={data.providers?.notification ?? []}
             onChange={(v) => {
-              if (!data.providers) data.providers = {};
+              const newData = structuredClone(data);
+              if (!newData.providers) newData.providers = {};
               //@ts-ignore
-              data.providers.notification = v;
-              if (Object.keys(v).length === 0)
-                delete data.providers.notification;
-              onChange(data);
+              newData.providers.notification = v;
+              if (Object.keys(v).length === 0) {
+                delete newData.providers.notification;
+              }
+              onChange(newData);
             }}
           />
         </AccordionItemContent>

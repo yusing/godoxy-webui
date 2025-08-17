@@ -8,24 +8,24 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
-import { SettingsItem } from "@/hooks/settings";
+import { type SettingsItem } from "@/hooks/settings";
 import {
   Box,
   createListCollection,
   HStack,
-  ListCollection,
+  type ListCollection,
   Select,
   Text,
-  TextProps,
+  type TextProps,
 } from "@chakra-ui/react";
 import React from "react";
 import { Label } from "./ui/label";
 import {
   SegmentedControl,
-  SegmentedControlProps,
+  type SegmentedControlProps,
 } from "./ui/segmented-control";
-import { Slider, SliderProps } from "./ui/slider";
-import { Switch, SwitchProps } from "./ui/switch";
+import { Slider, type SliderProps } from "./ui/slider";
+import { Switch, type SwitchProps } from "./ui/switch";
 
 export const sizeKeys = ["xs", "sm", "md", "lg", "xl", "2xl"] as const;
 export type SizeKeys = (typeof sizeKeys)[number];
@@ -96,7 +96,7 @@ interface LocalStorageSelectProps<T = string>
   item: SettingsItem<T>;
   collection: ListCollection<T>;
   label: string;
-  portalRef?: React.RefObject<HTMLElement>;
+  portalRef?: React.RefObject<HTMLDivElement>;
 }
 
 export const LocalStorageSelectShowAll = "Show All";
@@ -112,9 +112,7 @@ export function createSelectCollection(items: string[]) {
   });
 }
 
-export const LocalStorageSelect: React.FC<LocalStorageSelectProps> = (
-  props,
-) => {
+export function LocalStorageSelect(props: LocalStorageSelectProps) {
   const { item, collection, label, portalRef, ...rest } = props;
   return (
     <SelectRoot
@@ -143,7 +141,7 @@ export const LocalStorageSelect: React.FC<LocalStorageSelectProps> = (
       </SelectContent>
     </SelectRoot>
   );
-};
+}
 
 interface LocalStorageToggleProps extends Omit<SwitchProps, "value"> {
   item: SettingsItem<boolean>;

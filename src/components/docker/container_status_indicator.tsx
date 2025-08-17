@@ -1,24 +1,28 @@
+import type { ContainerState } from "@/lib/api";
 import { Status } from "@chakra-ui/react";
-import { FC } from "react";
 import { Label } from "../ui/label";
-import { Container } from "./container_context";
 
 const StatusMapping = {
+  created: "gray",
   running: "green",
   paused: "yellow", // idlewatcher
-  exited: "yellow", // idlewatcher
   restarting: "orange",
+  removing: "orange",
+  exited: "yellow", // idlewatcher
   dead: "red",
 };
 
-export const ContainerStatusIndicator: FC<{
-  status: Container["state"];
+export function ContainerStatusIndicator({
+  status,
+  withText,
+}: {
+  status: ContainerState;
   withText?: boolean;
-}> = ({ status, withText = false }) => {
+}) {
   return (
     <Status.Root>
       <Status.Indicator colorPalette={StatusMapping[status]} />
       {withText ? <Label>{status}</Label> : null}
     </Status.Root>
   );
-};
+}

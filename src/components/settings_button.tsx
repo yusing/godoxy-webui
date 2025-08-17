@@ -1,5 +1,5 @@
 import { IconButton } from "@chakra-ui/react";
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 import { MdSettings } from "react-icons/md";
 
 import {
@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { ButtonProps } from "./ui/button";
+import { type ButtonProps } from "./ui/button";
 
 export function SettingsButton({
   title,

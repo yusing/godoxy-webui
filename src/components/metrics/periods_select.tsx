@@ -1,20 +1,19 @@
-import {
-  type MetricsPeriod,
-  MetricsPeriods,
-} from "@/types/api/metrics/metrics";
-import { FC } from "react";
+import type { MetricsPeriod } from "@/lib/api";
 import { SegmentedControl } from "../ui/segmented-control";
 
-export const PeriodsSelect: FC<{
+export function PeriodsSelect({
+  period,
+  setPeriod,
+}: {
   period: MetricsPeriod;
   setPeriod: (period: MetricsPeriod) => void;
-}> = ({ period, setPeriod }) => {
+}) {
   return (
     <SegmentedControl
       value={period}
       onValueChange={({ value }) => setPeriod(value as MetricsPeriod)}
-      items={MetricsPeriods}
+      items={["5m", "15m", "1h", "1d", "1mo"] as MetricsPeriod[]}
       fontWeight={"medium"}
     />
   );
-};
+}

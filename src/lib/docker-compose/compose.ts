@@ -1,6 +1,6 @@
-import { DockerComposeNetwork } from "./network";
-import { DockerComposeService } from "./service";
-import { DockerComposeVolume } from "./volume";
+import { type DockerComposeNetwork } from "./network";
+import { type DockerComposeService } from "./service";
+import { type DockerComposeVolume } from "./volume";
 
 export type DockerCompose = {
   services: Record<string, DockerComposeService>;

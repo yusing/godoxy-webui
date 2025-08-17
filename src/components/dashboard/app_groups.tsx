@@ -1,11 +1,6 @@
 "use client";
 
 import {
-  DummyHomepageItem,
-  HomepageItem,
-  HomepageItems,
-} from "@/types/api/route/homepage_item";
-import {
   Box,
   Card,
   Editable,
@@ -20,15 +15,15 @@ import {
 import {
   closestCenter,
   DndContext,
-  DragEndEvent,
-  DragOverEvent,
   DragOverlay,
-  DragStartEvent,
   KeyboardSensor,
   MeasuringStrategy,
   PointerSensor,
   useSensor,
   useSensors,
+  type DragEndEvent,
+  type DragOverEvent,
+  type DragStartEvent,
 } from "@dnd-kit/core";
 import {
   arrayMove,
@@ -38,14 +33,11 @@ import {
 } from "@dnd-kit/sortable";
 import { useCallback, useState } from "react";
 
-import {
-  getHiddenHomepageItems,
-  getHomepageItems,
-} from "@/lib/api/homepage_items";
-import { toastError } from "@/types/api/endpoints";
-import { overrideHomepage } from "@/types/api/homepage";
+import { useHomepageItems } from "@/hooks/homepage-items";
+import type { HomepageItem, HomepageItems } from "@/lib/api";
+import { api } from "@/lib/api-client";
+import { toastError } from "@/lib/toast";
 import { MdInfo } from "react-icons/md";
-import { useAsync } from "react-use";
 import Conditional from "../conditional";
 import { ToggleTip } from "../ui/toggle-tip";
 import { AppCard } from "./app_card";
@@ -55,35 +47,15 @@ import { DashboardSettingsButton, useAllSettings } from "./settings";
 export default function AppGroups({
   isMobile,
 }: Readonly<{ isMobile: boolean }>) {
-  const { categoryGroupGap, categoryFilter, providerFilter } = useAllSettings();
+  const { categoryGroupGap } = useAllSettings();
 
   // Keep track of the currently dragged item for overlays and highlighting
   const [activeId, setActiveId] = useState<string | null>(null);
   // Track which categories are valid drop targets for the current drag
   const [dropTargets, setDropTargets] = useState<Record<string, boolean>>({});
 
-  const homepageItems = useAsync(
-    async () =>
-      await getHomepageItems({
-        category: categoryFilter.val,
-        provider: providerFilter.val,
-      })
-        .then((items) => {
-          setLocalHomepageItems(items);
-          localStorage.setItem("homepageItems", JSON.stringify(items));
-          return items;
-        })
-        .catch((error) => {
-          toastError(error);
-          return dummyItems();
-        }),
-    [categoryFilter.val, providerFilter.val],
-  );
-
   // State to manage the items for drag and drop
-  const [localHomepageItems, setLocalHomepageItems] = useState<HomepageItems>(
-    getCachedHomepageItems(),
-  );
+  const [homepageItems, setHomepageItems] = useHomepageItems();
 
   // Optimized sensors with activation constraints to improve performance
   const sensors = useSensors(
@@ -107,14 +79,14 @@ export default function AppGroups({
       // Find which category contains this item to track valid drop targets
       const targets: Record<string, boolean> = {};
 
-      for (const catName of Object.keys(localHomepageItems || {})) {
+      for (const catName of Object.keys(homepageItems)) {
         // All categories are potential drop targets
         targets[catName] = true;
       }
 
       setDropTargets(targets);
     },
-    [localHomepageItems],
+    [homepageItems],
   );
 
   // Track when hovering over potential drop targets
@@ -143,7 +115,7 @@ export default function AppGroups({
       const activeId = String(active.id);
       const overId = String(over.id);
 
-      setLocalHomepageItems((prevItems) => {
+      setHomepageItems((prevItems) => {
         // Create a shallow copy of state
         const newItems: HomepageItems = { ...prevItems };
 
@@ -287,31 +259,33 @@ export default function AppGroups({
 
         // Save changes to backend without blocking UI updates
         setTimeout(() => {
-          overrideHomepage("items_batch", null, updatedItemsForApi).catch(
-            toastError,
-          );
+          api.homepage
+            .setItemsBatch({
+              value: updatedItemsForApi,
+            })
+            .catch(toastError);
         }, 0);
 
         return newItems;
       });
     },
-    [overrideHomepage],
+    [setHomepageItems],
   );
 
   const lessThanTwo = useCallback(
     () =>
-      Object.entries(localHomepageItems).filter(
+      Object.entries(homepageItems).filter(
         ([_, items]) => items.length <= 2 && items.some((item) => item.show),
       ),
-    [localHomepageItems],
+    [homepageItems],
   );
 
   const others = useCallback(
     () =>
-      Object.entries(localHomepageItems).filter(
+      Object.entries(homepageItems).filter(
         ([_, items]) => items.length > 2 && items.some((item) => item.show),
       ),
-    [localHomepageItems],
+    [homepageItems],
   );
 
   // Function to find the dragged item data
@@ -319,8 +293,8 @@ export default function AppGroups({
     if (!activeId) return null;
 
     // Find the item in our data
-    for (const category of Object.keys(localHomepageItems || {})) {
-      const items = localHomepageItems?.[category];
+    for (const category of Object.keys(homepageItems)) {
+      const items = homepageItems?.[category];
       if (!items) continue;
 
       const item = items.find((item) => item.alias === activeId);
@@ -328,7 +302,7 @@ export default function AppGroups({
     }
 
     return null;
-  }, [activeId, localHomepageItems]);
+  }, [activeId, homepageItems]);
 
   // The currently dragged item
   const activeItem = getActiveItem();
@@ -370,9 +344,7 @@ export default function AppGroups({
           </ToggleTip>
           <DashboardSettingsButton
             size="md"
-            getHiddenApps={() =>
-              getHiddenHomepageItems(homepageItems.value ?? {})
-            }
+            getHiddenApps={() => getHiddenHomepageItems(homepageItems)}
           />
         </Float>
 
@@ -501,21 +473,21 @@ function Category({
             setCategoryName(value);
           }}
           onValueCommit={({ value }) => {
-            items.forEach((item) => (item.category = value));
-            overrideHomepage(
-              "items_batch",
-              null,
-              items.reduce(
-                (acc, item) => {
-                  acc[item.alias] = item;
-                  return acc;
-                },
-                {} as Record<string, HomepageItem>,
-              ),
-            ).catch((e) => {
-              toastError(e);
-              setCategoryName(category);
-            });
+            api.homepage
+              .setItemsBatch({
+                value: items.reduce(
+                  (acc, item) => {
+                    acc[item.alias] = item;
+                    item.category = value;
+                    return acc;
+                  },
+                  {} as Record<string, HomepageItem>,
+                ),
+              })
+              .catch((e) => {
+                toastError(e);
+                setCategoryName(category);
+              });
           }}
         >
           <Editable.Preview placeSelf="flex-start" w="fit" />
@@ -561,23 +533,8 @@ function Category({
   );
 }
 
-function getCachedHomepageItems() {
-  const cached = localStorage.getItem("homepageItems");
-  if (cached) {
-    try {
-      return JSON.parse(cached) as HomepageItems;
-    } catch (e) {
-      console.error(e);
-      return dummyItems();
-    }
-  }
-  return dummyItems();
-}
-
-function dummyItems(): HomepageItems {
-  const items = [];
-  for (let i = 0; i < 15; i++) {
-    items.push(DummyHomepageItem());
-  }
-  return { Docker: items, Others: items };
+export function getHiddenHomepageItems(items: HomepageItems): HomepageItem[] {
+  return Object.entries(items).flatMap(([_, items]) =>
+    items.filter((item) => !item.show),
+  );
 }

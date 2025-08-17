@@ -1,8 +1,8 @@
 import { For, HStack, Text, VStack } from "@chakra-ui/react";
 
 import { HealthStatus } from "@/components/health_status";
-import { healthStatuses, HealthStatusType } from "@/types/api/health";
-import { RouteStats as RouteStatsType } from "@/types/api/stats";
+import type { RouteStats } from "@/lib/api";
+import { healthStatuses, type HealthStatusType } from "@/types/api/health";
 import { SkeletonCircle, SkeletonText } from "../ui/skeleton";
 import { StatLabel, StatRoot, StatValueText } from "../ui/stat";
 import { Tooltip } from "../ui/tooltip";
@@ -47,8 +47,9 @@ function HealthNumberSkeleton() {
 export function RouteStats({
   label,
   stats,
-}: Readonly<{ label: string; stats: RouteStatsType }>) {
-  if (stats.skeleton) {
+  skeleton,
+}: Readonly<{ label: string; stats: RouteStats; skeleton?: boolean }>) {
+  if (skeleton) {
     return (
       <StatRoot>
         <StatLabel info={<StatusColorInfo />}>{label}</StatLabel>

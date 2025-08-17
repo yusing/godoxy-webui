@@ -2,9 +2,8 @@
 
 import { Tooltip } from "@/components/ui/tooltip";
 import { useSetting } from "@/hooks/settings";
+import type { ProviderStats, ProviderType, StatsResponse } from "@/lib/api";
 import { providerName } from "@/lib/format";
-import { ProviderType } from "@/types/api/route_provider";
-import { ProviderStats, Stats } from "@/types/api/stats";
 import { Box, For, HStack, Text, VStack } from "@chakra-ui/react";
 import { useTheme } from "next-themes";
 import { FaDocker, FaEllipsis, FaFile, FaServer } from "react-icons/fa6";
@@ -33,7 +32,7 @@ function providerColor(
   theme: string | undefined,
   fallback: string,
 ) {
-  if (providerType == ProviderType.docker) {
+  if (providerType == "docker") {
     return theme === "dark" ? "#46ffff" : "#5491df";
   }
   return fallback;
@@ -43,10 +42,10 @@ function ProviderIcon({
   providerType,
   color,
 }: Readonly<{ providerType: ProviderType; color: string }>) {
-  if (providerType == ProviderType.docker) {
+  if (providerType == "docker") {
     return <FaDocker size={iconSize} color={color} />;
   }
-  if (providerType == ProviderType.file) {
+  if (providerType == "file") {
     return <FaFile size={iconSize} color={color} />;
   }
   return <FaServer size={iconSize} color={color} />;
@@ -56,8 +55,14 @@ function ProviderItem({
   name,
   stats,
   color,
-}: Readonly<{ name: string; stats: ProviderStats; color: string }>) {
-  if (stats.skeleton) {
+  skeleton,
+}: Readonly<{
+  name: string;
+  stats: ProviderStats;
+  color: string;
+  skeleton?: boolean;
+}>) {
+  if (skeleton) {
     return (
       <HStack gap={2}>
         <SkeletonCircle size={`${iconSize}px`} />
@@ -77,7 +82,9 @@ function ProviderItem({
   );
 }
 
-export default function ProvidersGrid({ stats }: Readonly<{ stats: Stats }>) {
+export default function ProvidersGrid({
+  stats,
+}: Readonly<{ stats: StatsResponse }>) {
   const { theme } = useTheme();
   const showAllProviders = useSetting("dashboard_showAllProviders", false);
 

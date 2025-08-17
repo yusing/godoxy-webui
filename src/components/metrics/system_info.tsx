@@ -1,8 +1,6 @@
-import useWebsocket from "@/hooks/ws";
+import { useWebSocketApi } from "@/hooks/websocket";
+import type { Agent, SensorsTemperatureStat, SystemInfo } from "@/lib/api";
 import { formatPercent, providerName, toFahrenheit } from "@/lib/format";
-import { Agent } from "@/types/api/agent";
-import Endpoints from "@/types/api/endpoints";
-import type { SensorInfo, SystemInfo } from "@/types/api/metrics/system_info";
 import {
   Badge,
   Box,
@@ -18,6 +16,7 @@ import {
 import byteSize from "byte-size";
 import { useRouter } from "next/navigation";
 import path from "path";
+import { useState } from "react";
 import { FaTemperatureEmpty } from "react-icons/fa6";
 import {
   LuArrowDown,
@@ -36,8 +35,10 @@ const columnHeaderIconSize = 18;
 const tableRowIconSize = 14;
 
 export default function SystemInfo() {
-  const { data: agents } = useWebsocket<Agent[]>(Endpoints.LIST_AGENTS, {
-    json: true,
+  const [agents, setAgents] = useState<Agent[]>([]);
+  useWebSocketApi<Agent[]>({
+    endpoint: "/agent/list",
+    onMessage: setAgents,
   });
 
   if (!agents) {
@@ -102,9 +103,11 @@ export default function SystemInfo() {
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            {[{ name: "Main" }, ...agents].map((agent, index) => (
-              <SystemInfoRow key={agent.name} agent={agent} index={index} />
-            ))}
+            {[{ name: "Main", addr: "", version: "" }, ...agents].map(
+              (agent) => (
+                <SystemInfoRow key={agent.name} agent={agent} />
+              ),
+            )}
           </Table.Body>
         </Table.Root>
       </Table.ScrollArea>
@@ -135,14 +138,12 @@ function StyledColumnHeader({
   );
 }
 
-const SystemInfoRow: React.FC<{ agent: Agent; index: number }> = ({
-  agent,
-  index,
-}) => {
-  const { data: systemInfo } = useWebsocket<SystemInfo>(
-    Endpoints.metricsSystemInfo({ agent_addr: agent.addr, interval: "2s" }),
-    { json: true },
-  );
+const SystemInfoRow: React.FC<{ agent: Agent }> = ({ agent }) => {
+  const [systemInfo, setSystemInfo] = useState<SystemInfo>();
+  useWebSocketApi<SystemInfo>({
+    endpoint: "/metrics/system_info",
+    onMessage: (data) => setSystemInfo(data),
+  });
   const router = useRouter();
 
   if (!systemInfo) {
@@ -169,7 +170,7 @@ const SystemInfoRow: React.FC<{ agent: Agent; index: number }> = ({
   return (
     <Table.Row
       onClick={() => {
-        router.push(`/metrics/system_info/${agent.name}/${agent.addr ?? ""}`);
+        router.push(`/metrics/system_info/${agent.name}/${agent.addr}`);
       }}
       cursor="pointer"
       _hover={{
@@ -296,9 +297,8 @@ export const sensorIcons: Record<string, React.ReactNode> = {
 };
 
 const SensorCell: React.FC<{
-  sensor?: SensorInfo;
-  key?: string;
-}> = ({ sensor, key }) => {
+  sensor?: SensorsTemperatureStat;
+}> = ({ sensor }) => {
   const unit = useTemperatureUnit();
   if (!sensor) {
     return null;
@@ -307,10 +307,9 @@ const SensorCell: React.FC<{
   if (!icon) {
     return null;
   }
-  const isHigh =
-    sensor.sensorHigh > 0 && sensor.temperature > sensor.sensorHigh;
+  const isHigh = sensor.high > 0 && sensor.temperature > sensor.high;
   const isCritical =
-    sensor.sensorCritical > 0 && sensor.temperature > sensor.sensorCritical;
+    sensor.critical > 0 && sensor.temperature > sensor.critical;
   const temperature =
     unit.val === "celsius"
       ? Math.round(sensor.temperature * 10) / 10

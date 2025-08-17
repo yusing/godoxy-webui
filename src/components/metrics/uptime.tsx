@@ -5,21 +5,21 @@ import {
   PaginationRoot,
 } from "@/components/ui/pagination";
 
-import useWebsocket from "@/hooks/ws";
-import { formatPercent, formatTimestamp } from "@/lib/format";
-import Endpoints from "@/types/api/endpoints";
-import { healthStatusColors } from "@/types/api/health";
-import type { MetricsPeriod } from "@/types/api/metrics/metrics";
+import { useWebSocketApi } from "@/hooks/websocket";
 import type {
+  HomepageItem,
+  MetricsPeriod,
   RouteStatus,
-  RouteUptimeMetrics,
-  UptimeMetrics,
-} from "@/types/api/metrics/uptime";
-import type { HomepageItem } from "@/types/api/route/homepage_item";
+  RouteUptimeAggregate,
+  UptimeAggregate,
+} from "@/lib/api";
+import { api } from "@/lib/api-client";
+import { formatPercent, formatTimestamp } from "@/lib/format";
+import { healthStatusColors } from "@/types/api/health";
 import {
   Box,
   Card,
-  CardRootProps,
+  type CardRootProps,
   Center,
   Group,
   HStack,
@@ -28,8 +28,8 @@ import {
   Spinner,
   Stack,
 } from "@chakra-ui/react";
-import React, { FC, memo, useMemo, useState } from "react";
-import { useLocation, useWindowSize } from "react-use";
+import React, { type FC, memo, useMemo, useState } from "react";
+import { useAsync, useWindowSize } from "react-use";
 import { FavIcon } from "../dashboard/favicon";
 import { HealthStatus, HealthStatusTag } from "../health_status";
 import { EmptyState } from "../ui/empty-state";
@@ -46,7 +46,7 @@ import {
 
 export const Uptime: FC<{
   filter?: string;
-  period?: MetricsPeriod;
+  period: MetricsPeriod;
 }> = ({ filter, period }) => {
   const [page, setPage] = useState(1);
   const rowsCount = useRowsCount();
@@ -54,14 +54,17 @@ export const Uptime: FC<{
   const rowGap = useRowGap();
   const colsGap = useColsGap();
   const countPerPage = rowsCount.val * colsCount.val;
-  const { data: uptime } = useWebsocket<UptimeMetrics>(
-    Endpoints.metricsUptime(period ?? "1d", {
-      keyword: filter,
+  const [uptime, setUptime] = useState<UptimeAggregate>();
+  useWebSocketApi<UptimeAggregate>({
+    endpoint: `/metrics/uptime`,
+    query: {
+      period,
+      keyword: filter ?? "",
       limit: countPerPage,
       offset: (page - 1) * countPerPage,
-    }),
-    { json: true },
-  );
+    },
+    onMessage: setUptime,
+  });
 
   if (!uptime) {
     return (
@@ -107,7 +110,7 @@ export const Uptime: FC<{
   );
 };
 
-const Layout = ({ metrics }: { metrics: RouteUptimeMetrics }) => {
+function Layout({ metrics }: { metrics: RouteUptimeAggregate }) {
   const layoutMode = useLayoutMode();
   const AppCard = React.useMemo(() => {
     return layoutMode.val === "square_card"
@@ -116,14 +119,13 @@ const Layout = ({ metrics }: { metrics: RouteUptimeMetrics }) => {
         ? RouteUptimeMinimal
         : RouteUptime;
   }, [layoutMode.val]);
-  const location = useLocation();
-  const currentHost = location.host?.split(".").slice(1).join(".") ?? "";
-  const url = metrics.alias.search(".")
-    ? metrics.alias
-    : `${metrics.alias}.${currentHost}`;
+  const routeInfo = useAsync(
+    () => api.route.route(metrics.alias),
+    [metrics.alias],
+  );
 
   return (
-    <Link href={`${location.protocol}//${url}/`} target="_blank" unstyled>
+    <Link href={routeInfo.value?.data.homepage.url} target="_blank" unstyled>
       <AppCard
         metrics={metrics}
         _hover={{
@@ -132,9 +134,9 @@ const Layout = ({ metrics }: { metrics: RouteUptimeMetrics }) => {
       />
     </Link>
   );
-};
+}
 
-function title(metrics: RouteUptimeMetrics) {
+function title(metrics: RouteUptimeAggregate) {
   if (!metrics.display_name) {
     return metrics.alias;
   }
@@ -145,7 +147,7 @@ function title(metrics: RouteUptimeMetrics) {
   return metrics.display_name;
 }
 
-function TitleLabel_({ metrics }: { metrics: RouteUptimeMetrics }) {
+function TitleLabel_({ metrics }: { metrics: RouteUptimeAggregate }) {
   return (
     <Label fontSize={"md"} title={metrics.alias}>
       {title(metrics)}
@@ -159,7 +161,7 @@ const TitleLabel = memo(
 );
 
 interface RouteUptimeProps extends CardRootProps {
-  metrics: RouteUptimeMetrics;
+  metrics: RouteUptimeAggregate;
 }
 
 const RouteUptime: FC<RouteUptimeProps> = ({ metrics, ...props }) => {

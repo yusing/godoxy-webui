@@ -1,19 +1,18 @@
 import { HealthMapContext } from "@/hooks/health_map";
-import useWebsocket from "@/hooks/ws";
-import Endpoints from "@/types/api/endpoints";
-import { type HealthMap } from "@/types/api/health";
-import { type ReactNode, useMemo } from "react";
+import { useWebSocketApi } from "@/hooks/websocket";
+import type { HealthMap } from "@/lib/api";
+import { type ReactNode, useState } from "react";
 
 export default function HealthProvider({ children }: { children: ReactNode }) {
+  const [health, setHealth] = useState<HealthMap>({});
   // useWSJSON should handle the single connection internally
-  const { data: health } = useWebsocket<HealthMap>(Endpoints.HEALTH, {
-    json: true,
+  useWebSocketApi<HealthMap>({
+    endpoint: "/health",
+    onMessage: (data) => setHealth(data),
   });
 
-  const contextValue = useMemo(() => ({ health: health ?? {} }), [health]);
-
   return (
-    <HealthMapContext.Provider value={contextValue}>
+    <HealthMapContext.Provider value={health}>
       {children}
     </HealthMapContext.Provider>
   );

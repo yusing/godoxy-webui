@@ -1,15 +1,10 @@
-import { healthInfoUnknown, type HealthMap } from "@/types/api/health";
+import type { HealthMap } from "@/lib/api";
+import { healthInfoUnknown } from "@/types/api/health";
 import { createContext, useContext } from "react";
 
-export type HealthMapContext = {
-  health: HealthMap;
-};
-
-export const HealthMapContext = createContext<HealthMapContext>({
-  health: {},
-});
+export const HealthMapContext = createContext<HealthMap>({});
 
 export const useHealthInfo = (alias: string) => {
-  const { health } = useContext(HealthMapContext);
+  const health = useContext(HealthMapContext);
   return health[alias] ?? healthInfoUnknown;
 };

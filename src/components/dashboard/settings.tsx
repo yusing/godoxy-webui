@@ -1,11 +1,10 @@
 "use client";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tag } from "@/components/ui/tag";
-import { SettingsItem, useSetting } from "@/hooks/settings";
-import Endpoints, { toastError } from "@/types/api/endpoints";
-import { overrideHomepage } from "@/types/api/homepage";
-import { type HomepageItem } from "@/types/api/route/homepage_item";
-import { getRouteProviders } from "@/types/api/route_provider";
+import { type SettingsItem, useSetting } from "@/hooks/settings";
+import type { HomepageItem } from "@/lib/api";
+import { api } from "@/lib/api-client";
+import { toastError } from "@/lib/toast";
 import { HStack, Icon, Stack, Tabs } from "@chakra-ui/react";
 import React from "react";
 import { AiOutlineLayout } from "react-icons/ai";
@@ -18,7 +17,7 @@ import {
   LocalStorageSlider,
   LocalStorageStringSlider,
   LocalStorageToggle,
-  SizeKeys,
+  type SizeKeys,
   sizeKeys,
 } from "../local_storage";
 import { SettingsButton } from "../settings_button";
@@ -122,7 +121,11 @@ function HiddenApps({
       <HStack mx="3" justify={"space-between"}>
         <Button
           onClick={() =>
-            overrideHomepage("item_visible", selected, true)
+            api.homepage
+              .setItemVisible({
+                which: selected,
+                value: true,
+              })
               .then(() => {
                 selected.forEach((alias) => {
                   hiddenApps.find((item) => item.alias === alias)!.show = true;
@@ -231,22 +234,20 @@ function CategoryFontSizeSlider() {
 
 export default function DashboardFilters({
   portalRef,
-}: Readonly<{ portalRef?: React.RefObject<HTMLElement> }>) {
-  const providers = useAsync(async () => getRouteProviders());
-  const categories = useAsync(async () =>
-    fetch(Endpoints.LIST_HOMEPAGE_CATEGORIES)
-      .then((res) => res.json())
-      .then((res) => res as string[]),
-  );
+}: Readonly<{ portalRef?: React.RefObject<HTMLDivElement> }>) {
+  const providers = useAsync(api.route.providers);
+  const categories = useAsync(api.homepage.categories);
 
   const providerCollection = React.useMemo(
     () =>
-      createSelectCollection(providers.value?.map((p) => p.short_name) ?? []),
+      createSelectCollection(
+        providers.value?.data.map((p) => p.short_name) ?? [],
+      ),
     [providers.value],
   );
 
   const categoryCollection = React.useMemo(
-    () => createSelectCollection(categories.value ?? []),
+    () => createSelectCollection(categories.value?.data ?? []),
     [categories.value],
   );
 

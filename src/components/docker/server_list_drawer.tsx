@@ -4,6 +4,7 @@ import {
   DrawerRoot,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import type { ContainerResponse } from "@/lib/api";
 import { providerName } from "@/lib/format";
 import {
   Collapsible,
@@ -12,15 +13,15 @@ import {
   HStack,
   IconButton,
   Input,
-  InputProps,
+  type InputProps,
   Stack,
-  StackProps,
+  type StackProps,
   Text,
 } from "@chakra-ui/react";
 import {
   createContext,
-  FC,
-  RefObject,
+  type FC,
+  type RefObject,
   useContext,
   useEffect,
   useMemo,
@@ -32,7 +33,7 @@ import { FaBars } from "react-icons/fa6";
 import { InputGroup } from "../ui/input-group";
 import { Label } from "../ui/label";
 import { SkeletonText } from "../ui/skeleton";
-import { Container, useContainerContext } from "./container_context";
+import { useContainerContext } from "./container_context";
 import { ContainerStatusIndicator } from "./container_status_indicator";
 
 const SearchInputContext = createContext<{
@@ -125,7 +126,7 @@ export function ServerList(
           acc[container.server]!.push(container);
           return acc;
         },
-        {} as Record<string, Container[]>,
+        {} as Record<string, ContainerResponse[]>,
       ),
     [filteredContainers],
   );
@@ -174,11 +175,15 @@ function DummyContainerList() {
   ));
 }
 
-const ContainerList: FC<{
+function ContainerList({
+  server,
+  containers,
+  onItemClick,
+}: {
   server: string;
-  containers: Container[];
+  containers: ContainerResponse[];
   onItemClick: () => void;
-}> = ({ server, containers, onItemClick }) => {
+}) {
   const [collapsed, setCollapsed] = useState(false);
   return (
     <Collapsible.Root
@@ -207,10 +212,10 @@ const ContainerList: FC<{
       </Collapsible.Content>
     </Collapsible.Root>
   );
-};
+}
 
 interface ContainerItemProps extends Omit<StackProps, "container"> {
-  container: Container;
+  container: ContainerResponse;
   onItemClick: () => void;
 }
 

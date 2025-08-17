@@ -1,5 +1,4 @@
 import "@/styles/yaml_editor.css";
-import { RouteResponse } from "@/types/api/route/route";
 import {
   Badge,
   Box,
@@ -10,14 +9,17 @@ import {
   Input,
   Separator,
   Text,
-  UseDialogReturn,
+  type UseDialogReturn,
   VStack,
 } from "@chakra-ui/react";
 import { html } from "@codemirror/lang-html";
 import { json } from "@codemirror/lang-json";
-import ReactCodeMirror, { EditorView, Extension } from "@uiw/react-codemirror";
+import ReactCodeMirror, {
+  EditorView,
+  type Extension,
+} from "@uiw/react-codemirror";
 import { Copy, Search } from "lucide-react";
-import { memo, ReactNode, useCallback, useMemo, useState } from "react";
+import { memo, type ReactNode, useCallback, useMemo, useState } from "react";
 import { useColorMode } from "../ui/color-mode";
 import { DataListItem, DataListRoot } from "../ui/data-list";
 import {
@@ -28,6 +30,7 @@ import {
   DialogTitle,
 } from "../ui/dialog";
 
+import type { Route } from "@/lib/api";
 import "@/styles/yaml_editor.css";
 
 const nonObjectFirst = (a: [string, unknown], b: [string, unknown]) => {
@@ -43,7 +46,7 @@ export function FullDetailDialog({
   route,
   dialog,
 }: {
-  route: RouteResponse;
+  route: Route;
   dialog: UseDialogReturn;
 }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -251,8 +254,9 @@ const ObjectDataList = memo(function ObjectDataList({
         );
         stringify = false;
       } else if (
-        (v.includes("{") && v.includes("}")) ||
-        (v.includes("[") && v.includes("]"))
+        ((v.includes("{") && v.includes("}")) ||
+          (v.includes("[") && v.includes("]"))) &&
+        v.includes('"')
       ) {
         processedValue = (
           <Box

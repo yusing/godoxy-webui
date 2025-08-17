@@ -15,13 +15,10 @@ import {
   SelectTrigger,
   SelectValueText,
 } from "@/components/ui/select";
-import { CertInfo, fetchCertInfo, renewCert } from "@/lib/api/cert";
-import { formatTimestamp } from "@/lib/format";
-import { toastError } from "@/types/api/endpoints";
+import { useWebSocketApi } from "@/hooks/websocket";
 import { Autocert } from "@/types/godoxy";
 import {
   createListCollection,
-  DataList,
   DialogContext,
   DialogHeader,
   DialogTitle,
@@ -32,18 +29,22 @@ import {
   Input,
   Stack,
 } from "@chakra-ui/react";
-import React, { useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import { Controller } from "react-hook-form";
 import { LuRefreshCcw } from "react-icons/lu";
 import { useList } from "react-use";
 import { LogLine } from "../logline";
+import CertInfoWidget from "./cert_widget";
 import useHookForm from "./hook-form";
 
-export const AutocertUIEditor: React.FC<{
+export function AutocertUIEditor({
+  cfg,
+  onChange,
+}: {
   cfg: Autocert.AutocertConfig;
   onChange: (v: Autocert.AutocertConfig) => void;
-}> = ({ cfg, onChange }) => {
-  const collection = React.useMemo(
+}) {
+  const collection = useMemo(
     () =>
       createListCollection({
         items: Autocert.AUTOCERT_PROVIDERS,
@@ -127,16 +128,22 @@ export const AutocertUIEditor: React.FC<{
       )}
     />
   );
-};
+}
 
-const RenewLogDialogButton: React.FC = () => {
+export function RenewLogDialogButton() {
+  const [finished, setFinished] = useState(false);
   return (
     <DialogRoot
       lazyMount
       unmountOnExit
-      size="cover"
-      closeOnEscape={false}
-      closeOnInteractOutside={false}
+      size="lg"
+      closeOnEscape={finished}
+      closeOnInteractOutside={finished}
+      onOpenChange={({ open }) => {
+        if (open) {
+          setFinished(false);
+        }
+      }}
     >
       <DialogTrigger asChild>
         <DialogContext>
@@ -162,30 +169,23 @@ const RenewLogDialogButton: React.FC = () => {
           <DialogCloseTrigger />
         </DialogHeader>
         <DialogBody>
-          <RenewLogDialogBody />
+          <RenewLogDialogBody onFinish={() => setFinished(true)} />
         </DialogBody>
       </DialogContent>
     </DialogRoot>
   );
-};
+}
 
 const RenewLogDialogBody: React.FC<{
   onFinish?: () => void;
 }> = ({ onFinish }) => {
   const [log, { push }] = useList<string>();
-  useEffect(() => {
-    const ws = renewCert();
-    if (!ws) return;
-    ws.onmessage = (e) => {
-      push(e.data);
-    };
-    ws.onclose = () => {
-      onFinish?.();
-    };
-    return () => {
-      ws.close();
-    };
-  }, []);
+  useWebSocketApi<string>({
+    endpoint: "/cert/renew",
+    onMessage: push,
+    onClose: onFinish,
+    json: false,
+  });
   return (
     <Stack gap="2" overflowY="auto" maxH="50vh">
       <For each={log}>{(item, i) => <LogLine key={i} line={item} />}</For>
@@ -345,52 +345,5 @@ const OVHConfigEditor: React.FC<{
         />
       </Field>
     </>
-  );
-};
-
-const CertInfoWidget: React.FC = () => {
-  const [certInfo, setCertInfo] = React.useState<CertInfo | null>(null);
-  useEffect(() => {
-    fetchCertInfo().then(setCertInfo).catch(toastError);
-  }, []);
-  if (!certInfo) return null;
-  return (
-    <DataList.Root orientation="horizontal">
-      <DataList.Item>
-        <DataList.ItemLabel>Subject</DataList.ItemLabel>
-        <DataList.ItemValue>{certInfo.subject}</DataList.ItemValue>
-      </DataList.Item>
-      <DataList.Item>
-        <DataList.ItemLabel>Issuer</DataList.ItemLabel>
-        <DataList.ItemValue>{certInfo.issuer}</DataList.ItemValue>
-      </DataList.Item>
-      <DataList.Item>
-        <DataList.ItemLabel>Registration</DataList.ItemLabel>
-        <DataList.ItemValue>
-          {formatTimestamp(certInfo.not_before)}
-        </DataList.ItemValue>
-      </DataList.Item>
-      <DataList.Item>
-        <DataList.ItemLabel>Expiry</DataList.ItemLabel>
-        <DataList.ItemValue>
-          {formatTimestamp(certInfo.not_after)}
-        </DataList.ItemValue>
-      </DataList.Item>
-      {certInfo.dns_names &&
-        certInfo.dns_names.map((name, i) => (
-          <DataList.Item key={name}>
-            <DataList.ItemLabel>DNS name {i + 1}</DataList.ItemLabel>
-            <DataList.ItemValue>{name}</DataList.ItemValue>
-          </DataList.Item>
-        ))}
-      {certInfo.email_addresses && (
-        <DataList.Item>
-          <DataList.ItemLabel>Email addresses</DataList.ItemLabel>
-          <DataList.ItemValue>
-            {certInfo.email_addresses.join(", ")}
-          </DataList.ItemValue>
-        </DataList.Item>
-      )}
-    </DataList.Root>
   );
 };

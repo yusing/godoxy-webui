@@ -1,21 +1,21 @@
 import { Icon } from "@chakra-ui/react";
-import React from "react";
-import { Button, ButtonProps } from "../ui/button";
+import type { ReactNode } from "react";
+import { Button, type ButtonProps } from "../ui/button";
 
 export type ListboxItemProps = Readonly<{
-  icon: React.ReactNode;
+  icon: ReactNode;
   text?: string;
   isSelected?: boolean;
 }> &
   Omit<ButtonProps, "background">;
 
-export const ListboxItem: React.FC<ListboxItemProps> = ({
+export function ListboxItem({
   icon,
   text,
   children,
   isSelected,
   ...rest
-}) => {
+}: ListboxItemProps) {
   return (
     <Button
       justifyContent={"left"}
@@ -32,4 +32,4 @@ export const ListboxItem: React.FC<ListboxItemProps> = ({
       {children}
     </Button>
   );
-};
+}

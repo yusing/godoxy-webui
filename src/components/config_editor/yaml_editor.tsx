@@ -18,7 +18,7 @@ const schemas: Record<string, unknown> = {
 };
 
 function YAMLConfigEditor() {
-  const [localContent, setLocalContent] = useState<string | undefined>();
+  const [localContent, setLocalContent] = useState<string | null>(null);
   const typing = useTyping();
   const { content, current, setContent } = useConfigFileContent();
 
@@ -37,7 +37,7 @@ function YAMLConfigEditor() {
 
   return (
     <YAMLEditor
-      value={localContent ?? content}
+      value={localContent ?? content ?? ""}
       onChange={(value) => setLocalContent(value)}
       schema={schemas[current.type]}
     />

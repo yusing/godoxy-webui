@@ -1,14 +1,14 @@
-import { For, Stack, StackProps, Text } from "@chakra-ui/react";
-import React from "react";
-import { ListboxItem, ListboxItemProps } from "./listbox_item";
+import { For, Stack, type StackProps, Text } from "@chakra-ui/react";
+import { forwardRef, type ReactNode } from "react";
+import { ListboxItem, type ListboxItemProps } from "./listbox_item";
 
 export type ListboxSectionProps = Readonly<{
-  title: React.ReactNode;
+  title: ReactNode;
   items?: any[];
-  children?: React.ReactNode | ((item: any) => ListboxItemProps);
+  children?: ReactNode | ((item: any) => ListboxItemProps);
 }>;
 
-export const ListboxSection = React.forwardRef<
+export const ListboxSection = forwardRef<
   HTMLDivElement,
   ListboxSectionProps & Omit<StackProps, "children">
 >(function ListboxSection(props, ref) {

@@ -3,7 +3,7 @@
 import { EyeFilledIcon, EyeSlashFilledIcon } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 import { Field } from "@/components/ui/field";
-import { type FetchError, login } from "@/types/api/endpoints"; // Import the login function
+import { api, callApi } from "@/lib/api-client";
 import {
   Box,
   Card,
@@ -14,6 +14,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -32,6 +33,7 @@ export default function LoginPage() {
     setFocus,
     formState: { errors },
   } = useForm<FormValues>();
+  const router = useRouter();
 
   useEffect(() => {
     setFocus("username");
@@ -42,15 +44,16 @@ export default function LoginPage() {
   }
 
   const onSubmit = handleSubmit(async (data) => {
-    await login({
+    await callApi(api.auth.callback, {
       username: data.username,
       password: data.password,
-      toastAuthError: false,
-    })
-      .then(() => (window.location.href = "/"))
-      .catch((e: FetchError) => {
-        setErrorMessage(e.message);
-      });
+    }).then(({ error }) => {
+      if (error) {
+        setErrorMessage(error.message);
+      } else {
+        router.replace("/");
+      }
+    });
   });
 
   return (

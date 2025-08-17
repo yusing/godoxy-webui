@@ -7,7 +7,7 @@ import {
   getTitle,
   isInputType,
   isToggleType,
-  JSONSchema,
+  type JSONSchema,
 } from "@/types/schema";
 import {
   Box,
@@ -122,9 +122,12 @@ function ListInput_<T extends string>({
 
 export const ListInput = React.memo(ListInput_) as typeof ListInput_;
 
-type NamedListInputProps<T extends Record<string, unknown>> = {
+type NamedListInputProps<
+  IndexType extends string,
+  T extends Record<IndexType, unknown>,
+> = {
   label: React.ReactNode;
-  placeholder?: { key?: string; value?: string };
+  placeholder?: { key?: IndexType; value?: string };
   schema?: JSONSchema;
   keyField?: keyof T;
   nameField?: keyof T;
@@ -132,15 +135,18 @@ type NamedListInputProps<T extends Record<string, unknown>> = {
   onChange: (v: T[]) => void;
 };
 
-function NamedListInput_<T extends Record<string, unknown>>({
+function NamedListInput_<
+  IndexType extends string,
+  T extends Record<IndexType, unknown>,
+>({
   label,
   placeholder,
   value,
   onChange,
-  keyField = "name",
-  nameField = "name",
+  keyField = "name" as IndexType,
+  nameField = "name" as IndexType,
   schema,
-}: Readonly<NamedListInputProps<T>>) {
+}: Readonly<NamedListInputProps<IndexType, T>>) {
   if (!(value instanceof Array)) value = [];
 
   const defaultValue = useMemo(
@@ -322,8 +328,9 @@ function MapInput_<T extends Record<string, unknown>>({
                   schema={vSchema?.properties}
                   onChange={(e) => {
                     if (e === undefined || e === null) {
-                      delete value[k];
-                      onChange({ ...value });
+                      const newValue = { ...value };
+                      delete newValue[k];
+                      onChange(newValue);
                       return;
                     }
                     onChange({ ...value, [k]: e });
@@ -333,21 +340,25 @@ function MapInput_<T extends Record<string, unknown>>({
                 <FieldInput
                   key={`${index}_field`}
                   fieldKey={k}
-                  fieldValue={(v as Record<string, unknown> | undefined) ?? {}}
+                  fieldValue={v ?? {}}
                   schema={schema}
                   placeholder={placeholder}
                   allowDelete={allowDelete}
                   onKeyChange={(e) => {
-                    delete value[k];
-                    onChange({
+                    const newValue = {
                       ...value,
-                      [e]: v ? v : getDefaultValue(schema?.properties?.[e]),
-                    });
+                      [e]: v ?? getDefaultValue(schema?.properties?.[e]),
+                    };
+                    if (k !== e) {
+                      delete newValue[k];
+                    }
+                    onChange(newValue);
                   }}
                   onChange={(e) => {
                     if (e === undefined || e === null) {
-                      delete value[k];
-                      onChange({ ...value });
+                      const newValue = { ...value };
+                      delete newValue[k];
+                      onChange(newValue);
                       return;
                     }
                     onChange({ ...value, [k]: e });
@@ -405,13 +416,17 @@ function PureMapInput<T extends Record<string, unknown>>({
                   schema={undefined}
                   placeholder={placeholder}
                   onKeyChange={(newK, newV) => {
-                    delete value[k];
-                    onChange({ ...value, [newK]: newV });
+                    const newValue = { ...value, [newK]: newV };
+                    if (k !== newK) {
+                      delete newValue[k];
+                    }
+                    onChange(newValue);
                   }}
                   onChange={(e) => {
                     if (e === undefined || e === null) {
-                      delete value[k];
-                      onChange({ ...value });
+                      const newValue = { ...value };
+                      delete newValue[k];
+                      onChange(newValue);
                       return;
                     }
                     onChange({ ...value, [k]: e });
@@ -440,112 +455,113 @@ type FieldInputProps<T> = {
   allowDelete: boolean;
 };
 
-const FieldInput = React.memo(
-  <T extends unknown>({
-    fieldKey,
-    fieldValue,
-    schema,
-    placeholder,
-    onKeyChange,
-    onChange,
-    allowDelete = true,
-  }: Readonly<FieldInputProps<T>>) => {
-    const allowedValues = useMemo(
-      () => getAllowedValues(schema, fieldKey),
-      [schema, fieldKey],
-    );
-    const required = useMemo(
-      () => getRequired(schema).includes(fieldKey),
-      [schema, fieldKey],
-    );
+function FieldInput_<T extends unknown>({
+  fieldKey,
+  fieldValue,
+  schema,
+  placeholder,
+  onKeyChange,
+  onChange,
+  allowDelete = true,
+}: Readonly<FieldInputProps<T>>) {
+  const allowedValues = useMemo(
+    () => getAllowedValues(schema, fieldKey),
+    [schema, fieldKey],
+  );
+  const required = useMemo(
+    () => getRequired(schema).includes(fieldKey),
+    [schema, fieldKey],
+  );
 
-    const vSchema = schema?.properties?.[fieldKey];
-    const title = useMemo(() => getTitle(schema, fieldKey), [schema, fieldKey]);
+  const vSchema = schema?.properties?.[fieldKey];
+  const title = useMemo(() => getTitle(schema, fieldKey), [schema, fieldKey]);
 
-    return (
-      <HStack
-        color={
-          schema?.properties && !(fieldKey in schema.properties)
-            ? "red.500"
-            : undefined
-        }
-      >
-        {!schema ? (
-          <Input
-            value={fieldKey}
-            placeholder={placeholder?.key ?? "Key"}
-            onChange={({ target: { value } }) => onKeyChange(value, fieldValue)}
-          />
-        ) : title ? (
-          <Stack gap={0} userSelect={"none"} minW="150px">
-            <Group>
-              <Label>{title}</Label>
-              {required && (
-                <Label color="red.500" fontSize="xs">
-                  *
-                </Label>
-              )}
-            </Group>
-            <Code p={0}>{fieldKey}</Code>
-          </Stack>
-        ) : (
-          <Box minW="150px">
-            <Group attached>
-              <Label>{fieldKey}</Label>
-              {required && (
-                <Label color="red.500" fontSize="xs">
-                  *
-                </Label>
-              )}
-            </Group>
-          </Box>
-        )}
-        {allowedValues && allowedValues.size > 0 ? (
-          <SelectRoot
-            collection={allowedValues}
-            value={[fieldValue as string]}
-            onValueChange={({ value }) => {
-              if (value[0] === "") {
-                delete value[0];
-              }
+  return (
+    <HStack
+      color={
+        schema?.properties && !(fieldKey in schema.properties)
+          ? "red.500"
+          : undefined
+      }
+    >
+      {!schema ? (
+        <Input
+          value={fieldKey}
+          placeholder={placeholder?.key ?? "Key"}
+          onChange={({ target: { value } }) => onKeyChange(value, fieldValue)}
+        />
+      ) : title ? (
+        <Stack gap={0} userSelect={"none"} minW="150px">
+          <Group>
+            <Label>{title}</Label>
+            {required && (
+              <Label color="red.500" fontSize="xs">
+                *
+              </Label>
+            )}
+          </Group>
+          <Code p={0}>{fieldKey}</Code>
+        </Stack>
+      ) : (
+        <Box minW="150px">
+          <Group attached>
+            <Label>{fieldKey}</Label>
+            {required && (
+              <Label color="red.500" fontSize="xs">
+                *
+              </Label>
+            )}
+          </Group>
+        </Box>
+      )}
+      {allowedValues && allowedValues.size > 0 ? (
+        <SelectRoot
+          collection={allowedValues}
+          value={typeof fieldValue === "string" ? [fieldValue] : undefined}
+          onValueChange={({ value }) => {
+            if (value[0] && value[0].length > 0) {
               onChange(value[0]);
-            }}
-          >
-            <SelectTrigger>
-              <SelectValueText placeholder={placeholder?.value ?? "Value"} />
-            </SelectTrigger>
-            <SelectContent w="full">
-              {allowedValues.items.map((item) => (
-                <SelectItem item={item} key={item}>
-                  {item === "" ? "Use default" : item}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </SelectRoot>
-        ) : isInputType(vSchema) ? (
-          <Input
-            value={fieldValue as string | number}
-            type={getInputType(vSchema?.type)}
-            placeholder={placeholder?.value ?? "Value"}
-            onChange={({ target: { value } }) => onChange(value)}
-          />
-        ) : isToggleType(vSchema) ? (
-          <Checkbox
-            w="full"
-            checked={fieldValue as boolean}
-            onCheckedChange={({ checked }) => onChange(checked)}
-          />
-        ) : null}
-        {allowDelete && !required && (
-          <IconButton
-            variant={"ghost"}
-            color="red.500"
-            onClick={() => onChange(undefined)}
-          >
-            <Trash />
-          </IconButton>
-        )}
-      </HStack>
-    );
-  },
-);
+            } else {
+              onChange(undefined);
+            }
+          }}
+        >
+          <SelectTrigger>
+            <SelectValueText placeholder={placeholder?.value ?? "Value"} />
+          </SelectTrigger>
+          <SelectContent w="full">
+            {allowedValues.items.map((item) => (
+              <SelectItem item={item} key={item}>
+                {item === "" ? "Use default" : item}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </SelectRoot>
+      ) : isInputType(vSchema) ? (
+        <Input
+          value={fieldValue as string | number}
+          type={getInputType(vSchema?.type)}
+          placeholder={placeholder?.value ?? "Value"}
+          onChange={({ target: { value } }) => onChange(value)}
+        />
+      ) : isToggleType(vSchema) ? (
+        <Checkbox
+          w="full"
+          checked={fieldValue as boolean}
+          onCheckedChange={({ checked }) => onChange(checked)}
+        />
+      ) : null}
+      {allowDelete && !required && (
+        <IconButton
+          variant={"ghost"}
+          color="red.500"
+          onClick={() => onChange(undefined)}
+        >
+          <Trash />
+        </IconButton>
+      )}
+    </HStack>
+  );
+}
+
+export const FieldInput = React.memo(FieldInput_) as typeof FieldInput_;

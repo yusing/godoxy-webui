@@ -6,11 +6,15 @@ import { Tabs } from "@chakra-ui/react";
 import React from "react";
 import { LuPlus } from "react-icons/lu";
 
-export const MiddlewareEditor: React.FC<{
+export function MiddlewareEditor({
+  label,
+  data,
+  onChange,
+}: {
   label?: React.ReactNode;
   data: MiddlewareCompose.MiddlewareCompose;
   onChange: (v: MiddlewareCompose.MiddlewareCompose) => void;
-}> = ({ label, data, onChange }) => {
+}) {
   return (
     <NamedListInput
       label={label}
@@ -25,12 +29,15 @@ export const MiddlewareEditor: React.FC<{
       }}
     />
   );
-};
+}
 
-export const MiddlewareComposeEditor: React.FC<{
+export function MiddlewareComposeEditor({
+  data,
+  onChange,
+}: {
   data: Record<string, MiddlewareCompose.MiddlewareCompose>;
   onChange: (v: Record<string, MiddlewareCompose.MiddlewareCompose>) => void;
-}> = ({ data, onChange }) => {
+}) {
   const [selectedTab, setSelectedTab] = React.useState(Object.keys(data)[0]);
 
   return (
@@ -105,4 +112,4 @@ export const MiddlewareComposeEditor: React.FC<{
       </Tabs.ContentGroup>
     </Tabs.Root>
   );
-};
+}

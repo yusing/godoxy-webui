@@ -3,7 +3,7 @@ import {
   MiddlewareComposeSchema,
   RoutesSchema,
 } from "@/types/godoxy";
-import { createListCollection, ListCollection } from "@chakra-ui/react";
+import { createListCollection, type ListCollection } from "@chakra-ui/react";
 
 export type Schema =
   | typeof ConfigSchema
@@ -227,7 +227,12 @@ export function getInputType(
     if (type.includes("number")) return "number";
     return "string";
   }
-  return type === "string" || type === "number" ? type : "string";
+  switch (type) {
+    case "number":
+      return "number";
+    default:
+      return "string";
+  }
 }
 
 export function getDefaultValue(

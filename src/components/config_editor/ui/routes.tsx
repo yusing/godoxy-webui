@@ -22,8 +22,7 @@ import {
   SelectValueText,
 } from "@/components/ui/select";
 import { Tag } from "@/components/ui/tag";
-import { Agent } from "@/types/api/agent";
-import Endpoints, { fetchEndpoint, toastError } from "@/types/api/endpoints";
+import { api } from "@/lib/api-client";
 import { Homepage, LoadBalance, Routes } from "@/types/godoxy";
 import {
   Badge,
@@ -44,7 +43,12 @@ import {
 } from "@chakra-ui/react";
 import { Pencil, Trash } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
-import { Control, Controller, useForm, UseFormRegister } from "react-hook-form";
+import {
+  Controller,
+  useForm,
+  type Control,
+  type UseFormRegister,
+} from "react-hook-form";
 import { useAsync } from "react-use";
 import { IconSearcher } from "../icon_searcher";
 
@@ -598,11 +602,7 @@ function AgentSelector({
   onChange: (value: string | undefined) => void;
 }) {
   const fieldRef = useRef<HTMLDivElement>(null);
-  const agents = useAsync(async () => {
-    return fetchEndpoint(Endpoints.LIST_AGENTS)
-      .then((res) => res?.json() as Promise<Agent[]>)
-      .catch(toastError);
-  }, []);
+  const agents = useAsync(async () => api.agent.list().then((e) => e.data));
 
   const collection = useMemo(
     () =>

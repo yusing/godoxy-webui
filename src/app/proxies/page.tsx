@@ -18,22 +18,16 @@ import { HealthStatusBadge } from "@/components/health_status";
 import { Actions } from "@/components/proxies/actions";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useFragment } from "@/hooks/fragment";
-import useWebsocket, { ReadyState } from "@/hooks/ws";
-import Endpoints from "@/types/api/endpoints";
-import { type RouteResponse } from "@/types/api/route/route";
-import { type RouteProviderResponse } from "@/types/api/route_provider";
-import { getRoutes } from "@/types/api/routes";
-import { Geist_Mono } from "next/font/google";
+import { useWebSocketApi } from "@/hooks/websocket";
+import type { Route, RouteProvider } from "@/lib/api";
+import { formatDuration } from "@/lib/format";
+import type { HealthStatusType } from "@/types/api/health";
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
+import { memo, useMemo, useState } from "react";
 import { MdError } from "react-icons/md";
-import { useAsync } from "react-use";
+import { ReadyState } from "react-use-websocket";
 
-const GeistMono = Geist_Mono({
-  subsets: ["latin"],
-});
-
-function getStatus(route: RouteResponse) {
+function getStatus(route: Route): HealthStatusType {
   const health = route.health;
   if (!health || health.status === "unknown") {
     if (route.container?.running === false) {
@@ -41,10 +35,10 @@ function getStatus(route: RouteResponse) {
     }
     return "unknown";
   }
-  return health.status;
+  return health.status as HealthStatusType;
 }
 
-function Alias({ route }: { route: RouteResponse }) {
+function Alias({ route }: { route: Route }) {
   return (
     <HStack>
       <Text>{route.alias}</Text>
@@ -66,7 +60,7 @@ function Alias({ route }: { route: RouteResponse }) {
 export const Columns = [
   {
     label: "Service",
-    getter: (route: RouteResponse) =>
+    getter: (route: Route) =>
       route.container?.container_name != route.alias ? (
         <Stack gap={1}>
           <Alias route={route} />
@@ -84,7 +78,7 @@ export const Columns = [
   },
   {
     label: "Status",
-    getter: (route: RouteResponse) => (
+    getter: (route: Route) => (
       <Stack>
         <HealthStatusBadge status={getStatus(route)} />
         {route.health?.detail && (
@@ -104,7 +98,7 @@ export const Columns = [
   },
   {
     label: "Provider",
-    getter: (route: RouteResponse) =>
+    getter: (route: Route) =>
       route.provider && (
         <Badge variant={"surface"} colorPalette={"bg"} fontSize="sm">
           {route.provider}
@@ -113,17 +107,11 @@ export const Columns = [
   },
   {
     label: "Target",
-    getter: (route: RouteResponse) => (
+    getter: (route: Route) => (
       <>
-        <Text className={GeistMono.className} fontSize={"sm"}>
-          {route.purl}
-        </Text>
+        <Text fontSize={"sm"}>{route.purl}</Text>
         {route.lurl && (
-          <Text
-            className={GeistMono.className}
-            fontSize={"xs"}
-            color="fg.muted"
-          >
+          <Text fontSize={"xs"} color="fg.muted">
             Listening on {route.lurl}
           </Text>
         )}
@@ -132,24 +120,24 @@ export const Columns = [
   },
   {
     label: "Uptime",
-    getter: (route: RouteResponse) =>
+    getter: (route: Route) =>
       route.health?.uptime && (
-        <Text className={GeistMono.className} fontSize={"sm"}>
-          {formatUptime(route.health.uptime)}
+        <Text fontSize={"sm"} whiteSpace={"nowrap"}>
+          {formatDuration(route.health.uptime)}
         </Text>
       ),
   },
   {
     label: "Latency",
-    getter: (route: RouteResponse) => (
-      <Text className={GeistMono.className} fontSize={"sm"}>
+    getter: (route: Route) => (
+      <Text fontSize={"sm"} whiteSpace={"nowrap"}>
         {route.health?.latencyStr}
       </Text>
     ),
   },
   {
     label: "Exposed Ports",
-    getter: (route: RouteResponse) => (
+    getter: (route: Route) => (
       <Flex flexWrap={"wrap"} gap={1}>
         {Object.entries(route.container?.public_ports ?? {}).map(
           ([_, portInfo]) => (
@@ -167,22 +155,24 @@ export const Columns = [
   },
   {
     label: "Actions",
-    getter: (route: RouteResponse) => <Actions route={route} />,
+    getter: (route: Route) => <Actions route={route} />,
   },
 ] as const;
 
-function RenderTable({
+function RenderTable_({
   provider,
 }: Readonly<{
-  provider: RouteProviderResponse | null;
+  provider: RouteProvider | null;
 }>) {
-  const routes = useAsync(
-    async () => getRoutes(provider?.short_name ?? ""),
-    [provider],
-  );
+  const [routes, setRoutes] = useState<Route[]>([]);
+  const { readyState, connectionError } = useWebSocketApi<Route[]>({
+    endpoint: "/route/list",
+    query: provider ? { provider: provider.short_name } : undefined,
+    onMessage: setRoutes,
+  });
 
   const sortedRoutes = useMemo(() => {
-    return routes.value?.toSorted((a, b) => {
+    return routes.toSorted((a, b) => {
       if (a.excluded && !b.excluded) {
         return 1;
       }
@@ -206,20 +196,20 @@ function RenderTable({
 
       return a.alias.localeCompare(b.alias);
     });
-  }, [routes.value]);
+  }, [routes]);
 
-  if (routes.error) {
+  if (connectionError) {
     return (
       <EmptyState
         placeSelf={"center"}
         icon={<MdError />}
         title="Error"
-        description={routes.error.message}
+        description={connectionError}
       />
     );
   }
 
-  if (routes.loading) {
+  if (readyState === ReadyState.CONNECTING) {
     return (
       <Center>
         <Spinner />
@@ -227,7 +217,7 @@ function RenderTable({
     );
   }
 
-  if (routes.value?.length === 0) {
+  if (routes.length === 0) {
     return (
       <EmptyState
         placeSelf={"center"}
@@ -257,7 +247,7 @@ function RenderTable({
         </Table.Row>
       </Table.Header>
       <Table.Body>
-        <For each={sortedRoutes ?? []}>
+        <For each={sortedRoutes}>
           {(item) => (
             <Table.Row key={`${item.provider}_${item.alias}`}>
               <For each={Columns}>
@@ -274,6 +264,10 @@ function RenderTable({
     </Table.Root>
   );
 }
+
+const RenderTable = memo(RenderTable_, (prev, next) => {
+  return prev.provider?.full_name === next.provider?.full_name;
+});
 
 function StyledTabTrigger({ children, ...props }: Tabs.TriggerProps) {
   return (
@@ -308,16 +302,14 @@ function StyledTabTrigger({ children, ...props }: Tabs.TriggerProps) {
 export default function ProxiesPage() {
   const fragment = useFragment();
   const router = useRouter();
-  const providers = useWebsocket<RouteProviderResponse[]>(
-    Endpoints.LIST_ROUTE_PROVIDERS,
-    {
-      json: true,
-      sort: (a, b) => a.full_name.localeCompare(b.full_name),
-    },
-  );
+  const [providers, setProviders] = useState<RouteProvider[]>([]);
+  const { readyState } = useWebSocketApi<RouteProvider[]>({
+    endpoint: "/route/providers",
+    onMessage: setProviders,
+  });
 
-  switch (providers.readyState) {
-    case ReadyState.UNINITIALIZED:
+  switch (readyState) {
+    case ReadyState.UNINSTANTIATED:
     case ReadyState.CONNECTING:
       return (
         <Center>
@@ -348,7 +340,7 @@ export default function ProxiesPage() {
         <StyledTabTrigger key={"#all"} value={"#all"}>
           All
         </StyledTabTrigger>
-        <For each={providers.data ?? []}>
+        <For each={providers}>
           {(provider) => (
             <StyledTabTrigger
               key={provider.full_name}
@@ -377,8 +369,8 @@ export default function ProxiesPage() {
         >
           <RenderTable provider={null} />
         </Tabs.Content>
-        {providers.data ? (
-          providers.data.map((provider) => (
+        {providers ? (
+          providers.map((provider) => (
             <Tabs.Content
               key={provider.full_name}
               value={provider.full_name}
@@ -422,26 +414,4 @@ export default function ProxiesPage() {
       </Box>
     </Tabs.Root>
   );
-}
-
-const units = [
-  ["d", 86400],
-  ["h", 3600],
-  ["m", 60],
-  ["s", 1],
-] as const;
-
-function formatUptime(uptime: number) {
-  if (uptime === 0) {
-    return undefined;
-  }
-
-  let result = "";
-  for (const [unit, value] of units) {
-    if (uptime >= value) {
-      result += `${Math.floor(uptime / value)}${unit}`;
-      uptime %= value;
-    }
-  }
-  return result;
 }

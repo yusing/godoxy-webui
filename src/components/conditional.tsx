@@ -1,7 +1,7 @@
 import {
-  ComponentProps,
-  ElementType,
-  ReactNode,
+  type ComponentProps,
+  type ElementType,
+  type ReactNode,
   createElement,
   memo,
   useMemo,

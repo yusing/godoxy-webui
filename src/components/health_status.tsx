@@ -1,14 +1,14 @@
 import {
   healthStatusColorPalettes,
-  HealthStatusType,
+  type HealthStatusType,
 } from "@/types/api/health";
 import {
   Badge,
   Status as ChakraStatus,
   HStack,
   Icon,
-  IconProps,
-  TagRootProps,
+  type IconProps,
+  type TagRootProps,
   Text,
 } from "@chakra-ui/react";
 import { AlertCircle, CheckCircle2, Pause, Play } from "lucide-react";

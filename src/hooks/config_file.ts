@@ -1,68 +1,69 @@
-import { GoDoxyError } from "@/components/godoxy_error";
+import type { GoDoxyError } from "@/components/godoxy_error";
 import { toaster } from "@/components/ui/toaster";
-import { templateByType } from "@/lib/api/config";
-import Endpoints, {
-  ConfigFileType,
-  fetchEndpoint,
-  toastError,
-} from "@/types/api/endpoints";
-import { ConfigFile, getConfigFiles, godoxyConfig } from "@/types/file";
+import type { FileType } from "@/lib/api";
+import { api, callApi } from "@/lib/api-client";
+import { toastError } from "@/lib/toast";
+import type { ConfigFile, ConfigFiles } from "@/types/file";
+import { godoxyConfig } from "@/types/file";
 import { Config } from "@/types/godoxy";
+import { AxiosError } from "axios";
 import { parse as parseYAML, stringify as stringifyYAML } from "yaml";
 import { create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 
 type State = {
-  files: Record<ConfigFileType, ConfigFile[]>;
-  content: string | undefined;
+  files: Record<FileType, ConfigFile[]>;
+  content: string | null;
   current: ConfigFile;
   hasUnsavedChanges: boolean;
-  valErr: GoDoxyError | undefined;
+  valErr: GoDoxyError | null;
   setCurrent: (file: ConfigFile) => Promise<void>;
-  setContent: (content: string | undefined) => Promise<void>;
+  setContent: (content: string | null) => Promise<void>;
   updateRemote: () => void;
   addAgent: (host: string, port: number) => Promise<void>;
 };
 
-async function getContent(file: ConfigFile): Promise<string | undefined> {
+async function getContent(file: ConfigFile): Promise<string | null> {
   if (file.isNewFile) {
     return templateByType(file.type);
   }
-  return fetchEndpoint(Endpoints.fileContent(file.type, file.filename))
-    .then((r) => r?.text() ?? undefined)
-    .catch((e) => {
-      toastError(e);
-      return undefined;
-    });
+  const { data } = await callApi(api.file.get, {
+    filename: file.filename,
+    type: file.type,
+  });
+  return data;
 }
 
 async function validate(
   file: ConfigFile,
   content: string,
-): Promise<GoDoxyError | undefined> {
-  const res = await fetch(Endpoints.fileValidate(file.type), {
-    method: "POST",
-    body: content,
-  });
-  if (res.ok) {
-    return undefined;
+): Promise<GoDoxyError | null> {
+  try {
+    await api.file.validate({ type: file.type }, content);
+    return null;
+  } catch (e) {
+    if (e instanceof AxiosError) {
+      return e.response?.data;
+    }
+    return null;
   }
-  return (await res.json()) as GoDoxyError | undefined;
 }
 
 async function updateRemote(file: ConfigFile, content: string): Promise<void> {
-  return fetchEndpoint(Endpoints.fileContent(file.type, file.filename), {
-    method: "PUT",
-    body: content,
-  })
-    .then(() => {
+  await api.file
+    .set(
+      {
+        filename: file.filename,
+        type: file.type,
+      },
+      content,
+    )
+    .then(() =>
       toaster.create({
         title: "File saved successfully",
-      });
-    })
-    .catch((e) => {
-      toastError(e);
-    });
+      }),
+    )
+    .catch(toastError);
 }
 
 export const useConfigFileState = create<State>((set, get) => ({
@@ -71,11 +72,11 @@ export const useConfigFileState = create<State>((set, get) => ({
     provider: [],
     middleware: [],
   },
-  content: undefined,
+  content: null,
   current: godoxyConfig,
   hasUnsavedChanges: false,
-  valErr: undefined,
-  setContent: async (content: string | undefined) => {
+  valErr: null,
+  setContent: async (content: string | null) => {
     if (!content || content.length === 0) {
       return;
     }
@@ -103,7 +104,7 @@ export const useConfigFileState = create<State>((set, get) => ({
       current: file,
       content,
       hasUnsavedChanges: false,
-      valErr: undefined,
+      valErr: null,
     });
   },
   updateRemote: async () => {
@@ -147,7 +148,7 @@ export const useConfigFileState = create<State>((set, get) => ({
       current: godoxyConfig,
       content: cfgYAML,
       hasUnsavedChanges: false,
-      valErr: undefined,
+      valErr: null,
     }));
     return;
   },
@@ -166,7 +167,17 @@ export function useConfigFileContent() {
 }
 
 export async function initUseConfigFileState() {
-  const files = await getConfigFiles();
+  const { data } = await callApi(api.file.list);
+  if (!data) {
+    return;
+  }
+  const files = Object.entries(data).reduce((acc, [type, filenames]) => {
+    acc[type as FileType] = filenames.map((f: string) => ({
+      type: type,
+      filename: f,
+    }));
+    return acc;
+  }, {} as ConfigFiles);
   const content = await getContent(godoxyConfig);
   useConfigFileState.setState({
     files,
@@ -174,3 +185,95 @@ export async function initUseConfigFileState() {
     hasUnsavedChanges: false,
   });
 }
+
+export function templateByType(type: FileType) {
+  switch (type) {
+    case "provider":
+      return routeFileTemplate;
+    case "middleware":
+      return middlewareFileTemplate;
+    default:
+      return "";
+  }
+}
+
+const routeFileTemplate = `example: # matching "example.domain.com"
+  scheme: http
+  host: 10.0.0.254
+  port: 80
+  healthcheck:
+    disabled: false
+    path: /health
+    interval: 5s
+  load_balance:
+    link: app
+    mode: ip_hash
+    options:
+      header: X-Forwarded-For
+  middlewares:
+    cidr_whitelist:
+      allow:
+        - 127.0.0.1
+        - 10.0.0.0/8
+      status_code: 403
+      message: IP not allowed
+    hideXForwarded:
+  homepage:
+    name: Example App
+    icon: "@selfhst/example.png"
+    description: An example app
+    category: example
+  rules:
+    - name: default
+      do: pass
+    - name: api
+      on: path /api/*
+      do: proxy http://10.0.0.2:8080
+    - name: websocket
+      on: path /ws/*
+      do: proxy http://10.0.0.3:8080
+  access_log:
+    buffer_size: 8192
+    path: /var/log/example.log
+    filters:
+      status_codes:
+        values:
+          - 200-299
+          - 101
+      method:
+        values:
+          - GET
+      host:
+        values:
+          - example.y.z
+      headers:
+        negative: true
+        values:
+          - foo=bar
+          - baz
+      cidr:
+        values:
+          - 192.168.10.0/24
+    fields:
+      headers:
+        default: keep
+        config:
+          foo: redact
+      query:
+        default: drop
+        config:
+          foo: keep
+      cookies:
+        default: redact
+        config:
+          foo: keep
+`;
+
+const middlewareFileTemplate = `middleware1:
+  - use: cloudflare_real_ip
+  - use: cidr_whitelist
+    allow:
+      - 127.0.0.1
+      - 10.0.0.0/8
+    message: You have been blocked
+`;

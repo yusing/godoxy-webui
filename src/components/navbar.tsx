@@ -5,7 +5,7 @@ import {
   Box,
   ClientOnly,
   Flex,
-  FlexProps,
+  type FlexProps,
   For,
   Group,
   Link,
@@ -17,7 +17,6 @@ import { FaDocker } from "react-icons/fa6";
 import {
   LuBookOpen,
   LuChartArea,
-  LuFileCode,
   LuHouse,
   LuServer,
   LuSettings,
@@ -33,7 +32,7 @@ type NavLabel = (typeof siteConfig.navItems)[number]["label"];
 const iconComponents: Record<NavLabel, React.ElementType> = {
   Dashboard: LuHouse,
   "Config Editor": LuSettings,
-  "Compose Editor": LuFileCode,
+  // "Compose Editor": LuFileCode,
   Proxies: LuServer,
   Metrics: LuChartArea,
   Docker: FaDocker,

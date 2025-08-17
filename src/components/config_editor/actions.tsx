@@ -1,5 +1,4 @@
 import { ListboxItem } from "@/components/listbox/listbox_item";
-import { type ConfigFileType } from "@/types/api/endpoints";
 import path from "path";
 import { MdAdd, MdSave } from "react-icons/md";
 
@@ -17,7 +16,8 @@ import {
   RadioCardRoot,
 } from "@/components/ui/radio-card";
 import { useConfigFileState } from "@/hooks/config_file";
-import { ConfigFile } from "@/types/file";
+import type { FileType } from "@/lib/api";
+import type { ConfigFile } from "@/types/file";
 import { Group, Input, InputAddon } from "@chakra-ui/react";
 import { useCallback, useState } from "react";
 import { GrCloudSoftware, GrDocumentConfig } from "react-icons/gr";
@@ -30,7 +30,7 @@ interface FormProps {
 export function NewFileButton({ fileExtension }: FormProps) {
   const [error, setError] = useState<string | null>(null);
   const [filename, setFilename] = useState("");
-  const [fileType, setFileType] = useState<ConfigFileType>("provider");
+  const [fileType, setFileType] = useState<FileType>("provider");
   const [isOpen, setIsOpen] = useState(false);
   const { files, setCurrent } = useConfigFileState(
     useShallow((state) => ({
@@ -40,14 +40,14 @@ export function NewFileButton({ fileExtension }: FormProps) {
   );
 
   const checkExists = useCallback(
-    (t: ConfigFileType, v: string) => {
+    (t: FileType, v: string) => {
       return files[t].some((f) => f.filename === v);
     },
     [files],
   );
 
   const validate = useCallback(
-    (t: ConfigFileType, v: string) => {
+    (t: FileType, v: string) => {
       setFilename(v);
       if (v.length === 0) {
         setError("File name cannot be empty");
@@ -91,8 +91,8 @@ export function NewFileButton({ fileExtension }: FormProps) {
             value={fileType}
             orientation="horizontal"
             onValueChange={(t) => {
-              setFileType(t.value as ConfigFileType);
-              validate(t.value as ConfigFileType, filename);
+              setFileType(t.value as FileType);
+              validate(t.value as FileType, filename);
             }}
           >
             <RadioCardLabel>Select file type</RadioCardLabel>

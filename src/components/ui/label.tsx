@@ -1,10 +1,12 @@
-import { HStack, StackProps, Text, TextProps } from "@chakra-ui/react";
-import { FC, PropsWithChildren, ReactNode } from "react";
+import {
+  HStack,
+  type StackProps,
+  Text,
+  type TextProps,
+} from "@chakra-ui/react";
+import { type PropsWithChildren, type ReactNode } from "react";
 
-export const Label: FC<PropsWithChildren<TextProps>> = ({
-  children,
-  ...props
-}) => {
+export function Label({ children, ...props }: PropsWithChildren<TextProps>) {
   return (
     <Text
       fontSize={props.fontSize ?? "sm"}
@@ -19,23 +21,23 @@ export const Label: FC<PropsWithChildren<TextProps>> = ({
       {children}
     </Text>
   );
-};
+}
 
 interface IconLabelProps extends TextProps, PropsWithChildren {
   wrapperProps?: StackProps;
   icon: ReactNode;
 }
 
-export const IconLabel: FC<IconLabelProps> = ({
+export function IconLabel({
   children,
   wrapperProps,
   icon,
   ...props
-}) => {
+}: IconLabelProps) {
   return (
     <HStack {...wrapperProps}>
       {icon}
       <Label {...props}>{children}</Label>
     </HStack>
   );
-};
+}

@@ -1,9 +1,9 @@
 import {
-  DockerComposeServiceGoDoxy,
   preprocessService,
   serviceGoDoxySchemaResolver,
   toDockerComposeService,
   type DockerComposeService,
+  type DockerComposeServiceGoDoxy,
 } from "@/lib/docker-compose/service";
 import {
   Box,
@@ -17,10 +17,10 @@ import {
   Icon,
   IconButton,
   Input,
-  ListCollection,
   Select,
   Stack,
   type ButtonProps,
+  type ListCollection,
 } from "@chakra-ui/react";
 import { Trash } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -172,7 +172,7 @@ function ServiceCardEditFields({
         <Fieldset.Root>
           <Fieldset.Legend>Ports</Fieldset.Legend>
           <Fieldset.Content>
-            {service.ports?.map((port, index) => (
+            {service.ports?.map((_, index) => (
               <HStack key={index} gap={2}>
                 <Field.Root>
                   <Field.Label>IP</Field.Label>
