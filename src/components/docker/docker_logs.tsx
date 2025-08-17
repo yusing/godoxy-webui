@@ -34,7 +34,7 @@ import { ServerOverview } from "./server_overview";
 
 interface LogsProps extends StackProps {
   server: string;
-  containerInfo: Container;
+  containerInfo: ContainerResponse;
 }
 
 function Logs({ server, containerInfo, ...props }: LogsProps) {
@@ -44,6 +44,8 @@ function Logs({ server, containerInfo, ...props }: LogsProps) {
   const logsRef = useRef<HTMLDivElement>(null);
   const [chevronDirection, setChevronDirection] = useState<"up" | "down">("up");
   const idRef = useRef(0);
+
+  const [autoScroll, toggle] = useBoolean(true);
 
   useEffect(() => {
     const calcChevronShouldUp = () => {
@@ -73,6 +75,8 @@ function Logs({ server, containerInfo, ...props }: LogsProps) {
     json: false,
     onMessage: (data) => {
       push({ ...parseLogLine(data), id: idRef.current++ });
+      if (autoScroll) {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
       }
     },
   });
@@ -113,6 +117,10 @@ function Logs({ server, containerInfo, ...props }: LogsProps) {
         <Label>{containerInfo.name.slice(1)}</Label>
         <Tag>{containerInfo.image}</Tag>
         <ContainerStatusIndicator status={containerInfo.state} withText />
+        <Group gap="2" ml="4">
+          <Switch checked={autoScroll} onChange={toggle} />
+          <Label>Auto scroll</Label>
+        </Group>
       </HStack>
       <Stack gap="1" overflowY="auto" ref={logsRef}>
         <Box ref={topRef} />
