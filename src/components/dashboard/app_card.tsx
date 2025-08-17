@@ -47,7 +47,9 @@ import {
   type UseFormRegister,
 } from "react-hook-form";
 import { LuEyeOff, LuInfo, LuPencil } from "react-icons/lu";
+import { useAsync } from "react-use";
 import { IconSearcher } from "../config_editor/icon_searcher";
+import { FullDetailDialog } from "../proxies/full_detail_dialog";
 import { DataListItem, DataListRoot } from "../ui/data-list";
 import { useAllSettings } from "./settings";
 
@@ -67,8 +69,14 @@ const AppCardToolTip = ({ item }: { item: HomepageItem }) => {
     >
       <DataListRoot size="sm">
         <DataListItem label="Status" value={health.status} />
-        <DataListItem label="Uptime" value={health.uptime} />
-        <DataListItem label="Latency" value={health.latency} />
+        <DataListItem
+          label="Uptime"
+          value={formatDuration(health.uptime, { unit: "ms" })}
+        />
+        <DataListItem
+          label="Latency"
+          value={formatDuration(health.latency, { unit: "us" })}
+        />
         <DataListItem label="URL" value={item.url} />
         {health.detail && (
           <DataListItem
@@ -121,12 +129,6 @@ const AppCardHealthBubbleRight = ({ item }: { item: HomepageItem }) => {
 export const AppCardInner = memo<AppCardInnerProps>(
   ({ item, disableTooltip, ...rest }) => {
     const portalRef = React.useRef<HTMLDivElement>(null);
-    const icon = useMemo(() => {
-      if (item.icon) {
-        return <FavIcon url={item.icon} size={"24px"} />;
-      }
-      return <FavIcon item={item} size={"24px"} />;
-    }, [item.icon]);
     return (
       <Tooltip.Root
         openDelay={100}
@@ -264,6 +266,16 @@ export const AppCard = memo<Omit<AppCardInnerProps, "dragging">>(
               <LuEyeOff />
               Hide App
             </MenuItem>
+            <MenuItem
+              value="detail"
+              aria-label="Show details"
+              onClick={() => {
+                setIsDetailDialogOpen(true);
+              }}
+            >
+              <LuInfo />
+              Details
+            </MenuItem>
           </MenuContent>
         </MenuRoot>
         {isEditDialogOpen && (
@@ -279,6 +291,11 @@ export const AppCard = memo<Omit<AppCardInnerProps, "dragging">>(
             }}
           />
         )}
+        {isDetailDialogOpen && (
+          <DetailDialog
+            item={curItem}
+            onClose={() => {
+              setIsDetailDialogOpen(false);
             }}
           />
         )}
@@ -441,4 +458,34 @@ function EditItemDialog({
       </DialogContent>
     </DialogRootProvider>
   );
+}
+
+function DetailDialog({
+  item,
+  onClose,
+}: Readonly<{
+  item: HomepageItem;
+  onClose: () => void;
+}>) {
+  const route = useAsync(
+    async () =>
+      await api.route
+        .route(item.alias)
+        .then((e) => e.data)
+        .catch(toastError),
+  );
+  const dialog = useDialog({
+    open: true,
+    onOpenChange: ({ open }) => {
+      if (!open) {
+        onClose();
+      }
+    },
+  });
+
+  if (!route.value) {
+    return null;
+  }
+
+  return <FullDetailDialog route={route.value} dialog={dialog} />;
 }
