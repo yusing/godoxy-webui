@@ -1257,10 +1257,16 @@ export namespace Metrics {
       interval?: "5m" | "15m" | "1h" | "1d" | "1mo";
       /** @example "" */
       keyword?: string;
-      /** @example 10 */
+      /**
+       * @default 0
+       * @example 10
+       */
       limit?: number;
-      /** @example "10" */
-      offset?: string;
+      /**
+       * @default 0
+       * @example 10
+       */
+      offset?: number;
     };
     export type RequestBody = never;
     export type RequestHeaders = {};
@@ -1470,7 +1476,7 @@ export class HttpClient<SecurityDataType = unknown> {
   }: ApiConfig<SecurityDataType> = {}) {
     this.instance = axios.create({
       ...axiosConfig,
-      baseURL: axiosConfig.baseURL || "",
+      baseURL: axiosConfig.baseURL || "/api/v1",
     });
     this.secure = secure;
     this.format = format;
@@ -1582,8 +1588,15 @@ export class HttpClient<SecurityDataType = unknown> {
 }
 
 /**
- * @title No title
- * @contact
+ * @title GoDoxy API
+ * @version 1.0
+ * @license MIT (https://github.com/yusing/godoxy/blob/main/LICENSE)
+ * @termsOfService https://github.com/yusing/godoxy/blob/main/LICENSE
+ * @baseUrl /api/v1
+ * @externalDocs https://docs.godoxy.dev
+ * @contact Yusing (https://github.com/yusing/godoxy/issues)
+ *
+ * GoDoxy API
  */
 export class Api<
   SecurityDataType extends unknown,
@@ -2246,10 +2259,16 @@ export class Api<
         interval?: "5m" | "15m" | "1h" | "1d" | "1mo";
         /** @example "" */
         keyword?: string;
-        /** @example 10 */
+        /**
+         * @default 0
+         * @example 10
+         */
         limit?: number;
-        /** @example "10" */
-        offset?: string;
+        /**
+         * @default 0
+         * @example 10
+         */
+        offset?: number;
       },
       params: RequestParams = {},
     ) =>
