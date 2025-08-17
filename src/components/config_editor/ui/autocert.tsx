@@ -64,13 +64,15 @@ export function AutocertUIEditor({
             collection={collection}
             value={[field.value]}
             onValueChange={({ value }) => {
-              cfg.provider = value[0]! as Autocert.AutocertProvider;
-              if (cfg.provider === "local") {
-                cfg = { provider: "local" } as Autocert.LocalOptions;
-              } else {
-                delete cfg.options;
+              const selected = value[0]! as Autocert.AutocertProvider;
+              let provider = {
+                ...cfg,
+                provider: selected,
+              } as Autocert.AutocertConfig;
+              if (selected === "local") {
+                provider = { provider: "local" } as Autocert.LocalOptions;
               }
-              onChange(cfg);
+              onChange(provider);
             }}
           >
             <SelectLabel>Certificate provider</SelectLabel>
