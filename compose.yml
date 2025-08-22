@@ -1,0 +1,21 @@
+# this docker compose file is for development only
+services:
+  frontend:
+    container_name: godoxy-frontend-next-dev
+    restart: no
+    network_mode: host
+    image: godoxy-frontend
+    env_file: .env
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
+    volumes:
+      - .:/app
+    labels:
+      proxy.aliases: godoxy-dev
+      proxy.*: |
+        port: 3002
+        healthcheck:
+          disabled: true
+        homepage:
+          show: false
