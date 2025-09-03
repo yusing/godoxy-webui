@@ -10,6 +10,8 @@ import AppDetailsDialogContent from './AppDetailsDialogContent'
 import AppEditDialogContent from './AppEditDialogContent'
 import { store } from './store'
 
+import { store as routesStore } from '@/components/routes/store'
+
 export default function AppItemContextMenuContent({ app }: { app: HomepageItem }) {
   const visible = store.useValue(`visibility.${app.alias}`) ?? app.show
   const toggleVisibility = () =>
@@ -66,7 +68,10 @@ export default function AppItemContextMenuContent({ app }: { app: HomepageItem }
             {favorite ? 'Remove favorite' : 'Favorite'}
           </ContextMenuItem>
         )}
-        <Link href={`/routes?route=${app.alias}`}>
+        <Link
+          href={`/routes#${app.alias}`}
+          onClick={() => routesStore.set('requestedRoute', app.alias)}
+        >
           <ContextMenuItem>
             <Info className="w-4 h-4" />
             Details

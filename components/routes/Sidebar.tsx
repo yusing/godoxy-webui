@@ -10,7 +10,7 @@ import { useWebSocketApi } from '@/hooks/websocket'
 import type { RouteUptimeAggregate, UptimeAggregate } from '@/lib/api'
 import { toastError } from '@/lib/toast'
 import { cn } from '@/lib/utils'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { Label } from '../ui/label'
 import RoutePercentageText from './PercentageText'
 import RoutesSidebarSearchBox from './SearchBox'
@@ -44,6 +44,8 @@ export default function RoutesSidebar() {
       <RoutesSidebarSearchBox />
       <RoutesSidebarItemList />
       <RoutesUptimeProvider sidebarRef={sidebarRef} />
+      <SelectedRouteResetter />
+      <ScrollIntoSelectedRoute />
     </div>
   )
 }
@@ -92,6 +94,7 @@ function RoutesSidebarItem({ alias }: { alias: string }) {
       <a
         id={`route-${alias}`}
         href={`#${alias}`}
+        target="_self"
         onClick={() => setSelectedRoute(alias)}
         className={cn(
           'route-item text-left p-3 transition-colors border-x border-b',
@@ -127,8 +130,6 @@ function RoutesUptimeProvider({
 }: {
   sidebarRef: React.RefObject<HTMLDivElement | null>
 }) {
-  const selected = useSelectedRoute()
-
   useWebSocketApi<UptimeAggregate>({
     endpoint: '/metrics/uptime',
     query: {
@@ -147,18 +148,42 @@ function RoutesUptimeProvider({
           {} as Record<string, RouteUptimeAggregate>
         )
       )
-      if (
-        uptime.data.length > 0 &&
-        !(selected || uptime.data.some(route => route.alias === selected))
-      ) {
-        setSelectedRoute(uptime.data[0]!.alias)
-      }
 
       const maxLength = Math.max(...uptime.data.map(route => route.alias.length))
       if (sidebarRef.current) sidebarRef.current.style.width = `${maxLength + 8}ch`
     },
     onError: toastError,
   })
+
+  return null
+}
+
+function SelectedRouteResetter() {
+  const selectedRoute = useSelectedRoute()
+  const routeKeys = store.useValue('routeKeys')
+
+  useEffect(() => {
+    if (routeKeys && routeKeys.length > 0) {
+      if (!selectedRoute || !routeKeys.some(route => route === selectedRoute)) {
+        setSelectedRoute(routeKeys[0]!)
+      }
+    }
+  }, [selectedRoute, routeKeys])
+
+  return null
+}
+
+function ScrollIntoSelectedRoute() {
+  const selectedRoute = useSelectedRoute()
+  useEffect(() => {
+    if (selectedRoute) {
+      const el = document.getElementById(`route-${selectedRoute}`)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth' })
+        el.setAttribute('data-active', 'true')
+      }
+    }
+  }, [selectedRoute])
 
   return null
 }

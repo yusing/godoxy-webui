@@ -1,5 +1,6 @@
+'use client'
+
 import type { RouteUptimeAggregate } from '@/lib/api'
-import { useSearchParams } from 'next/navigation'
 import { useFragment } from '../../hooks/fragment'
 import { createStore } from '../../hooks/store'
 
@@ -10,6 +11,7 @@ export type RouteDisplaySettings = {
 }
 
 type RouteState = {
+  requestedRoute: string | undefined
   routeKeys: string[]
   uptime: Record<string, RouteUptimeAggregate>
   displaySettings: RouteDisplaySettings
@@ -17,6 +19,7 @@ type RouteState = {
 }
 
 export const store = createStore<RouteState>('routes', {
+  requestedRoute: undefined,
   routeKeys: [],
   uptime: {},
   displaySettings: {
@@ -27,20 +30,14 @@ export const store = createStore<RouteState>('routes', {
   logsAutoScroll: true,
 })
 
-export function useSelectedRoute(): string | null {
-  const params = useSearchParams()
+export function useSelectedRoute(): string | undefined {
+  const requestedRoute = store.useValue('requestedRoute')
   const fragment = useFragment()
-  if (fragment) {
-    return fragment
-  }
-  return params.get('route')
+  return fragment || requestedRoute
 }
 
 // setSelectedRoute changes the active route item in the sidebar
 export function setSelectedRoute(alias: string) {
-  // css trick to prevent the whole route list from being re-rendered on selection change
-  // since the item itself no longer needs to check it's own active state with useSelectedRoute
-
   const prevActive = document.querySelector('.route-item[data-active="true"]') as HTMLElement | null
   if (prevActive) {
     prevActive.removeAttribute('data-active')
@@ -50,7 +47,4 @@ export function setSelectedRoute(alias: string) {
   if (el) el.setAttribute('data-active', 'true')
 
   window.location.hash = `#${alias}`
-  if (window.location.search.includes('route=')) {
-    window.location.search = ''
-  }
 }
