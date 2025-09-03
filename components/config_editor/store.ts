@@ -30,4 +30,4 @@ export const configStore = createStore<ConfigState<Config.Config>>('config', {
   validateError: null,
 })
 
-export const routesConfigStore = configStore as Store<ConfigState<Routes.Routes>>
+export const routesConfigStore = configStore as unknown as Store<ConfigState<Routes.Routes>>
