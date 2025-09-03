@@ -39,14 +39,20 @@ type ApiMethodData<T extends (...args: any[]) => any> = T extends (
 export function formatError(data: AxiosError | ErrorResponse | string): ErrorResponse {
   if (data instanceof AxiosError) {
     if (data.response) {
-      if (data.response.headers['Content-Type']?.toString().includes('application/json')) {
+      if (typeof data.response.data === 'object') {
         return data.response.data as ErrorResponse
       }
-      return { message: (data.response.data as string) || data.message }
+      if (typeof data.response.data === 'string') {
+        return { message: data.response.data }
+      }
+      return { message: data.message }
     }
   }
   if (typeof data === 'object') {
-    return data
+    if (data instanceof Error) {
+      return { message: data.message }
+    }
+    return data as ErrorResponse
   }
   return { message: data }
 }
