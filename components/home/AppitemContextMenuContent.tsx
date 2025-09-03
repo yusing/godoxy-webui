@@ -1,4 +1,3 @@
-import type { HomepageItem } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
 import { cn } from '@/lib/utils'
@@ -6,34 +5,41 @@ import { Edit, Eye, EyeOff, Heart, Info } from 'lucide-react'
 import Link from 'next/link'
 import { ContextMenuContent, ContextMenuItem } from '../ui/context-menu'
 import { DialogContent, DialogOverlay, DialogTrigger } from '../ui/dialog'
-import AppDetailsDialogContent from './AppDetailsDialogContent'
 import AppEditDialogContent from './AppEditDialogContent'
 import { store } from './store'
 
 import { store as routesStore } from '@/components/routes/store'
 
-export default function AppItemContextMenuContent({ app }: { app: HomepageItem }) {
-  const visible = store.useValue(`visibility.${app.alias}`) ?? app.show
+export default function AppItemContextMenuContent({
+  categoryIndex,
+  appIndex,
+}: {
+  categoryIndex: number
+  appIndex: number
+}) {
+  const baseKey = `homepageCategories.${categoryIndex}.items.${appIndex}` as const
+  const alias = store.useValue(`${baseKey}.alias`)!
+  const visible = store.useValue(`${baseKey}.show`)!
+  const favorite = store.useValue(`${baseKey}.favorite`)!
+
   const toggleVisibility = () =>
     api.homepage
       .setItemVisible({
         value: !visible,
-        which: [app.alias],
+        which: [alias],
       })
-      .then(() => store.set(`visibility.${app.alias}`, !visible))
+      .then(() => store.set(`${baseKey}.show`, !visible))
       .catch(toastError)
-
-  const favorite = store.useValue(`favorite.${app.alias}`) ?? app.favorite
 
   const toggleFavorite = () => {
     const newFavorite = !favorite
     api.homepage
       .setItemFavorite({
         value: newFavorite,
-        which: [app.alias],
+        which: [alias],
       })
       .then(() => {
-        store.set(`favorite.${app.alias}`, newFavorite)
+        store.set(`${baseKey}.favorite`, newFavorite)
         if (newFavorite) {
           store.set('pendingFavorites', true)
         }
@@ -68,10 +74,7 @@ export default function AppItemContextMenuContent({ app }: { app: HomepageItem }
             {favorite ? 'Remove favorite' : 'Favorite'}
           </ContextMenuItem>
         )}
-        <Link
-          href={`/routes#${app.alias}`}
-          onClick={() => routesStore.set('requestedRoute', app.alias)}
-        >
+        <Link href={`/routes#${alias}`} onClick={() => routesStore.set('requestedRoute', alias)}>
           <ContextMenuItem>
             <Info className="w-4 h-4" />
             Details
@@ -80,20 +83,26 @@ export default function AppItemContextMenuContent({ app }: { app: HomepageItem }
       </ContextMenuContent>
       <DialogOverlay className="backdrop-blur-xs" />
       <DialogContent className="min-w-[40vw] overflow-x-hidden">
-        <AppItemDialogContent app={app} />
+        <AppItemDialogContent categoryIndex={categoryIndex} appIndex={appIndex} />
       </DialogContent>
     </>
   )
 }
 
-function AppItemDialogContent({ app }: { app: HomepageItem }) {
+function AppItemDialogContent({
+  categoryIndex,
+  appIndex,
+}: {
+  categoryIndex: number
+  appIndex: number
+}) {
   const openedDialog = store.useValue('openedDialog')
 
   if (openedDialog === 'edit') {
-    return <AppEditDialogContent app={app} />
+    return <AppEditDialogContent categoryIndex={categoryIndex} appIndex={appIndex} />
   }
-  if (openedDialog === 'details') {
-    return <AppDetailsDialogContent alias={app.alias} />
-  }
+  // if (openedDialog === 'details') {
+  //   return <AppDetailsDialogContent alias={alias} />
+  // }
   return null
 }

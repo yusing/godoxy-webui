@@ -15,8 +15,16 @@ import {
 } from '../ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
+import { store } from './store'
 
-export default function AppEditDialogContent({ app }: { app: HomepageItem }) {
+export default function AppEditDialogContent({
+  categoryIndex,
+  appIndex,
+}: {
+  categoryIndex: number
+  appIndex: number
+}) {
+  const app = store.useValue(`homepageCategories.${categoryIndex}.items.${appIndex}`)!
   const icon = useMemo(() => {
     if (app.icon) return app.icon
     return (app.name || app.alias)
@@ -29,6 +37,7 @@ export default function AppEditDialogContent({ app }: { app: HomepageItem }) {
   const form = useForm<HomepageItem>({
     defaultValues: {
       ...app,
+      name: app.name || app.alias,
       icon,
     },
   })
@@ -39,7 +48,8 @@ export default function AppEditDialogContent({ app }: { app: HomepageItem }) {
 
     await api.homepage
       .setItem({ which: newItem.alias, value: newItem })
-      .then(() => api.homepage.setItemVisible({ which: [newItem.alias], value: true }))
+      .then(async () => await api.homepage.setItemVisible({ which: [newItem.alias], value: true }))
+      .then(() => store.set(`homepageCategories.${categoryIndex}.items.${appIndex}`, newItem))
       .catch(toastError)
   }
 

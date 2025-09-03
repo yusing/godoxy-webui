@@ -1,9 +1,7 @@
 import { cn } from '@/lib/utils'
 import type { HealthStatusType } from '@/types/health'
-import { store } from './store'
 
-export default function HealthBubble({ alias }: { alias: string }) {
-  const status = store.useValue(`health.${alias}.status`) ?? 'unknown'
+export default function HealthBubble({ status }: { status: HealthStatusType }) {
   return <div className={cn(getClassName(status ?? 'unknown'), 'w-2 h-2 rounded-full')} />
 }
 

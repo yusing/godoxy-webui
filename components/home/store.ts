@@ -1,10 +1,10 @@
-import type { HealthMap } from '@/lib/api'
+import type { HealthMap, HomepageCategory } from '@/lib/api'
 import { createStore } from '../../hooks/store'
 
 export type Store = {
   systemInfo: SystemInfoSimple
-  visibility: Record<string, boolean>
-  favorite: Record<string, boolean>
+  homepageCategories: HomepageCategory[]
+  searchQuery: string
   health: HealthMap
   pendingFavorites: boolean
   openedDialog: 'edit' | 'details' | null
@@ -24,8 +24,8 @@ export const store = createStore<Store>('homepage', {
     rootPartitionUsage: 0,
     memoryUsage: 0,
   },
-  visibility: {},
-  favorite: {},
+  homepageCategories: [],
+  searchQuery: '',
   health: {},
   pendingFavorites: false,
   openedDialog: null,

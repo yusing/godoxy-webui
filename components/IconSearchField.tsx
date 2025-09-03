@@ -60,6 +60,7 @@ export default function IconSearchField({ value, onChange, className }: IconSear
     queryFn: () =>
       api.icons.icons({ keyword: debouncedSearchValue, limit: 5 }).then(res => res.data),
     enabled: debouncedSearchValue.length > 2,
+    staleTime: 5000,
   })
 
   const inputValue = useMemo(() => {

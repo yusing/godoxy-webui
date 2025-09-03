@@ -17,25 +17,10 @@ import AppCategoryEmpty from './AppCategoryEmpty'
 import { store } from './store'
 
 export default function AppGrid() {
-  const [searchQuery, setSearchQuery] = useState('')
-  const [comboboxValue, setComboboxValue] = useState<string>()
   const [activeCategory, setActiveCategory] = useState('Favorites')
+  const [comboboxValue, setComboboxValue] = useState<string>()
 
-  const debouncedSearchQuery = useDebounce(searchQuery, 300)
-  const {
-    data: categories,
-    // isLoading,
-    // error,
-  } = useQuery({
-    queryKey: ['homepage.items', debouncedSearchQuery],
-    queryFn: () =>
-      api.homepage
-        .items({
-          search: debouncedSearchQuery,
-        })
-        .then(res => res.data),
-  })
-
+  const categories = store.useValue('homepageCategories')
   const categoryNames = useMemo(() => categories?.map(c => c.name) ?? [], [categories])
 
   const maxTabsWithoutCombobox = 5
@@ -74,6 +59,7 @@ export default function AppGrid() {
   return (
     <div className="space-y-4">
       <HealthWatcher />
+      <HomepageCategoriesProvider />
       <PendingFavoritesResetter activeCategory={activeCategory} />
       <Tabs
         value={activeCategory}
@@ -124,16 +110,20 @@ export default function AppGrid() {
 
           <div className="relative w-full lg:w-75 min-w-0 md:min-w-50">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search apps..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className="pl-10"
-            />
+            <store.Render path="searchQuery">
+              {(searchQuery, setSearchQuery) => (
+                <Input
+                  placeholder="Search apps..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              )}
+            </store.Render>
           </div>
         </div>
 
-        {categories?.map(({ name: category, items }) => (
+        {categories?.map(({ name: category, items }, index) => (
           <TabsContent key={category} value={category} className="mt-6">
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -146,6 +136,7 @@ export default function AppGrid() {
               ) : (
                 // workaround for favorites tab, use `All` items instead
                 <AppCategory
+                  index={index}
                   category={category}
                   items={category === 'Favorites' ? categories[0]!.items : items}
                 />
@@ -156,6 +147,22 @@ export default function AppGrid() {
       </Tabs>
     </div>
   )
+}
+
+function HomepageCategoriesProvider() {
+  const searchQuery = store.useValue('searchQuery')
+  const debouncedSearchQuery = useDebounce(searchQuery, 300)
+  useQuery({
+    queryKey: ['homepage.items', debouncedSearchQuery],
+    queryFn: () =>
+      api.homepage
+        .items({
+          search: debouncedSearchQuery,
+        })
+        .then(res => store.set('homepageCategories', res.data))
+        .then(() => true),
+  })
+  return null
 }
 
 function HealthWatcher() {
