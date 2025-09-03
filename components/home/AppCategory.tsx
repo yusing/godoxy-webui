@@ -10,11 +10,13 @@ export default function AppCategory({
   category: string
   items: HomepageItem[]
 }) {
+  const visibility = store.useValue('visibility') ?? {}
+  const favorites = store.useValue('favorite') ?? {}
+
   const visibleItems = items.reduce(
     (acc, item) => {
-      const show = store.value(`visibility.${item.alias}`) ?? item.show
-      const favorite =
-        category === 'Favorites' && (store.value(`favorite.${item.alias}`) ?? item.favorite)
+      const show = visibility[item.alias] ?? item.show
+      const favorite = category === 'Favorites' && (favorites[item.alias] ?? item.favorite)
       switch (category) {
         case 'Hidden': // show only hidden items on Hidden category
           acc[item.alias] = show === false
