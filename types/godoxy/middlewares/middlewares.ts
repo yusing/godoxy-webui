@@ -11,10 +11,12 @@ export const ALL_MIDDLEWARES = [
   'ModifyRequest',
   'ModifyResponse',
   'OIDC',
+  'ForwardAuth',
   'RateLimit',
   'RealIP',
   'hCaptcha',
   'ModifyHTML',
+  'Themed',
 ] as const
 
 export type MiddlewareBase = {
@@ -85,9 +87,11 @@ export interface MiddlewaresMap
     KeyOptMapping<ModifyRequest>,
     KeyOptMapping<ModifyResponse>,
     KeyOptMapping<OIDC>,
+    KeyOptMapping<ForwardAuth>,
     KeyOptMapping<RateLimit>,
     KeyOptMapping<RealIP>,
     KeyOptMapping<ModifyHTML>,
+    KeyOptMapping<Themed>,
     KeyOptMapping<UseMiddlewareFileRef> {}
 
 export type MiddlewareComposeItem = (
@@ -103,6 +107,8 @@ export type MiddlewareComposeItem = (
   | RateLimit
   | RealIP
   | ModifyHTML
+  | Themed
+  | ForwardAuth
   | UseMiddlewareFileRef
 ) & {
   /**
@@ -202,6 +208,26 @@ export type OIDC = {
   allowed_groups?: string[]
 }
 
+export type ForwardAuth = {
+  /** forward_auth */
+  use: LooseUse<'forward_auth'>
+  /** Auth route name
+   *
+   * @default "tinyauth"
+   */
+  route?: string
+  /** Auth endpoint
+   *
+   * @default "/api/auth/traefik"
+   */
+  auth_endpoint?: string
+  /** Additional response headers
+   *
+   * @default ["Remote-User", "Remote-Name", "Remote-Email", "Remote-Groups"]
+   */
+  headers?: HTTPHeader[]
+}
+
 export type hCaptcha = {
   /** h_captcha */
   use: LooseUse<'h_captcha'>
@@ -268,4 +294,17 @@ export type ModifyHTML = {
    * @default false
    */
   replace?: boolean
+}
+
+export type Themed = {
+  /** themed */
+  use: LooseUse<'themed'>
+  /** Predefined themes */
+  theme?: 'dark' | 'dark-grey' | 'solarized-dark'
+  /** Custom CSS */
+  css?: string
+  /** Font URL */
+  font_url?: string
+  /** Font family */
+  font_family?: string
 }

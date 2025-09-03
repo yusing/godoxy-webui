@@ -1,7 +1,7 @@
 VERSION ?= $(shell git describe --tags --abbrev=0)
 BUILD_DATE ?= $(shell date -u +'%Y%m%d-%H%M')
 
-SCHEMA_DIR := src/types/godoxy
+SCHEMA_DIR := types/godoxy
 
 .PHONY: dev
 
