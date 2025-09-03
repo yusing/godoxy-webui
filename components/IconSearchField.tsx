@@ -162,6 +162,7 @@ function IconVariantIconButton({
 
   return (
     <button
+      type="button"
       onClick={() => {
         setState(prev => ({
           searchValue: prev.searchValue,
