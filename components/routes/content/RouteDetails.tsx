@@ -7,6 +7,7 @@ import { DataList, DataListRow } from '@/components/ui/data-list'
 import { Label } from '@/components/ui/label'
 import { api } from '@/lib/api-client'
 import { formatDuration } from '@/lib/format'
+import { cn } from '@/lib/utils'
 import { json } from '@codemirror/lang-json'
 import { useQuery } from '@tanstack/react-query'
 import ReactCodeMirror from '@uiw/react-codemirror'
@@ -58,34 +59,14 @@ export default function RouteDetails() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Title>Alias</Title>
-              <div className="text-sm">{routeDetails.alias}</div>
-            </div>
-            <div>
-              <Title>Agent</Title>
-              <div className="text-sm">{routeDetails.agent}</div>
-            </div>
-            <div>
-              <Title>Host</Title>
-              <div className="text-sm font-mono">{routeDetails.host}</div>
-            </div>
-            <div>
-              <Title>Scheme</Title>
-              <Badge variant="outline">{routeDetails.scheme}</Badge>
-            </div>
+            <Item title="Alias" value={routeDetails.alias} />
+            <Item title="Agent" value={routeDetails.agent} />
+            <Item title="Host" value={routeDetails.host} className="font-mono" />
+            <Item title="Scheme" value={routeDetails.scheme} kind="badge" />
           </div>
-
-          <div>
-            <Title>Origin URL</Title>
-            <div className="text-sm font-mono break-all">{routeDetails.purl}</div>
-          </div>
-
+          <Item title="Origin URL" value={routeDetails.purl} className="font-mono break-all" />
           {routeDetails.lurl && (
-            <div>
-              <Title>Listening URL</Title>
-              <div className="text-sm font-mono break-all">{routeDetails.lurl}</div>
-            </div>
+            <Item title="Listening URL" value={routeDetails.lurl} className="font-mono break-all" />
           )}
         </CardContent>
       </Card>
@@ -96,14 +77,8 @@ export default function RouteDetails() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Title>Listening Port</Title>
-              <div className="text-lg font-mono">{routeDetails.port.listening}</div>
-            </div>
-            <div>
-              <Title>Origin Port</Title>
-              <div className="text-lg font-mono">{routeDetails.port.proxy}</div>
-            </div>
+            <Item title="Listening Port" value={routeDetails.port.listening} />
+            <Item title="Origin Port" value={routeDetails.port.proxy} />
           </div>
         </CardContent>
       </Card>
@@ -113,39 +88,21 @@ export default function RouteDetails() {
           <CardTitle>Status</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex gap-2">
-            <div className="flex gap-2">
-              <Title>Route Excluded</Title>
-              <Badge variant={routeDetails.excluded ? 'destructive' : 'secondary'}>
-                {routeDetails.excluded ? 'Yes' : 'No'}
-              </Badge>
-            </div>
-          </div>
-
+          <Item
+            title="Route Excluded"
+            value={routeDetails.excluded ? 'Yes' : 'No'}
+            kind="badge"
+            variant={routeDetails.excluded ? 'destructive' : 'outline'}
+          />
           {routeDetails.health && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {routeDetails.excluded_reason && (
-                <div>
-                  <Title>Excluded reason</Title>
-                  <div className="text-sm">{routeDetails.excluded_reason}</div>
-                </div>
+                <Item title="Excluded reason" value={routeDetails.excluded_reason} />
               )}
-              <div>
-                <Title>Status</Title>
-                <div className="text-sm">{routeDetails.health.status}</div>
-              </div>
-              <div>
-                <Title>Latency</Title>
-                <div className="text-sm">{routeDetails.health.latencyStr}</div>
-              </div>
-              <div>
-                <Title>Uptime</Title>
-                <div className="text-sm">{routeDetails.health.uptimeStr}</div>
-              </div>
-              <div>
-                <Title>Last Seen</Title>
-                <div className="text-sm">{routeDetails.health.lastSeenStr}</div>
-              </div>
+              <Item title="Status" value={routeDetails.health.status} />
+              <Item title="Latency" value={routeDetails.health.latencyStr} />
+              <Item title="Uptime" value={routeDetails.health.uptimeStr} />
+              <Item title="Last Seen" value={routeDetails.health.lastSeenStr} />
               {routeDetails.health.detail && (
                 <div className="md:col-span-2">
                   <Title>Details</Title>
@@ -164,26 +121,26 @@ export default function RouteDetails() {
         <CardContent className="space-y-4">
           <div className="flex flex-wrap gap-4">
             {routeDetails.response_header_timeout && (
-              <div className="flex items-center gap-2">
-                <Title>Response Header Timeout</Title>
-                <div className="text-sm">{routeDetails.response_header_timeout} ms</div>
-              </div>
+              <Item
+                title="Response Header Timeout"
+                value={`${routeDetails.response_header_timeout} ms`}
+              />
             )}
             {(routeDetails.scheme === 'http' || routeDetails.scheme === 'https') && (
-              <div className="flex items-center gap-2">
-                <Title>Compression</Title>
-                <Badge variant={routeDetails.disable_compression ? 'destructive' : 'default'}>
-                  {routeDetails.disable_compression ? 'Disabled' : 'Enabled'}
-                </Badge>
-              </div>
+              <Item
+                title="Compression"
+                value={routeDetails.disable_compression ? 'Disabled' : 'Enabled'}
+                kind="badge"
+                variant={routeDetails.disable_compression ? 'destructive' : 'secondary'}
+              />
             )}
             {routeDetails.scheme === 'https' && (
-              <div className="flex items-center gap-2">
-                <Title>TLS Verify</Title>
-                <Badge variant={routeDetails.no_tls_verify ? 'destructive' : 'default'}>
-                  {routeDetails.no_tls_verify ? 'Disabled' : 'Enabled'}
-                </Badge>
-              </div>
+              <Item
+                title="TLS Verify"
+                value={routeDetails.no_tls_verify ? 'Disabled' : 'Enabled'}
+                kind="badge"
+                variant={routeDetails.no_tls_verify ? 'destructive' : 'secondary'}
+              />
             )}
           </div>
 
@@ -202,36 +159,28 @@ export default function RouteDetails() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <div>
-              <Title>Enabled</Title>
-              <Badge variant={routeDetails.healthcheck.disable ? 'destructive' : 'default'}>
-                {routeDetails.healthcheck.disable ? 'No' : 'Yes'}
-              </Badge>
-            </div>
-            <div>
-              <Title>Interval</Title>
-              <div className="text-sm">
-                {formatDuration(routeDetails.healthcheck.interval / 1000, { unit: 'us' })}
-              </div>
-            </div>
-            <div>
-              <Title>Timeout</Title>
-              <div className="text-sm">
-                {formatDuration(routeDetails.healthcheck.timeout / 1000, { unit: 'us' })}
-              </div>
-            </div>
-            <div>
-              <Title>Retries</Title>
-              <div className="text-sm">{routeDetails.healthcheck.retries}</div>
-            </div>
-            <div>
-              <Title>Use GET</Title>
-              <Badge variant="outline">{routeDetails.healthcheck.use_get ? 'Yes' : 'No'}</Badge>
-            </div>
-            <div>
-              <Title>Path</Title>
-              <div className="text-sm font-mono">{routeDetails.healthcheck.path || '/'}</div>
-            </div>
+            <Item
+              title="Enabled"
+              value={routeDetails.healthcheck.disable ? 'No' : 'Yes'}
+              kind="badge"
+              variant={routeDetails.healthcheck.disable ? 'destructive' : 'secondary'}
+            />
+            <Item
+              title="Interval"
+              value={formatDuration(routeDetails.healthcheck.interval / 1000, { unit: 'us' })}
+            />
+            <Item
+              title="Timeout"
+              value={formatDuration(routeDetails.healthcheck.timeout / 1000, { unit: 'us' })}
+            />
+            <Item title="Retries" value={routeDetails.healthcheck.retries} />
+            <Item
+              title="Use GET"
+              value={routeDetails.healthcheck.use_get ? 'Yes' : 'No'}
+              kind="badge"
+              variant="outline"
+            />
+            <Item title="Path" value={routeDetails.healthcheck.path || '/'} className="font-mono" />
           </div>
         </CardContent>
       </Card>
@@ -241,45 +190,26 @@ export default function RouteDetails() {
           <CardTitle>Homepage Configuration</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Title>Name</Title>
-              <div className="text-sm">{routeDetails.homepage.name}</div>
-            </div>
-            <div>
-              <Title>Category</Title>
-              <div className="text-sm">{routeDetails.homepage.category}</div>
-            </div>
-          </div>
-
-          <div>
-            <Title>Description</Title>
-            <div className="text-sm">{routeDetails.homepage.description}</div>
-          </div>
-
           <div className="flex gap-4">
-            <div className="flex items-center gap-2">
-              <Title>Favorite</Title>
-              <Badge variant={routeDetails.homepage.favorite ? 'default' : 'secondary'}>
-                {routeDetails.homepage.favorite ? 'Yes' : 'No'}
-              </Badge>
-            </div>
-            <div className="flex items-center gap-2">
-              <Title>Show</Title>
-              <Badge variant={routeDetails.homepage.show ? 'default' : 'secondary'}>
-                {routeDetails.homepage.show ? 'Yes' : 'No'}
-              </Badge>
-            </div>
+            <Item
+              title="Favorite"
+              value={routeDetails.homepage.favorite ? 'Yes' : 'No'}
+              kind="badge"
+              variant={routeDetails.homepage.favorite ? 'secondary' : 'outline'}
+            />
+            <Item
+              title="Show"
+              value={routeDetails.homepage.show ? 'Yes' : 'No'}
+              kind="badge"
+              variant={routeDetails.homepage.show ? 'secondary' : 'outline'}
+            />
           </div>
-
-          <div>
-            <Title>Icon</Title>
-            <div className="text-sm font-mono">{routeDetails.homepage.icon}</div>
-          </div>
-
-          <div>
-            <Title>URL</Title>
-            <div className="text-sm font-mono break-all">{routeDetails.homepage.url}</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Item title="Name" value={routeDetails.homepage.name} />
+            <Item title="Category" value={routeDetails.homepage.category} />
+            <Item title="Description" value={routeDetails.homepage.description} />
+            <Item title="Icon" value={routeDetails.homepage.icon} className="font-mono" />
+            <Item title="URL" value={routeDetails.homepage.url} className="font-mono break-all" />
           </div>
         </CardContent>
       </Card>
@@ -327,45 +257,40 @@ export default function RouteDetails() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Title>Name</Title>
-                <div className="text-sm font-mono">{routeDetails.container.container_name}</div>
-              </div>
-              <div>
-                <Title>Docker Host</Title>
-                <div className="text-sm font-mono">{routeDetails.container.docker_host}</div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Title>Image</Title>
-                <div className="text-sm font-mono">{routeDetails.container.image.name}</div>
-              </div>
-              <div>
-                <Title>Container ID</Title>
-                <div className="text-sm font-mono">
-                  {routeDetails.container.container_id.slice(0, 12)}
-                </div>
-              </div>
+              <Item
+                title="Name"
+                value={routeDetails.container.container_name}
+                className="font-mono"
+              />
+              <Item
+                title="Docker Host"
+                value={routeDetails.container.docker_host}
+                className="font-mono"
+              />
+              <Item title="Image" value={routeDetails.container.image.name} className="font-mono" />
+              <Item
+                title="Container ID"
+                value={routeDetails.container.container_id.slice(0, 12)}
+                className="font-mono"
+              />
               <Item title="Network" value={routeDetails.container.network} />
               <Item title="Public Hostname" value={routeDetails.container.public_hostname} />
               <Item title="Private Hostname" value={routeDetails.container.private_hostname} />
             </div>
 
             <div className="flex gap-4">
-              <div className="flex items-center gap-2">
-                <Title>Running</Title>
-                <Badge variant={routeDetails.container.running ? 'default' : 'destructive'}>
-                  {routeDetails.container.running ? 'Yes' : 'No'}
-                </Badge>
-              </div>
-              <div className="flex items-center gap-2">
-                <Title>Container Excluded</Title>
-                <Badge variant={routeDetails.container.is_excluded ? 'destructive' : 'secondary'}>
-                  {routeDetails.container.is_excluded ? 'Yes' : 'No'}
-                </Badge>
-              </div>
+              <Item
+                title="Running"
+                value={routeDetails.container.running ? 'Yes' : 'No'}
+                kind="badge"
+                variant={routeDetails.container.running ? 'secondary' : 'destructive'}
+              />
+              <Item
+                title="Container Excluded"
+                value={routeDetails.container.is_excluded ? 'Yes' : 'No'}
+                kind="badge"
+                variant={routeDetails.container.is_excluded ? 'destructive' : 'outline'}
+              />
             </div>
 
             <div>
@@ -413,7 +338,7 @@ export default function RouteDetails() {
 
             {routeDetails.container.errors && (
               <div>
-                <Label className="text-muted-foreground">Errors</Label>
+                <Title>Errors</Title>
                 <div className="text-sm text-error">{routeDetails.container.errors}</div>
               </div>
             )}
@@ -488,11 +413,29 @@ function Title({ children }: { children: React.ReactNode }) {
   return <Label className="text-muted-foreground">{children}</Label>
 }
 
-function Item({ title, value }: { title: string; value: string | undefined | null }) {
+function Item({
+  title,
+  value,
+  className,
+  kind = 'text',
+  variant = 'secondary',
+}: {
+  title: string
+  value: string | number | undefined | null
+  kind?: 'text' | 'badge'
+  variant?: 'secondary' | 'outline' | 'destructive' | 'outline'
+  className?: string
+}) {
   return (
-    <div>
+    <div className={cn(kind === 'badge' && 'flex items-center gap-4')}>
       <Title>{title}</Title>
-      <div className="text-sm">{value || <span className="text-muted-foreground">None</span>}</div>
+      {kind === 'badge' ? (
+        <Badge variant={variant}>{value || 'None'}</Badge>
+      ) : (
+        <div className={cn('text-sm', className)}>
+          {value || <span className={cn('text-muted-foreground', className)}>None</span>}
+        </div>
+      )}
     </div>
   )
 }
