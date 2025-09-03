@@ -1,0 +1,18 @@
+:root {
+  --sidebar-header-height: 40px;
+  --sidebar-search-box-height: 40px;
+}
+
+.sidebar-header {
+  height: var(--sidebar-header-height);
+}
+
+.sidebar-search-box {
+  height: var(--sidebar-search-box-height);
+}
+
+.sidebar-item-list {
+  height: calc(
+    100vh - var(--titlebar-height) - var(--sidebar-search-box-height) - var(--sidebar-header-height)
+  );
+}

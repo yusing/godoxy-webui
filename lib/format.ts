@@ -6,6 +6,17 @@ export function formatTimestamp(timestamp: number) {
   return new Date(timestamp * 1000).toLocaleString()
 }
 
+export function formatShortTime(ts?: number | null): string {
+  if (!ts) return ''
+  const d = new Date(ts)
+  return d.toLocaleString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  })
+}
+
 function formatPrecision(value: number, precision: number) {
   const factor = 10 ** precision
   return Math.round(value * factor) / factor
@@ -78,17 +89,25 @@ export function formatDuration(dur: number, options?: { unit?: 'us' | 'ms' | 's'
 
 const units = ['B', 'KB', 'MB', 'GB', 'TB']
 
-export function formatByte(value: number, precision = 2) {
+export function formatBytes(value?: number | null, params?: { precision?: number; unit?: string }) {
+  if (!value) return `0 B${params?.unit ?? ''}`
   let index = 0
   while (value >= 1024 && index < units.length - 1) {
     value /= 1024
     index++
   }
-  return `${formatPrecision(value, precision)} ${units[index]}`
+  return `${formatPrecision(value, params?.precision ?? 0)} ${units[index]}${params?.unit ?? ''}`
+}
+
+export function formatTemperature(value: number, unit?: 'celsius' | 'fahrenheit') {
+  if (unit === 'fahrenheit') {
+    return `${toFahrenheit(value).toFixed(0)} °F`
+  }
+  return `${value.toFixed(0)} °C`
 }
 
 export function toFahrenheit(celsius: number) {
-  return Math.round((celsius * 1.8 + 32) * 10) / 10
+  return celsius * 1.8 + 32
 }
 
 export function providerName(name: string) {

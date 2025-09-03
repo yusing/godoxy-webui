@@ -10,6 +10,7 @@ import {
   Cpu,
   CreditCard,
   Database,
+  EyeOff,
   FileText,
   Gamepad2,
   Globe,
@@ -43,6 +44,7 @@ import {
   Video,
   Wrench,
   Zap,
+  type LucideIcon,
 } from 'lucide-react'
 
 interface CategoryIconProps {
@@ -51,10 +53,11 @@ interface CategoryIconProps {
   size?: number
 }
 
-const categoryIconMap: Record<string, any> = {
+const categoryIconMap: Record<string, LucideIcon> = {
   // Common categories from the app
   favorites: Star,
   all: Grid3X3,
+  hidden: EyeOff,
   productivity: BarChart3,
   communication: Mail,
   development: Database,

@@ -7,14 +7,3 @@ export type ConfigFile = {
 }
 
 export type ConfigFiles = Record<FileType, ConfigFile[]>
-
-export const godoxyConfig: ConfigFile = {
-  type: 'config',
-  filename: 'config.yml',
-}
-
-export const placeholderFiles: ConfigFiles = {
-  config: [],
-  provider: [],
-  middleware: [],
-}

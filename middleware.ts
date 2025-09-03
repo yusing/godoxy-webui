@@ -1,22 +1,71 @@
+import { HttpStatusCode } from 'axios'
 import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
 // Default to localhost:8888 if env var is not set
 const API_BASE_URL = `http://${process.env.GODOXY_API_ADDR ?? '127.0.0.1:8888'}`
 
-export function middleware(request: NextRequest) {
-  // pass url info to ssr components
+export async function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers)
-  requestHeaders.set('x-path', request.nextUrl.pathname)
-  requestHeaders.set('x-url', request.url)
+
+  if (request.nextUrl.pathname === '/login') {
+    return NextResponse.next({
+      headers: requestHeaders,
+    })
+  }
+
+  if (request.nextUrl.pathname === '/logout') {
+    return new NextResponse(
+      null,
+      await fetch(new URL('/api/v1/auth/logout', API_BASE_URL), {
+        method: 'POST',
+      })
+    )
+  }
+
+  // FIXME: being redirected to login again with invalid cookie
+  if (request.nextUrl.pathname !== '/api/v1/auth/callback') {
+    const cookie = request.headers.get('Cookie')
+    if (!cookie) {
+      return NextResponse.redirect(new URL('/login', request.nextUrl.origin), {
+        headers: requestHeaders,
+      })
+    }
+
+    const resp = await fetch(new URL('/api/v1/auth/check', API_BASE_URL), {
+      method: 'HEAD',
+      headers: { Cookie: cookie },
+      redirect: 'manual',
+      cache: 'no-store',
+    }).catch(() => new Response('Unauthorized', { status: HttpStatusCode.Unauthorized }))
+
+    if (resp.status === HttpStatusCode.Unauthorized || resp.status === HttpStatusCode.Forbidden) {
+      return NextResponse.redirect(new URL('/login', request.nextUrl.origin), {
+        headers: resp.headers,
+      })
+    }
+
+    if (
+      resp.status === HttpStatusCode.Found ||
+      resp.status === HttpStatusCode.TemporaryRedirect ||
+      resp.status === HttpStatusCode.PermanentRedirect
+    ) {
+      return NextResponse.redirect(
+        resp.headers.get('Location') ||
+          resp.headers.get('X-Redirect-To') ||
+          new URL('/login', request.nextUrl.origin),
+        {
+          headers: resp.headers,
+        }
+      )
+    }
+  }
 
   // match api requests only
-  let apiPath = request.nextUrl.pathname
+  const apiPath = request.nextUrl.pathname
   if (!apiPath.startsWith('/api/v1')) {
     return NextResponse.next({
-      request: {
-        headers: requestHeaders,
-      },
+      headers: requestHeaders,
     })
   }
   // Create the URL for the proxied request
@@ -39,4 +88,8 @@ export function middleware(request: NextRequest) {
       headers: requestHeaders,
     },
   })
+}
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
 }

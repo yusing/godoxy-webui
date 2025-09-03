@@ -127,30 +127,26 @@ export function getAllowedValues(
   keyField: string
 ): string[] | undefined {
   if (!schema) return undefined
-  const required = getRequired(schema).includes(keyField)
   if (schema.anyOf) {
     const items = distinct(
-      schema.anyOf.reduce(
-        (acc, v) => {
-          const field = v.properties?.[keyField]
-          if (field) {
-            acc.push(...getAllowedValuesFromProperty(field))
-          }
-          return acc
-        },
-        !required ? [''] : ([] as string[])
-      )
+      schema.anyOf.reduce((acc, v) => {
+        const field = v.properties?.[keyField]
+        if (field) {
+          acc.push(...getAllowedValuesFromProperty(field))
+        }
+        return acc
+      }, [] as string[])
     )
-    if (items.length === 1 && items[0] === '') {
+    if (items.length === 0) {
       return undefined
     }
     return items
   }
   if (schema.properties?.[keyField]) {
     const field = schema.properties[keyField]
-    const items: string[] = required ? [] : ['']
+    const items: string[] = []
     items.push(...getAllowedValuesFromProperty(field))
-    if (items.length === 1 && items[0] === '') {
+    if (items.length === 0) {
       return undefined
     }
     return items

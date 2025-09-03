@@ -1,4 +1,3 @@
-import { useConsume } from '@/hooks/producer-consumer'
 import type { RoutesHealthInfo } from '@/lib/api'
 import { formatDuration } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -14,20 +13,20 @@ import {
   XCircle,
   Zap,
 } from 'lucide-react'
-import { useMemo } from 'react'
 import { TooltipItem } from '../ui/tooltip'
+import { store } from './store'
 
 export default function AppItemTooltipContent({ alias }: { alias: string }) {
-  const healthInfo = useConsume<RoutesHealthInfo>(`service-health-${alias}`)
+  const healthInfo = store.useValue(`health.${alias}`)
 
   if (!healthInfo) {
     return null
   }
 
-  const StatusIcon = useMemo(() => getStatusIcon(healthInfo.status), [healthInfo.status])
+  const StatusIcon = getStatusIcon(healthInfo.status)
 
   return (
-    <div className="space-y-2 p-2 min-w-[220px]">
+    <div className="space-y-2 p-2">
       {/* Header with status */}
       <div className="flex items-center gap-2 pb-2 border-b border-border/50">
         <Activity className="w-4 h-4 text-muted-foreground" />

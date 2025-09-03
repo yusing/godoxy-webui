@@ -3,9 +3,12 @@ import { Api, type ErrorResponse } from '@/lib/api'
 import { AxiosError, type AxiosResponse } from 'axios'
 import { logger } from './logger'
 
+// this is for server side only, on client side we use relative path for middleware to handle
+const apiAddr = process.env.GODOXY_API_ADDR ? `http://${process.env.GODOXY_API_ADDR}` : ''
+
 export const api = new Api({
-  baseURL: '/api/v1',
-  secure: process.env.NODE_ENV === 'production',
+  baseURL: `${apiAddr}/api/v1`,
+  secure: process.env.GODOXY_API_ADDR !== undefined && process.env.NODE_ENV === 'production',
   format: 'json',
 })
 
@@ -33,7 +36,15 @@ type ApiMethodData<T extends (...args: any[]) => any> = T extends (
   ? D
   : never
 
-function getError(data: ErrorResponse | string) {
+export function formatError(data: AxiosError | ErrorResponse | string): ErrorResponse {
+  if (data instanceof AxiosError) {
+    if (data.response) {
+      if (data.response.headers['Content-Type']?.toString().includes('application/json')) {
+        return data.response.data as ErrorResponse
+      }
+      return { message: (data.response.data as string) || data.message }
+    }
+  }
   if (typeof data === 'object') {
     return data
   }
@@ -59,7 +70,7 @@ export async function callApi<Fn extends (...args: any[]) => Promise<AxiosRespon
     return {
       data: null,
       code: status,
-      error: getError(data),
+      error: formatError(data),
       headers: headers,
     }
   } catch (e) {
@@ -68,7 +79,7 @@ export async function callApi<Fn extends (...args: any[]) => Promise<AxiosRespon
       return {
         data: null,
         code: e.response?.status ?? 500,
-        error: getError(e.response?.data),
+        error: formatError(e.response?.data),
         headers: e.response?.headers ?? {},
       }
     }

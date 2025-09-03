@@ -1,5 +1,8 @@
+'use client'
+
 import { logger } from '@/lib/logger'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
+import isEqual from 'react-fast-compare'
 import { useLocation } from 'react-use'
 import useWebSocket, { ReadyState } from 'react-use-websocket'
 
@@ -11,6 +14,10 @@ export type WebSocketApiOptions<TMessage, TSubscription = unknown> = {
   query?: Record<string, string | number>
   /** Whether the WebSocket message is JSON */
   json?: boolean
+  /** Whether to use HTTP for the initial data fetch */
+  httpAsInitial?: boolean
+  /** Whether to deduplicate messages */
+  deduplicate?: boolean
   /** Whether the WebSocket should connect */
   shouldConnect?: boolean
   /** Callback for handling incoming messages */
@@ -29,31 +36,33 @@ export type WebSocketApiOptions<TMessage, TSubscription = unknown> = {
   reconnectInterval?: (attemptNumber: number) => number
 }
 
-const HEARTBEAT_INTERVAL = 3000 as const
+const HEARTBEAT_INTERVAL = 2000 as const
 const HEARTBEAT_TIMEOUT = 8000 as const
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useWebSocketApi<TMessage, TSubscription = any>({
   endpoint,
   query,
   json = true,
+  httpAsInitial = false,
+  deduplicate = true,
   shouldConnect = true,
   onMessage,
   subscriptionData,
   onOpen,
   onClose,
   onError,
-  reconnectAttempts = 3,
-  reconnectInterval = (numAttempts: number) => Math.min(1000 * Math.pow(2, numAttempts), 10000), // exponential backoff, max 10s
+  reconnectAttempts = 10,
+  reconnectInterval = (numAttempts: number) => Math.min(1000 * Math.pow(2, numAttempts), 5000), // exponential backoff, max 5s
 }: WebSocketApiOptions<TMessage, TSubscription>) {
-  const [dataSent, setDataSent] = useState(false)
-  const [connectionError, setConnectionError] = useState<string | null>(null)
-  const location = useLocation()
+  const dataSent = useRef(false)
   const lastHeartbeat = useRef(Date.now())
   const heartbeatIntervalRef = useRef<NodeJS.Timeout | null>(null)
-  const isConnectedRef = useRef(false)
+  const lastMessageRef = useRef<TMessage | null>(null)
+  const location = useLocation()
 
   // Create WebSocket URL
-  const getSocketUrl = useCallback(() => {
+  const socketURL = useMemo(() => {
     if (!shouldConnect) {
       return null
     }
@@ -65,19 +74,26 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
   // Handle connection open
   const handleOpen = useCallback(() => {
     logger.debug(`WebSocket connected to ${endpoint}`)
-    setConnectionError(null)
-    setDataSent(false) // Reset data sent flag on new connection
+    dataSent.current = false // Reset data sent flag on new connection
     lastHeartbeat.current = Date.now() // Reset heartbeat on connection
-    isConnectedRef.current = true
     onOpen?.()
   }, [endpoint, onOpen])
+
+  const handleError = useCallback(
+    (error: string | null) => {
+      if (error) {
+        logger.error('WebSocket error', error)
+        onError?.(error)
+      }
+    },
+    [onError]
+  )
 
   // Handle connection close
   const handleClose = useCallback(
     (event: CloseEvent) => {
       logger.debug(`WebSocket disconnected from ${endpoint}:`, event.code, event.reason)
-      setDataSent(false)
-      isConnectedRef.current = false
+      dataSent.current = false
 
       // Clear heartbeat interval
       if (heartbeatIntervalRef.current) {
@@ -98,26 +114,14 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
 
       onClose?.(event)
     },
-    [endpoint, onClose]
+    [endpoint, onClose, handleError]
   )
 
   // Handle errors
   const handleEventError = useCallback(
     (error: Event) => {
-      setConnectionError('WebSocket connection error')
       logger.error('WebSocket error', error)
       onError?.(error.toString())
-    },
-    [onError]
-  )
-
-  const handleError = useCallback(
-    (error: string | null) => {
-      setConnectionError(error)
-      if (error) {
-        logger.error('WebSocket error', error)
-        onError?.(error)
-      }
     },
     [onError]
   )
@@ -131,21 +135,67 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
       }
       try {
         const data: TMessage = json ? JSON.parse(event.data) : (event.data as string)
-        onMessage(data)
-        // Clear any previous connection errors on successful message
-        setConnectionError(null)
+        if (!deduplicate || !isEqual(data, lastMessageRef.current)) {
+          lastMessageRef.current = data
+          onMessage(data)
+        }
+        // Treat any incoming message as a heartbeat
+        lastHeartbeat.current = Date.now()
       } catch (error) {
         handleError(`Failed to parse WebSocket message on ${endpoint}: ${error}`)
       }
     },
-    [endpoint, onMessage, json, handleError]
+    [endpoint, onMessage, json, handleError, deduplicate]
   )
+
+  // Fetch initial data via HTTP using the same URL and query as socketURL
+  useEffect(() => {
+    if (!socketURL || !httpAsInitial) {
+      return
+    }
+
+    const controller = new AbortController()
+    const fetchInitialData = async () => {
+      try {
+        const wsUrl = newURL(socketURL, query)
+        // Swap ws/wss to http/https for the initial HTTP request
+        wsUrl.protocol = wsUrl.protocol === 'wss:' ? 'https:' : 'http:'
+
+        const response = await fetch(wsUrl.toString(), {
+          credentials: 'include',
+          signal: controller.signal,
+          headers: {
+            Accept: 'application/json, text/plain;q=0.9,*/*;q=0.8',
+          },
+        })
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status} ${response.statusText}`)
+        }
+
+        const payload = json ? await response.json() : await response.text()
+
+        // Set last message to leverage deduplication with subsequent WS messages
+        lastMessageRef.current = payload
+        onMessage(payload)
+      } catch (error) {
+        if (error instanceof Error && error.name === 'AbortError') {
+          return
+        }
+        handleError(`Failed to fetch initial data from ${endpoint}: ${error}`)
+      }
+    }
+
+    fetchInitialData()
+    return () => controller.abort()
+  }, [query, socketURL, json, onMessage, handleError, endpoint, httpAsInitial])
 
   // Use WebSocket hook with enhanced configuration
   const { sendJsonMessage, sendMessage, readyState, getWebSocket } = useWebSocket<TMessage>(
-    getSocketUrl(),
+    socketURL,
     {
       queryParams: query,
+      share: false,
       onOpen: handleOpen,
       onClose: handleClose,
       onError: handleEventError,
@@ -175,21 +225,43 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
     shouldConnect
   )
 
+  // Keep latest function references stable for heartbeat effect
+  const sendMessageRef = useRef(sendMessage)
+  const sendJsonMessageRef = useRef(sendJsonMessage)
+  const getWebSocketRef = useRef(getWebSocket)
+  const handleErrorRef = useRef(handleError)
+
+  useEffect(() => {
+    sendMessageRef.current = sendMessage
+  }, [sendMessage])
+
+  useEffect(() => {
+    sendJsonMessageRef.current = sendJsonMessage
+  }, [sendJsonMessage])
+
+  useEffect(() => {
+    getWebSocketRef.current = getWebSocket
+  }, [getWebSocket])
+
+  useEffect(() => {
+    handleErrorRef.current = handleError
+  }, [handleError])
+
   // Send subscription message when connected and subscription data changes
   useEffect(() => {
-    if (readyState === ReadyState.OPEN && subscriptionData && !dataSent) {
+    if (readyState === ReadyState.OPEN && subscriptionData && !dataSent.current) {
       try {
-        sendJsonMessage(subscriptionData)
-        setDataSent(true)
+        sendJsonMessageRef.current?.(subscriptionData)
+        dataSent.current = true
         logger.debug(`WebSocket subscription message sent on ${endpoint}:`, subscriptionData)
       } catch (error) {
         handleError(`Failed to send subscription message on ${endpoint}: ${error}`)
       }
     }
     if (readyState === ReadyState.CLOSED || readyState === ReadyState.CLOSING) {
-      setDataSent(false)
+      dataSent.current = false
     }
-  }, [readyState, subscriptionData, sendJsonMessage, endpoint, dataSent, handleError])
+  }, [readyState, subscriptionData, endpoint, handleError])
 
   // heartbeat
   useEffect(() => {
@@ -201,16 +273,14 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
 
     // Only start heartbeat if connected
     if (readyState !== ReadyState.OPEN) {
-      isConnectedRef.current = false
       return
     }
 
-    isConnectedRef.current = true
     lastHeartbeat.current = Date.now() // Reset heartbeat when starting
 
     heartbeatIntervalRef.current = setInterval(() => {
       // Check if we're still connected
-      if (!isConnectedRef.current || readyState !== ReadyState.OPEN) {
+      if (readyState !== ReadyState.OPEN) {
         if (heartbeatIntervalRef.current) {
           clearInterval(heartbeatIntervalRef.current)
           heartbeatIntervalRef.current = null
@@ -222,17 +292,15 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
       const timeSinceLastHeartbeat = now - lastHeartbeat.current
 
       if (timeSinceLastHeartbeat > HEARTBEAT_TIMEOUT) {
-        logger.warn(`Heartbeat timeout after ${timeSinceLastHeartbeat}ms`)
-        handleError('Heartbeat timeout')
-        getWebSocket()?.close()
+        handleErrorRef.current?.(`Heartbeat timeout after ${timeSinceLastHeartbeat}ms`)
+        getWebSocketRef.current?.()?.close()
         return
       }
 
       try {
-        sendMessage('ping')
+        sendMessageRef.current?.('ping')
       } catch (error) {
-        logger.error('Failed to send heartbeat ping:', error)
-        handleError('Failed to send heartbeat')
+        handleErrorRef.current?.(`Failed to send heartbeat ping: ${formatError(error)}`)
       }
     }, HEARTBEAT_INTERVAL)
 
@@ -241,14 +309,29 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
         clearInterval(heartbeatIntervalRef.current)
         heartbeatIntervalRef.current = null
       }
-      isConnectedRef.current = false
     }
-  }, [readyState, sendMessage, getWebSocket, handleError])
+  }, [readyState])
 
   return {
     sendJsonMessage,
     sendMessage,
     readyState,
-    connectionError,
   }
+}
+
+function newURL(url: string, query?: Record<string, string | number>) {
+  const urlObj = new URL(url)
+  if (query) {
+    Object.entries(query).forEach(([key, value]) => {
+      urlObj.searchParams.set(key, String(value))
+    })
+  }
+  return urlObj
+}
+
+function formatError(error: unknown) {
+  if (error instanceof Error) {
+    return error.message
+  }
+  return String(error)
 }

@@ -1,10 +1,9 @@
-import { useConsume } from '@/hooks/producer-consumer'
-import type { RoutesHealthInfo } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import type { HealthStatusType } from '@/types/health'
+import { store } from './store'
 
 export default function HealthBubble({ alias }: { alias: string }) {
-  const status = useConsume<RoutesHealthInfo['status']>(`service-health-status-${alias}`)
+  const status = store.useValue(`health.${alias}.status`) ?? 'unknown'
   return <div className={cn(getClassName(status ?? 'unknown'), 'w-2 h-2 rounded-full')} />
 }
 

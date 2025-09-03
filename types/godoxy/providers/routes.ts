@@ -112,7 +112,7 @@ export type StreamRoute = {
    */
   host?: Hostname | IPv4 | IPv6
   /* Stream port */
-  port: StreamPort
+  port: StreamPort | number
   /** Agent */
   agent?: string
   /** Healthcheck config */

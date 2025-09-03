@@ -41,7 +41,7 @@ export type AccessLogConfigBase = {
   /**
    * Rotation interval
    *
-   * @default "1 day"
+   * @default "24h"
    */
   rotate_interval?: Duration
 }
@@ -56,7 +56,7 @@ export type LogKeepSize = `${number} ${'KB' | 'MB' | 'GB' | 'kb' | 'mb' | 'gb'}`
  */
 export type RetentionPolicy = LogKeepDays | LogKeepLast | LogKeepSize
 
-export interface RequestLogConfig extends AccessLogConfigBase {
+export type RequestLogConfig = AccessLogConfigBase & {
   /**
    * Access log format
    * @default "combined"
@@ -72,7 +72,7 @@ export interface RequestLogConfig extends AccessLogConfigBase {
   fields?: RequestLogFields
 }
 
-export interface ACLLogConfig extends AccessLogConfigBase {
+export type ACLLogConfig = AccessLogConfigBase & {
   /**
    * Log allowed IPs?
    * @default false

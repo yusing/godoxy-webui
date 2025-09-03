@@ -11,7 +11,9 @@ export const NOTIFICATION_FORMATS = ['markdown', 'plain']
  */
 export type NotificationFormat = (typeof NOTIFICATION_FORMATS)[number]
 
-export type NotificationConfig = {
+export type NotificationConfig = GotifyConfig | NtfyConfig | WebhookConfig
+
+export type NotificationConfigBase = {
   /** Provider name */
   name: string
   /** Provider URL */
@@ -23,14 +25,14 @@ export type NotificationConfig = {
   format?: NotificationFormat
 }
 
-export interface GotifyConfig extends NotificationConfig {
+export type GotifyConfig = NotificationConfigBase & {
   /** Provider type */
   provider: 'gotify'
   /** Gotify token */
   token: string
 }
 
-export interface NtfyConfig extends NotificationConfig {
+export type NtfyConfig = NotificationConfigBase & {
   /** Provider type */
   provider: 'ntfy'
   /** Topic */
@@ -57,7 +59,7 @@ export type WebhookMethod = (typeof WEBHOOK_METHODS)[number]
 export type WebhookMimeType = (typeof WEBHOOK_MIME_TYPES)[number]
 export type WebhookColorMode = (typeof WEBHOOK_COLOR_MODES)[number]
 
-export interface WebhookConfig extends NotificationConfig {
+export type WebhookConfig = NotificationConfigBase & {
   /** Provider type */
   provider: 'webhook'
   /**

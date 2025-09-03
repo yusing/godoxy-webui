@@ -1,7 +1,7 @@
 import type { ProxmoxConfig } from '../providers/proxmox'
 import type { URI, URL } from '../types'
 import type { MaxmindConfig } from './maxmind'
-import type { GotifyConfig, NtfyConfig, WebhookConfig } from './notification'
+import type { NotificationConfig } from './notification'
 
 export type Providers = {
   /** List of route definition files to include
@@ -29,7 +29,7 @@ export type Providers = {
    *
    * @minItems 1
    */
-  notification?: (WebhookConfig | GotifyConfig | NtfyConfig)[]
+  notification?: NotificationConfig[]
   /** Maxmind provider */
   maxmind?: MaxmindConfig
 }

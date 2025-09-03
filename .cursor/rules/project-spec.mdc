@@ -1,0 +1,66 @@
+---
+alwaysApply: true
+---
+
+# GoDoxy WebUI
+
+This is a WebUI for GoDoxy - a reverse proxy for local services.
+
+## Tech Stack
+
+- React
+- Tailwind
+- Shadcn UI
+- Next.js
+- Tanstack Query
+- React Hook Form
+- pnpm
+- motion (Framer Motion's successor)
+
+## Current State
+
+- Migrating from original Chakra UI to Shadcn UI + tailwindcss.
+- API and most types are identical
+
+## Missing Shadcn UI Components
+
+- For every missing component, run `pnpm dlx shadcn@latest add <component-name>`
+
+## Code Style
+
+- DO NOT HARDCODE COLORS WITH `text-COLOR-WEIGHT`, use variables instead.
+- For repetitive code, create a component under the main component then pass props to it.
+- Retrieve data on a Seperate `Provider` component which do query, produce values and return null. They should be mounted on the top level of the page, or at least before the data is used.
+- For single statement anonymous functions, use arrow function (no brackets!).
+
+## Pages
+
+- [x] Homepage: basic system info + app dashboard.
+- [x] Config: edit the config files for GoDoxy.
+- [x] Proxies: Table of proxies grouped by providers with tabs.
+- [x] Routes: Service uptime and route details.
+- [x] Servers: System info of different nodes.
+- [ ] Docker: Log viewer for docker containers.
+
+## Layout and Style
+
+- On desktop, titlebar.
+- On mobile, TBD
+
+## Homepage
+
+- Have a row of system infos like hostname, cpu /memory/disk usage. then other rows for apps
+- Tabs grouped by categories, e.g. "Pinned", "All", "Cat 1", "Cat 2", etc.
+- A search box on the same row as tab for filtering apps
+Some apps might have widgets (at most 3, in a single row) with value (on top) and label (on bottom)
+- Apps with widgets should take 1.5x height (same height with two apps without widgets, across rows)
+- Limits tabs to 5 items, if exceeds show a combobox starting from the 4th item
+- System infos should always be in a single row of 4-item grid
+  - On mobile, it's displayed in a single card with css tuning
+  - On desktop, every item is displayed as a card
+- if enough space, widgets should be on the same row
+
+## What you should NOT do
+
+- Suggest workarounds for the current state, rather than fixing the issue.
+- Ask to run `pnpm buikd`, `pnpm dev` and such commands unless it's explicitly asked for.

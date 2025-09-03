@@ -1,0 +1,44 @@
+import type { Routes } from '@/types/godoxy'
+import { Plus, RefreshCcw } from 'lucide-react'
+import { useEffect, useMemo } from 'react'
+import { routesConfigStore } from '../store'
+import RouteEditForm from './RouteEditForm'
+
+export default function NewRouteForm() {
+  const [config, setConfig] = routesConfigStore.use('configObject')
+
+  const routes = useMemo(() => (typeof config === 'object' ? config : {}), [config])
+  useEffect(() => {
+    if (!routes) {
+      routesConfigStore.set('validateError', 'Expecting routes objects')
+    }
+  }, [routes])
+
+  const onSave = (route: Routes.Route) => {
+    if (!route.alias) {
+      // it should not happen because of form validation
+      // but just in case
+      routesConfigStore.set('validateError', 'Alias is required')
+      return
+    }
+    setConfig({
+      ...config,
+      [route.alias]: route,
+    })
+  }
+
+  return (
+    <RouteEditForm
+      route={{}}
+      alias=""
+      onSave={onSave}
+      onCancel={form => form.reset()}
+      headerText="New Route"
+      saveButtonIcon={Plus}
+      saveButtonText="Create"
+      cancelButtonIcon={RefreshCcw}
+      cancelButtonText="Reset"
+      cancelButtonVariant="outline"
+    />
+  )
+}
