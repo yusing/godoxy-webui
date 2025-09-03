@@ -26,15 +26,9 @@ export async function middleware(request: NextRequest) {
   // FIXME: being redirected to login again with invalid cookie
   if (request.nextUrl.pathname !== '/api/v1/auth/callback') {
     const cookie = request.headers.get('Cookie')
-    if (!cookie) {
-      return NextResponse.redirect(new URL('/login', request.nextUrl.origin), {
-        headers: requestHeaders,
-      })
-    }
-
     const resp = await fetch(new URL('/api/v1/auth/check', API_BASE_URL), {
       method: 'HEAD',
-      headers: { Cookie: cookie },
+      headers: cookie ? { Cookie: cookie } : undefined,
       redirect: 'manual',
       cache: 'no-store',
     }).catch(() => new Response('Unauthorized', { status: HttpStatusCode.Unauthorized }))
