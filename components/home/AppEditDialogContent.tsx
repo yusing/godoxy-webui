@@ -1,7 +1,7 @@
 import { type HomepageItem } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { AppIcon } from '../AppIcon'
 import IconSearchField from '../IconSearchField'
@@ -42,16 +42,21 @@ export default function AppEditDialogContent({
     },
   })
 
-  const onSubmit = async (value: HomepageItem) => {
-    const newItem: HomepageItem = { ...value }
-    if (!newItem.icon) newItem.icon = app.icon
+  const onSubmit = useCallback(
+    async (value: HomepageItem) => {
+      const newItem: HomepageItem = { ...value }
+      if (!newItem.icon) newItem.icon = app.icon
 
-    await api.homepage
-      .setItem({ which: newItem.alias, value: newItem })
-      .then(async () => await api.homepage.setItemVisible({ which: [newItem.alias], value: true }))
-      .then(() => store.set(`homepageCategories.${categoryIndex}.items.${appIndex}`, newItem))
-      .catch(toastError)
-  }
+      await api.homepage
+        .setItem({ which: newItem.alias, value: newItem })
+        .then(
+          async () => await api.homepage.setItemVisible({ which: [newItem.alias], value: true })
+        )
+        .then(() => store.set(`homepageCategories.${categoryIndex}.items.${appIndex}`, newItem))
+        .catch(toastError)
+    },
+    [app.icon, categoryIndex, appIndex]
+  )
 
   return (
     <>
@@ -63,7 +68,15 @@ export default function AppEditDialogContent({
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6 py-2">
           <div className="flex items-start gap-4">
             <div className="hidden sm:flex h-full items-center shrink-0 border-2 p-2 rounded-xl">
-              <AppIcon size={36} item={app} url={form.watch('icon')} />
+              <FormField
+                control={form.control}
+                name={'icon'}
+                render={({ field }) => (
+                  <FormControl>
+                    <AppIcon size={36} alias={app.alias} url={field.value} />
+                  </FormControl>
+                )}
+              />
             </div>
             <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField
@@ -87,11 +100,7 @@ export default function AppEditDialogContent({
                   <FormItem>
                     <FormLabel>Category</FormLabel>
                     <FormControl>
-                      <Input
-                        value={field.value ?? ''}
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
-                      />
+                      <Input {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -106,11 +115,7 @@ export default function AppEditDialogContent({
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Input
-                    value={field.value ?? ''}
-                    onChange={field.onChange}
-                    onBlur={field.onBlur}
-                  />
+                  <Input {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -123,7 +128,7 @@ export default function AppEditDialogContent({
               <FormItem>
                 <FormLabel>Icon</FormLabel>
                 <FormControl>
-                  <IconSearchField value={field.value ?? ''} onChange={field.onChange} />
+                  <IconSearchField {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

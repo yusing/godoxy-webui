@@ -105,7 +105,7 @@ function RoutesSidebarItem({ alias }: { alias: string }) {
       >
         <div className="flex justify-between items-center gap-4 flex-1">
           <div className="flex-shrink-0 mt-0.5 flex items-center gap-2">
-            <AppIcon item={{ alias }} size={18} />
+            <AppIcon alias={alias} size={18} />
             <RouteDisplayName alias={alias} />
           </div>
           <Label className="text-sm">

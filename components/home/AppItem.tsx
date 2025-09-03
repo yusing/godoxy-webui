@@ -58,7 +58,9 @@ const AppItemInner = forwardRef<HTMLDivElement, { categoryIndex: number; appInde
               {status => <HealthBubble status={status ?? 'unknown'} />}
             </store.Render>
             <div className="rounded-xl bg-accent/10 group-hover:bg-accent/20 transition-colors">
-              <AppIcon className="h-6 w-6" alias={alias} />
+              <store.Render path={`${baseKey}.icon`}>
+                {icon => <AppIcon className="h-6 w-6" alias={alias} url={icon} />}
+              </store.Render>
             </div>
             <div className="flex flex-col items-start space-y-1">
               <store.Render path={`${baseKey}.name`}>
