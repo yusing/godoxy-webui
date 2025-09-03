@@ -30,6 +30,8 @@ export type Store<T extends FieldValues> = {
     path: P,
     listener: (value: FieldPathValue<T, P>) => void
   ) => void
+  /** Notify listeners at path. */
+  notify: <P extends FieldPath<T>>(path: P) => void
   /** Convenience hook returning [value, setValue] for the path. */
   use: <P extends FieldPath<T>>(path: P) => StoreUse<FieldPathValue<T, P>>
   /** Render-prop helper for inline usage. */
@@ -68,10 +70,17 @@ export function createStore<T extends FieldValues>(namespace: string, defaultVal
     resetValue: <P extends FieldPath<T>>(path: P) => produce(namespace + '.' + path, undefined),
     subscribe: <P extends FieldPath<T>>(path: P, listener: (value: FieldPathValue<T, P>) => void) =>
       useSubscribe<FieldPathValue<T, P>>(namespace + '.' + path, listener),
+    notify: <P extends FieldPath<T>>(path: P) => {
+      const value = getNestedValue(store.get(namespace), path)
+      return notifyListeners(namespace + '.' + path, value, value, true, true)
+    },
     use: <P extends FieldPath<T>>(path: P) =>
       [
         useObject<T, P>(namespace, path),
-        (value: FieldPathValue<T, P> | undefined) => setLeaf<T, P>(namespace, path, value),
+        useCallback(
+          (value: FieldPathValue<T, P> | undefined) => setLeaf<T, P>(namespace, path, value),
+          [path]
+        ),
       ] as const,
     Render: <P extends FieldPath<T>>({ path, children }: StoreRenderProps<T, P>) => {
       const value = useObject<T, P>(namespace, path)
@@ -226,28 +235,36 @@ function getPath(key: string): string {
 
 // Helper function to notify listeners hierarchically
 /** Notify exact, parent, and affected child listeners for a given key change. */
-function notifyListeners(key: string, oldValue: unknown, newValue: unknown) {
+function notifyListeners(
+  key: string,
+  oldValue: unknown,
+  newValue: unknown,
+  skipRoot = false,
+  skipCholdren = false
+) {
   // Notify exact key listeners
   const keyListeners = listeners.get(key)
   keyListeners?.forEach(listener => listener())
 
-  // Notify all parent listeners (they should see the change)
-  const segments = key.split('.')
-  for (let i = segments.length - 1; i > 0; i--) {
-    const parentKey = segments.slice(0, i).join('.')
-    const parentListeners = listeners.get(parentKey)
-    parentListeners?.forEach(listener => listener())
+  // Notify root listener
+  if (!skipRoot) {
+    // we need the root object, not namespace. Therefore we need namespace.rootKey
+    const rootKey = key.split('.').slice(0, 2).join('.')
+    const rootListeners = listeners.get(rootKey)
+    rootListeners?.forEach(listener => listener())
   }
 
   // Notify child listeners only if their specific values changed
-  for (const [listenerKey, listenerSet] of listeners.entries()) {
-    if (listenerKey.startsWith(key + '.')) {
-      const childPath = listenerKey.substring(key.length + 1)
-      const oldChildValue = getNestedValue(oldValue, childPath)
-      const newChildValue = getNestedValue(newValue, childPath)
+  if (!skipCholdren) {
+    for (const [listenerKey, listenerSet] of listeners.entries()) {
+      if (listenerKey.startsWith(key + '.')) {
+        const childPath = listenerKey.substring(key.length + 1)
+        const oldChildValue = getNestedValue(oldValue, childPath)
+        const newChildValue = getNestedValue(newValue, childPath)
 
-      if (!isEqual(oldChildValue, newChildValue)) {
-        listenerSet.forEach(listener => listener())
+        if (!isEqual(oldChildValue, newChildValue)) {
+          listenerSet.forEach(listener => listener())
+        }
       }
     }
   }
