@@ -9,22 +9,23 @@ import type { FieldPath, FieldPathValue, FieldValues } from 'react-hook-form'
  *
  * - Dot-path addressing for nested values (e.g. "config.ui.theme").
  * - Immutable partial updates with automatic object/array creation.
- * - Persists root namespaces to localStorage with an in-memory mirror.
- * - Cross-tab synchronization via BroadcastChannel.
+ * - Persists root namespaces to localStorage with an in-memory mirror (no localStorage on SSR).
+ * - Cross-tab synchronization via BroadcastChannel (no-ops on SSR).
  * - Fine-grained subscriptions built on useSyncExternalStore.
  * - Type-safe paths using react-hook-form FieldPath.
+ * - Dynamic deep access via Proxy for ergonomic usage like `store.a.b.c.use()` and `store.a.b.c.set(v)`.
  */
 
 /** Public API returned by createStore(namespace, defaultValue). */
-export type Store<T extends FieldValues> = {
+export type StoreBase<T extends FieldValues> = {
   /** Subscribe and read the value at path. Re-renders when the value changes. */
-  useValue: <P extends FieldPath<T>>(path: P) => FieldPathValue<T, P> | undefined
+  use: <P extends FieldPath<T>>(path: P) => FieldPathValue<T, P> | undefined
   /** Set value at path (creates intermediate nodes as needed). */
   set: <P extends FieldPath<T>>(path: P, value: FieldPathValue<T, P>) => void
   /** Read without subscribing. */
   value: <P extends FieldPath<T>>(path: P) => FieldPathValue<T, P> | undefined
   /** Delete value at path (for arrays, removes index; for objects, deletes key). */
-  resetValue: <P extends FieldPath<T>>(path: P) => void
+  reset: <P extends FieldPath<T>>(path: P) => void
   /** Subscribe to changes at path and invoke listener with the new value. */
   subscribe: <P extends FieldPath<T>>(
     path: P,
@@ -33,7 +34,7 @@ export type Store<T extends FieldValues> = {
   /** Notify listeners at path. */
   notify: <P extends FieldPath<T>>(path: P) => void
   /** Convenience hook returning [value, setValue] for the path. */
-  use: <P extends FieldPath<T>>(path: P) => StoreUse<FieldPathValue<T, P>>
+  useState: <P extends FieldPath<T>>(path: P) => StoreUse<FieldPathValue<T, P>>
   /** Render-prop helper for inline usage. */
   Render: <P extends FieldPath<T>>(
     props: FieldPathValue<T, P> extends undefined ? never : StoreRenderProps<T, P>
@@ -53,28 +54,166 @@ export type StoreRenderProps<T extends FieldValues, P extends FieldPath<T>> = {
 }
 
 /**
- * Create or retrieve a namespaced store. On first call for a namespace, initializes
- * the namespace with defaultValue (memory only, no persistence) to seed the store.
+ * Store with dynamic deep property access via a Proxy.
+ * Enables usage like `store.a.b.c` for reads and assignments for writes.
+ * Also supports `store.a.b.c.use()` as a React hook.
+ */
+export type Store<T extends FieldValues> = StoreBase<T> & {
+  [K in keyof T]: NonNullable<T[K]> extends object ? DeepProxy<T[K]> : LeafProxy<T[K]>
+}
+
+/** Common methods available on any deep proxy node */
+type NodeMethods<T> = {
+  /** Subscribe and read the value at path. Re-renders when the value changes. */
+  use(): T | undefined
+  /** Convenience hook returning [value, setValue] for the path. */
+  useState(): readonly [T | undefined, (value: T | undefined) => void]
+  /** Set value at path (creates intermediate nodes as needed). */
+  set(value: T | undefined): void
+  /** Delete value at path (for arrays, removes index; for objects, deletes key). */
+  reset(): void
+  /** Subscribe to changes at path and invoke listener with the new value. */
+  subscribe(listener: (value: T | undefined) => void): void
+  /** Notify listener of current value. */
+  notify(): void
+  /** Render-prop helper for inline usage.
+   *
+   * @example
+   * <store.a.b.c.Render>
+   *   {(value, update) => <button onClick={() => update('new value')}>{value}</button>}
+   * </store.a.b.c.Render>
+   */
+  Render: (props: {
+    children: (value: T | undefined, update: (value: T | undefined) => void) => ReactNode
+  }) => ReactNode
+}
+
+type Prettify<T> = {
+  [K in keyof T]: T[K]
+} & {}
+
+/** Type for leaf values with hook methods */
+type LeafProxy<T> = Prettify<
+  {
+    /** Read without subscribing. */
+    readonly value: T | undefined
+  } & NodeMethods<T>
+>
+
+/** Type for nested objects with proxy methods */
+type DeepProxy<T> =
+  NonNullable<T> extends readonly (infer U)[]
+    ? ArrayProxy<U> & NodeMethods<NonNullable<T>>
+    : NonNullable<T> extends FieldValues
+      ? {
+          [K in keyof NonNullable<T>]-?: NonNullable<NonNullable<T>[K]> extends object
+            ? DeepProxy<NonNullable<T>[K]>
+            : LeafProxy<NonNullable<T>[K]>
+        } & NodeMethods<NonNullable<T>>
+      : LeafProxy<NonNullable<T>>
+
+/** Type for array proxy with index access */
+type ArrayProxy<T> = {
+  /**
+   * Length of the underlying array. Runtime may return undefined when the
+   * current value is not an array at the path. Prefer `Array.isArray(x) && x.length` when unsure.
+   */
+  readonly length: number
+  /** Numeric index access never returns undefined at the type level because
+   * the proxy always returns another proxy object, even if the underlying value doesn't exist.
+   */
+  [K: number]: T extends object ? DeepProxy<T> : LeafProxy<T>
+  /** Safe accessor that never returns undefined at the type level */
+  at(index: number): T extends object ? DeepProxy<T> : LeafProxy<T>
+}
+
+/** Build a deep proxy for dynamic path access under a namespace. */
+function createValuesProxy(namespace: string, storeApi: StoreBase<any>, initialPath = '') {
+  const build = (path: string): any =>
+    new Proxy(
+      {},
+      {
+        get(_target, prop) {
+          if (prop === 'use') {
+            return () => storeApi.use(path)
+          }
+          if (prop === 'useState') {
+            return () => storeApi.useState(path)
+          }
+          if (prop === 'value') {
+            return storeApi.value(path)
+          }
+          if (prop === 'set') {
+            return (value: any) => storeApi.set(path, value)
+          }
+          if (prop === 'reset') {
+            return () => storeApi.reset(path)
+          }
+          if (prop === 'subscribe') {
+            return (listener: (v: any) => void) => storeApi.subscribe(path, listener)
+          }
+          if (prop === 'Render') {
+            return ({
+              children,
+            }: {
+              children: (value: any, update: (value: any) => void) => ReactNode
+            }) => storeApi.Render({ path, children })
+          }
+          if (prop === 'at') {
+            return (index: number) => {
+              const nextPath = path ? `${path}.${index}` : String(index)
+              return build(nextPath)
+            }
+          }
+          if (prop === 'length') {
+            const value = store.get(`${namespace}.${path}`)
+            return Array.isArray(value) ? value.length : undefined
+          }
+          if (typeof prop === 'string' || typeof prop === 'number') {
+            const nextPath = path ? `${path}.${prop}` : String(prop)
+            // Always return a proxy
+            return build(nextPath)
+          }
+          return undefined
+        },
+        set(_target, prop, value) {
+          if (typeof prop === 'string') {
+            const nextPath = path ? `${path}.${prop}` : prop
+            storeApi.set(nextPath, value)
+            return true
+          }
+          return false
+        },
+      }
+    )
+
+  return build(initialPath)
+}
+
+/**
+ * Create or retrieve a namespaced store. The returned object is a Proxy that
+ * exposes the base API (use/set/value/reset/...) and also allows deep, dynamic
+ * access: e.g. `store.user.profile.name.use()` or `store.todos.at(0).title.set('x')`.
  */
 export function createStore<T extends FieldValues>(namespace: string, defaultValue: T): Store<T> {
   if (!store.has(namespace)) {
     produce(namespace, defaultValue, true, true)
   }
 
-  return {
-    useValue: <P extends FieldPath<T>>(path: P) => useObject<T, P>(namespace, path),
+  const storeApi: StoreBase<T> = {
+    use: <P extends FieldPath<T>>(path: P) => useObject<T, P>(namespace, path),
     set: <P extends FieldPath<T>>(path: P, value: FieldPathValue<T, P>) =>
       setLeaf<T, P>(namespace, path, value),
     value: <P extends FieldPath<T>>(path: P) =>
       store.get(namespace + '.' + path) as FieldPathValue<T, P>,
-    resetValue: <P extends FieldPath<T>>(path: P) => produce(namespace + '.' + path, undefined),
+    reset: <P extends FieldPath<T>>(path: P) => produce(namespace + '.' + path, undefined),
     subscribe: <P extends FieldPath<T>>(path: P, listener: (value: FieldPathValue<T, P>) => void) =>
       useSubscribe<FieldPathValue<T, P>>(namespace + '.' + path, listener),
     notify: <P extends FieldPath<T>>(path: P) => {
       const value = getNestedValue(store.get(namespace), path)
       return notifyListeners(namespace + '.' + path, value, value, true, true)
     },
-    use: <P extends FieldPath<T>>(path: P) =>
+    useState: <P extends FieldPath<T>>(path: P) =>
       [
         useObject<T, P>(namespace, path),
         useCallback(
@@ -91,6 +230,23 @@ export function createStore<T extends FieldValues>(namespace: string, defaultVal
       return children(value, update)
     },
   }
+
+  // Return a proxy that intercepts property access at the root level
+  return new Proxy(storeApi, {
+    get(target, prop) {
+      // If it's a known store method, return it
+      if (prop in target) {
+        return target[prop as keyof typeof target]
+      }
+
+      // Otherwise, treat it as a dynamic path access
+      if (typeof prop === 'string') {
+        return createValuesProxy(namespace, storeApi, prop)
+      }
+
+      return undefined
+    },
+  }) as Store<T>
 }
 
 const memoryStore = new Map<string, unknown>()
@@ -234,7 +390,7 @@ function getPath(key: string): string {
 }
 
 // Helper function to notify listeners hierarchically
-/** Notify exact, parent, and affected child listeners for a given key change. */
+/** Notify exact, root, and affected child listeners for a given key change. */
 function notifyListeners(
   key: string,
   oldValue: unknown,
@@ -248,7 +404,7 @@ function notifyListeners(
 
   // Notify root listener
   if (!skipRoot) {
-    // we need the root object, not namespace. Therefore we need namespace.rootKey
+    // We need the root object (namespace.path root), i.e. `namespace.rootKey`.
     const rootKey = key.split('.').slice(0, 2).join('.')
     const rootListeners = listeners.get(rootKey)
     rootListeners?.forEach(listener => listener())
@@ -275,7 +431,9 @@ const broadcastChannel =
   typeof window !== 'undefined' ? new BroadcastChannel('godoxy-producer-consumer') : null
 
 /**
- * Backing store providing memory + localStorage persistence with cross-tab sync.
+ * Backing store providing in-memory data with localStorage persistence
+ * and cross-tab synchronization. All operations are namespaced at the root key
+ * (characters before the first dot).
  */
 const store: KeyValueStore = {
   has(key: string) {
