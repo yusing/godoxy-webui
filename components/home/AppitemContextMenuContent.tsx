@@ -1,7 +1,7 @@
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
 import { cn } from '@/lib/utils'
-import { Edit, Eye, EyeOff, Heart, Info } from 'lucide-react'
+import { Edit, Eye, EyeOff, Heart, Info, Play, RotateCcw, Square } from 'lucide-react'
 import Link from 'next/link'
 import { ContextMenuContent, ContextMenuItem } from '../ui/context-menu'
 import { DialogContent, DialogOverlay, DialogTrigger } from '../ui/dialog'
@@ -9,6 +9,10 @@ import AppEditDialogContent from './AppEditDialogContent'
 import { store } from './store'
 
 import { store as routesStore } from '@/components/routes/store'
+import type { RoutesHealthInfo } from '@/lib/api'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { Separator } from '../ui/separator'
 
 export default function AppItemContextMenuContent({
   categoryIndex,
@@ -80,11 +84,78 @@ export default function AppItemContextMenuContent({
             Details
           </ContextMenuItem>
         </Link>
+        <Separator className="my-2" />
+        <DockerOnlyMenuItems categoryIndex={categoryIndex} appIndex={appIndex} />
       </ContextMenuContent>
       <DialogOverlay className="backdrop-blur-xs" />
       <DialogContent className="min-w-[40vw] overflow-x-hidden">
         <AppItemDialogContent categoryIndex={categoryIndex} appIndex={appIndex} />
       </DialogContent>
+    </>
+  )
+}
+
+const containerItems = [
+  {
+    label: 'Start',
+    icon: Play,
+    api: api.docker.start,
+    className: 'text-success',
+    enableIf: (status: RoutesHealthInfo['status']) => status !== 'healthy',
+  },
+  {
+    label: 'Stop',
+    icon: Square,
+    api: api.docker.stop,
+    className: 'text-error',
+    enableIf: (status: RoutesHealthInfo['status']) => status !== 'napping',
+  },
+  {
+    label: 'Restart',
+    icon: RotateCcw,
+    api: api.docker.restart,
+    className: 'text-warning',
+    enableIf: (status: RoutesHealthInfo['status']) => status !== 'napping',
+  },
+] as const
+
+function DockerOnlyMenuItems({
+  categoryIndex,
+  appIndex,
+}: {
+  categoryIndex: number
+  appIndex: number
+}) {
+  const baseKey = `homepageCategories.${categoryIndex}.items.${appIndex}` as const
+  const alias = store.useValue(`${baseKey}.alias`)!
+  const containerID = store.useValue(`${baseKey}.container_id`)!
+  const status = store.useValue(`health.${alias}.status`)!
+  const [isLoading, setIsLoading] = useState(false)
+
+  if (!containerID) {
+    return null
+  }
+
+  return (
+    <>
+      {containerItems.map(item => (
+        <ContextMenuItem
+          key={item.label}
+          className={item.className}
+          disabled={isLoading || !item.enableIf(status)}
+          onClick={() => {
+            setIsLoading(true)
+            item
+              .api({ id: containerID })
+              .then(res => toast.success(res.data.message))
+              .catch(toastError)
+              .finally(() => setIsLoading(false))
+          }}
+        >
+          <item.icon className={cn('w-4 h-4', item.className)} />
+          {item.label}
+        </ContextMenuItem>
+      ))}
     </>
   )
 }
