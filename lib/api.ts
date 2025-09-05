@@ -192,12 +192,44 @@ export interface DockerConfig {
   docker_host: string
 }
 
+export interface DockerapiStartRequest {
+  checkpointDir?: string
+  checkpointID?: string
+  id: string
+}
+
+export interface DockerapiStopRequest {
+  id: string
+  /**
+   * Signal (optional) is the signal to send to the container to (gracefully)
+   * stop it before forcibly terminating the container with SIGKILL after the
+   * timeout expires. If not value is set, the default (SIGTERM) is used.
+   */
+  signal?: string
+  /**
+   * Timeout (optional) is the timeout (in seconds) to wait for the container
+   * to stop gracefully before forcibly terminating it with SIGKILL.
+   *
+   * - Use nil to use the default timeout (10 seconds).
+   * - Use '-1' to wait indefinitely.
+   * - Use '0' to not wait for the container to exit gracefully, and
+   *   immediately proceeds to forcibly terminating the container.
+   * - Other positive values are used as timeout (in seconds).
+   */
+  timeout?: number
+}
+
 export interface ErrorResponse {
   error?: string | null
   message: string
 }
 
 export type FileType = 'config' | 'provider' | 'middleware'
+
+export interface GithubComYusingGoProxyInternalRouteTypesPort {
+  listening: number
+  proxy: number
+}
 
 export interface HTTPHeader {
   key: string
@@ -266,6 +298,7 @@ export interface HomepageItem {
   /** sort order in all */
   all_sort_order: number
   category: string
+  container_id?: string | null
   description: string
   /** sort order in favorite */
   fav_sort_order: number
@@ -448,7 +481,7 @@ export interface NetIOCountersStat {
 export interface NewAgentRequest {
   host: string
   name: string
-  nightly: boolean
+  nightly?: boolean
   /**
    * @min 1
    * @max 65535
@@ -524,7 +557,7 @@ export interface Route {
   middlewares?: Record<string, TypesLabelMap>
   no_tls_verify: boolean
   path_patterns?: string[] | null
-  port: RoutePort
+  port: GithubComYusingGoProxyInternalRouteTypesPort
   /** for backward compatibility */
   provider?: string | null
   purl: string
@@ -536,11 +569,6 @@ export interface Route {
 }
 
 export type RouteApiRoutesByProvider = Record<string, RouteRoute[]>
-
-export interface RoutePort {
-  listening: number
-  proxy: number
-}
 
 export interface RouteProvider {
   full_name: string
@@ -568,7 +596,7 @@ export interface RouteRoute {
   middlewares?: Record<string, TypesLabelMap>
   no_tls_verify: boolean
   path_patterns?: string[] | null
-  port: RoutePort
+  port: GithubComYusingGoProxyInternalRouteTypesPort
   /** for backward compatibility */
   provider?: string | null
   purl: string
@@ -980,6 +1008,60 @@ export namespace Docker {
     export type RequestBody = never
     export type RequestHeaders = {}
     export type ResponseBody = void
+  }
+
+  /**
+   * @description Restart container by container id
+   * @tags docker
+   * @name Restart
+   * @summary Restart container
+   * @request POST:/docker/restart
+   * @response `200` `SuccessResponse` OK
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Restart {
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = DockerapiStopRequest
+    export type RequestHeaders = {}
+    export type ResponseBody = SuccessResponse
+  }
+
+  /**
+   * @description Start container by container id
+   * @tags docker
+   * @name Start
+   * @summary Start container
+   * @request POST:/docker/start
+   * @response `200` `SuccessResponse` OK
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Start {
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = DockerapiStartRequest
+    export type RequestHeaders = {}
+    export type ResponseBody = SuccessResponse
+  }
+
+  /**
+   * @description Stop container by container id
+   * @tags docker
+   * @name Stop
+   * @summary Stop container
+   * @request POST:/docker/stop
+   * @response `200` `SuccessResponse` OK
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Stop {
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = DockerapiStopRequest
+    export type RequestHeaders = {}
+    export type ResponseBody = SuccessResponse
   }
 }
 
@@ -2014,6 +2096,69 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: 'GET',
         query: query,
         type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * @description Restart container by container id
+     *
+     * @tags docker
+     * @name Restart
+     * @summary Restart container
+     * @request POST:/docker/restart
+     * @response `200` `SuccessResponse` OK
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    restart: (request: DockerapiStopRequest, params: RequestParams = {}) =>
+      this.request<SuccessResponse, ErrorResponse>({
+        path: `/docker/restart`,
+        method: 'POST',
+        body: request,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Start container by container id
+     *
+     * @tags docker
+     * @name Start
+     * @summary Start container
+     * @request POST:/docker/start
+     * @response `200` `SuccessResponse` OK
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    start: (request: DockerapiStartRequest, params: RequestParams = {}) =>
+      this.request<SuccessResponse, ErrorResponse>({
+        path: `/docker/start`,
+        method: 'POST',
+        body: request,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Stop container by container id
+     *
+     * @tags docker
+     * @name Stop
+     * @summary Stop container
+     * @request POST:/docker/stop
+     * @response `200` `SuccessResponse` OK
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    stop: (request: DockerapiStopRequest, params: RequestParams = {}) =>
+      this.request<SuccessResponse, ErrorResponse>({
+        path: `/docker/stop`,
+        method: 'POST',
+        body: request,
+        type: ContentType.Json,
+        format: 'json',
         ...params,
       }),
   }
