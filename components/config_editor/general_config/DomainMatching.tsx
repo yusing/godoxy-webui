@@ -2,7 +2,7 @@ import { ListInput } from '@/components/form/ListInput'
 import { configStore } from '../store'
 
 export default function DomainMatchingConfigContent() {
-  const [matchDomains, setMatchDomains] = configStore.use('configObject.match_domains')
+  const [matchDomains, setMatchDomains] = configStore.configObject.match_domains.useState()
 
   return (
     <ListInput

@@ -17,7 +17,7 @@ import { TooltipItem } from '../ui/tooltip'
 import { store } from './store'
 
 export default function AppItemTooltipContent({ alias }: { alias: string }) {
-  const healthInfo = store.useValue(`health.${alias}`)
+  const healthInfo = store.health[alias]?.use()
 
   if (!healthInfo) {
     return null

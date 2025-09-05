@@ -15,12 +15,12 @@ export default function AllSystemInfoProvider() {
     endpoint: '/metrics/all_system_info',
     onMessage: data => {
       for (const agent in data) {
-        store.set(`systemInfo.${agent}`, data[agent]!)
+        store.systemInfo[agent]?.set(data[agent]!)
       }
-      store.set('readyState', true)
+      store.readyState.set(true)
     },
-    onError: () => store.set('readyState', false),
-    onClose: () => store.set('readyState', false),
+    onError: () => store.readyState.set(false),
+    onClose: () => store.readyState.set(false),
   })
 
   useQuery({

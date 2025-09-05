@@ -3,7 +3,7 @@ import { MaxmindSchema } from '@/types/godoxy'
 import { configStore } from '../store'
 
 export default function MaxmindConfigContent() {
-  const [maxmindConfig, setMaxmindConfig] = configStore.use('configObject.providers.maxmind')
+  const [maxmindConfig, setMaxmindConfig] = configStore.configObject.providers.maxmind.useState()
 
   return (
     <MapInput

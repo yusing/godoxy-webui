@@ -13,51 +13,51 @@ export default function ConfigStateSyncronizer() {
   useMount(() => {
     api.file
       .get({
-        type: configStore.value('activeFile.type') ?? 'config',
-        filename: configStore.value('activeFile.filename') ?? 'config.yml',
+        type: configStore.activeFile.type.value ?? 'config',
+        filename: configStore.activeFile.filename.value ?? 'config.yml',
       })
-      .then(r => configStore.set('content', r.data))
-      .catch(err => configStore.set('error', err))
-      .finally(() => configStore.set('isLoading', false))
+      .then(r => configStore.content.set(r.data))
+      .catch(err => configStore.error.set(err))
+      .finally(() => configStore.isLoading.set(false))
   })
 
-  configStore.subscribe('activeFile', activeFile => {
-    configStore.set('isLoading', true)
-    configStore.set('error', null)
+  configStore.activeFile.subscribe(activeFile => {
+    configStore.isLoading.set(true)
+    configStore.error.reset()
     api.file
       .get({
-        type: activeFile.type,
-        filename: activeFile.filename,
+        type: activeFile?.type ?? 'config',
+        filename: activeFile?.filename ?? 'config.yml',
       })
-      .then(r => configStore.set('content', r.data))
-      .catch(err => configStore.set('error', err))
-      .finally(() => configStore.set('isLoading', false))
+      .then(r => configStore.content.set(r.data))
+      .catch(err => configStore.error.set(err))
+      .finally(() => configStore.isLoading.set(false))
   })
 
-  configStore.subscribe('configObject', config => {
+  configStore.configObject.subscribe(config => {
     const yaml = stringifyYAML(config)
-    configStore.set('content', yaml)
-    validate(yaml, configStore.value('activeFile.type')!).then(err =>
-      configStore.set('validateError', err)
+    configStore.content.set(yaml)
+    validate(yaml, configStore.activeFile.type.value!).then(err =>
+      configStore.validateError.set(err as GoDoxyError)
     )
   })
 
   // when content changes, set the rootObject and validate
-  configStore.subscribe('content', content => {
+  configStore.content.subscribe(content => {
     if (!content) {
-      configStore.resetValue('configObject')
-      configStore.set('validateError', null)
+      configStore.configObject.reset()
+      configStore.validateError.reset()
       return
     }
 
     try {
       const config = parseYAML(content) as Config.Config
-      configStore.set('configObject', config)
-      validate(content, configStore.value('activeFile.type')!).then(err =>
-        configStore.set('validateError', err)
+      configStore.configObject.set(config)
+      validate(content, configStore.activeFile.type.value!).then(err =>
+        configStore.validateError.set(err as GoDoxyError)
       )
     } catch {
-      configStore.set('validateError', 'invalid yaml')
+      configStore.validateError.set('invalid yaml')
     }
   })
 

@@ -17,7 +17,7 @@ export default function ConfigFileListProvider() {
           return acc
         }, {} as ConfigFiles)
       )
-      .then(files => configStore.set('files', files))
+      .then(files => configStore.files.set(files))
   })
 
   return null

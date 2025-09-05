@@ -41,7 +41,7 @@ export default function ConfigPage() {
 }
 
 function ConfigValidationError() {
-  const error = configStore.useValue('validateError')
+  const error = configStore.validateError.use()
   if (!error)
     return (
       <Alert variant="success">

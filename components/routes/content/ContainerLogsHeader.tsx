@@ -20,7 +20,7 @@ export default function ContainerLogsHeader({ container }: { container: Containe
 }
 
 function AutoScrollSwitch() {
-  const [autoScroll, setAutoScroll] = store.use('logsAutoScroll')
+  const [autoScroll, setAutoScroll] = store.logsAutoScroll.useState()
 
   return <Switch checked={autoScroll} onCheckedChange={value => setAutoScroll(value)} />
 }

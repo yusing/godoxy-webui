@@ -10,7 +10,7 @@ export default function SystemStatsProvider() {
       interval: '2s',
     },
     onMessage: data =>
-      store.set('systemInfo', {
+      store.systemInfo.set({
         hostname: 'GoDoxy',
         cpuAverage: data.cpu_average,
         rootPartitionUsage:

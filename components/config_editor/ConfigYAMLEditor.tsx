@@ -10,10 +10,10 @@ const schemas: Record<string, unknown> = {
 }
 
 export default function ConfigYAMLEditor({ ...props }: Omit<ReactCodeMirrorProps, 'onChange'>) {
-  const activeFile = configStore.useValue('activeFile')
-  const content = configStore.useValue('content')
-  const error = configStore.useValue('error')
-  const isLoading = configStore.useValue('isLoading')
+  const activeFile = configStore.activeFile.use()
+  const content = configStore.content.use()
+  const error = configStore.error.use()
+  const isLoading = configStore.isLoading.use()
 
   if (error) {
     return <YAMLEditor readOnly value={error.message} onChange={() => {}} schema={undefined} />
@@ -26,7 +26,7 @@ export default function ConfigYAMLEditor({ ...props }: Omit<ReactCodeMirrorProps
   return (
     <YAMLEditor
       value={content}
-      onChange={content => configStore.set('content', content)}
+      onChange={content => configStore.content.set(content)}
       schema={activeFile ? schemas[activeFile.type] : undefined}
       {...props}
     />

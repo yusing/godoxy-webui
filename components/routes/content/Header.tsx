@@ -5,9 +5,9 @@ import { formatPercent } from '@/lib/format'
 import { useMemo } from 'react'
 
 export default function RoutePageHeader() {
-  const selected = useSelectedRoute()
-  const displayName = store.useValue(`uptime.${selected}.display_name`)
-  const uptime = store.useValue(`uptime.${selected}.uptime`)
+  const selected = useSelectedRoute() ?? ''
+  const displayName = store.uptime[selected]?.display_name.use()
+  const uptime = store.uptime[selected]?.uptime.use()
   const percentage = useMemo(() => (uptime ? formatPercent(uptime) : undefined), [uptime])
 
   if (!selected) {

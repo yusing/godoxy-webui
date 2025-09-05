@@ -5,12 +5,12 @@ import { routesConfigStore } from '../store'
 import RouteEditForm from './RouteEditForm'
 
 export default function NewRouteForm() {
-  const [config, setConfig] = routesConfigStore.use('configObject')
+  const [config, setConfig] = routesConfigStore.configObject.useState()
 
   const routes = useMemo(() => (typeof config === 'object' ? config : {}), [config])
   useEffect(() => {
     if (!routes) {
-      routesConfigStore.set('validateError', 'Expecting routes objects')
+      routesConfigStore.validateError.set('Expecting routes objects')
     }
   }, [routes])
 
@@ -18,7 +18,7 @@ export default function NewRouteForm() {
     if (!route.alias) {
       // it should not happen because of form validation
       // but just in case
-      routesConfigStore.set('validateError', 'Alias is required')
+      routesConfigStore.validateError.set('Alias is required')
       return
     }
     setConfig({

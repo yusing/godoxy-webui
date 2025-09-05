@@ -11,9 +11,9 @@ import { sectionsByFileType } from './sections'
 import { configStore } from './store'
 
 export default function ConfigContent({ className }: { className?: string }) {
-  const activeFile = configStore.useValue('activeFile')!
-  const activeSection = configStore.useValue('activeSection')
-  const isLoading = configStore.useValue('isLoading')
+  const activeFile = configStore.activeFile.use()!
+  const activeSection = configStore.activeSection.use()
+  const isLoading = configStore.isLoading.use()
 
   const section =
     sectionsByFileType[activeFile.type].sections.find(section => section.id === activeSection) ??
@@ -60,7 +60,7 @@ export default function ConfigContent({ className }: { className?: string }) {
 }
 
 function ConfigReloadButton() {
-  const [activeFile, setActiveFile] = configStore.use('activeFile')
+  const [activeFile, setActiveFile] = configStore.activeFile.useState()
 
   const handleReload = () => {
     setActiveFile(activeFile)
@@ -75,8 +75,8 @@ function ConfigReloadButton() {
 }
 
 function ConfigSaveButton() {
-  const activeFile = configStore.useValue('activeFile')!
-  const content = configStore.useValue('content')
+  const activeFile = configStore.activeFile.use()!
+  const content = configStore.content.use()
 
   const [isSaving, setIsSaving] = useState(false)
   const [isSaved, setIsSaved] = useState(false)

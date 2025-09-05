@@ -19,7 +19,7 @@ export default function ContainerLogs({ containerId }: { containerId: string }) 
   const bottomRef = useRef<HTMLDivElement>(null)
   const logsRef = useRef<HTMLDivElement>(null)
   const idRef = useRef(0)
-  const autoScroll = store.useValue('logsAutoScroll') ?? false
+  const autoScroll = store.logsAutoScroll.use() ?? false
   const scrollDirection = useRef<'up' | 'down'>('down')
 
   useEffect(() => {

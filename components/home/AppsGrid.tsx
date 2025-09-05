@@ -17,7 +17,7 @@ export default function AppGrid() {
   const [activeCategory, setActiveCategory] = useState('Favorites')
   const [comboboxValue, setComboboxValue] = useState<string>()
 
-  const categories = store.useValue('homepageCategories')
+  const categories = store.use('homepageCategories')
   const categoryNames = useMemo(() => categories?.map(c => c.name) ?? [], [categories])
 
   const maxTabsWithoutCombobox = 5
@@ -107,7 +107,7 @@ export default function AppGrid() {
 
           <div className="relative w-full lg:w-75 min-w-0 md:min-w-50">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <store.Render path="searchQuery">
+            <store.searchQuery.Render>
               {(searchQuery, setSearchQuery) => (
                 <Input
                   placeholder="Search apps..."
@@ -116,7 +116,7 @@ export default function AppGrid() {
                   className="pl-10"
                 />
               )}
-            </store.Render>
+            </store.searchQuery.Render>
           </div>
         </div>
 
@@ -150,7 +150,7 @@ function HomepageCategoriesProvider() {
   useWebSocketApi<HomepageCategory[]>({
     endpoint: '/homepage/items',
     onMessage: data => {
-      store.set('homepageCategories', data)
+      store.homepageCategories.set(data)
     },
   })
   return null
@@ -159,14 +159,14 @@ function HomepageCategoriesProvider() {
 function HealthWatcher() {
   useWebSocketApi<HealthMap>({
     endpoint: '/health',
-    onMessage: data => store.set('health', data),
+    onMessage: data => store.health.set(data),
   })
 
   return null
 }
 
 function FavoritesTabIndicator() {
-  const hasPending = store.useValue('pendingFavorites')
+  const hasPending = store.pendingFavorites.use()
   if (!hasPending) return null
   return <span className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-primary" />
 }
@@ -174,7 +174,7 @@ function FavoritesTabIndicator() {
 function PendingFavoritesResetter({ activeCategory }: { activeCategory: string }) {
   useEffect(() => {
     if (activeCategory === 'Favorites') {
-      store.set('pendingFavorites', false)
+      store.pendingFavorites.set(false)
     }
   }, [activeCategory])
   return null

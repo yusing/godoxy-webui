@@ -20,9 +20,7 @@ import { Skeleton } from '../ui/skeleton'
 import { store } from './store'
 
 export default function ServersSidebar() {
-  const agents = store.useValue('agents')
-
-  console.log(agents)
+  const agents = store.agents.use()
 
   return (
     <div className="content scrollbar-hidden flex flex-col w-[600px] max-w-[35vw] lg:max-w-[50vw] border">
@@ -106,11 +104,11 @@ function ServerItem({ agent }: { agent?: Agent }) {
 }
 
 function CpuTemperatureRadio() {
-  const temperatureUnit = store.useValue('temperatureUnit')!
+  const [temperatureUnit, setTemperatureUnit] = store.temperatureUnit.useState()
   return (
     <RadioGroup
       value={temperatureUnit}
-      onValueChange={e => store.set('temperatureUnit', e as 'celsius' | 'fahrenheit')}
+      onValueChange={e => setTemperatureUnit(e as 'celsius' | 'fahrenheit')}
       className="flex flex-row gap-x-2"
     >
       <RadioGroupField label="°C" value="celsius" />
@@ -134,7 +132,7 @@ function MetricTile<P extends FieldPath<SystemInfo>>({
   formatter?: (value: FieldPathValue<SystemInfo, P>) => string
   label?: string
 }) {
-  const value = store.useValue(`systemInfo.${agent}.${field}`)
+  const value = store.use(`systemInfo.${agent}.${field}`)
   const formattedValue = useMemo(
     () => (value !== undefined ? (formatter ? formatter(value) : String(value)) : undefined),
     [value, formatter]
@@ -181,9 +179,9 @@ function TemperatureTile({ agent }: { agent: string }) {
   let diskTemp: number | null = null
   let diskTempStatus: 'warning' | 'critical' | null = null
 
-  const sensorsState = store.useValue(`systemInfo.${agent}.sensors`)
-  const readyState = store.useValue('readyState')!
-  const temperatureUnit = store.useValue('temperatureUnit')!
+  const sensorsState = store.systemInfo[agent]?.sensors.use()
+  const readyState = store.readyState.use()!
+  const temperatureUnit = store.temperatureUnit.use()!
 
   if (sensorsState) {
     // backward compatibility: sensors can be an object map

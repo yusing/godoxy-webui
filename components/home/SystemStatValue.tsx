@@ -12,7 +12,7 @@ export default function SystemStatValue({
   type: 'text' | 'progress'
   label: string
 }) {
-  const value = store.useValue(`systemInfo.${valueKey}`)
+  const value = store.systemInfo[valueKey].use()
   return (
     <div className="flex-1 min-w-0">
       <p className="text-sm font-medium text-muted-foreground hidden sm:block">{label}</p>

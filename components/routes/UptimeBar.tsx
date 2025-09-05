@@ -7,8 +7,8 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import isEqual from 'react-fast-compare'
 
 export default function RouteUptimeBar({ alias }: { alias: string }) {
-  const statuses = store.useValue(`uptime.${alias}.statuses`) ?? []
-  const hideUptimeBar = store.useValue('displaySettings.hideUptimebar')
+  const statuses = store.uptime[alias]?.statuses.use() ?? []
+  const hideUptimeBar = store.displaySettings.hideUptimebar.use()
 
   if (hideUptimeBar) return null
 

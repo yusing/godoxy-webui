@@ -19,7 +19,7 @@ export default function AppCategory({
   items: HomepageItem[]
   index: number
 }) {
-  const searchQuery = store.useValue('searchQuery')
+  const searchQuery = store.searchQuery.use()
   const isEmpty = useRef(true)
   const itemState = items.reduce(
     (acc, item, itemIndex) => {

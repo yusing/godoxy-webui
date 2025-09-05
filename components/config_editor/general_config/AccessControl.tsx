@@ -8,6 +8,7 @@ import { ACLSchema } from '@/types/godoxy'
 import { configStore } from '../store'
 
 export default function AccessControlConfigContent() {
+  const acl = configStore.configObject.acl
   return (
     <div className="flex flex-col gap-4">
       <Card>
@@ -17,7 +18,7 @@ export default function AccessControlConfigContent() {
         <CardContent flex>
           <div className="flex flex-col gap-2">
             <Label>Default behavior</Label>
-            <configStore.Render path={`configObject.acl.default`}>
+            <acl.default.Render>
               {(val, setVal) => (
                 <RadioGroup
                   defaultValue="allow"
@@ -28,19 +29,19 @@ export default function AccessControlConfigContent() {
                   <RadioGroupField label="Deny" value="deny" id="deny" />
                 </RadioGroup>
               )}
-            </configStore.Render>
+            </acl.default.Render>
           </div>
           <div className="flex flex-col gap-2">
             <div className="flex items-center space-x-2">
               <Label htmlFor="allow_local">Allow local access</Label>
-              <configStore.Render path={`configObject.acl.allow_local`}>
+              <acl.allow_local.Render>
                 {(val, setVal) => <Switch checked={val ?? true} onCheckedChange={setVal} />}
-              </configStore.Render>
+              </acl.allow_local.Render>
             </div>
           </div>
         </CardContent>
       </Card>
-      <configStore.Render path={`configObject.acl.log`}>
+      <acl.log.Render>
         {(log, setLog) => (
           <MapInput
             label="Log Config"
@@ -49,15 +50,15 @@ export default function AccessControlConfigContent() {
             onChange={setLog}
           />
         )}
-      </configStore.Render>
-      <configStore.Render path={`configObject.acl.allow`}>
+      </acl.log.Render>
+      <acl.allow.Render>
         {(allow, setAllow) => (
           <ListInput label="Allow List" value={allow ?? []} onChange={setAllow} />
         )}
-      </configStore.Render>
-      <configStore.Render path={`configObject.acl.deny`}>
+      </acl.allow.Render>
+      <acl.deny.Render>
         {(deny, setDeny) => <ListInput label="Deny List" value={deny ?? []} onChange={setDeny} />}
-      </configStore.Render>
+      </acl.deny.Render>
     </div>
   )
 }

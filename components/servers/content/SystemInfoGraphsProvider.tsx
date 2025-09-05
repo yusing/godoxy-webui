@@ -52,9 +52,7 @@ function PerAggregateProvider({
       aggregate: mode,
       agent_name: agent === 'Main Server' ? '' : agent,
     },
-    onMessage: data => {
-      store.set(`systemInfoGraphs.${agent}.${period}.${mode}`, data)
-    },
+    onMessage: data => store.systemInfoGraphs[agent]?.[period]?.[mode]?.set(data),
   })
 
   // no UI

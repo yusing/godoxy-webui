@@ -21,10 +21,10 @@ export default function AppItemContextMenuContent({
   categoryIndex: number
   appIndex: number
 }) {
-  const baseKey = `homepageCategories.${categoryIndex}.items.${appIndex}` as const
-  const alias = store.useValue(`${baseKey}.alias`)!
-  const visible = store.useValue(`${baseKey}.show`)!
-  const favorite = store.useValue(`${baseKey}.favorite`)!
+  const item = store.homepageCategories.at(categoryIndex).items.at(appIndex)
+  const alias = item.alias.use()!
+  const visible = item.show.use()!
+  const favorite = item.favorite.use()!
 
   const toggleVisibility = () =>
     api.homepage
@@ -32,7 +32,7 @@ export default function AppItemContextMenuContent({
         value: !visible,
         which: [alias],
       })
-      .then(() => store.set(`${baseKey}.show`, !visible))
+      .then(() => item.show.set(!visible))
       .catch(toastError)
 
   const toggleFavorite = () => {
@@ -43,7 +43,7 @@ export default function AppItemContextMenuContent({
         which: [alias],
       })
       .then(() => {
-        store.set(`${baseKey}.favorite`, newFavorite)
+        item.favorite.set(newFavorite)
         if (newFavorite) {
           store.set('pendingFavorites', true)
         }
@@ -54,7 +54,7 @@ export default function AppItemContextMenuContent({
   return (
     <>
       <ContextMenuContent>
-        <DialogTrigger asChild onClick={() => store.set('openedDialog', 'edit')}>
+        <DialogTrigger asChild onClick={() => store.openedDialog.set('edit')}>
           <ContextMenuItem>
             <Edit className="w-4 h-4" />
             Edit
@@ -78,7 +78,7 @@ export default function AppItemContextMenuContent({
             {favorite ? 'Remove favorite' : 'Favorite'}
           </ContextMenuItem>
         )}
-        <Link href={`/routes#${alias}`} onClick={() => routesStore.set('requestedRoute', alias)}>
+        <Link href={`/routes#${alias}`} onClick={() => routesStore.requestedRoute.set(alias)}>
           <ContextMenuItem>
             <Info className="w-4 h-4" />
             Details
@@ -125,10 +125,10 @@ function DockerOnlyMenuItems({
   categoryIndex: number
   appIndex: number
 }) {
-  const baseKey = `homepageCategories.${categoryIndex}.items.${appIndex}` as const
-  const alias = store.useValue(`${baseKey}.alias`)!
-  const containerID = store.useValue(`${baseKey}.container_id`)!
-  const status = store.useValue(`health.${alias}.status`)!
+  const item = store.homepageCategories.at(categoryIndex).items.at(appIndex)
+  const alias = item.alias.use()!
+  const containerID = item.container_id.use()!
+  const status = store.health[alias]?.status.use() ?? 'unknown'
   const [isLoading, setIsLoading] = useState(false)
 
   if (!containerID) {
@@ -167,7 +167,7 @@ function AppItemDialogContent({
   categoryIndex: number
   appIndex: number
 }) {
-  const openedDialog = store.useValue('openedDialog')
+  const openedDialog = store.use('openedDialog')
 
   if (openedDialog === 'edit') {
     return <AppEditDialogContent categoryIndex={categoryIndex} appIndex={appIndex} />

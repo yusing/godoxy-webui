@@ -24,7 +24,7 @@ export default function AppEditDialogContent({
   categoryIndex: number
   appIndex: number
 }) {
-  const app = store.useValue(`homepageCategories.${categoryIndex}.items.${appIndex}`)!
+  const app = store.use(`homepageCategories.${categoryIndex}.items.${appIndex}`)!
   const icon = useMemo(() => {
     if (app.icon) return app.icon
     return (app.name || app.alias)

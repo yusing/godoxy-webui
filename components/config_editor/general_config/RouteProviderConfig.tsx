@@ -3,23 +3,24 @@ import { MapInput } from '@/components/form/MapInput'
 import { configStore } from '../store'
 
 export default function RouteProviderConfigContent() {
+  const providers = configStore.configObject.providers
   return (
     <div className="flex flex-col gap-4">
-      <configStore.Render path={`configObject.providers.include`}>
+      <providers.include.Render>
         {(include, setInclude) => (
           <ListInput label="Include Files" value={include ?? []} onChange={setInclude} />
         )}
-      </configStore.Render>
-      <configStore.Render path={`configObject.providers.agents`}>
+      </providers.include.Render>
+      <providers.agents.Render>
         {(agents, setAgents) => (
           <ListInput label="Agents" value={agents ?? []} onChange={setAgents} />
         )}
-      </configStore.Render>
-      <configStore.Render path={`configObject.providers.docker`}>
+      </providers.agents.Render>
+      <providers.docker.Render>
         {(docker, setDocker) => (
           <MapInput label="Docker" value={docker ?? {}} onChange={setDocker} />
         )}
-      </configStore.Render>
+      </providers.docker.Render>
     </div>
   )
 }

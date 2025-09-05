@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
-import { forwardRef } from 'react'
+import { forwardRef, useMemo } from 'react'
 import { AppIcon } from '../AppIcon'
 import { ContextMenu, ContextMenuTrigger } from '../ui/context-menu'
 import { Dialog } from '../ui/dialog'
@@ -16,14 +16,21 @@ export default function AppItem({
   categoryIndex: number
   appIndex: number
 }) {
-  const url = store.useValue(`homepageCategories.${categoryIndex}.items.${appIndex}.url`)!
+  const item = useMemo(
+    () => store.homepageCategories.at(categoryIndex).items.at(appIndex),
+    [categoryIndex, appIndex]
+  )
   return (
     <Dialog>
       <ContextMenu>
-        <ContextMenuTrigger asChild>
-          <Link href={url} target="_blank" prefetch={false}>
-            <AppItemInner categoryIndex={categoryIndex} appIndex={appIndex} />
-          </Link>
+        <ContextMenuTrigger>
+          <item.url.Render>
+            {url => (
+              <Link href={url!} target="_blank" prefetch={false}>
+                <AppItemInner categoryIndex={categoryIndex} appIndex={appIndex} />
+              </Link>
+            )}
+          </item.url.Render>
         </ContextMenuTrigger>
         <AppItemContextMenuContent categoryIndex={categoryIndex} appIndex={appIndex} />
       </ContextMenu>
@@ -33,9 +40,9 @@ export default function AppItem({
 
 const AppItemInner = forwardRef<HTMLDivElement, { categoryIndex: number; appIndex: number }>(
   ({ categoryIndex, appIndex, ...props }, ref) => {
-    const baseKey = `homepageCategories.${categoryIndex}.items.${appIndex}` as const
-    const alias = store.useValue(`${baseKey}.alias`)!
-    const widgets = store.useValue(`${baseKey}.widgets`)!
+    const item = store.homepageCategories.at(categoryIndex).items.at(appIndex)
+    const alias = item.alias.use()!
+    const widgets = item.widgets.use()!
     const hasWidgets = Array.isArray(widgets) && widgets.length > 0
 
     return (
@@ -58,21 +65,21 @@ const AppItemInner = forwardRef<HTMLDivElement, { categoryIndex: number; appInde
               {status => <HealthBubble status={status ?? 'unknown'} />}
             </store.Render>
             <div className="rounded-xl bg-accent/10 group-hover:bg-accent/20 transition-colors">
-              <store.Render path={`${baseKey}.icon`}>
+              <item.icon.Render>
                 {icon => <AppIcon className="h-6 w-6" alias={alias} url={icon} />}
-              </store.Render>
+              </item.icon.Render>
             </div>
             <div className="flex flex-col items-start space-y-1">
-              <store.Render path={`${baseKey}.name`}>
+              <item.name.Render>
                 {name => <h3 className="font-medium text-sm">{name || alias}</h3>}
-              </store.Render>
-              <store.Render path={`${baseKey}.description`}>
+              </item.name.Render>
+              <item.description.Render>
                 {description =>
                   description && (
                     <p className="text-xs text-muted-foreground line-clamp-2">{description}</p>
                   )
                 }
-              </store.Render>
+              </item.description.Render>
             </div>
           </div>
 

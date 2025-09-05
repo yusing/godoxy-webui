@@ -9,9 +9,9 @@ type ConfigState<T extends Config.Config | Routes.Routes, Sections extends strin
   activeSection: Sections
   content: string
   isLoading: boolean
-  error: Error | null
-  configObject: T | null
-  validateError: GoDoxyError | null
+  error: Error | undefined
+  configObject: T | undefined
+  validateError: GoDoxyError | undefined
 }
 
 const defaultConfig: ConfigFile = {
@@ -25,9 +25,9 @@ export const configStore = createStore<ConfigState<Config.Config>>('config', {
   activeSection: 'autocert',
   content: '',
   isLoading: false,
-  error: null,
-  configObject: null,
-  validateError: null,
+  error: undefined,
+  configObject: undefined,
+  validateError: undefined,
 })
 
 export const routesConfigStore = configStore as unknown as Store<ConfigState<Routes.Routes>>

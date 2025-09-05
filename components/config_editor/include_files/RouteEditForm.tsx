@@ -1,4 +1,4 @@
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button, type buttonVariants } from '@/components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -47,7 +47,7 @@ export default function RouteEditForm({
     defaultValues: {
       ...route,
       alias: alias,
-      // @ts-expect-error
+      // @ts-expect-error intended
       scheme: 'scheme' in route ? route.scheme : 'http',
       host: 'host' in route ? route.host : 'localhost',
       port: 'port' in route ? route.port : 3000,

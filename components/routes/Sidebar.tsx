@@ -51,12 +51,12 @@ export default function RoutesSidebar() {
 }
 
 function Setting({ field, label }: { field: FieldPath<RouteDisplaySettings>; label: string }) {
-  const displaySettings = store.useValue(`displaySettings.${field}`)
+  const displaySettings = store.displaySettings[field].use()
   return (
     <div className="flex items-center gap-2">
       <Switch
         checked={displaySettings}
-        onCheckedChange={checked => store.set(`displaySettings.${field}`, checked)}
+        onCheckedChange={checked => store.displaySettings[field].set(checked)}
       />
       <Label>{label}</Label>
     </div>
@@ -64,7 +64,7 @@ function Setting({ field, label }: { field: FieldPath<RouteDisplaySettings>; lab
 }
 
 function RoutesSidebarItemList() {
-  const keys = store.useValue('routeKeys') ?? []
+  const keys = store.routeKeys.use() ?? []
   return (
     <ScrollArea>
       <div className="sidebar-item-list border-b">
@@ -77,9 +77,9 @@ function RoutesSidebarItemList() {
 }
 
 function RoutesSidebarItem({ alias }: { alias: string }) {
-  const { hideUnknown, dockerOnly } = store.useValue('displaySettings') ?? {}
-  const currentStatus = store.useValue(`uptime.${alias}.current_status`)
-  const isDocker = store.useValue(`uptime.${alias}.is_docker`)
+  const { hideUnknown, dockerOnly } = store.displaySettings.use() ?? {}
+  const currentStatus = store.uptime[alias]?.current_status.use()
+  const isDocker = store.uptime[alias]?.is_docker.use()
 
   if (hideUnknown && currentStatus === 'unknown') {
     return null
@@ -106,7 +106,11 @@ function RoutesSidebarItem({ alias }: { alias: string }) {
         <div className="flex justify-between items-center gap-4 flex-1">
           <div className="flex-shrink-0 mt-0.5 flex items-center gap-2">
             <AppIcon alias={alias} size={18} />
-            <RouteDisplayName alias={alias} />
+            <store.Render path={`uptime.${alias}.display_name`}>
+              {displayName => (
+                <Label className="truncate route-display-name">{displayName || alias}</Label>
+              )}
+            </store.Render>
           </div>
           <Label className="text-sm">
             <RoutePercentageText alias={alias} />
@@ -118,11 +122,6 @@ function RoutesSidebarItem({ alias }: { alias: string }) {
       </a>
     </div>
   )
-}
-
-function RouteDisplayName({ alias }: { alias: string }) {
-  const displayName = store.useValue(`uptime.${alias}.display_name`)
-  return <Label className="truncate route-display-name">{displayName || alias}</Label>
 }
 
 function RoutesUptimeProvider({
@@ -160,7 +159,7 @@ function RoutesUptimeProvider({
 
 function SelectedRouteResetter() {
   const selectedRoute = useSelectedRoute()
-  const routeKeys = store.useValue('routeKeys')
+  const routeKeys = store.routeKeys.use()
 
   useEffect(() => {
     if (routeKeys && routeKeys.length > 0) {

@@ -6,7 +6,7 @@ import RouteDisplay from './RouteDisplay'
 import RouteEditForm from './RouteEditForm'
 
 export default function RouteList() {
-  const [config, setConfig] = routesConfigStore.use('configObject')
+  const [config, setConfig] = routesConfigStore.useState('configObject')
 
   const routes = useMemo(() => (typeof config === 'object' ? config : {}), [config])
 

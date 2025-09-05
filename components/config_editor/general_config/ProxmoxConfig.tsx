@@ -4,7 +4,7 @@ import type { ProxmoxConfig } from '@/types/godoxy/providers/proxmox'
 import { configStore } from '../store'
 
 export default function ProxmoxConfigContent() {
-  const [config, setConfig] = configStore.use('configObject.providers.proxmox')
+  const [config, setConfig] = configStore.configObject.providers.proxmox.useState()
 
   const setProxmoxConfig = (proxmoxConfig: ProxmoxConfig[]) => {
     if (proxmoxConfig.length === 0) {

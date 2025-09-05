@@ -29,8 +29,8 @@ function SystemInfoGraphsPage() {
   const selectedAgent = useFragment()
   const agent = useMemo(() => selectedAgent || 'Main Server', [selectedAgent])
 
-  const period = store.useValue('metricsPeriod')!
-  const temperatureUnit = store.useValue('temperatureUnit')!
+  const period = store.use('metricsPeriod')!
+  const temperatureUnit = store.use('temperatureUnit')!
 
   const byteSizeFormatter = useCallback((value: number) => formatBytes(value, { precision: 0 }), [])
   const speedFormatter = useCallback(
@@ -47,6 +47,11 @@ function SystemInfoGraphsPage() {
     [temperatureUnit]
   )
 
+  const agentStore = store.agents[agent]
+  if (!agentStore) {
+    return null
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <SystemInfoGraphsProvider agent={agent} period={period} />
@@ -54,15 +59,15 @@ function SystemInfoGraphsPage() {
         <div className="flex flex-col gap-1">
           <h2 className="text-xl font-medium">
             {agent.replaceAll('%20', ' ')}
-            <store.Render path={`agents.${agent}.version`}>
+            <agentStore.version.Render>
               {agentVersion => <span className="ml-2 text-sm font-normal">{agentVersion}</span>}
-            </store.Render>
+            </agentStore.version.Render>
           </h2>
           <div className="flex items-center gap-2 text-muted-foreground">
             <Globe className="h-4 w-4" />
-            <store.Render path={`agents.${agent}.addr`}>
-              {agentAddr => <span className="text-sm font-medium">{agentAddr}</span>}
-            </store.Render>
+            <agentStore.addr.Render>
+              {addr => <span className="text-sm font-medium">{addr}</span>}
+            </agentStore.addr.Render>
           </div>
         </div>
         <PeriodSelect value={period} onChange={period => store.set('metricsPeriod', period)} />

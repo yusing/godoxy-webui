@@ -31,7 +31,7 @@ export const store = createStore<RouteState>('routes', {
 })
 
 export function useSelectedRoute(): string | undefined {
-  const requestedRoute = store.useValue('requestedRoute')
+  const requestedRoute = store.requestedRoute.use()
   const fragment = useFragment()
   return fragment || requestedRoute
 }

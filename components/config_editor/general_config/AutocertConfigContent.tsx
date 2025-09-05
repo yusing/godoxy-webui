@@ -23,7 +23,7 @@ import AutocertInfo from './AutocertInfo'
 import AutocertRenewDialogButton from './AutocertRenewDialogButton'
 
 export default function AutocertConfigContent() {
-  const [cfg, setCfg] = configStore.use('configObject.autocert')
+  const [cfg, setCfg] = configStore.configObject.autocert.useState()
 
   const provider = cfg?.provider ?? 'local'
 

@@ -5,7 +5,7 @@ import type { JSONSchema } from '@/types/schema'
 import { configStore } from '../store'
 
 export default function NotificationsConfigContent() {
-  const [config, setConfig] = configStore.use('configObject.providers.notification')
+  const [config, setConfig] = configStore.configObject.providers.notification.useState()
 
   const setNotificationsConfig = (cfg: NotificationConfig[]) => {
     if (cfg.length === 0) {

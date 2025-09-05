@@ -58,8 +58,8 @@ const fileTypeLabels = {
 }
 
 function FileList() {
-  const files = configStore.useValue('files')!
-  const activeFile = configStore.useValue('activeFile')
+  const files = configStore.files.use()!
+  const activeFile = configStore.activeFile.use()
 
   return (
     <>
@@ -72,7 +72,7 @@ function FileList() {
                 key={`${type}:${file.filename}`}
                 value={`${type}:${file.filename}`}
                 onSelect={() =>
-                  configStore.set('activeFile', {
+                  configStore.activeFile.set({
                     type: type as FileType,
                     filename: file.filename,
                   })
@@ -91,8 +91,8 @@ function FileList() {
 }
 
 function Sections() {
-  const activeFile = configStore.useValue('activeFile')!
-  const [activeSection, setActiveSection] = configStore.use('activeSection')
+  const activeFile = configStore.activeFile.use()!
+  const [activeSection, setActiveSection] = configStore.activeSection.useState()
 
   const { label, sections } = sectionsByFileType[activeFile.type]
 
