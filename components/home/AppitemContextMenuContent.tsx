@@ -84,7 +84,6 @@ export default function AppItemContextMenuContent({
             Details
           </ContextMenuItem>
         </Link>
-        <Separator className="my-2" />
         <DockerOnlyMenuItems categoryIndex={categoryIndex} appIndex={appIndex} />
       </ContextMenuContent>
       <DialogOverlay className="backdrop-blur-xs" />
@@ -138,6 +137,7 @@ function DockerOnlyMenuItems({
 
   return (
     <>
+      <Separator className="my-2" />
       {containerItems.map(item => (
         <ContextMenuItem
           key={item.label}
