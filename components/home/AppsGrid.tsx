@@ -5,10 +5,7 @@ import { Combobox } from '@/components/ui/combobox'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useWebSocketApi } from '@/hooks/websocket'
-import { type HealthMap } from '@/lib/api'
-import { api } from '@/lib/api-client'
-import { useQuery } from '@tanstack/react-query'
-import { useDebounce } from '@uidotdev/usehooks'
+import { type HealthMap, type HomepageCategory } from '@/lib/api'
 import { Search } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useEffect, useMemo, useState } from 'react'
@@ -150,17 +147,11 @@ export default function AppGrid() {
 }
 
 function HomepageCategoriesProvider() {
-  const searchQuery = store.useValue('searchQuery')
-  const debouncedSearchQuery = useDebounce(searchQuery, 300)
-  useQuery({
-    queryKey: ['homepage.items', debouncedSearchQuery],
-    queryFn: () =>
-      api.homepage
-        .items({
-          search: debouncedSearchQuery,
-        })
-        .then(res => store.set('homepageCategories', res.data))
-        .then(() => true),
+  useWebSocketApi<HomepageCategory[]>({
+    endpoint: '/homepage/items',
+    onMessage: data => {
+      store.set('homepageCategories', data)
+    },
   })
   return null
 }
@@ -168,9 +159,7 @@ function HomepageCategoriesProvider() {
 function HealthWatcher() {
   useWebSocketApi<HealthMap>({
     endpoint: '/health',
-    onMessage: data => {
-      Object.entries(data).forEach(([key, value]) => store.set(`health.${key}`, value))
-    },
+    onMessage: data => store.set('health', data),
   })
 
   return null

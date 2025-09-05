@@ -1,7 +1,9 @@
 import type { HomepageItem } from '@/lib/api'
+import { match } from '@/lib/match'
 import { useRef } from 'react'
 import AppCategoryEmpty from './AppCategoryEmpty'
 import AppItem from './AppItem'
+import { store } from './store'
 
 type ItemState = {
   show: boolean
@@ -17,9 +19,17 @@ export default function AppCategory({
   items: HomepageItem[]
   index: number
 }) {
+  const searchQuery = store.useValue('searchQuery')
   const isEmpty = useRef(true)
   const itemState = items.reduce(
     (acc, item, itemIndex) => {
+      if (searchQuery && !match(item.name, searchQuery)) {
+        acc[item.alias] = {
+          show: false,
+          index: itemIndex,
+        }
+        return acc
+      }
       const show = item.show
       const favorite = category === 'Favorites' && item.favorite
       switch (category) {
