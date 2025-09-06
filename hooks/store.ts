@@ -196,9 +196,7 @@ function createValuesProxy(namespace: string, storeApi: StoreBase<any>, initialP
  * access: e.g. `store.user.profile.name.use()` or `store.todos.at(0).title.set('x')`.
  */
 export function createStore<T extends FieldValues>(namespace: string, defaultValue: T): Store<T> {
-  if (!store.has(namespace)) {
-    produce(namespace, defaultValue, true, true)
-  }
+  produce(namespace, { ...defaultValue, ...(store.get(namespace) ?? {}) }, true, true)
 
   const storeApi: StoreBase<T> = {
     use: <P extends FieldPath<T>>(path: P) => useObject<T, P>(namespace, path),
