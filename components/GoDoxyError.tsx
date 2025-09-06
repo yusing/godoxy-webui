@@ -101,8 +101,8 @@ export function flattenGoDoxyError(
       headerText = typeof innerErr === 'string' ? `${label} ${innerErr}` : label
     }
 
-    if ((input as any).extras.length <= 1) {
-      if (typeof nested.err === 'object' && 'subjects' in (nested.err as any)) {
+    if (input.extras.length <= 1) {
+      if (typeof nested.err === 'object' && 'subjects' in nested.err) {
         rows.push({
           key: `hdr-inline-subj-${rows.length}`,
           level,
@@ -120,19 +120,14 @@ export function flattenGoDoxyError(
           text: headerText,
         })
       }
-      if ((input as any).extras.length === 1) {
-        flattenGoDoxyError(
-          (input as any).extras[0] as unknown as GoDoxyError,
-          level + 1,
-          rows,
-          currentGroup
-        )
+      if (input.extras.length === 1) {
+        flattenGoDoxyError(input.extras[0] as GoDoxyError, level + 1, rows, currentGroup)
       }
       return rows
     }
 
     const groupKey = `grp-${rows.length}`
-    if (typeof nested.err === 'object' && 'subjects' in (nested.err as any)) {
+    if (typeof nested.err === 'object' && 'subjects' in nested.err) {
       rows.push({
         key: `hdr-subj-${groupKey}`,
         level,
@@ -152,7 +147,7 @@ export function flattenGoDoxyError(
         text: headerText,
       })
     }
-    ;(input as any).extras.forEach((e: GoDoxyError) => {
+    input.extras.forEach((e: GoDoxyError) => {
       flattenGoDoxyError(e as GoDoxyError, level + 1, rows, groupKey)
     })
     return rows
@@ -190,17 +185,16 @@ export function flattenGoDoxyError(
   return rows
 }
 
+type TreeSpec = {
+  id: string
+  level: number
+  label: ReactNode
+  children: TreeSpec[]
+}
+
 export function GoDoxyErrorText({ err, level }: { err: GoDoxyError; level?: number }) {
-  if (!err) return null
   const baseLevel = level ?? 0
   const rows = useMemo(() => flattenGoDoxyError(err, baseLevel), [err, baseLevel])
-
-  type TreeSpec = {
-    id: string
-    level: number
-    label: ReactNode
-    children: TreeSpec[]
-  }
 
   const tree = useMemo(() => {
     const root: TreeSpec = { id: 'root', level: -1, label: <span />, children: [] }
@@ -227,31 +221,31 @@ export function GoDoxyErrorText({ err, level }: { err: GoDoxyError; level?: numb
     return root.children
   }, [rows])
 
-  function renderNodes(nodes: TreeSpec[], parentLevel = 0) {
-    return nodes.map((node, idx) => {
-      const hasChildren = node.children.length > 0
-      const isLast = idx === nodes.length - 1
-      return (
-        <TreeNode key={node.id} nodeId={node.id} level={node.level} isLast={isLast}>
-          <TreeNodeTrigger className="py-0.5">
-            <TreeExpander hasChildren={hasChildren} />
-            <TreeLabel>{node.label}</TreeLabel>
-          </TreeNodeTrigger>
-          {hasChildren && (
-            <TreeNodeContent hasChildren>
-              {renderNodes(node.children, parentLevel + 1)}
-            </TreeNodeContent>
-          )}
-        </TreeNode>
-      )
-    })
-  }
-
   return (
     <TreeProvider>
       <TreeView>{renderNodes(tree, 0)}</TreeView>
     </TreeProvider>
   )
+}
+
+function renderNodes(nodes: TreeSpec[], parentLevel = 0) {
+  return nodes.map((node, idx) => {
+    const hasChildren = node.children.length > 0
+    const isLast = idx === nodes.length - 1
+    return (
+      <TreeNode key={node.id} nodeId={node.id} level={node.level} isLast={isLast}>
+        <TreeNodeTrigger className="py-0.5">
+          <TreeExpander hasChildren={hasChildren} />
+          <TreeLabel>{node.label}</TreeLabel>
+        </TreeNodeTrigger>
+        {hasChildren && (
+          <TreeNodeContent hasChildren>
+            {renderNodes(node.children, parentLevel + 1)}
+          </TreeNodeContent>
+        )}
+      </TreeNode>
+    )
+  })
 }
 
 function SubjectText({

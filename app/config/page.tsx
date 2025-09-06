@@ -55,7 +55,7 @@ function ConfigValidationError() {
       <AlertCircleIcon />
       <AlertTitle>Error</AlertTitle>
       <AlertDescription className="-ml-12 max-h-[150px] overflow-y-auto overflow-x-hidden">
-        <GoDoxyErrorText err={error} />
+        {error && <GoDoxyErrorText err={error} />}
       </AlertDescription>
     </Alert>
   )

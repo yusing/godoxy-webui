@@ -3,7 +3,7 @@ import { json } from '@codemirror/lang-json'
 import ReactCodeMirror, { EditorView, type Extension } from '@uiw/react-codemirror'
 import { CopyIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import { memo, useCallback, useMemo, type ReactNode } from 'react'
+import { memo, useCallback, type ReactNode } from 'react'
 import { toast } from 'sonner'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
@@ -98,45 +98,45 @@ const ObjectDataList = memo(function ObjectDataList({
     )
   }
 
-  const renderedValue = useMemo(() => {
-    let stringify = true
-    let processedValue: string | ReactNode = ''
-
-    if (typeof v === 'string') {
-      if (v.startsWith('<!DOCTYPE html>') || (v.startsWith('<') && v.endsWith('>'))) {
-        processedValue = (
-          <ReadonlyCodeMirror
-            value={v}
-            extensions={[html(), EditorView.lineWrapping]}
-            language="html"
-          />
-        )
-        stringify = false
-      } else if (
-        ((v.includes('{') && v.includes('}')) || (v.includes('[') && v.includes(']'))) &&
-        v.includes('"')
-      ) {
-        processedValue = (
-          <ReadonlyCodeMirror
-            value={v}
-            extensions={[json(), EditorView.lineWrapping]}
-            language="json"
-          />
-        )
-        stringify = false
-      }
-    }
-
-    if (stringify) {
-      processedValue = `${v}`
-    }
-
-    return processedValue
-  }, [v])
-
   return (
-    <DataListRow label={k ?? ''} value={renderedValue} className="w-full break-words text-sm" />
+    <DataListRow label={k ?? ''} value={<Value v={v} />} className="w-full break-words text-sm" />
   )
+})
+
+const Value = memo(function Value({ v }: { v: unknown }) {
+  let stringify = true
+  let processedValue: string | ReactNode = ''
+
+  if (typeof v === 'string') {
+    if (v.startsWith('<!DOCTYPE html>') || (v.startsWith('<') && v.endsWith('>'))) {
+      processedValue = (
+        <ReadonlyCodeMirror
+          value={v}
+          extensions={[html(), EditorView.lineWrapping]}
+          language="html"
+        />
+      )
+      stringify = false
+    } else if (
+      ((v.includes('{') && v.includes('}')) || (v.includes('[') && v.includes(']'))) &&
+      v.includes('"')
+    ) {
+      processedValue = (
+        <ReadonlyCodeMirror
+          value={v}
+          extensions={[json(), EditorView.lineWrapping]}
+          language="json"
+        />
+      )
+      stringify = false
+    }
+  }
+
+  if (stringify) {
+    processedValue = `${v}`
+  }
+
+  return processedValue
 })
 
 const ReadonlyCodeMirror = memo(function ReadonlyCodeMirror({

@@ -29,7 +29,7 @@ function NamedListInput_<IndexType extends string, T extends Record<IndexType, u
   schema,
   card = true,
 }: Readonly<NamedListInputProps<IndexType, T>>) {
-  const listValue: T[] = Array.isArray(value) ? value : []
+  const listValue: T[] = useMemo(() => (Array.isArray(value) ? value : []), [value])
 
   const defaultValue = useMemo(
     () => getDefaultValue(schema?.properties?.[keyField as string]),
@@ -66,7 +66,6 @@ function NamedListInput_<IndexType extends string, T extends Record<IndexType, u
 
   const renderItem = useCallback(
     (item: T, index: number) => {
-      // @ts-ignore
       const name = item[nameField] as string
       const key = item[keyField] as string
       return (

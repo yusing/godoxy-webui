@@ -89,13 +89,7 @@ function MapInput_<T extends Record<string, unknown>>({
   card = true,
   footer,
   onChange,
-}: Readonly<MapInputProps<T>>) {
-  if (!schema) {
-    return (
-      <PureMapInput label={label} placeholder={placeholder} value={value} onChange={onChange} />
-    )
-  }
-
+}: Readonly<MapInputProps<T> & { schema: JSONSchema }>) {
   let workingValue: Record<string, unknown> = useMemo(() => (value ? { ...value } : {}), [value])
 
   const isEmpty = useMemo(() => {
@@ -239,4 +233,14 @@ function MapInput_<T extends Record<string, unknown>>({
   )
 }
 
-export const MapInput = memo(MapInput_) as typeof MapInput_
+export function MapInput<T extends Record<string, unknown>>({
+  schema,
+  ...props
+}: MapInputProps<T>) {
+  if (!schema) {
+    return <PureMapInput {...props} />
+  }
+  return <MapInputMemo {...props} schema={schema} />
+}
+
+const MapInputMemo = memo(MapInput_) as typeof MapInput_

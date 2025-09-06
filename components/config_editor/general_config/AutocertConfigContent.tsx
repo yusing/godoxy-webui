@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { Autocert } from '@/types/godoxy'
+import type { DomainOrWildcard, Email } from '@/types/godoxy/types'
 import { Plus } from 'lucide-react'
 import { AnimatePresence, motion, type HTMLMotionProps } from 'motion/react'
 import { configStore } from '../store'
@@ -42,8 +43,8 @@ export default function AutocertConfigContent() {
 
       // Preserve existing common fields when switching provider
       const base: {
-        email: Autocert.AutocertConfigBase['email']
-        domains: Autocert.AutocertConfigBase['domains']
+        email: Email
+        domains: DomainOrWildcard[]
         cert_path?: string
         key_path?: string
       } =
@@ -73,7 +74,7 @@ export default function AutocertConfigContent() {
             provider: 'clouddns',
             options: {
               client_id: '',
-              email: '' as Autocert.AutocertConfigBase['email'],
+              email: '' as Email,
               password: '',
             },
             ...base,
@@ -295,20 +296,22 @@ function DnsProviderOptionsEditor({
   }
 
   if (provider === 'ovh') {
-    const opts = (cfg as Autocert.OVHOptionsWithAppKey | Autocert.OVHOptionsWithOAuth2Config)
-      .options as any
+    const opts = cfg.options as
+      | Autocert.OVHOptionsWithAppKey['options']
+      | Autocert.OVHOptionsWithOAuth2Config['options']
 
     // derive auth mode
-    const authMode = (
-      opts.application_key ? 'application_key' : opts.oauth2_config ? 'oauth2' : 'application_key'
-    ) as 'application_key' | 'oauth2'
+    const authMode = 'application_key' in opts ? 'application_key' : 'oauth2'
+
+    const applicationKey = 'application_key' in opts ? opts.application_key : undefined
+    const oauth2Config = 'oauth2_config' in opts ? opts.oauth2_config : undefined
 
     const setAuthMode = (mode: 'application_key' | 'oauth2') => {
       if (mode === 'application_key') {
         const next = {
           application_secret: opts.application_secret || '',
           consumer_key: opts.consumer_key || '',
-          application_key: opts.application_key || '',
+          application_key: applicationKey || '',
           api_endpoint: opts.api_endpoint,
         }
         setOptions(next)
@@ -318,8 +321,8 @@ function DnsProviderOptionsEditor({
           consumer_key: opts.consumer_key || '',
           api_endpoint: opts.api_endpoint,
           oauth2_config: {
-            client_id: opts.oauth2_config?.client_id || '',
-            client_secret: opts.oauth2_config?.client_secret || '',
+            client_id: oauth2Config?.client_id || '',
+            client_secret: oauth2Config?.client_secret || '',
           },
         }
         setOptions(next)
@@ -379,30 +382,30 @@ function DnsProviderOptionsEditor({
         {authMode === 'application_key' ? (
           <LabeledInput
             label="Application key"
-            value={opts.application_key || ''}
+            value={applicationKey ?? ''}
             onChange={v => setOptions({ ...opts, application_key: v, oauth2_config: undefined })}
           />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <LabeledInput
               label="Client ID"
-              value={opts.oauth2_config?.client_id || ''}
+              value={oauth2Config?.client_id ?? ''}
               onChange={v =>
                 setOptions({
                   ...opts,
                   application_key: undefined,
-                  oauth2_config: { ...(opts.oauth2_config || {}), client_id: v },
+                  oauth2_config: { ...(oauth2Config ?? {}), client_id: v },
                 })
               }
             />
             <LabeledInput
               label="Client Secret"
-              value={opts.oauth2_config?.client_secret || ''}
+              value={oauth2Config?.client_secret ?? ''}
               onChange={v =>
                 setOptions({
                   ...opts,
                   application_key: undefined,
-                  oauth2_config: { ...(opts.oauth2_config || {}), client_secret: v },
+                  oauth2_config: { ...(oauth2Config ?? {}), client_secret: v },
                 })
               }
             />
