@@ -65,15 +65,15 @@ export type Store<T extends FieldValues> = StoreBase<T> & {
 /** Common methods available on any deep proxy node */
 type NodeMethods<T> = {
   /** Subscribe and read the value at path. Re-renders when the value changes. */
-  use(): T | undefined
+  use(): T
   /** Convenience hook returning [value, setValue] for the path. */
-  useState(): readonly [T | undefined, (value: T | undefined) => void]
+  useState(): readonly [T, (value: T | undefined) => void]
   /** Set value at path (creates intermediate nodes as needed). */
   set(value: T | undefined): void
   /** Delete value at path (for arrays, removes index; for objects, deletes key). */
   reset(): void
   /** Subscribe to changes at path and invoke listener with the new value. */
-  subscribe(listener: (value: T | undefined) => void): void
+  subscribe(listener: (value: T) => void): void
   /** Notify listener of current value. */
   notify(): void
   /** Render-prop helper for inline usage.
@@ -84,7 +84,7 @@ type NodeMethods<T> = {
    * </store.a.b.c.Render>
    */
   Render: (props: {
-    children: (value: T | undefined, update: (value: T | undefined) => void) => ReactNode
+    children: (value: T, update: (value: T | undefined) => void) => ReactNode
   }) => ReactNode
 }
 
@@ -114,6 +114,8 @@ type DeepProxy<T> =
 
 /** Type for array proxy with index access */
 type ArrayProxy<T> = {
+  /** Read without subscribing. */
+  value: T[] | undefined
   /**
    * Length of the underlying array. Runtime may return undefined when the
    * current value is not an array at the path. Prefer `Array.isArray(x) && x.length` when unsure.
