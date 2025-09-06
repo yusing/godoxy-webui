@@ -114,6 +114,7 @@ export default function AppGrid() {
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   className="pl-10"
+                  autoFocus
                 />
               )}
             </store.searchQuery.Render>
