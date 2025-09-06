@@ -1,21 +1,23 @@
 'use client'
 
 import { CategoryIcon } from '@/components/home/CategoryIcon'
+import { Button } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
 import { Input } from '@/components/ui/input'
+import { Kbd } from '@/components/ui/kbd'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useWebSocketApi } from '@/hooks/websocket'
 import { type HealthMap, type HomepageCategory } from '@/lib/api'
-import { Search } from 'lucide-react'
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Search } from 'lucide-react'
 import { motion } from 'motion/react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import AppCategory from './AppCategory'
 import AppCategoryEmpty from './AppCategoryEmpty'
+import ArrowNavigation from './ArrowNavigation'
 import { store } from './store'
 
 export default function AppGrid() {
-  const [activeCategory, setActiveCategory] = useState('Favorites')
-  const [comboboxValue, setComboboxValue] = useState<string>()
+  const [activeCategory, setActiveCategory] = store.navigation.activeCategory.useState()
 
   const categories = store.use('homepageCategories')
   const categoryNames = useMemo(() => categories?.map(c => c.name) ?? [], [categories])
@@ -39,11 +41,6 @@ export default function AppGrid() {
       setActiveCategory(categoryNames[0] ?? 'All')
     }
 
-    // Clear combobox value when active category is in visible tabs
-    if (visibleTabs.some(tab => tab.name === activeCategory)) {
-      setComboboxValue(undefined)
-    }
-
     // if current category is Favorites and there are no favorites, set to All
     if (
       activeCategory === 'Favorites' &&
@@ -58,6 +55,7 @@ export default function AppGrid() {
       <HealthWatcher />
       <HomepageCategoriesProvider />
       <PendingFavoritesResetter activeCategory={activeCategory} />
+      <ArrowNavigation />
       <Tabs
         value={activeCategory}
         onValueChange={value => setActiveCategory(value)}
@@ -71,6 +69,11 @@ export default function AppGrid() {
                   key={category}
                   value={category}
                   className="flex items-center gap-2 px-3 py-2 text-xs sm:text-sm whitespace-nowrap"
+                  onKeyDown={e => {
+                    // prevent arrow navigation on tabs, we handle it with ArrowNavigation
+                    e.stopPropagation()
+                    e.preventDefault()
+                  }}
                 >
                   <CategoryIcon
                     category={category.toLowerCase().replace(/\s+/g, '-')}
@@ -84,7 +87,7 @@ export default function AppGrid() {
               ))}
               {overflowTabs.length > 0 && (
                 <Combobox
-                  value={comboboxValue}
+                  value={overflowTabs.find(c => c.name === activeCategory)?.name}
                   options={overflowTabs.map(c => ({
                     label: c.name,
                     icon: (
@@ -96,10 +99,7 @@ export default function AppGrid() {
                   }))}
                   placeholder="More"
                   emptyMessage="No more categories"
-                  onValueChange={value => {
-                    setActiveCategory(value)
-                    setComboboxValue(value)
-                  }}
+                  onValueChange={value => setActiveCategory(value)}
                 />
               )}
             </TabsList>
@@ -120,6 +120,59 @@ export default function AppGrid() {
             </store.searchQuery.Render>
           </div>
         </div>
+
+        {/* Keyboard hints */}
+        <store.ui.showKeyboardHints.Render>
+          {(show, setShow) =>
+            show ? (
+              <div className="mt-2 text-xs text-muted-foreground flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-1">
+                  <Kbd>
+                    <ArrowUp className="h-3 w-3" />
+                  </Kbd>
+                  <Kbd>
+                    <ArrowDown className="h-3 w-3" />
+                  </Kbd>
+                  <span>Move</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Kbd>
+                    <ArrowLeft className="h-3 w-3" />
+                  </Kbd>
+                  <Kbd>
+                    <ArrowRight className="h-3 w-3" />
+                  </Kbd>
+                  <span>Move</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Kbd>Enter</Kbd>
+                  <span>Open</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Kbd>Esc</Kbd>
+                  <span>Reset</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Kbd>Alt</Kbd>
+                  <span>+</span>
+                  <Kbd>
+                    <ArrowLeft className="h-3 w-3" />
+                  </Kbd>
+                  <Kbd>
+                    <ArrowRight className="h-3 w-3" />
+                  </Kbd>
+                  <span>Switch category</span>
+                </div>
+                <div className="ml-auto flex items-center gap-2">
+                  <span className="hidden lg:inline">Tab is disabled on this page</span>
+                  <Button size="sm" variant="outline" onClick={() => setShow(false)}>
+                    Dismiss
+                  </Button>
+                </div>
+              </div>
+            ) : null
+          }
+        </store.ui.showKeyboardHints.Render>
 
         {categories?.map(({ name: category, items }, index) => (
           <TabsContent key={category} value={category} className="mt-6">

@@ -9,13 +9,13 @@ import AppItemContextMenuContent from './AppitemContextMenuContent'
 import HealthBubble from './HealthBubble'
 import { store } from './store'
 
-export default function AppItem({
-  categoryIndex,
-  appIndex,
-}: {
+type AppItemProps = {
   categoryIndex: number
   appIndex: number
-}) {
+  visibleIndex: number
+}
+
+export default function AppItem({ categoryIndex, appIndex, visibleIndex }: AppItemProps) {
   const item = useMemo(
     () => store.homepageCategories.at(categoryIndex).items.at(appIndex),
     [categoryIndex, appIndex]
@@ -27,7 +27,11 @@ export default function AppItem({
           <item.url.Render>
             {url => (
               <Link href={url!} target="_blank" prefetch={false}>
-                <AppItemInner categoryIndex={categoryIndex} appIndex={appIndex} />
+                <AppItemInner
+                  categoryIndex={categoryIndex}
+                  appIndex={appIndex}
+                  visibleIndex={visibleIndex}
+                />
               </Link>
             )}
           </item.url.Render>
@@ -38,8 +42,8 @@ export default function AppItem({
   )
 }
 
-const AppItemInner = forwardRef<HTMLDivElement, { categoryIndex: number; appIndex: number }>(
-  ({ categoryIndex, appIndex, ...props }, ref) => {
+const AppItemInner = forwardRef<HTMLDivElement, AppItemProps>(
+  ({ categoryIndex, appIndex, visibleIndex, ...props }, ref) => {
     const item = store.homepageCategories.at(categoryIndex).items.at(appIndex)
     const alias = item.alias.use()!
     const widgets = item.widgets.use()!
@@ -49,9 +53,11 @@ const AppItemInner = forwardRef<HTMLDivElement, { categoryIndex: number; appInde
       <Card
         ref={ref}
         className={cn(
-          'border-accent/50 cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-105 px-0 py-4 row-span-2',
+          'app-item border-accent/50 cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-105 px-0 py-4 row-span-2',
+          'data-[active=true]:ring-2 data-[active=true]:ring-primary data-[active=true]:shadow-lg',
           hasWidgets && 'row-span-3'
         )}
+        data-index={visibleIndex}
         {...props}
       >
         <CardContent

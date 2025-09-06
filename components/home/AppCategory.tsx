@@ -1,6 +1,6 @@
 import type { HomepageItem } from '@/lib/api'
 import { match } from '@/lib/match'
-import { useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import AppCategoryEmpty from './AppCategoryEmpty'
 import AppItem from './AppItem'
 import { store } from './store'
@@ -21,54 +21,68 @@ export default function AppCategory({
 }) {
   const searchQuery = store.searchQuery.use()
   const isEmpty = useRef(true)
-  const itemState = items.reduce(
-    (acc, item, itemIndex) => {
-      if (searchQuery && !match(item.name, searchQuery)) {
-        acc[item.alias] = {
-          show: false,
-          index: itemIndex,
+  const itemState = useMemo(() => {
+    return items.reduce(
+      (acc, item, itemIndex) => {
+        if (searchQuery && !match(item.name, searchQuery)) {
+          acc[item.alias] = {
+            show: false,
+            index: itemIndex,
+          }
+          return acc
+        }
+        const show = item.show
+        const favorite = category === 'Favorites' && item.favorite
+        switch (category) {
+          case 'Hidden': // show only hidden items on Hidden category
+            acc[item.alias] = {
+              show: show === false,
+              index: itemIndex,
+            }
+            break
+          case 'Favorites': // show only favorite items on Favorite category
+            acc[item.alias] = {
+              show: show && favorite,
+              index: itemIndex,
+            }
+            break
+          default: // show only visible items on other categories, including 'All'
+            acc[item.alias] = {
+              show: show ?? false,
+              index: itemIndex,
+            }
+        }
+        if (acc[item.alias]!.show) {
+          isEmpty.current = false
         }
         return acc
-      }
-      const show = item.show
-      const favorite = category === 'Favorites' && item.favorite
-      switch (category) {
-        case 'Hidden': // show only hidden items on Hidden category
-          acc[item.alias] = {
-            show: show === false,
-            index: itemIndex,
-          }
-          break
-        case 'Favorites': // show only favorite items on Favorite category
-          acc[item.alias] = {
-            show: show && favorite,
-            index: itemIndex,
-          }
-          break
-        default: // show only visible items on other categories, including 'All'
-          acc[item.alias] = {
-            show: show ?? false,
-            index: itemIndex,
-          }
-      }
-      if (acc[item.alias]!.show) {
-        isEmpty.current = false
-      }
-      return acc
-    },
-    {} as Record<string, ItemState>
-  )
+      },
+      {} as Record<string, ItemState>
+    )
+  }, [items, searchQuery, category])
+
+  useEffect(() => {
+    store.itemState.set(itemState)
+  }, [itemState])
 
   if (isEmpty.current) {
     return <AppCategoryEmpty />
   }
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 auto-rows-max">
+    <div
+      id="app-category"
+      className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2 auto-rows-max"
+    >
       {items
         ?.filter(app => itemState[app.alias]!.show)
-        .map(app => (
-          <AppItem key={app.alias} categoryIndex={index} appIndex={itemState[app.alias]!.index} />
+        .map((app, visibleIndex) => (
+          <AppItem
+            key={app.alias}
+            categoryIndex={index}
+            appIndex={itemState[app.alias]!.index}
+            visibleIndex={visibleIndex}
+          />
         ))}
     </div>
   )
