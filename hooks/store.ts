@@ -101,21 +101,23 @@ type LeafProxy<T> = Prettify<
 >
 
 /** Type for nested objects with proxy methods */
-type DeepProxy<T> =
-  NonNullable<T> extends readonly (infer U)[]
-    ? ArrayProxy<U> & NodeMethods<NonNullable<T>>
-    : NonNullable<T> extends FieldValues
-      ? {
-          [K in keyof NonNullable<T>]-?: NonNullable<NonNullable<T>[K]> extends object
-            ? DeepProxy<NonNullable<T>[K]>
-            : LeafProxy<NonNullable<T>[K]>
-        } & NodeMethods<NonNullable<T>>
-      : LeafProxy<NonNullable<T>>
+type DeepProxy<T> = (NonNullable<T> extends readonly (infer U)[]
+  ? ArrayProxy<U> & NodeMethods<NonNullable<T>>
+  : NonNullable<T> extends FieldValues
+    ? {
+        [K in keyof NonNullable<T>]-?: NonNullable<NonNullable<T>[K]> extends object
+          ? DeepProxy<NonNullable<T>[K]>
+          : LeafProxy<NonNullable<T>[K]>
+      } & NodeMethods<NonNullable<T>>
+    : LeafProxy<NonNullable<T>>) & {
+  /** Read without subscribing. */
+  readonly value: T | undefined
+}
 
 /** Type for array proxy with index access */
 type ArrayProxy<T> = {
   /** Read without subscribing. */
-  value: T[] | undefined
+  readonly value: T[] | undefined
   /**
    * Length of the underlying array. Runtime may return undefined when the
    * current value is not an array at the path. Prefer `Array.isArray(x) && x.length` when unsure.
