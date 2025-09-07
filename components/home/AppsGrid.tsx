@@ -3,17 +3,17 @@
 import { CategoryIcon } from '@/components/home/CategoryIcon'
 import { Button } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
-import { Input } from '@/components/ui/input'
 import { Kbd } from '@/components/ui/kbd'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useWebSocketApi } from '@/hooks/websocket'
 import { type HealthMap, type HomepageCategory } from '@/lib/api'
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Search } from 'lucide-react'
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useEffect, useMemo } from 'react'
 import AppCategory from './AppCategory'
 import AppCategoryEmpty from './AppCategoryEmpty'
 import ArrowNavigation from './ArrowNavigation'
+import Searchbox from './Searchbox'
 import { store } from './store'
 
 export default function AppGrid() {
@@ -104,21 +104,7 @@ export default function AppGrid() {
               )}
             </TabsList>
           </div>
-
-          <div className="relative w-full lg:w-75 min-w-0 md:min-w-50">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <store.searchQuery.Render>
-              {(searchQuery, setSearchQuery) => (
-                <Input
-                  placeholder="Search apps..."
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                  autoFocus
-                />
-              )}
-            </store.searchQuery.Render>
-          </div>
+          <Searchbox />
         </div>
 
         {/* Keyboard hints */}

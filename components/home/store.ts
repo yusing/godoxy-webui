@@ -14,6 +14,7 @@ export type Store = {
   health: HealthMap
   pendingFavorites: boolean
   openedDialog: 'edit' | 'details' | null
+  searchEngine: 'google' | 'duckduckgo'
   ui: {
     showKeyboardHints: boolean
   }
@@ -43,6 +44,7 @@ export const store = createStore<Store>('homepage', {
   health: {},
   pendingFavorites: false,
   openedDialog: null,
+  searchEngine: 'duckduckgo',
   ui: {
     showKeyboardHints: true,
   },
