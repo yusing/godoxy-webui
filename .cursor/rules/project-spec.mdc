@@ -16,6 +16,7 @@ This is a WebUI for GoDoxy - a reverse proxy for local services.
 - React Hook Form
 - pnpm
 - motion (Framer Motion's successor)
+- Custom state management system
 
 ## Current State
 
@@ -37,30 +38,48 @@ This is a WebUI for GoDoxy - a reverse proxy for local services.
 
 - [x] Homepage: basic system info + app dashboard.
 - [x] Config: edit the config files for GoDoxy.
-- [x] Proxies: Table of proxies grouped by providers with tabs.
 - [x] Routes: Service uptime and route details.
 - [x] Servers: System info of different nodes.
-- [ ] Docker: Log viewer for docker containers.
 
 ## Layout and Style
 
 - On desktop, titlebar.
 - On mobile, TBD
 
-## Homepage
+### Homepage
 
 - Have a row of system infos like hostname, cpu /memory/disk usage. then other rows for apps
 - Tabs grouped by categories, e.g. "Pinned", "All", "Cat 1", "Cat 2", etc.
 - A search box on the same row as tab for filtering apps
-Some apps might have widgets (at most 3, in a single row) with value (on top) and label (on bottom)
-- Apps with widgets should take 1.5x height (same height with two apps without widgets, across rows)
+- Some apps might have widgets (at most 3, in a single row) with value (on top) and label (on bottom)
+  - these should take 1.5x height (same height with two apps without widgets, across rows)
 - Limits tabs to 5 items, if exceeds show a combobox starting from the 4th item
 - System infos should always be in a single row of 4-item grid
   - On mobile, it's displayed in a single card with css tuning
   - On desktop, every item is displayed as a card
 - if enough space, widgets should be on the same row
+- Arrow navigation
+  - Up/Down/Left/Right arrows to navigate between apps
+  - Enter to open the app in a new tab
+  - Escape to reset the navigation
+  - Reset when category or search query changes
+  - Alt+Left/Right to navigate between categories
 
-## What you should NOT do
+## Optimization
 
-- Suggest workarounds for the current state, rather than fixing the issue.
-- Ask to run `pnpm buikd`, `pnpm dev` and such commands unless it's explicitly asked for.
+- Move irrelevant hooks and logics outside of Components to prevent the whole tree from re-rendering when the value changes.
+
+## State management
+
+- Store will be created by calling `createStore(namespace, defaultValue)` and located in `components/{page}/store.ts`
+- Set a field by calling `store.a.b.c.set(e)`
+- Use a hook to read a field by calling `store.a.b.c.use()`
+- Render a field by calling `<store.a.b.c.Render>{(e, update) => {}}</store.a.b.c.Render>`
+- Get field value without subscribing (e.g. in callback) by calling `store.a.b.c.value`
+- Subscribe to a field by calling `store.a.b.c.subscribe(value => {})`, NOT `useEffect`
+
+## What YOU SHOULD NOT DO
+
+- DO NOT suggest workarounds, YOU SHOULD fix the issue.
+- DO NOT ask to run `pnpm build`, `pnpm dev` and such commands unless it's explicitly asked for.
+- Refactoring should not change the functionality / behavior of the code.
