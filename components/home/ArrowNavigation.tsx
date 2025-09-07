@@ -10,17 +10,6 @@ function getGridCols() {
 }
 
 function setActiveItem(index: number) {
-  // remove data-active from current active item
-  const currentActiveItem = document.querySelector(`.app-item[data-active="true"]`)
-  if (currentActiveItem) {
-    currentActiveItem.removeAttribute('data-active')
-  }
-  // add data-active to new active item
-  const newActiveItem = document.querySelector(`.app-item[data-index="${index}"]`)
-  if (newActiveItem) {
-    newActiveItem.setAttribute('data-active', 'true')
-  }
-  // update store
   store.navigation.activeItemIndex.set(index)
 }
 
@@ -147,14 +136,36 @@ export default function ArrowNavigation() {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [])
 
+  store.navigation.activeItemIndex.subscribe(index => {
+    const numVisibleItems = getVisibleItems().length
+    if (!index || index < 0) {
+      index = 0
+    } else if (index >= numVisibleItems) {
+      index = numVisibleItems - 1
+    }
+
+    // remove data-active from current active item
+    const currentActiveItem = document.querySelector(`.app-item[data-active="true"]`)
+    if (currentActiveItem) {
+      currentActiveItem.removeAttribute('data-active')
+    }
+    // add data-active to new active item
+    const newActiveItem = document.querySelector(`.app-item[data-index="${index}"]`)
+    if (newActiveItem) {
+      newActiveItem.setAttribute('data-active', 'true')
+    }
+  })
+
   // Reset navigation when category changes
   store.navigation.activeCategory.subscribe(() => {
-    store.navigation.activeItemIndex.reset()
+    // set first item as active
+    setActiveItem(0)
   })
 
   // Reset navigation when search query changes
   store.searchQuery.subscribe(() => {
-    store.navigation.activeItemIndex.reset()
+    // set first item as active
+    setActiveItem(0)
   })
 
   return null

@@ -60,6 +60,8 @@ const AppItemInner = forwardRef<HTMLDivElement, AppItemProps>(
         )}
         data-index={visibleIndex}
         data-url={url}
+        /* initialize data-active for first item */
+        data-active={visibleIndex === 0 ? 'true' : 'false'}
         {...props}
       >
         <CardContent
