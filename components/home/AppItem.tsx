@@ -48,6 +48,7 @@ const AppItemInner = forwardRef<HTMLDivElement, AppItemProps>(
     const alias = item.alias.use()!
     const widgets = item.widgets.use()!
     const hasWidgets = Array.isArray(widgets) && widgets.length > 0
+    const url = item.url.use()!
 
     return (
       <Card
@@ -58,6 +59,7 @@ const AppItemInner = forwardRef<HTMLDivElement, AppItemProps>(
           hasWidgets && 'row-span-3'
         )}
         data-index={visibleIndex}
+        data-url={url}
         {...props}
       >
         <CardContent

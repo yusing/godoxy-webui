@@ -49,15 +49,7 @@ function handleRight(visibleItemsLength: number) {
 }
 
 function handleOpenApp() {
-  const currentActiveIndex = store.navigation.activeItemIndex.value ?? 0
-  const categories = store.homepageCategories.value ?? []
-  const activeCategory = store.navigation.activeCategory.value!
-  const activeCategoryIndex = Math.max(
-    0,
-    categories.findIndex(c => c.name === activeCategory)
-  )
-  const itemsCategoryIndex = activeCategory === 'Favorites' ? 0 : activeCategoryIndex
-  const url = store.homepageCategories.at(itemsCategoryIndex).items.at(currentActiveIndex).url.value
+  const url = document.querySelector('.app-item[data-active="true"]')?.getAttribute('data-url')
   if (url) {
     window.open(url, '_blank')
   }
