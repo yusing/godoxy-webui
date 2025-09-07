@@ -3,6 +3,12 @@ import { Search } from 'lucide-react'
 import { useState } from 'react'
 import DuckDuckGo from '../svg/duckduckgo'
 import Google from '../svg/google'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu'
 import { Input } from '../ui/input'
 import Kbd from '../ui/kbd'
 import { store } from './store'
@@ -75,12 +81,30 @@ function SearchIcon({
   enabled: boolean
 }) {
   if (!enabled) return <Search className={cn('size-4', className)} />
-  switch (searchEngine) {
-    case 'duckduckgo':
-      return <DuckDuckGo className={cn('size-4', className)} />
-    default: // google
-      return <Google className={cn('size-4', className)} />
-  }
+
+  const CurrentIcon = searchEngine === 'duckduckgo' ? DuckDuckGo : Google
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          className={cn('cursor-pointer', className)}
+          aria-label="Select search engine"
+        >
+          <CurrentIcon className="size-4" />
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start" sideOffset={6}>
+        <DropdownMenuItem onClick={() => store.searchEngine.set('google')}>
+          <Google className="size-4" /> Google
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => store.searchEngine.set('duckduckgo')}>
+          <DuckDuckGo className="size-4" /> DuckDuckGo
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
 }
 
 function buildSearchUrl(searchQuery: string) {
