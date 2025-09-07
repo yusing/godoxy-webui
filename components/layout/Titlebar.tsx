@@ -1,6 +1,6 @@
 import { ModeToggle } from '@/components/ui/theme-toggle'
 import { siteConfig } from '@/site-config'
-import { Code, Grid3X3, Monitor, Route, Server } from 'lucide-react'
+import { Code, Grid3X3, Route, Server } from 'lucide-react'
 import Link from 'next/link'
 import LogoutButton from '../LogoutButton'
 import VersionText from '../VersionText'
@@ -19,7 +19,7 @@ export default function Titlebar() {
       className="titlebar hidden data-[hidden=false]:flex data-[sidebar-open=true]:ml-[var(--sidebar-width)] fixed top-0 inset-x-0 items-center justify-between px-4 border-b surface z-40 backdrop-blur-sm"
     >
       <div className="flex items-center gap-2">
-        <Monitor className="size-5 text-primary" />
+        <img src="/godoxy-no-text.png" alt="GoDoxy" width={24} height={24} />
         <span className="font-semibold tracking-tight">{siteConfig.metadata.title}</span>
         <VersionText />
         <div className="flex items-center ml-4 gap-4 text-sm text-muted-foreground">

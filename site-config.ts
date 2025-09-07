@@ -2,7 +2,7 @@ export const siteConfig = {
   metadata: {
     title: 'GoDoxy',
     description: 'Beyond a reverse proxy',
-    icons: [{ rel: 'icon', url: '/favicon.ico' }],
+    icons: [{ rel: 'icon', url: '/godoxy-no-text.png' }],
   },
   links: {
     github: 'https://github.com/yusing/godoxy',
