@@ -8,9 +8,9 @@ export function toastError<T extends string | Error | Event | ErrorResponse | Ax
   error: T
 ) {
   if (error instanceof Event) {
-    toast.error('Websocket error')
+    toast.error('Websocket error', { duration: 3000 })
   } else {
     const { message, error: err } = formatError(error)
-    toast.error(`${message}${err ? `: ${err}` : ''}`)
+    toast.error(`${message}${err ? `: ${err}` : ''}`, { duration: 3000 })
   }
 }
