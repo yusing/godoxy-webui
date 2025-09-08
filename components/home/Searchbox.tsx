@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { Search } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import { useState } from 'react'
 import DuckDuckGo from '../svg/duckduckgo'
 import Google from '../svg/google'
@@ -29,44 +29,61 @@ export default function Searchbox() {
       </store.searchEngine.Render>
       <store.searchQuery.Render>
         {(searchQuery, setSearchQuery) => (
-          <Input
-            placeholder="Search apps or terms..."
-            type="search"
-            value={searchQuery}
-            onChange={e => {
-              setSearchQuery(e.target.value)
-              if (e.target.value.length > 2) {
-                setUseSearchEngine(true)
-              } else {
-                setUseSearchEngine(false)
-              }
-            }}
-            className={cn('pl-10', useSearchEngine && 'pr-22')}
-            autoFocus
-            onKeyDown={e => {
-              if (e.key === 'Enter') {
-                e.preventDefault()
-                e.stopPropagation()
-                // if no results, search it on configured search engine
-                if (
-                  searchQuery.length > 2 &&
-                  Object.values(store.itemState.value ?? {}).every(item => item.show === false)
-                ) {
-                  window.open(buildSearchUrl(searchQuery), '_blank')
+          <>
+            <Input
+              placeholder="Search apps or terms..."
+              type="text"
+              value={searchQuery}
+              onChange={e => {
+                setSearchQuery(e.target.value)
+                if (e.target.value.length > 2) {
+                  setUseSearchEngine(true)
+                } else {
+                  setUseSearchEngine(false)
                 }
-              }
-            }}
-          />
+              }}
+              className={cn(
+                'pl-10',
+                useSearchEngine ? 'pr-22' : searchQuery.length > 0 ? 'pr-12' : ''
+              )}
+              autoFocus
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  // if no results, search it on configured search engine
+                  if (
+                    searchQuery.length > 2 &&
+                    Object.values(store.itemState.value ?? {}).every(item => item.show === false)
+                  ) {
+                    window.open(buildSearchUrl(searchQuery), '_blank')
+                  }
+                }
+              }}
+            />
+            <div
+              className={cn(
+                'absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-muted-foreground flex items-center gap-2'
+              )}
+            >
+              {searchQuery.length > 0 && (
+                <button
+                  type="button"
+                  className="p-0.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground"
+                  aria-label="Clear search"
+                  onClick={() => {
+                    setSearchQuery('')
+                    setUseSearchEngine(false)
+                  }}
+                >
+                  <X className="size-4" />
+                </button>
+              )}
+              {useSearchEngine && <Kbd>Enter</Kbd>}
+            </div>
+          </>
         )}
       </store.searchQuery.Render>
-      <div
-        className={cn(
-          'absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-muted-foreground',
-          useSearchEngine ? 'flex items-center gap-2' : 'hidden'
-        )}
-      >
-        <Kbd>Enter</Kbd>
-      </div>
     </div>
   )
 }
