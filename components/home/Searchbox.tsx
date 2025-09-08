@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils'
 import { Search, X } from 'lucide-react'
 import { useState } from 'react'
+import { useMount } from 'react-use'
 import DuckDuckGo from '../svg/duckduckgo'
 import Google from '../svg/google'
 import {
@@ -15,6 +16,10 @@ import { store } from './store'
 
 export default function Searchbox() {
   const [useSearchEngine, setUseSearchEngine] = useState(false)
+
+  useMount(() => {
+    store.searchQuery.set('')
+  })
 
   return (
     <div className="relative flex-1 min-w-0 w-full">
