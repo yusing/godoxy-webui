@@ -96,7 +96,7 @@ type Prettify<T> = {
 type LeafProxy<T> = Prettify<
   {
     /** Read without subscribing. */
-    readonly value: T | undefined
+    readonly value: T
   } & NodeMethods<T>
 >
 
@@ -111,7 +111,7 @@ type DeepProxy<T> = (NonNullable<T> extends readonly (infer U)[]
       } & NodeMethods<NonNullable<T>>
     : LeafProxy<NonNullable<T>>) & {
   /** Read without subscribing. */
-  readonly value: T | undefined
+  readonly value: T
 }
 
 /** Type for array proxy with index access */
