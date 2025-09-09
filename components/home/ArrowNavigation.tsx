@@ -14,25 +14,25 @@ function setActiveItem(index: number) {
 }
 
 function handleUp() {
-  const currentActiveIndex = store.navigation.activeItemIndex.value ?? 0
+  const currentActiveIndex = store.navigation.activeItemIndex.value
   const prevRowIndex = Math.max(currentActiveIndex - getGridCols(), 0)
   setActiveItem(prevRowIndex)
 }
 
 function handleDown(visibleItemsLength: number) {
-  const currentActiveIndex = store.navigation.activeItemIndex.value ?? 0
+  const currentActiveIndex = store.navigation.activeItemIndex.value
   const nextRowIndex = Math.min(currentActiveIndex + getGridCols(), visibleItemsLength - 1)
   setActiveItem(nextRowIndex)
 }
 
 function handleLeft() {
-  const currentActiveIndex = store.navigation.activeItemIndex.value ?? 0
+  const currentActiveIndex = store.navigation.activeItemIndex.value
   const prevRowIndex = Math.max(currentActiveIndex - 1, 0)
   setActiveItem(prevRowIndex)
 }
 
 function handleRight(visibleItemsLength: number) {
-  const currentActiveIndex = store.navigation.activeItemIndex.value ?? 0
+  const currentActiveIndex = store.navigation.activeItemIndex.value
   const nextRowIndex = Math.min(currentActiveIndex + 1, visibleItemsLength - 1)
   setActiveItem(nextRowIndex)
 }
@@ -71,7 +71,7 @@ function handleNextCategory() {
 }
 
 function getVisibleItems() {
-  const itemState = store.value('itemState') ?? {}
+  const itemState = store.itemState.value ?? {}
   if (!Object.values(itemState).length) return []
   return Object.values(itemState).filter(item => item.show)
 }
@@ -138,8 +138,8 @@ export default function ArrowNavigation() {
 
   store.navigation.activeItemIndex.subscribe(index => {
     const numVisibleItems = getVisibleItems().length
-    if (!index || index < 0) {
-      index = 0
+    if (index < -1) {
+      index = -1
     } else if (index >= numVisibleItems) {
       index = numVisibleItems - 1
     }
@@ -158,14 +158,18 @@ export default function ArrowNavigation() {
 
   // Reset navigation when category changes
   store.navigation.activeCategory.subscribe(() => {
-    // set first item as active
-    setActiveItem(0)
+    // reset active item
+    setActiveItem(-1)
   })
 
   // Reset navigation when search query changes
   store.searchQuery.subscribe(() => {
-    // set first item as active
-    setActiveItem(0)
+    // reset active item
+    setActiveItem(-1)
+  })
+
+  store.navigation.activeItemIndex.subscribe(value => {
+    console.log('active item index changed', value)
   })
 
   return null

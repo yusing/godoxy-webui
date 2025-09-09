@@ -20,7 +20,7 @@ export type Store = {
   }
   navigation: {
     activeCategory: string
-    activeItemIndex: number | null
+    activeItemIndex: number
   }
 }
 
@@ -50,6 +50,6 @@ export const store = createStore<Store>('homepage', {
   },
   navigation: {
     activeCategory: 'Favorites',
-    activeItemIndex: null,
+    activeItemIndex: -1,
   },
 })
