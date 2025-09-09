@@ -13,6 +13,10 @@ export default function AppDetailsDialogContent({ alias }: { alias: string }) {
   const { data: route } = useQuery({
     queryKey: ['route', alias],
     queryFn: () => api.route.route(alias).then(r => r.data),
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   })
 
   const handleSearch = useCallback((value: string) => {

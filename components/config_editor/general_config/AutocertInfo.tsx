@@ -12,6 +12,10 @@ export default function AutocertInfo() {
   } = useQuery({
     queryKey: ['autocert.info'],
     queryFn: () => api.cert.info().then(res => res.data),
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   })
   if (!certInfo)
     return (

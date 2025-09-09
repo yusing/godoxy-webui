@@ -14,6 +14,7 @@ export default function AllSystemInfoProvider() {
   useWebSocketApi<Record<string, SystemInfo>>({
     endpoint: '/metrics/all_system_info',
     onMessage: data => {
+      // server sends one agent at a time, so we need to set each one individually
       for (const agent in data) {
         store.systemInfo[agent]?.set(data[agent]!)
       }
@@ -32,8 +33,7 @@ export default function AllSystemInfoProvider() {
           if (!agent || !res.data.some(a => a.name === agent)) {
             window.location.hash = ''
           }
-          store.set(
-            'agents',
+          store.agents.set(
             res.data.reduce(
               (acc, agent) => {
                 acc[agent.name] = agent
@@ -42,9 +42,14 @@ export default function AllSystemInfoProvider() {
               {} as Record<string, Agent>
             )
           )
+          store.agentList.set(res.data.map(a => a.name))
         })
         .then(() => true)
         .catch(toastError),
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   })
   return null
 }

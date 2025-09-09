@@ -23,6 +23,10 @@ export default function RouteDetails() {
     queryKey: ['route', activeRoute],
     queryFn: () =>
       !activeRoute ? Promise.resolve(null) : api.route.route(activeRoute).then(res => res.data),
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
   })
 
   if (!activeRoute) {

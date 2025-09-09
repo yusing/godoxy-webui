@@ -1,6 +1,6 @@
 'use client'
 
-import type { Agent, DiskUsageStat, SensorsTemperatureStat, SystemInfo } from '@/lib/api'
+import type { DiskUsageStat, SensorsTemperatureStat, SystemInfo } from '@/lib/api'
 import { formatBytes, formatShortTime, formatTemperature } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import {
@@ -21,7 +21,7 @@ import { AddAgentDialogButton } from './NewAgentButton'
 import { store } from './store'
 
 export default function ServersSidebar() {
-  const agents = store.agents.use()
+  const agentList = store.agentList.use() ?? []
 
   return (
     <div className="content scrollbar-hidden flex flex-col w-[600px] max-w-[35vw] lg:max-w-[50vw] border">
@@ -35,19 +35,19 @@ export default function ServersSidebar() {
       </div>
       <div className="px-3 py-3 space-y-3">
         <ServerItem key="Main Server" />
-        {Object.values(agents ?? {}).map(agent => (
-          <ServerItem key={agent.name} agent={agent} />
+        {agentList.map(agent => (
+          <ServerItem key={agent} agent={agent} />
         ))}
       </div>
     </div>
   )
 }
 
-function ServerItem({ agent }: { agent?: Agent }) {
-  const agentKey = agent?.name || 'GoDoxy'
+function ServerItem({ agent }: { agent?: string }) {
+  const agentKey = agent || 'GoDoxy'
   return (
     <div className="block p-4 rounded-xl border bg-card text-card-foreground transition-all hover:bg-accent/50 hover:shadow-md">
-      <a href={`#${!agent ? '' : agent.name}`}>
+      <a href={`#${agent ?? ''}`}>
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between gap-3">
             <div className="sidebar-item-title truncate font-medium">{agentKey}</div>
