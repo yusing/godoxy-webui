@@ -17,6 +17,7 @@ import type { FieldPath, FieldPathValue } from 'react-hook-form'
 import { Label } from '../ui/label'
 import { RadioGroup, RadioGroupField } from '../ui/radio-group'
 import { Skeleton } from '../ui/skeleton'
+import { AddAgentDialogButton } from './NewAgentButton'
 import { store } from './store'
 
 export default function ServersSidebar() {
@@ -29,6 +30,7 @@ export default function ServersSidebar() {
         <div className="flex items-center gap-2">
           <Label className="text-sm">Temperature Unit</Label>
           <CpuTemperatureRadio />
+          <AddAgentDialogButton />
         </div>
       </div>
       <div className="px-3 py-3 space-y-3">

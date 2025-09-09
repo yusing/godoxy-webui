@@ -34,9 +34,12 @@ export interface AccesslogFilters {
 
 export interface Agent {
   addr: string
+  is_nerdctl: boolean
   name: string
   version: string
 }
+
+export type AgentContainerRuntime = 'docker' | 'podman' | 'nerdctl'
 
 export interface AuthUserPassAuthCallbackRequest {
   password: string
@@ -479,6 +482,8 @@ export interface NetIOCountersStat {
 }
 
 export interface NewAgentRequest {
+  /** @default "docker" */
+  container_runtime?: 'docker' | 'podman' | 'nerdctl'
   host: string
   name: string
   nightly?: boolean
@@ -740,6 +745,7 @@ export interface UptimeAggregate {
 export interface VerifyNewAgentRequest {
   ca: PEMPairResponse
   client: PEMPairResponse
+  container_runtime: AgentContainerRuntime
   host: string
 }
 
@@ -1222,7 +1228,7 @@ export namespace Homepage {
 
   /**
    * @description Homepage items
-   * @tags homepage
+   * @tags homepage, websocket
    * @name Items
    * @summary Homepage items
    * @request GET:/homepage/items
@@ -2351,7 +2357,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     /**
      * @description Homepage items
      *
-     * @tags homepage
+     * @tags homepage, websocket
      * @name Items
      * @summary Homepage items
      * @request GET:/homepage/items
