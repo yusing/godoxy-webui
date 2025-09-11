@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev_docker": "pnpm run dev -H 0.0.0.0 -p 3002",
     "build": "next build --turbopack",
     "check": "next lint && tsc --noEmit",
     "lint": "eslint app",
@@ -15,7 +16,7 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache"
   },
   "dependencies": {
-    "@codemirror/lang-html": "^6.4.9",
+    "@codemirror/lang-html": "^6.4.10",
     "@codemirror/lang-json": "^6.0.2",
     "@codemirror/lang-yaml": "^6.1.2",
     "@codemirror/lint": "^6.8.5",
@@ -42,7 +43,7 @@
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@tailwindcss/postcss": "^4.1.13",
-    "@tanstack/react-query": "^5.86.0",
+    "@tanstack/react-query": "^5.87.4",
     "@uidotdev/usehooks": "^2.4.1",
     "@uiw/react-codemirror": "^4.25.1",
     "ansi-to-html": "^0.7.2",
@@ -53,7 +54,7 @@
     "codemirror-json-schema": "^0.8.1",
     "lucide-react": "^0.542.0",
     "motion": "^12.23.12",
-    "next": "^15.5.2",
+    "next": "^15.5.3",
     "next-themes": "^0.4.6",
     "postcss": "^8.5.6",
     "react": "^19.1.1",
@@ -69,28 +70,28 @@
     "tailwindcss": "^4.1.13",
     "thememirror": "^2.0.1",
     "yaml": "^2.8.1",
-    "zod": "^4.1.5"
+    "zod": "^4.1.7"
   },
   "devDependencies": {
-    "@apidevtools/json-schema-ref-parser": "^14.2.0",
+    "@apidevtools/json-schema-ref-parser": "^14.2.1",
     "@eslint/eslintrc": "^3.3.1",
-    "@eslint/js": "^9.34.0",
-    "@next/bundle-analyzer": "^15.5.2",
+    "@eslint/js": "^9.35.0",
+    "@next/bundle-analyzer": "^15.5.3",
     "@react-types/shared": "^3.32.0",
     "@types/eslint": "^9.6.1",
     "@types/node": "^24.3.1",
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.9",
-    "@typescript-eslint/eslint-plugin": "^8.42.0",
-    "@typescript-eslint/parser": "^8.42.0",
-    "eslint": "^9.34.0",
-    "eslint-config-next": "^15.5.2",
+    "@typescript-eslint/eslint-plugin": "^8.43.0",
+    "@typescript-eslint/parser": "^8.43.0",
+    "eslint": "^9.35.0",
+    "eslint-config-next": "^15.5.3",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "prettier": "^3.6.2",
     "tw-animate-css": "^1.3.8",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.42.0"
+    "typescript-eslint": "^8.43.0"
   }
 }
