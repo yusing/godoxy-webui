@@ -10,7 +10,7 @@ import { store } from './store'
 
 import { store as routesStore } from '@/components/routes/store'
 import type { RoutesHealthInfo } from '@/lib/api'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { Separator } from '../ui/separator'
 
@@ -21,22 +21,25 @@ export default function AppItemContextMenuContent({
   categoryIndex: number
   appIndex: number
 }) {
-  const item = store.homepageCategories.at(categoryIndex).items.at(appIndex)
-  const alias = item.alias.use()!
-  const visible = item.show.use()!
-  const favorite = item.favorite.use()!
+  const item = useMemo(
+    () => store.homepageCategories.at(categoryIndex).items.at(appIndex),
+    [categoryIndex, appIndex]
+  )
+  const alias = item.alias.use()
 
-  const toggleVisibility = () =>
+  const toggleVisibility = () => {
+    const newVisible = !item.show.value
     api.homepage
       .setItemVisible({
-        value: !visible,
+        value: newVisible,
         which: [alias],
       })
-      .then(() => item.show.set(!visible))
+      .then(() => item.show.set(newVisible))
       .catch(toastError)
+  }
 
   const toggleFavorite = () => {
-    const newFavorite = !favorite
+    const newFavorite = !item.favorite.value
     api.homepage
       .setItemFavorite({
         value: newFavorite,
@@ -45,7 +48,7 @@ export default function AppItemContextMenuContent({
       .then(() => {
         item.favorite.set(newFavorite)
         if (newFavorite) {
-          store.set('pendingFavorites', true)
+          store.pendingFavorites.set(true)
         }
       })
       .catch(toastError)
@@ -60,24 +63,37 @@ export default function AppItemContextMenuContent({
             Edit
           </ContextMenuItem>
         </DialogTrigger>
-        {visible ? (
-          <ContextMenuItem onClick={toggleVisibility}>
-            <EyeOff className="w-4 h-4" />
-            Hide
-          </ContextMenuItem>
-        ) : (
-          <ContextMenuItem onClick={toggleVisibility}>
-            <Eye className="w-4 h-4" />
-            Unhide
-          </ContextMenuItem>
-        )}
-        {/* Only visible items can be favorites */}
-        {visible && (
-          <ContextMenuItem onClick={toggleFavorite} className={cn(favorite && 'text-primary')}>
-            <Heart className="w-4 h-4" />
-            {favorite ? 'Remove favorite' : 'Favorite'}
-          </ContextMenuItem>
-        )}
+        <item.show.Render>
+          {visible => (
+            <>
+              {visible ? (
+                <ContextMenuItem onClick={toggleVisibility}>
+                  <EyeOff className="w-4 h-4" />
+                  Hide
+                </ContextMenuItem>
+              ) : (
+                <ContextMenuItem onClick={toggleVisibility}>
+                  <Eye className="w-4 h-4" />
+                  Unhide
+                </ContextMenuItem>
+              )}
+              {/* Only visible items can be favorites */}
+              {visible && (
+                <item.favorite.Render>
+                  {favorite => (
+                    <ContextMenuItem
+                      onClick={toggleFavorite}
+                      className={cn(favorite && 'text-primary')}
+                    >
+                      <Heart className="w-4 h-4" />
+                      {favorite ? 'Remove favorite' : 'Favorite'}
+                    </ContextMenuItem>
+                  )}
+                </item.favorite.Render>
+              )}
+            </>
+          )}
+        </item.show.Render>
         <Link href={`/routes#${alias}`} onClick={() => routesStore.requestedRoute.set(alias)}>
           <ContextMenuItem>
             <Info className="w-4 h-4" />

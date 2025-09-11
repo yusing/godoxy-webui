@@ -11,7 +11,6 @@ import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useEffect, useMemo } from 'react'
 import AppCategory from './AppCategory'
-import AppCategoryEmpty from './AppCategoryEmpty'
 import ArrowNavigation from './ArrowNavigation'
 import Searchbox from './Searchbox'
 import { store } from './store'
@@ -19,21 +18,21 @@ import { store } from './store'
 export default function AppGrid() {
   const [activeCategory, setActiveCategory] = store.navigation.activeCategory.useState()
 
-  const categories = store.use('homepageCategories')
-  const categoryNames = useMemo(() => categories?.map(c => c.name) ?? [], [categories])
+  const categories = store.homepageCategories.use()
+  const categoryNames = useMemo(() => categories.map(cat => cat.name), [categories])
 
   const maxTabsWithoutCombobox = 5
   const comboboxStartIndex = 5
   const visibleTabs = useMemo(() => {
-    const list = categories ?? []
+    const list = categoryNames
     if (list.length <= maxTabsWithoutCombobox) return list
     return list.slice(0, comboboxStartIndex)
-  }, [categories])
+  }, [categoryNames])
   const overflowTabs = useMemo(() => {
-    const list = categories ?? []
+    const list = categoryNames
     if (list.length <= maxTabsWithoutCombobox) return []
     return list.slice(comboboxStartIndex)
-  }, [categories])
+  }, [categoryNames])
 
   useEffect(() => {
     if (!categoryNames.length) return
@@ -44,11 +43,13 @@ export default function AppGrid() {
     // if current category is Favorites and there are no favorites, set to All
     if (
       activeCategory === 'Favorites' &&
-      !categories?.find(c => c.name === activeCategory)?.items?.some(c => c.favorite)
+      !store.homepageCategories
+        .at(categoryNames.indexOf(activeCategory))
+        .items.value.some(c => c.favorite)
     ) {
       setActiveCategory('All')
     }
-  }, [categoryNames, activeCategory, visibleTabs, categories])
+  }, [categoryNames, activeCategory, visibleTabs])
 
   return (
     <div className="space-y-4">
@@ -64,7 +65,7 @@ export default function AppGrid() {
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
           <div className="w-full sm:w-auto">
             <TabsList className="flex w-auto gap-1 h-auto p-1">
-              {visibleTabs?.map(({ name: category }) => (
+              {visibleTabs?.map(category => (
                 <TabsTrigger
                   key={category}
                   value={category}
@@ -87,12 +88,12 @@ export default function AppGrid() {
               ))}
               {overflowTabs.length > 0 && (
                 <Combobox
-                  value={overflowTabs.find(c => c.name === activeCategory)?.name}
+                  value={overflowTabs.find(c => c === activeCategory)}
                   options={overflowTabs.map(c => ({
-                    label: c.name,
+                    label: c,
                     icon: (
                       <CategoryIcon
-                        category={c.name.toLowerCase().replace(/\s+/g, '-')}
+                        category={c.toLowerCase().replace(/\s+/g, '-')}
                         className="h-3 w-3 sm:h-4 sm:w-4"
                       />
                     ),
@@ -160,27 +161,24 @@ export default function AppGrid() {
           }
         </store.ui.showKeyboardHints.Render>
 
-        {categories?.map(({ name: category, items }, index) => (
-          <TabsContent key={category} value={category} className="mt-6">
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2, ease: 'easeInOut' }}
-            >
-              {categories?.length === 0 ? (
-                <AppCategoryEmpty />
-              ) : (
-                // workaround for favorites tab, use `All` items instead
-                <AppCategory
-                  index={index}
-                  category={category}
-                  items={category === 'Favorites' ? categories[0]!.items : items}
-                />
-              )}
-            </motion.div>
-          </TabsContent>
-        ))}
+        {categoryNames?.map((category, index) => {
+          // workaround for favorites tab, use `All` items instead
+          const i = store.homepageCategories.at(category === 'Favorites' ? 0 : index).items
+          return (
+            <TabsContent key={category} value={category} className="mt-6">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2, ease: 'easeInOut' }}
+              >
+                <i.Render>
+                  {items => <AppCategory index={index} category={category} items={items} />}
+                </i.Render>
+              </motion.div>
+            </TabsContent>
+          )
+        })}
       </Tabs>
     </div>
   )
