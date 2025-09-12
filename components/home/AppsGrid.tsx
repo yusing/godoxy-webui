@@ -55,7 +55,7 @@ export default function AppGrid() {
   return (
     <div className="space-y-4">
       <HealthWatcher />
-      <HomepageCategoriesProvider />
+      <HomepageItemsProvider />
       <PendingFavoritesResetter activeCategory={activeCategory} />
       <ArrowNavigation />
       <Tabs
@@ -186,7 +186,7 @@ export default function AppGrid() {
   )
 }
 
-function HomepageCategoriesProvider() {
+function HomepageItemsProvider() {
   const sortMethod = store.settings.sortMethod.use()
 
   useWebSocketApi<HomepageCategory[]>({
