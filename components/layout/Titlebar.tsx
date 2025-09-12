@@ -1,6 +1,6 @@
 import { ModeToggle } from '@/components/ui/theme-toggle'
 import { siteConfig } from '@/site-config'
-import { Code, Grid3X3, Route, Server } from 'lucide-react'
+import { BookOpenText, Code, Grid3X3, Route, Server } from 'lucide-react'
 import Link from 'next/link'
 import LogoutButton from '../LogoutButton'
 import VersionText from '../VersionText'
@@ -10,6 +10,7 @@ const pages = [
   { href: '/config', Icon: Code, label: 'Config' },
   { href: '/routes', Icon: Route, label: 'Routes' },
   { href: '/servers', Icon: Server, label: 'Servers' },
+  { href: '/wiki/Home', Icon: BookOpenText, label: 'Wiki' },
 ] as const
 
 export default function Titlebar() {
