@@ -130,6 +130,11 @@ function handleKeyDown(e: KeyboardEvent) {
 }
 
 export default function ArrowNavigation() {
+  // reset active item index when component mounts
+  useEffect(() => {
+    store.navigation.activeItemIndex.set(-1)
+  }, [])
+
   // Add/remove keyboard event listeners
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown)
