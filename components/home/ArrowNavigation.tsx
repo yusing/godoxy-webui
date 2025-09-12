@@ -168,9 +168,13 @@ export default function ArrowNavigation() {
   })
 
   // Reset navigation when search query changes
-  store.searchQuery.subscribe(() => {
-    // reset active item
-    setActiveItem(-1)
+  store.searchQuery.subscribe(v => {
+    // set first visible item as active item (only while searching)
+    if (v) {
+      setActiveItem(0)
+    } else {
+      setActiveItem(-1)
+    }
   })
 
   store.navigation.activeItemIndex.subscribe(value => {
