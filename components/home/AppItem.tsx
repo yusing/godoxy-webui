@@ -1,4 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card'
+import { api } from '@/lib/api-client'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import { forwardRef, useMemo } from 'react'
@@ -20,13 +21,25 @@ export default function AppItem({ categoryIndex, appIndex, visibleIndex }: AppIt
     () => store.homepageCategories.at(categoryIndex).items.at(appIndex),
     [categoryIndex, appIndex]
   )
+
+  const handleClick = async () => {
+    const alias = item.alias.value
+    if (alias) {
+      try {
+        await api.homepage.itemClick({ which: alias })
+      } catch (error) {
+        console.warn('Failed to track item click:', error)
+      }
+    }
+  }
+
   return (
     <Dialog>
       <ContextMenu>
         <ContextMenuTrigger>
           <item.url.Render>
             {url => (
-              <Link href={url!} target="_blank" prefetch={false}>
+              <Link href={url!} target="_blank" prefetch={false} onClick={handleClick}>
                 <AppItemInner
                   categoryIndex={categoryIndex}
                   appIndex={appIndex}
@@ -54,12 +67,13 @@ const AppItemInner = forwardRef<HTMLDivElement, AppItemProps>(
       <Card
         ref={ref}
         className={cn(
-          'app-item border-accent/50 cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-105 px-0 py-4 row-span-2',
+          'app-item border-none cursor-pointer hover:shadow-md hover:scale-105 px-0 py-4 row-span-2',
           'data-[active=true]:ring-2 data-[active=true]:ring-primary data-[active=true]:shadow-lg',
           hasWidgets && 'row-span-3'
         )}
         data-index={visibleIndex}
         data-url={url}
+        data-alias={alias}
         /* initialize data-active for first item while searching */
         data-active={visibleIndex === 0 && store.searchQuery.value ? 'true' : 'false'}
         {...props}

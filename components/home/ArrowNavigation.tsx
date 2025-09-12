@@ -1,3 +1,4 @@
+import { api } from '@/lib/api-client'
 import { useEffect } from 'react'
 import { store } from './store'
 
@@ -37,8 +38,21 @@ function handleRight(visibleItemsLength: number) {
   setActiveItem(nextRowIndex)
 }
 
-function handleOpenApp() {
-  const url = document.querySelector('.app-item[data-active="true"]')?.getAttribute('data-url')
+async function handleOpenApp() {
+  const activeItem = document.querySelector('.app-item[data-active="true"]')
+  if (!activeItem) return
+
+  const url = activeItem.getAttribute('data-url')
+  const alias = activeItem.getAttribute('data-alias')
+
+  if (alias) {
+    try {
+      await api.homepage.itemClick({ which: alias })
+    } catch (error) {
+      console.warn('Failed to track item click:', error)
+    }
+  }
+
   if (url) {
     window.open(url, '_blank')
   }

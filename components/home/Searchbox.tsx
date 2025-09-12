@@ -59,7 +59,7 @@ export default function Searchbox() {
                   // if no results, search it on configured search engine
                   if (
                     searchQuery.length > 2 &&
-                    Object.values(store.itemState.value ?? {}).every(item => item.show === false)
+                    Object.values(store.itemState.value).every(item => item.show === false)
                   ) {
                     window.open(buildSearchUrl(searchQuery), '_blank')
                   }

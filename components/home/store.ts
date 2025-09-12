@@ -22,6 +22,10 @@ export type Store = {
     activeCategory: string
     activeItemIndex: number
   }
+  settings: {
+    sortMethod: 'clicks' | 'alphabetical' | 'custom'
+    // Future settings can be added here
+  }
 }
 
 type SystemInfoSimple = {
@@ -51,5 +55,8 @@ export const store = createStore<Store>('homepage', {
   navigation: {
     activeCategory: 'Favorites',
     activeItemIndex: -1,
+  },
+  settings: {
+    sortMethod: 'alphabetical',
   },
 })

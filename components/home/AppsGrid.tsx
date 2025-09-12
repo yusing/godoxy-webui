@@ -13,6 +13,7 @@ import { useEffect, useMemo } from 'react'
 import AppCategory from './AppCategory'
 import ArrowNavigation from './ArrowNavigation'
 import Searchbox from './Searchbox'
+import SettingsPopover from './SettingsPopover'
 import { store } from './store'
 
 export default function AppGrid() {
@@ -105,6 +106,7 @@ export default function AppGrid() {
               )}
             </TabsList>
           </div>
+          <SettingsPopover />
           <Searchbox />
         </div>
 
@@ -185,8 +187,11 @@ export default function AppGrid() {
 }
 
 function HomepageCategoriesProvider() {
+  const sortMethod = store.settings.sortMethod.use()
+
   useWebSocketApi<HomepageCategory[]>({
     endpoint: '/homepage/items',
+    query: { sort_method: sortMethod },
     onMessage: data => {
       store.homepageCategories.set(data)
     },
