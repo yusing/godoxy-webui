@@ -27,7 +27,7 @@ import './style.css'
 export default function RoutesSidebar() {
   const sidebarRef = useRef<HTMLDivElement>(null)
   return (
-    <div ref={sidebarRef} className="max-w-[35vw] min-w-[300px] flex flex-col">
+    <div ref={sidebarRef} className="max-w-[35vw] min-w-[330px] flex flex-col">
       <div className="sidebar-header sticky top-0 px-3 py-3 flex items-center justify-between border-x">
         <Label className="text-sm">Routes</Label>
         <Popover>
@@ -104,12 +104,10 @@ function RoutesSidebarItem({ alias }: { alias: string }) {
         )}
       >
         <div className="flex justify-between items-center gap-4 flex-1">
-          <div className="flex-shrink-0 mt-0.5 flex items-center gap-2">
+          <div className="mt-0.5 flex items-center gap-2">
             <AppIcon alias={alias} size={18} />
             <store.Render path={`uptime.${alias}.display_name`}>
-              {displayName => (
-                <Label className="truncate route-display-name">{displayName || alias}</Label>
-              )}
+              {displayName => <Label className="route-display-name">{displayName || alias}</Label>}
             </store.Render>
           </div>
           <Label className="text-sm">
