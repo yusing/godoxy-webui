@@ -49,7 +49,7 @@ function RadioGroupField({
   ...props
 }: React.ComponentProps<typeof RadioGroupPrimitive.Item> & { label: string }) {
   return (
-    <div className={cn('flex items-center gap-1', className)}>
+    <div className={cn('flex items-center gap-1.5', className)}>
       <RadioGroupItem {...props} />
       <Label htmlFor={props.id}>{label}</Label>
     </div>
