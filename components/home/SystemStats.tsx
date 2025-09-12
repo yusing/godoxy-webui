@@ -37,37 +37,38 @@ export default function SystemStats() {
 type StatProp = {
   label: string
   icon: LucideIcon
-  type: 'text' | 'progress'
+  type: 'text' | 'progress' | 'duration'
   color: string
   key: FieldPath<Store['systemInfo']>
+  format?: (value: number) => string
 }
 
 const statsProps: StatProp[] = [
   {
     label: 'Uptime',
     icon: Clock,
-    type: 'text' as const,
+    type: 'duration',
     color: 'text-primary',
     key: 'uptime',
   },
   {
     label: 'CPU Usage',
     icon: Cpu,
-    type: 'progress' as const,
+    type: 'progress',
     color: 'bg-chart-1',
     key: 'cpuAverage',
   },
   {
     label: 'Memory',
     icon: MemoryStick,
-    type: 'progress' as const,
+    type: 'progress',
     color: 'bg-chart-2',
     key: 'memoryUsage',
   },
   {
     label: 'Disk Usage',
     icon: HardDrive,
-    type: 'progress' as const,
+    type: 'progress',
     color: 'bg-chart-3',
     key: 'rootPartitionUsage',
   },

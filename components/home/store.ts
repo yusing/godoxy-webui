@@ -29,7 +29,7 @@ export type Store = {
 }
 
 type SystemInfoSimple = {
-  uptime: string
+  uptime: number
   cpuAverage: number
   rootPartitionUsage: number
   memoryUsage: number
@@ -37,7 +37,7 @@ type SystemInfoSimple = {
 
 export const store = createStore<Store>('homepage', {
   systemInfo: {
-    uptime: '0s',
+    uptime: 0,
     cpuAverage: 0,
     rootPartitionUsage: 0,
     memoryUsage: 0,
