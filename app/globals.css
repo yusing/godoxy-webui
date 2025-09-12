@@ -123,6 +123,25 @@
   --sidebar-height: calc(100vh - var(--titlebar-height) );
 }
 
+/* Responsive sidebar widths for smaller desktop sizes */
+@media (max-width: 1500px) {
+  :root {
+    --sidebar-width: 16rem; /* 256px */
+  }
+}
+
+@media (max-width: 1200px) {
+  :root {
+    --sidebar-width: 14rem; /* 224px */
+  }
+}
+
+@media (max-width: 900px) {
+  :root {
+    --sidebar-width: 12rem; /* 192px */
+  }
+}
+
 .dark {
   --background: oklch(0.1776 0 0);
   --foreground: oklch(0.9491 0 0);
