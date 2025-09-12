@@ -19,8 +19,8 @@ export default function ConfigPage() {
       <ConfigStateSyncronizer />
       <ConfigSidebar />
       <SidebarInset>
-        <div className="w-full h-full px-4 grid grid-cols-[3fr_2fr] gap-4 py-2">
-          <ConfigContent className="min-w-fit max-w-[50vw]" />
+        <div className="w-full h-full px-4 grid grid-cols-2 xl:grid-cols-[3fr_2fr] gap-4 py-2">
+          <ConfigContent className="min-w-fit max-w-[50vw] overflow-y-auto" />
           {/* 3/5 */}
           <Card className="flex flex-col h-full overflow-hidden">
             <CardHeader className="flex-shrink-0">
