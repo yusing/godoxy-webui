@@ -75,7 +75,14 @@ const AppItemInner = forwardRef<HTMLDivElement, AppItemProps>(
         data-url={url}
         data-alias={alias}
         /* initialize data-active for first item while searching */
-        data-active={visibleIndex === 0 && store.searchQuery.value ? 'true' : 'false'}
+        data-active={
+          (visibleIndex === 0 && store.searchQuery.value) ||
+          // NOTE: this is not a hook and is irrelevant to arrow navigation
+          // only for preserving the ring on item order change
+          store.navigation.activeItemIndex.value === visibleIndex
+            ? 'true'
+            : 'false'
+        }
         {...props}
       >
         <CardContent
