@@ -4,6 +4,7 @@ import { api } from '@/lib/api-client'
 import type { ConfigFile } from '@/types/file'
 import type { Config } from '@/types/godoxy'
 import { AxiosError } from 'axios'
+import isEqual from 'react-fast-compare'
 import { useMount } from 'react-use'
 import { parse as parseYAML, stringify as stringifyYAML } from 'yaml'
 import type { GoDoxyError } from '../GoDoxyError'
@@ -35,6 +36,13 @@ export default function ConfigStateSyncronizer() {
   })
 
   configStore.configObject.subscribe(config => {
+    try {
+      if (isEqual(config, parseYAML(configStore.content.value ?? ''))) {
+        return
+      }
+    } catch {
+      // ignore
+    }
     const yaml = stringifyYAML(config)
     configStore.content.set(yaml)
     validate(yaml, configStore.activeFile.type.value!).then(err =>
