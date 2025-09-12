@@ -34,8 +34,8 @@ export interface AccesslogFilters {
 
 export interface Agent {
   addr: string
-  is_nerdctl: boolean
   name: string
+  runtime: AgentContainerRuntime
   version: string
 }
 
@@ -301,6 +301,7 @@ export interface HomepageItem {
   /** sort order in all */
   all_sort_order: number
   category: string
+  clicks: number
   container_id?: string | null
   description: string
   /** sort order in favorite */
@@ -1227,6 +1228,26 @@ export namespace Homepage {
   }
 
   /**
+   * @description Increment item click.
+   * @tags homepage
+   * @name ItemClick
+   * @summary Increment item click
+   * @request POST:/homepage/item_click
+   * @response `200` `SuccessResponse` OK
+   * @response `400` `ErrorResponse` Bad Request
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace ItemClick {
+    export type RequestParams = {}
+    export type RequestQuery = {
+      which: string
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = SuccessResponse
+  }
+
+  /**
    * @description Homepage items
    * @tags homepage, websocket
    * @name Items
@@ -1245,6 +1266,11 @@ export namespace Homepage {
       provider?: string
       /** Search query */
       search?: string
+      /**
+       * Sort method
+       * @default "alphabetical"
+       */
+      sort_method?: 'clicks' | 'alphabetical' | 'custom'
     }
     export type RequestBody = never
     export type RequestHeaders = {}
@@ -2355,6 +2381,32 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
+     * @description Increment item click.
+     *
+     * @tags homepage
+     * @name ItemClick
+     * @summary Increment item click
+     * @request POST:/homepage/item_click
+     * @response `200` `SuccessResponse` OK
+     * @response `400` `ErrorResponse` Bad Request
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    itemClick: (
+      query: {
+        which: string
+      },
+      params: RequestParams = {}
+    ) =>
+      this.request<SuccessResponse, ErrorResponse>({
+        path: `/homepage/item_click`,
+        method: 'POST',
+        query: query,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
      * @description Homepage items
      *
      * @tags homepage, websocket
@@ -2373,6 +2425,11 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         provider?: string
         /** Search query */
         search?: string
+        /**
+         * Sort method
+         * @default "alphabetical"
+         */
+        sort_method?: 'clicks' | 'alphabetical' | 'custom'
       },
       params: RequestParams = {}
     ) =>
