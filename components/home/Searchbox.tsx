@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { Search, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useMount } from 'react-use'
 import DuckDuckGo from '../svg/duckduckgo'
 import Google from '../svg/google'
@@ -14,11 +14,27 @@ import { Input } from '../ui/input'
 import Kbd from '../ui/kbd'
 import { store } from './store'
 
+function isAlphabetKey(key: string) {
+  return /^[a-zA-Z]$/.test(key)
+}
+
 export default function Searchbox() {
+  const searchInputRef = useRef<HTMLInputElement>(null)
   const [useSearchEngine, setUseSearchEngine] = useState(false)
 
   useMount(() => {
     store.searchQuery.set('')
+  })
+
+  // focus search input on Alt+S
+  useEffect(() => {
+    const onAltS = (e: KeyboardEvent) => {
+      if (isAlphabetKey(e.key) && !searchInputRef.current?.contains(document.activeElement)) {
+        searchInputRef.current?.focus()
+      }
+    }
+    window.addEventListener('keydown', onAltS)
+    return () => window.removeEventListener('keydown', onAltS)
   })
 
   return (
@@ -36,6 +52,7 @@ export default function Searchbox() {
         {(searchQuery, setSearchQuery) => (
           <>
             <Input
+              ref={searchInputRef}
               placeholder="Search apps or terms..."
               type="text"
               value={searchQuery}
@@ -84,7 +101,7 @@ export default function Searchbox() {
                   <X className="size-4" />
                 </button>
               )}
-              {useSearchEngine && <Kbd>Enter</Kbd>}
+              {<Kbd>{useSearchEngine ? 'Enter' : 'A-Z'}</Kbd>}
             </div>
           </>
         )}

@@ -152,6 +152,10 @@ export default function AppGrid() {
                   </Kbd>
                   <span>Switch category</span>
                 </div>
+                <div className="flex items-center gap-1">
+                  <Kbd>A-Z</Kbd>
+                  <span>Search</span>
+                </div>
                 <div className="ml-auto flex items-center gap-2">
                   <span className="hidden lg:inline">Tab is disabled on this page</span>
                   <Button size="sm" variant="outline" onClick={() => setShow(false)}>
