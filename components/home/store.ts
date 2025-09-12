@@ -25,7 +25,7 @@ export type Store = {
 }
 
 type SystemInfoSimple = {
-  hostname: string
+  uptime: string
   cpuAverage: number
   rootPartitionUsage: number
   memoryUsage: number
@@ -33,7 +33,7 @@ type SystemInfoSimple = {
 
 export const store = createStore<Store>('homepage', {
   systemInfo: {
-    hostname: 'GoDoxy',
+    uptime: '0s',
     cpuAverage: 0,
     rootPartitionUsage: 0,
     memoryUsage: 0,

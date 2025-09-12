@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import { Cpu, HardDrive, MemoryStick, Server, type LucideIcon } from 'lucide-react'
+import { Clock, Cpu, HardDrive, MemoryStick, type LucideIcon } from 'lucide-react'
 import type { FieldPath } from 'react-hook-form'
 import type { Store } from './store'
 import SystemStatsProvider from './SystemStatsProvider'
@@ -44,11 +44,11 @@ type StatProp = {
 
 const statsProps: StatProp[] = [
   {
-    label: 'Hostname',
-    icon: Server,
+    label: 'Uptime',
+    icon: Clock,
     type: 'text' as const,
     color: 'text-primary',
-    key: 'hostname',
+    key: 'uptime',
   },
   {
     label: 'CPU Usage',
