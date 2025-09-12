@@ -177,9 +177,5 @@ export default function ArrowNavigation() {
     }
   })
 
-  store.navigation.activeItemIndex.subscribe(value => {
-    console.log('active item index changed', value)
-  })
-
   return null
 }
