@@ -120,6 +120,7 @@
   --sidebar-width: 20rem;
   --sidebar-width-mobile: 18rem;
   --sidebar-width-icon: 3rem;
+  --sidebar-height: calc(100vh - var(--titlebar-height) );
 }
 
 .dark {

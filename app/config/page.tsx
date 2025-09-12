@@ -26,8 +26,8 @@ export default function ConfigPage() {
             <CardHeader className="flex-shrink-0">
               <CardTitle>YAML Editor</CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 min-h-0 overflow-hidden w-full">
-              <ConfigYAMLEditor className="min-w-[500px] min-h-fit border rounded-md h-full w-full" />
+            <CardContent className="flex-1 min-h-0 overflow-hidden w-full h-full">
+              <ConfigYAMLEditor className="min-w-[500px] border rounded-md w-full h-full" />
             </CardContent>
             <CardFooter className="flex-shrink-0">
               <ConfigValidationError />

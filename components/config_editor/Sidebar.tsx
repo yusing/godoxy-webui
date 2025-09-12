@@ -33,12 +33,12 @@ export default function ConfigSidebar() {
       <SidebarContent className="flex flex-col gap-2 justify-between">
         <Sections />
         {sidebar.state === 'expanded' && (
-          <SidebarGroup>
+          <SidebarGroup className="flex-1 min-h-0">
             <SidebarGroupLabel>Config Files</SidebarGroupLabel>
-            <SidebarGroupContent>
+            <SidebarGroupContent className="flex-1 min-h-0">
               <Command>
                 <CommandInput placeholder="Search files..." />
-                <CommandList className="min-h-[50vh]">
+                <CommandList className="max-h-none">
                   <CommandEmpty>No files found.</CommandEmpty>
                   <FileList />
                 </CommandList>
