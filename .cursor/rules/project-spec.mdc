@@ -13,11 +13,14 @@ This is a WebUI for GoDoxy - a reverse proxy for local services.
 - Shadcn UI
 - Next.js
 
+## Package Manager
+
+- pnpm
+
 ## Libraries
 
 - Tanstack Query
 - React Hook Form
-- pnpm
 - motion (Framer Motion's successor)
 - sonner (Toast)
 - Custom state management system in `hooks/store.ts`
