@@ -34,7 +34,7 @@ export default function AppItem({ categoryIndex, appIndex, visibleIndex }: AppIt
   }
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={open => !open && store.openedDialog.set(null)}>
       <ContextMenu>
         <ContextMenuTrigger>
           <item.url.Render>
