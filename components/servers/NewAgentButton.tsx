@@ -225,12 +225,12 @@ export function AddAgentDialogButton() {
                         </FormControl>
                         <FormLabel className={minWidth}>Podman</FormLabel>
                       </FormItem>
-                      <FormItem className="flex items-center gap-3">
+                      {/* <FormItem className="flex items-center gap-3">
                         <FormControl>
                           <RadioGroupItem value="nerdctl" disabled={agentType !== 'system'} />
                         </FormControl>
                         <FormLabel className={minWidth}>Nerdctl</FormLabel>
-                      </FormItem>
+                      </FormItem> */}
                     </RadioGroup>
                   </FormControl>
                 </FormItem>
