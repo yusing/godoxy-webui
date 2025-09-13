@@ -47,7 +47,8 @@ export default function ConfigStateSyncronizer() {
         return
       }
     } catch {
-      // ignore
+      configStore.validateError.set('invalid yaml')
+      return
     }
     const yaml = stringifyYAML(config)
     configStore.content.set(yaml)
