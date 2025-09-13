@@ -2,6 +2,7 @@
 Dockerfile
 dev.Dockerfile
 compose.yml
+test-run.compose.yml
 
 .dockerignore
 .git
