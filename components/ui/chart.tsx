@@ -2,6 +2,10 @@
 
 import * as React from 'react'
 import * as RechartsPrimitive from 'recharts'
+import type { LegendPayload } from 'recharts/types/component/DefaultLegendContent'
+import type { NameType, Payload, ValueType } from 'recharts/types/component/DefaultTooltipContent'
+import type { Props as LegendProps } from 'recharts/types/component/Legend'
+import type { TooltipContentProps } from 'recharts/types/component/Tooltip'
 
 import { cn } from '@/lib/utils'
 
@@ -20,6 +24,37 @@ export type ChartConfig = {
 
 type ChartContextProps = {
   config: ChartConfig
+}
+
+export type CustomTooltipProps = Partial<TooltipContentProps<ValueType, NameType>> & {
+  className?: string
+  hideLabel?: boolean
+  hideIndicator?: boolean
+  indicator?: 'line' | 'dot' | 'dashed'
+  nameKey?: string
+  labelKey?: string
+  labelFormatter?: (
+    label: TooltipContentProps<number, string>['label'],
+    payload: TooltipContentProps<number, string>['payload']
+  ) => React.ReactNode
+  formatter?: (
+    value: number | string,
+    name: string,
+    item: Payload<number | string, string>,
+    index: number,
+    payload: ReadonlyArray<Payload<number | string, string>>
+  ) => React.ReactNode
+  valueFormatter?: (value: number | string) => React.ReactNode
+  labelClassName?: string
+  color?: string
+}
+
+export type ChartLegendContentProps = {
+  className?: string
+  hideIcon?: boolean
+  verticalAlign?: LegendProps['verticalAlign']
+  payload?: LegendPayload[]
+  nameKey?: string
 }
 
 const ChartContext = React.createContext<ChartContextProps | null>(null)
@@ -111,15 +146,7 @@ function ChartTooltipContent({
   color,
   nameKey,
   labelKey,
-}: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
-  React.ComponentProps<'div'> & {
-    hideLabel?: boolean
-    hideIndicator?: boolean
-    indicator?: 'line' | 'dot' | 'dashed'
-    nameKey?: string
-    labelKey?: string
-    valueFormatter?: (value: unknown) => React.ReactNode
-  }) {
+}: CustomTooltipProps) {
   const { config } = useChart()
 
   const tooltipLabel = React.useMemo(() => {
@@ -240,11 +267,7 @@ function ChartLegendContent({
   payload,
   verticalAlign = 'bottom',
   nameKey,
-}: React.ComponentProps<'div'> &
-  Pick<RechartsPrimitive.LegendProps, 'payload' | 'verticalAlign'> & {
-    hideIcon?: boolean
-    nameKey?: string
-  }) {
+}: ChartLegendContentProps) {
   const { config } = useChart()
 
   if (!payload?.length) {
