@@ -39,7 +39,7 @@ export interface Agent {
   version: string
 }
 
-export type AgentContainerRuntime = 'docker' | 'podman' | 'nerdctl'
+export type AgentContainerRuntime = 'docker' | 'podman'
 
 export interface AuthUserPassAuthCallbackRequest {
   password: string
@@ -484,7 +484,7 @@ export interface NetIOCountersStat {
 
 export interface NewAgentRequest {
   /** @default "docker" */
-  container_runtime?: 'docker' | 'podman' | 'nerdctl'
+  container_runtime?: 'docker' | 'podman'
   host: string
   name: string
   nightly?: boolean
@@ -933,7 +933,9 @@ export namespace Docker {
    * @summary Get container
    * @request GET:/docker/container/{id}
    * @response `200` `ContainerResponse` OK
+   * @response `400` `ErrorResponse` ID is required
    * @response `403` `ErrorResponse` Forbidden
+   * @response `404` `ErrorResponse` Container not found
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Container {
@@ -992,7 +994,7 @@ export namespace Docker {
    * @response `200` `void` OK
    * @response `400` `ErrorResponse` Bad Request
    * @response `403` `ErrorResponse` Forbidden
-   * @response `404` `ErrorResponse` Not Found
+   * @response `404` `ErrorResponse` server not found or container not found
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Logs {
@@ -1024,7 +1026,9 @@ export namespace Docker {
    * @summary Restart container
    * @request POST:/docker/restart
    * @response `200` `SuccessResponse` OK
+   * @response `400` `ErrorResponse` Invalid request
    * @response `403` `ErrorResponse` Forbidden
+   * @response `404` `ErrorResponse` Container not found
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Restart {
@@ -1042,7 +1046,9 @@ export namespace Docker {
    * @summary Start container
    * @request POST:/docker/start
    * @response `200` `SuccessResponse` OK
+   * @response `400` `ErrorResponse` Invalid request
    * @response `403` `ErrorResponse` Forbidden
+   * @response `404` `ErrorResponse` Container not found
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Start {
@@ -1060,7 +1066,9 @@ export namespace Docker {
    * @summary Stop container
    * @request POST:/docker/stop
    * @response `200` `SuccessResponse` OK
+   * @response `400` `ErrorResponse` Invalid request
    * @response `403` `ErrorResponse` Forbidden
+   * @response `404` `ErrorResponse` Container not found
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Stop {
@@ -1491,6 +1499,7 @@ export namespace Metrics {
    * @response `200` `SystemInfoAggregate` period specified
    * @response `400` `ErrorResponse` Bad Request
    * @response `403` `ErrorResponse` Forbidden
+   * @response `404` `ErrorResponse` Not Found
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace SystemInfo {
@@ -2045,7 +2054,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Get container
      * @request GET:/docker/container/{id}
      * @response `200` `ContainerResponse` OK
+     * @response `400` `ErrorResponse` ID is required
      * @response `403` `ErrorResponse` Forbidden
+     * @response `404` `ErrorResponse` Container not found
      * @response `500` `ErrorResponse` Internal Server Error
      */
     container: (id: string, params: RequestParams = {}) =>
@@ -2104,7 +2115,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @response `200` `void` OK
      * @response `400` `ErrorResponse` Bad Request
      * @response `403` `ErrorResponse` Forbidden
-     * @response `404` `ErrorResponse` Not Found
+     * @response `404` `ErrorResponse` server not found or container not found
      * @response `500` `ErrorResponse` Internal Server Error
      */
     logs: (
@@ -2139,7 +2150,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Restart container
      * @request POST:/docker/restart
      * @response `200` `SuccessResponse` OK
+     * @response `400` `ErrorResponse` Invalid request
      * @response `403` `ErrorResponse` Forbidden
+     * @response `404` `ErrorResponse` Container not found
      * @response `500` `ErrorResponse` Internal Server Error
      */
     restart: (request: DockerapiStopRequest, params: RequestParams = {}) =>
@@ -2160,7 +2173,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Start container
      * @request POST:/docker/start
      * @response `200` `SuccessResponse` OK
+     * @response `400` `ErrorResponse` Invalid request
      * @response `403` `ErrorResponse` Forbidden
+     * @response `404` `ErrorResponse` Container not found
      * @response `500` `ErrorResponse` Internal Server Error
      */
     start: (request: DockerapiStartRequest, params: RequestParams = {}) =>
@@ -2181,7 +2196,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Stop container
      * @request POST:/docker/stop
      * @response `200` `SuccessResponse` OK
+     * @response `400` `ErrorResponse` Invalid request
      * @response `403` `ErrorResponse` Forbidden
+     * @response `404` `ErrorResponse` Container not found
      * @response `500` `ErrorResponse` Internal Server Error
      */
     stop: (request: DockerapiStopRequest, params: RequestParams = {}) =>
@@ -2696,6 +2713,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @response `200` `SystemInfoAggregate` period specified
      * @response `400` `ErrorResponse` Bad Request
      * @response `403` `ErrorResponse` Forbidden
+     * @response `404` `ErrorResponse` Not Found
      * @response `500` `ErrorResponse` Internal Server Error
      */
     systemInfo: (
