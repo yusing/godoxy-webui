@@ -138,11 +138,41 @@ function MapInput_<T extends Record<string, unknown>>({
   const entries = useMemo(
     () =>
       Object.entries(merged).sort(([key1], [key2]) => {
+        // Priority 1: keyField and nameField come first
         if (key1 === (keyField as string) || key1 === (nameField as string)) return -1
         if (key2 === (keyField as string) || key2 === (nameField as string)) return 1
+
+        // Get types for comparison
+        const type1 = schema.properties?.[key1]?.type as string
+        const type2 = schema.properties?.[key2]?.type as string
+
+        // Define type priority order: string, number, boolean first
+        const getTypePriority = (type: string) => {
+          switch (type) {
+            case 'string':
+              return 0
+            case 'number':
+            case 'integer':
+              return 1
+            case 'boolean':
+              return 2
+            default:
+              return 3 // Other types (object, array, etc.) come last
+          }
+        }
+
+        const priority1 = getTypePriority(type1)
+        const priority2 = getTypePriority(type2)
+
+        // Priority 2: Sort by type priority
+        if (priority1 !== priority2) {
+          return priority1 - priority2
+        }
+
+        // Priority 3: Alphabetical sort within same type
         return key1.localeCompare(key2)
       }),
-    [merged, keyField, nameField]
+    [merged, keyField, nameField, schema]
   )
 
   const renderItem = useCallback(
