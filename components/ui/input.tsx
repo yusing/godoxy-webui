@@ -18,4 +18,23 @@ function Input({ className, type, ...props }: React.ComponentProps<'input'>) {
   )
 }
 
+type InputAddonProps = React.ComponentProps<'div'> & {
+  position?: 'left' | 'right'
+}
+
+export function InputAddon({ className, children, position = 'right', ...props }: InputAddonProps) {
+  return (
+    <div
+      className={cn(
+        'text-sm text-muted-foreground pointer-events-none inline-flex items-center absolute top-1/2 -translate-y-1/2',
+        position === 'left' ? 'start-2' : 'end-2',
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  )
+}
+
 export { Input }
