@@ -12,12 +12,17 @@ This is a WebUI for GoDoxy - a reverse proxy for local services.
 - Tailwind
 - Shadcn UI
 - Next.js
+
+## Libraries
+
 - Tanstack Query
 - React Hook Form
 - pnpm
 - motion (Framer Motion's successor)
 - sonner (Toast)
-- Custom state management system
+- Custom state management system in `hooks/store.ts`
+- APIs in `lib/api.ts`
+- API Client in `lib/api-client.ts`
 
 ## Current State
 
