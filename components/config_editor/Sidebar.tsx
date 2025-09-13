@@ -23,8 +23,10 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '../ui/sidebar'
+import AddFilePopoverButton from './AddFilePopoverButton'
 import { sectionsByFileType } from './sections'
 import { configStore } from './store'
+import { fileTypeLabels } from './types'
 
 export default function ConfigSidebar() {
   const sidebar = useSidebar()
@@ -34,7 +36,10 @@ export default function ConfigSidebar() {
         <Sections />
         {sidebar.state === 'expanded' && (
           <SidebarGroup className="flex-1 min-h-0">
-            <SidebarGroupLabel>Config Files</SidebarGroupLabel>
+            <div className="flex items-center gap-2 justify-between">
+              <SidebarGroupLabel>Config Files</SidebarGroupLabel>
+              <AddFilePopoverButton />
+            </div>
             <SidebarGroupContent className="flex-1 min-h-0">
               <Command>
                 <CommandInput placeholder="Search files..." />
@@ -51,12 +56,6 @@ export default function ConfigSidebar() {
   )
 }
 
-const fileTypeLabels = {
-  config: 'GoDoxy Config',
-  middleware: 'Middleware Compose',
-  provider: 'Include Files',
-}
-
 function FileList() {
   const files = configStore.files.use()!
   const activeFile = configStore.activeFile.use()
@@ -64,7 +63,7 @@ function FileList() {
   return (
     <>
       {Object.entries(files).map(([type, list]) => (
-        <CommandGroup key={type} heading={fileTypeLabels[type as FileType]}>
+        <CommandGroup key={type} heading={fileTypeLabels[type as FileType].label}>
           {list.map(file => {
             const isActive = activeFile?.filename === file.filename && activeFile?.type === type
             return (
