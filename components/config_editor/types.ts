@@ -1,4 +1,4 @@
-import { Code, Route } from "lucide-react";
+import { Code, Route } from 'lucide-react'
 
 export const fileTypeLabels = {
   config: { label: 'GoDoxy Config', icon: Code },

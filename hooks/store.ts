@@ -346,7 +346,7 @@ export function createStore<T extends FieldValues>(namespace: string, defaultVal
 
   const storeApi: StoreBase<T> = {
     use: <P extends FieldPath<T>>(path: P) => useObject<T, P>(namespace, path),
-    set: <P extends FieldPath<T>>(path: P, value: FieldPathValue<T, P>, skipUpdate =false) =>
+    set: <P extends FieldPath<T>>(path: P, value: FieldPathValue<T, P>, skipUpdate = false) =>
       setLeaf<T, P>(namespace, path, value, skipUpdate),
     value: <P extends FieldPath<T>>(path: P) =>
       store.get(namespace + '.' + path) as FieldPathValue<T, P>,
