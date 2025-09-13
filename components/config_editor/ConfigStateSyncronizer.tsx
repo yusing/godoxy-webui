@@ -1,6 +1,6 @@
 'use client'
 
-import { api } from '@/lib/api-client'
+import { api, formatErrorString } from '@/lib/api-client'
 import type { ConfigFile } from '@/types/file'
 import type { Config } from '@/types/godoxy'
 import { AxiosError } from 'axios'
@@ -18,7 +18,7 @@ export default function ConfigStateSyncronizer() {
         filename: configStore.activeFile.filename.value ?? 'config.yml',
       })
       .then(r => configStore.content.set(r.data))
-      .catch(err => configStore.error.set(err))
+      .catch(err => configStore.error.set(formatErrorString(err)))
       .finally(() => configStore.isLoading.set(false))
   })
 
@@ -37,7 +37,7 @@ export default function ConfigStateSyncronizer() {
         filename: activeFile?.filename ?? 'config.yml',
       })
       .then(r => configStore.content.set(r.data))
-      .catch(err => configStore.error.set(err))
+      .catch(err => configStore.error.set(formatErrorString(err)))
       .finally(() => configStore.isLoading.set(false))
   })
 

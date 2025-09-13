@@ -16,7 +16,7 @@ export default function ConfigYAMLEditor({ ...props }: Omit<ReactCodeMirrorProps
   const isLoading = configStore.isLoading.use()
 
   if (error) {
-    return <YAMLEditor readOnly value={error.message} onChange={() => {}} schema={undefined} />
+    return <YAMLEditor readOnly value={error} onChange={() => {}} schema={undefined} />
   }
 
   if (isLoading) {

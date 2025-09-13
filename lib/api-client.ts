@@ -57,6 +57,11 @@ export function formatError(data: AxiosError | ErrorResponse | string): ErrorRes
   return { message: data }
 }
 
+export function formatErrorString(data: AxiosError | ErrorResponse | string): string {
+  const error = formatError(data)
+  return `${error.message}${error.error ? `: ${error.error}` : ''}`
+}
+
 export async function callApi<Fn extends (...args: any[]) => Promise<AxiosResponse<any>>>(
   fn: Fn,
   ...args: ApiMethodParams<Fn>

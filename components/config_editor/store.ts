@@ -9,7 +9,7 @@ type ConfigState<T extends Config.Config | Routes.Routes, Sections extends strin
   activeSection: Sections
   content: string
   isLoading: boolean
-  error: Error | undefined
+  error: string | undefined
   configObject: T | undefined
   validateError: GoDoxyError | undefined
 }
