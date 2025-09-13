@@ -30,7 +30,7 @@ export type MiddlewareBase = {
   priority?: number
 }
 
-type MiddlewareFileRef = `${string}@file`
+export type MiddlewareFileRef = `${string}@file`
 /**
  * @type object
  * @patternProperties {"^.*@file$": {"type": "null"}}

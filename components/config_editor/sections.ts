@@ -82,7 +82,7 @@ const middlewareSections: Section[] = [
     id: 'middleware-list',
     label: 'Middleware List',
     icon: SlidersHorizontal,
-    Content: null,
+    Content: lazy(() => import('./middleware_compose/MiddlewareComposeForm')),
   },
 ]
 

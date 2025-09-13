@@ -1,9 +1,12 @@
 import type { GoDoxyError } from '@/components/GoDoxyError'
 import { createStore, type Store } from '@/hooks/store'
 import type { ConfigFile, ConfigFiles } from '@/types/file'
-import type { Config, Routes } from '@/types/godoxy'
+import type { Config, MiddlewareCompose, Routes } from '@/types/godoxy'
 
-type ConfigState<T extends Config.Config | Routes.Routes, Sections extends string = string> = {
+type ConfigState<
+  T extends Config.Config | Routes.Routes | MiddlewareCompose.MiddlewareCompose,
+  Sections extends string = string,
+> = {
   files: ConfigFiles
   activeFile: ConfigFile
   activeSection: Sections
@@ -31,3 +34,6 @@ export const configStore = createStore<ConfigState<Config.Config>>('config', {
 })
 
 export const routesConfigStore = configStore as unknown as Store<ConfigState<Routes.Routes>>
+export const middlewareComposeConfigStore = configStore as unknown as Store<
+  ConfigState<MiddlewareCompose.MiddlewareCompose>
+>
