@@ -91,13 +91,13 @@ const includeFileSections: Section[] = [
     id: 'route-list',
     label: 'Route List',
     icon: Route,
-    Content: lazy(() => import('./include_files/RouteList')),
+    Content: lazy(() => import('./route_files/RouteList')),
   },
   {
     id: 'new-route',
     label: 'New Route',
     icon: Plus,
-    Content: lazy(() => import('./include_files/NewRouteForm')),
+    Content: lazy(() => import('./route_files/NewRouteForm')),
   },
 ]
 
