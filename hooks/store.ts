@@ -465,6 +465,16 @@ function getNestedValue(obj: unknown, path: string): unknown {
   return current
 }
 
+function tryStructuredClone(obj: unknown): unknown {
+  if (obj === null || obj === undefined) return null
+  if (typeof obj !== 'object') return null
+  try {
+    return structuredClone(obj)
+  } catch (e) {
+    return null
+  }
+}
+
 /**
  * Immutable set/delete of a nested value using a dot-separated path.
  * - Creates intermediate nodes (array if next segment is a numeric index).
@@ -475,8 +485,8 @@ function setNestedValue(obj: unknown, path: string, value: unknown): unknown {
   if (!path) return value
 
   const segments = path.split('.')
-  const result = obj === null || obj === undefined ? {} : structuredClone(obj)
-  let current = result
+  const result = tryStructuredClone(obj)
+  let current = result ?? {}
 
   for (let i = 0; i < segments.length - 1; i++) {
     const segment = segments[i]!
