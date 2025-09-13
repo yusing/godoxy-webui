@@ -21,7 +21,7 @@ export type StoreBase<T extends FieldValues> = {
   /** Subscribe and read the value at path. Re-renders when the value changes. */
   use: <P extends FieldPath<T>>(path: P) => FieldPathValue<T, P> | undefined
   /** Set value at path (creates intermediate nodes as needed). */
-  set: <P extends FieldPath<T>>(path: P, value: FieldPathValue<T, P>) => void
+  set: <P extends FieldPath<T>>(path: P, value: FieldPathValue<T, P>, skipUpdate?: boolean) => void
   /** Read without subscribing. */
   value: <P extends FieldPath<T>>(path: P) => FieldPathValue<T, P> | undefined
   /** Delete value at path (for arrays, removes index; for objects, deletes key). */
@@ -69,7 +69,7 @@ type NodeMethods<T> = {
   /** Convenience hook returning [value, setValue] for the path. */
   useState(): readonly [T, (value: T | undefined) => void]
   /** Set value at path (creates intermediate nodes as needed). */
-  set(value: T | undefined): void
+  set(value: T | undefined, skipUpdate?: boolean): void
   /** Delete value at path (for arrays, removes index; for objects, deletes key). */
   reset(): void
   /** Subscribe to changes at path and invoke listener with the new value. */
@@ -129,10 +129,32 @@ type ArrayProxy<T> = {
   [K: number]: T extends object ? DeepProxy<T> : LeafProxy<T>
   /** Safe accessor that never returns undefined at the type level */
   at(index: number): T extends object ? DeepProxy<T> : LeafProxy<T>
+
+  // Array mutation methods
+  /** Add one or more elements to the end of the array and return the new length. */
+  push(...items: T[]): number
+  /** Remove the last element from the array and return it. */
+  pop(): T | undefined
+  /** Remove the first element from the array and return it. */
+  shift(): T | undefined
+  /** Add one or more elements to the beginning of the array and return the new length. */
+  unshift(...items: T[]): number
+  /** Change the contents of the array by removing or replacing existing elements and/or adding new elements. */
+  splice(start: number, deleteCount?: number, ...items: T[]): T[]
+  /** Reverse the order of the elements in the array. */
+  reverse(): T[]
+  /** Sort the elements of the array in place. */
+  sort(compareFn?: (a: T, b: T) => number): T[]
+  /** Fill the array with a static value from start index to end index. */
+  fill(value: T, start?: number, end?: number): T[]
+  /** Shallow copy part of the array to another location in the same array. */
+  copyWithin(target: number, start: number, end?: number): T[]
+  /** Insert items into the array in sorted order using the provided comparison function. */
+  sortedInsert(cmp: (a: T, b: T) => number, ...items: T[]): number
 }
 
 /** Build a deep proxy for dynamic path access under a namespace. */
-function createValuesProxy(namespace: string, storeApi: StoreBase<any>, initialPath = '') {
+function createValuesProxy(storeApi: StoreBase<any>, initialPath = '') {
   const build = (path: string): any =>
     new Proxy(
       {},
@@ -170,9 +192,129 @@ function createValuesProxy(namespace: string, storeApi: StoreBase<any>, initialP
             }
           }
           if (prop === 'length') {
-            const value = store.get(`${namespace}.${path}`)
+            const value = storeApi.value(path)
             return Array.isArray(value) ? value.length : undefined
           }
+
+          // Array mutation methods
+          if (prop === 'push') {
+            return (...items: any[]) => {
+              const currentArray = storeApi.value(path) ?? []
+              if (!Array.isArray(currentArray)) return 0
+              const newArray = [...currentArray, ...items]
+              storeApi.set(path as any, newArray)
+              return newArray.length
+            }
+          }
+          if (prop === 'pop') {
+            return () => {
+              const currentArray = storeApi.value(path) ?? []
+              if (!Array.isArray(currentArray) || currentArray.length === 0) return undefined
+              const newArray = currentArray.slice(0, -1)
+              const poppedItem = currentArray[currentArray.length - 1]
+              storeApi.set(path as any, newArray)
+              return poppedItem
+            }
+          }
+          if (prop === 'shift') {
+            return () => {
+              const currentArray = storeApi.value(path) ?? []
+              if (!Array.isArray(currentArray) || currentArray.length === 0) return undefined
+              const newArray = currentArray.slice(1)
+              const shiftedItem = currentArray[0]
+              storeApi.set(path as any, newArray)
+              return shiftedItem
+            }
+          }
+          if (prop === 'unshift') {
+            return (...items: any[]) => {
+              const currentArray = storeApi.value(path) ?? []
+              if (!Array.isArray(currentArray)) return 0
+              const newArray = [...items, ...currentArray]
+              storeApi.set(path as any, newArray)
+              return newArray.length
+            }
+          }
+          if (prop === 'splice') {
+            return (start: number, deleteCount?: number, ...items: any[]) => {
+              const currentArray = storeApi.value(path) ?? []
+              if (!Array.isArray(currentArray)) return []
+              const newArray = [...currentArray]
+              const deletedItems = newArray.splice(start, deleteCount ?? 0, ...items)
+              storeApi.set(path as any, newArray)
+              return deletedItems
+            }
+          }
+          if (prop === 'reverse') {
+            return () => {
+              const currentArray = storeApi.value(path) ?? []
+              if (!Array.isArray(currentArray)) return []
+              const newArray = [...currentArray].reverse()
+              storeApi.set(path as any, newArray)
+              return newArray
+            }
+          }
+          if (prop === 'sort') {
+            return (compareFn?: (a: any, b: any) => number) => {
+              const currentArray = storeApi.value(path) ?? []
+              if (!Array.isArray(currentArray)) return []
+              const newArray = [...currentArray].sort(compareFn)
+              storeApi.set(path as any, newArray)
+              return newArray
+            }
+          }
+          if (prop === 'fill') {
+            return (value: any, start?: number, end?: number) => {
+              const currentArray = storeApi.value(path) ?? []
+              if (!Array.isArray(currentArray)) return []
+              const newArray = [...currentArray].fill(value, start, end)
+              storeApi.set(path as any, newArray)
+              return newArray
+            }
+          }
+          if (prop === 'copyWithin') {
+            return (target: number, start: number, end?: number) => {
+              const currentArray = storeApi.value(path) ?? []
+              if (!Array.isArray(currentArray)) return []
+              const newArray = [...currentArray].copyWithin(target, start, end)
+              storeApi.set(path as any, newArray)
+              return newArray
+            }
+          }
+          if (prop === 'sortedInsert') {
+            return (cmp: (a: any, b: any) => number, ...items: any[]) => {
+              const currentArray = storeApi.value(path) ?? []
+              if (!Array.isArray(currentArray)) return 0
+
+              if (typeof cmp !== 'function') return currentArray.length
+
+              // Create a copy of the current array
+              let newArray = [...currentArray]
+
+              // Insert each item in sorted order using binary search
+              for (const item of items) {
+                let left = 0
+                let right = newArray.length
+
+                // Binary search to find insertion point
+                while (left < right) {
+                  const mid = (left + right) >>> 1
+                  if (cmp(newArray[mid], item) <= 0) {
+                    left = mid + 1
+                  } else {
+                    right = mid
+                  }
+                }
+
+                // Insert at the found position
+                newArray.splice(left, 0, item)
+              }
+
+              storeApi.set(path, newArray)
+              return newArray.length
+            }
+          }
+
           if (typeof prop === 'string' || typeof prop === 'number') {
             const nextPath = path ? `${path}.${prop}` : String(prop)
             // Always return a proxy
@@ -204,8 +346,8 @@ export function createStore<T extends FieldValues>(namespace: string, defaultVal
 
   const storeApi: StoreBase<T> = {
     use: <P extends FieldPath<T>>(path: P) => useObject<T, P>(namespace, path),
-    set: <P extends FieldPath<T>>(path: P, value: FieldPathValue<T, P>) =>
-      setLeaf<T, P>(namespace, path, value),
+    set: <P extends FieldPath<T>>(path: P, value: FieldPathValue<T, P>, skipUpdate =false) =>
+      setLeaf<T, P>(namespace, path, value, skipUpdate),
     value: <P extends FieldPath<T>>(path: P) =>
       store.get(namespace + '.' + path) as FieldPathValue<T, P>,
     reset: <P extends FieldPath<T>>(path: P) => produce(namespace + '.' + path, undefined),
@@ -243,7 +385,7 @@ export function createStore<T extends FieldValues>(namespace: string, defaultVal
 
       // Otherwise, treat it as a dynamic path access
       if (typeof prop === 'string') {
-        return createValuesProxy(namespace, storeApi, prop)
+        return createValuesProxy(storeApi, prop)
       }
 
       return undefined
