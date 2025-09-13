@@ -470,7 +470,7 @@ function tryStructuredClone(obj: unknown): unknown {
   if (typeof obj !== 'object') return null
   try {
     return structuredClone(obj)
-  } catch (e) {
+  } catch {
     return null
   }
 }
