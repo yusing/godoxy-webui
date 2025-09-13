@@ -102,21 +102,21 @@ type LeafProxy<T> = Prettify<
 
 /** Type for nested objects with proxy methods */
 type DeepProxy<T> = (NonNullable<T> extends readonly (infer U)[]
-  ? ArrayProxy<U> & NodeMethods<NonNullable<T>>
+  ? ArrayProxy<U> & NodeMethods<T>
   : NonNullable<T> extends FieldValues
     ? {
         [K in keyof NonNullable<T>]-?: NonNullable<NonNullable<T>[K]> extends object
           ? DeepProxy<NonNullable<T>[K]>
           : LeafProxy<NonNullable<T>[K]>
-      } & NodeMethods<NonNullable<T>>
-    : LeafProxy<NonNullable<T>>) & {
+      } & NodeMethods<T>
+    : LeafProxy<T>) & {
   /** Read without subscribing. */
   readonly value: T
 }
 
 /** Type for array proxy with index access */
 type ArrayProxy<T> = {
-  /** Read without subscribing. */
+  /** Read without subscribing. Returns array or undefined for missing paths. */
   readonly value: T[] | undefined
   /**
    * Length of the underlying array. Runtime may return undefined when the
