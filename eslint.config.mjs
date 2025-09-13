@@ -18,7 +18,14 @@ const compat = new FlatCompat({
 export default [
   ...compat.extends('next/core-web-vitals', 'next/typescript', 'prettier'),
   {
-    ignores: ['app/components/ui/**'],
+    ignores: [
+      'app/components/ui/**',
+      'public/**',
+      '.next/**',
+      'postcss.config.mjs',
+      'eslint.config.mjs',
+      'next-env.d.ts',
+    ],
   },
   {
     plugins: {
