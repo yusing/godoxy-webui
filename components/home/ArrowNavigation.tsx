@@ -61,7 +61,7 @@ async function handleOpenApp() {
 function handlePrevCategory() {
   const categories = store.homepageCategories.value ?? []
   if (!categories.length) return
-  const currentCategory = store.navigation.activeCategory.value!
+  const currentCategory = store.navigation.activeCategory.value
   const currentCategoryIndex = Math.max(
     0,
     categories.findIndex(c => c.name === currentCategory)
@@ -74,7 +74,7 @@ function handlePrevCategory() {
 function handleNextCategory() {
   const categories = store.homepageCategories.value ?? []
   if (!categories.length) return
-  const currentCategory = store.navigation.activeCategory.value!
+  const currentCategory = store.navigation.activeCategory.value
   const currentCategoryIndex = Math.max(
     0,
     categories.findIndex(c => c.name === currentCategory)

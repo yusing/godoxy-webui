@@ -39,7 +39,7 @@ export default function AppItem({ categoryIndex, appIndex, visibleIndex }: AppIt
         <ContextMenuTrigger>
           <item.url.Render>
             {url => (
-              <Link href={url!} target="_blank" prefetch={false} onClick={handleClick}>
+              <Link href={url} target="_blank" prefetch={false} onClick={handleClick}>
                 <AppItemInner
                   categoryIndex={categoryIndex}
                   appIndex={appIndex}

@@ -51,7 +51,7 @@ export default function ConfigStateSyncronizer() {
     }
     const yaml = stringifyYAML(config)
     configStore.content.set(yaml)
-    validate(yaml, configStore.activeFile.type.value!).then(err =>
+    validate(yaml, configStore.activeFile.type.value).then(err =>
       configStore.validateError.set(err as GoDoxyError)
     )
   })
@@ -67,7 +67,7 @@ export default function ConfigStateSyncronizer() {
     try {
       const config = parseYAML(content) as Config.Config
       configStore.configObject.set(config)
-      validate(content, configStore.activeFile.type.value!).then(err =>
+      validate(content, configStore.activeFile.type.value).then(err =>
         configStore.validateError.set(err as GoDoxyError)
       )
     } catch {
