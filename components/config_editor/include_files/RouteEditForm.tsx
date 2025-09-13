@@ -70,11 +70,11 @@ export default function RouteEditForm({
         className="space-y-4"
       >
         {/* Header with save/cancel buttons */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4 px-0.5">
           <h3 className="text-lg font-semibold">{headerText}</h3>
           <div className="flex gap-2">
-            <Button type="submit" size="sm" className="bg-foreground">
-              <SaveButtonIcon className="h-4 w-4 mr-1" />
+            <Button type="submit" size="sm">
+              <SaveButtonIcon className="size-4" />
               {saveButtonText}
             </Button>
             <Button
@@ -84,7 +84,7 @@ export default function RouteEditForm({
               onClick={() => onCancel(form)}
               className={cancelButtonClassName}
             >
-              <CancelButtonIcon className="h-4 w-4 mr-1" />
+              <CancelButtonIcon className="size-4" />
               {cancelButtonText}
             </Button>
           </div>

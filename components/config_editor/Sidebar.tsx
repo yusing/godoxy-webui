@@ -24,6 +24,8 @@ import {
   useSidebar,
 } from '../ui/sidebar'
 import AddFilePopoverButton from './AddFilePopoverButton'
+import ConfigReloadButton from './ConfigReloadButton'
+import ConfigSaveButton from './ConfigSaveButton'
 import { sectionsByFileType } from './sections'
 import { configStore } from './store'
 import { fileTypeLabels } from './types'
@@ -38,7 +40,29 @@ export default function ConfigSidebar() {
           <SidebarGroup className="flex-1 min-h-0">
             <div className="flex items-center gap-2 justify-between">
               <SidebarGroupLabel>Config Files</SidebarGroupLabel>
-              <AddFilePopoverButton />
+              <div className="flex items-center gap-2">
+                <AddFilePopoverButton
+                  aria-label="Add File"
+                  title="Add File"
+                  className="size-6"
+                  variant="ghost"
+                  size="icon"
+                />
+                <ConfigReloadButton
+                  aria-label="Reload File"
+                  title="Reload File"
+                  className="size-6"
+                  variant="ghost"
+                  size="icon"
+                />
+                <ConfigSaveButton
+                  aria-label="Save File"
+                  title="Save File"
+                  className="size-6 text-primary"
+                  variant="ghost"
+                  size="icon"
+                />
+              </div>
             </div>
             <SidebarGroupContent className="flex-1 min-h-0">
               <Command>

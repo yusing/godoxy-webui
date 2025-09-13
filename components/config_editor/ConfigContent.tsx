@@ -1,11 +1,6 @@
-import { api } from '@/lib/api-client'
-import { toastError } from '@/lib/toast'
 import { cn } from '@/lib/utils'
-import { CheckCircle2Icon, Loader2, RefreshCcw, Save } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
-import { useEffect, useState } from 'react'
 import LoadingRing from '../LoadingRing'
-import { Button } from '../ui/button'
 import { SidebarTrigger } from '../ui/sidebar'
 import { sectionsByFileType } from './sections'
 import { configStore } from './store'
@@ -24,15 +19,9 @@ export default function ConfigContent({ className }: { className?: string }) {
 
   return (
     <div className={cn('relative', className)}>
-      <header className="py-2 pr-1 flex items-start justify-between sticky top-0">
-        <div className="flex items-center gap-2">
-          <SidebarTrigger />
-          <h1 className="text-2xl font-bold">{label}</h1>
-        </div>
-        <div className="flex items-center gap-2">
-          <ConfigReloadButton />
-          <ConfigSaveButton />
-        </div>
+      <header className="py-2 pr-1 flex items-start sticky top-0 gap-1">
+        <SidebarTrigger className="size-8" />
+        <h1 className="text-xl font-bold">{label}</h1>
       </header>
       <AnimatePresence mode="wait">
         <motion.div
@@ -56,64 +45,5 @@ export default function ConfigContent({ className }: { className?: string }) {
         </motion.div>
       </AnimatePresence>
     </div>
-  )
-}
-
-function ConfigReloadButton() {
-  const [activeFile, setActiveFile] = configStore.activeFile.useState()
-
-  const handleReload = () => {
-    setActiveFile(activeFile)
-  }
-
-  return (
-    <Button onClick={handleReload} variant={'outline'}>
-      <RefreshCcw />
-      Reload File
-    </Button>
-  )
-}
-
-function ConfigSaveButton() {
-  const activeFile = configStore.activeFile.use()!
-  const content = configStore.content.use()
-
-  const [isSaving, setIsSaving] = useState(false)
-  const [isSaved, setIsSaved] = useState(false)
-
-  const handleSave = () => {
-    if (content) {
-      setIsSaving(true)
-      api.file
-        .set(activeFile, content)
-        .catch(toastError)
-        .finally(() => {
-          setIsSaving(false)
-          setIsSaved(true)
-        })
-    }
-  }
-
-  useEffect(() => {
-    let timeout: NodeJS.Timeout
-    if (isSaved) {
-      timeout = setTimeout(() => setIsSaved(false), 2000)
-    }
-    return () => timeout && clearTimeout(timeout)
-  }, [isSaved])
-
-  return (
-    <Button onClick={handleSave} disabled={isSaving}>
-      {isSaving ? (
-        <Loader2 className="animate-spin" />
-      ) : isSaved ? (
-        <CheckCircle2Icon className="text-green-500 animate-in fade-in-0 duration-1000" />
-      ) : (
-        <>
-          <Save />
-          Save File
-        </>
-      )}
-    </Button>
   )
 }

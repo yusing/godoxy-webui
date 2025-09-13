@@ -12,7 +12,7 @@ import { sectionsByFileType } from './sections'
 import { configStore } from './store'
 import { fileTypeLabels } from './types'
 
-export default function AddFilePopoverButton() {
+export default function AddFilePopoverButton(props: React.ComponentProps<typeof Button>) {
   const [isOpen, setIsOpen] = useState(false)
 
   const form = useForm<{ type: FileType; filename: string }>({
@@ -71,7 +71,7 @@ export default function AddFilePopoverButton() {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger>
-        <Button className="size-6" variant="ghost" size="icon">
+        <Button {...props}>
           <Plus />
         </Button>
       </PopoverTrigger>

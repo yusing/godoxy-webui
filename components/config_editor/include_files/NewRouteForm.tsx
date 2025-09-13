@@ -28,17 +28,19 @@ export default function NewRouteForm() {
   }
 
   return (
-    <RouteEditForm
-      route={{}}
-      alias=""
-      onSave={onSave}
-      onCancel={form => form.reset()}
-      headerText="New Route"
-      saveButtonIcon={Plus}
-      saveButtonText="Create"
-      cancelButtonIcon={RefreshCcw}
-      cancelButtonText="Reset"
-      cancelButtonVariant="outline"
-    />
+    <div className="rounded-md border border-border p-4">
+      <RouteEditForm
+        route={{}}
+        alias=""
+        onSave={onSave}
+        onCancel={form => form.reset()}
+        headerText="New Route"
+        saveButtonIcon={Plus}
+        saveButtonText="Create"
+        cancelButtonIcon={RefreshCcw}
+        cancelButtonText="Reset"
+        cancelButtonVariant="outline"
+      />
+    </div>
   )
 }
