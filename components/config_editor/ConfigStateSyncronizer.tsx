@@ -23,6 +23,12 @@ export default function ConfigStateSyncronizer() {
   })
 
   configStore.activeFile.subscribe(activeFile => {
+    if (activeFile.isNewFile) {
+      configStore.content.set('')
+      configStore.isLoading.set(false)
+      configStore.error.reset()
+      return
+    }
     configStore.isLoading.set(true)
     configStore.error.reset()
     api.file

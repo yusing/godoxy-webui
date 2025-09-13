@@ -1,6 +1,6 @@
 import type { FileType } from '@/lib/api'
 import { Plus } from 'lucide-react'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { Button } from '../ui/button'
 import { Input, InputAddon } from '../ui/input'
@@ -13,6 +13,8 @@ import { configStore } from './store'
 import { fileTypeLabels } from './types'
 
 export default function AddFilePopoverButton() {
+  const [isOpen, setIsOpen] = useState(false)
+
   const form = useForm<{ type: FileType; filename: string }>({
     defaultValues: {
       type: 'provider',
@@ -32,12 +34,15 @@ export default function AddFilePopoverButton() {
     configStore.activeFile.set({
       type,
       filename: `${filename}.yml`,
+      isNewFile: true,
     })
 
     // if the type has changed, set the active section to the first section of the new type
     if (hasTypeChanged) {
       configStore.activeSection.set(sectionsByFileType[type].sections[0]!.id)
     }
+
+    setIsOpen(false)
   }, [])
 
   // Validation functions
@@ -64,7 +69,7 @@ export default function AddFilePopoverButton() {
   }, [])
 
   return (
-    <Popover>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon">
           <Plus className="size-4" />
