@@ -50,7 +50,7 @@ export default function AppGrid() {
     ) {
       setActiveCategory('All')
     }
-  }, [categoryNames, activeCategory, visibleTabs])
+  }, [categoryNames, activeCategory, setActiveCategory, visibleTabs])
 
   return (
     <div className="space-y-4">
