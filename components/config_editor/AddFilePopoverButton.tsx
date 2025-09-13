@@ -70,9 +70,9 @@ export default function AddFilePopoverButton() {
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <Plus className="size-4" />
+      <PopoverTrigger>
+        <Button className="size-6" variant="ghost" size="icon">
+          <Plus />
         </Button>
       </PopoverTrigger>
       <PopoverContent>
