@@ -85,22 +85,15 @@ const AppItemInner = forwardRef<HTMLDivElement, AppItemProps>(
         }
         {...props}
       >
-        <CardContent
-          className={cn(
-            'flex flex-col items-center text-center h-full justify-center',
-            hasWidgets && 'justify-between'
-          )}
-        >
-          <div className="flex flex-row justify-start items-center space-x-4 w-full">
+        <CardContent className={cn(hasWidgets && 'justify-between')}>
+          <div className="flex items-center gap-4 w-full">
             <store.Render path={`health.${alias}.status`}>
               {status => <HealthBubble status={status ?? 'unknown'} />}
             </store.Render>
-            <div className="rounded-xl bg-accent/10 group-hover:bg-accent/20 transition-colors">
-              <item.icon.Render>
-                {icon => <AppIcon className="h-6 w-6" alias={alias} url={icon} />}
-              </item.icon.Render>
-            </div>
-            <div className="flex flex-col items-start space-y-1">
+            <item.icon.Render>
+              {icon => <AppIcon className="h-6 w-6" alias={alias} url={icon} />}
+            </item.icon.Render>
+            <div className="flex-1 flex flex-col items-start truncate">
               <item.name.Render>
                 {name => <h3 className="font-medium text-sm">{name || alias}</h3>}
               </item.name.Render>
