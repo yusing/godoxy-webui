@@ -5,7 +5,7 @@ import ServersSidebar from '@/components/servers/Sidebar'
 
 export default function ServersPage() {
   return (
-    <div className="flex">
+    <div className="flex h-full">
       <ServersSidebar />
       <ServerContent />
       <QueryProvider>

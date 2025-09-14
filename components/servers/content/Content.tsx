@@ -19,7 +19,7 @@ import MetricChart from './Charts'
 
 export default function ServerContent() {
   return (
-    <div className="content p-4 space-y-4 flex-1">
+    <div className="hidden md:block content p-4 space-y-4 flex-1">
       <SystemInfoGraphsPage />
     </div>
   )

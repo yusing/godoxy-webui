@@ -24,12 +24,12 @@ export default function ServersSidebar() {
   const agentList = store.agentList.use() ?? []
 
   return (
-    <div className="content scrollbar-hidden flex flex-col w-[600px] max-w-[35vw] lg:max-w-[50vw] border">
+    <div className="content scrollbar-hidden flex flex-col w-full md:w-[600px] md:max-w-[35vw] lg:max-w-[50vw] border">
       <div className="sticky top-0 z-10 px-4 py-3 flex items-center justify-between backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <Label className="text-sm">Servers</Label>
         <div className="flex items-center gap-2">
-          <Label className="text-sm">Temperature Unit</Label>
-          <CpuTemperatureRadio />
+          <Label className="text-xs md:text-sm text-muted-foreground">Temperature Unit</Label>
+          <CpuTemperatureRadio className="text-xs md:text-sm text-muted-foreground" />
           <AddAgentDialogButton />
         </div>
       </div>
@@ -105,13 +105,13 @@ function ServerItem({ agent }: { agent?: string }) {
   )
 }
 
-function CpuTemperatureRadio() {
+function CpuTemperatureRadio({ className }: { className?: string }) {
   const [temperatureUnit, setTemperatureUnit] = store.temperatureUnit.useState()
   return (
     <RadioGroup
       value={temperatureUnit}
       onValueChange={e => setTemperatureUnit(e as 'celsius' | 'fahrenheit')}
-      className="flex flex-row gap-x-2"
+      className={cn('flex flex-row gap-x-2', className)}
     >
       <RadioGroupField label="°C" value="celsius" />
       <RadioGroupField label="°F" value="fahrenheit" />
