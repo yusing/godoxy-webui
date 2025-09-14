@@ -59,7 +59,7 @@ export default function LoginPage() {
   )
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-200px)]">
+    <div className="flex items-center justify-center h-full px-6 sm:px-0">
       <Card className="max-w-md w-full">
         <CardHeader>
           <CardTitle>{siteConfig.metadata.title}</CardTitle>
