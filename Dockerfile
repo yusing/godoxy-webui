@@ -30,7 +30,7 @@ RUN corepack enable pnpm && \
 FROM webui-deps AS webui-builder
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN pnpm run build
+RUN --mount=type=cache,target=/app/.next/cache pnpm run build
 
 # Rebuild the source code only when needed
 FROM wiki-deps AS wiki-builder
