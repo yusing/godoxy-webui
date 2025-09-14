@@ -3,6 +3,7 @@ import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
 import { useCallback, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { AppIcon } from '../AppIcon'
 import IconSearchField from '../IconSearchField'
 import { Button } from '../ui/button'
@@ -52,7 +53,11 @@ export default function AppEditDialogContent({
         .then(
           async () => await api.homepage.setItemVisible({ which: [newItem.alias], value: true })
         )
-        .then(() => store.set(`homepageCategories.${categoryIndex}.items.${appIndex}`, newItem))
+        .then(() => {
+          store.set(`homepageCategories.${categoryIndex}.items.${appIndex}`, newItem)
+          store.openedDialog.set(null)
+          toast.success('App saved successfully')
+        })
         .catch(toastError)
     },
     [app.icon, categoryIndex, appIndex]
@@ -140,9 +145,7 @@ export default function AppEditDialogContent({
                 Cancel
               </Button>
             </DialogClose>
-            <DialogClose asChild>
-              <Button type="submit">Save</Button>
-            </DialogClose>
+            <Button type="submit">Save</Button>
           </DialogFooter>
         </form>
       </Form>
