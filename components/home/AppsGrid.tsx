@@ -64,8 +64,8 @@ export default function AppGrid() {
         className="w-full"
       >
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-          <div className="w-full sm:w-auto">
-            <TabsList className="flex w-auto gap-1 h-auto p-1">
+          <div className="flex items-center w-full">
+            <TabsList className="flex w-full sm:w-auto gap-1 h-auto p-1">
               {visibleTabs?.map(category => (
                 <TabsTrigger
                   key={category}
@@ -105,8 +105,8 @@ export default function AppGrid() {
                 />
               )}
             </TabsList>
+            <SettingsPopover />
           </div>
-          <SettingsPopover />
           <Searchbox />
         </div>
 
