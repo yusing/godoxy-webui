@@ -19,6 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <ReactScan />
+      <head>
+        <meta name="apple-mobile-web-app-title" content="GoDoxy" />
+      </head>
       <body className="antialiased">
         <ThemeProvider attribute="class" defaultTheme="system" storageKey="ui-theme" enableSystem>
           <Titlebar />
