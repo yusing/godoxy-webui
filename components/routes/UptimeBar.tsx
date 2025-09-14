@@ -28,16 +28,45 @@ const RouteUptimeBar_ = memo(({ statuses }: { statuses: RouteStatus[] }) => {
 
     const calculatedMax = Math.floor(containerWidth / (barWidth + gap))
 
-    // Ensure we have at least 10 bars and at most 100 for reasonable limits
-    const newMaxStatuses = Math.max(10, Math.min(50, calculatedMax))
+    const newMaxStatuses = Math.max(10, calculatedMax)
     return newMaxStatuses
   }, [containerRef])
 
   const [barsCount, setBarsCount] = useState(0)
 
   useEffect(() => {
-    setBarsCount(calcMaxStatuses())
-  }, [containerRef, calcMaxStatuses])
+    const updateBarsCount = () => {
+      const newCount = calcMaxStatuses()
+      if (newCount !== barsCount) {
+        setBarsCount(newCount)
+      }
+    }
+
+    // Initial calculation
+    updateBarsCount()
+
+    // Set up ResizeObserver to watch for container size changes
+    let resizeObserver: ResizeObserver | null = null
+    if (containerRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        updateBarsCount()
+      })
+      resizeObserver.observe(containerRef.current)
+    }
+
+    // Fallback: listen to window resize events
+    const handleWindowResize = () => {
+      updateBarsCount()
+    }
+    window.addEventListener('resize', handleWindowResize)
+
+    return () => {
+      if (resizeObserver) {
+        resizeObserver.disconnect()
+      }
+      window.removeEventListener('resize', handleWindowResize)
+    }
+  }, [calcMaxStatuses, barsCount])
 
   const displayStatuses = useMemo(() => statuses.slice(-barsCount), [statuses, barsCount])
 
