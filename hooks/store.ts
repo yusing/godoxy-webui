@@ -185,133 +185,128 @@ function createValuesProxy(storeApi: StoreBase<any>, initialPath = '') {
               children: (value: any, update: (value: any) => void) => ReactNode
             }) => storeApi.Render({ path, children })
           }
-          if (prop === 'at') {
-            return (index: number) => {
-              const nextPath = path ? `${path}.${index}` : String(index)
-              return build(nextPath)
+          if (Array.isArray(storeApi.value(path))) {
+            if (prop === 'at') {
+              return (index: number) => {
+                const nextPath = path ? `${path}.${index}` : String(index)
+                return build(nextPath)
+              }
             }
-          }
-          if (prop === 'length') {
-            const value = storeApi.value(path)
-            return Array.isArray(value) ? value.length : undefined
-          }
+            if (prop === 'length') {
+              const value = storeApi.value(path)
+              return Array.isArray(value) ? value.length : undefined
+            }
 
-          // Array mutation methods
-          if (prop === 'push') {
-            return (...items: any[]) => {
-              const currentArray = storeApi.value(path) ?? []
-              if (!Array.isArray(currentArray)) return 0
-              const newArray = [...currentArray, ...items]
-              storeApi.set(path as any, newArray)
-              return newArray.length
+            // Array mutation methods
+            if (prop === 'push') {
+              return (...items: any[]) => {
+                const currentArray = storeApi.value(path) ?? []
+                const newArray = [...currentArray, ...items]
+                storeApi.set(path as any, newArray)
+                return newArray.length
+              }
             }
-          }
-          if (prop === 'pop') {
-            return () => {
-              const currentArray = storeApi.value(path) ?? []
-              if (!Array.isArray(currentArray) || currentArray.length === 0) return undefined
-              const newArray = currentArray.slice(0, -1)
-              const poppedItem = currentArray[currentArray.length - 1]
-              storeApi.set(path as any, newArray)
-              return poppedItem
+            if (prop === 'pop') {
+              return () => {
+                const currentArray = storeApi.value(path) ?? []
+                if (currentArray.length === 0) return undefined
+                const newArray = currentArray.slice(0, -1)
+                const poppedItem = currentArray[currentArray.length - 1]
+                storeApi.set(path as any, newArray)
+                return poppedItem
+              }
             }
-          }
-          if (prop === 'shift') {
-            return () => {
-              const currentArray = storeApi.value(path) ?? []
-              if (!Array.isArray(currentArray) || currentArray.length === 0) return undefined
-              const newArray = currentArray.slice(1)
-              const shiftedItem = currentArray[0]
-              storeApi.set(path as any, newArray)
-              return shiftedItem
+            if (prop === 'shift') {
+              return () => {
+                const currentArray = storeApi.value(path) ?? []
+                if (currentArray.length === 0) return undefined
+                const newArray = currentArray.slice(1)
+                const shiftedItem = currentArray[0]
+                storeApi.set(path as any, newArray)
+                return shiftedItem
+              }
             }
-          }
-          if (prop === 'unshift') {
-            return (...items: any[]) => {
-              const currentArray = storeApi.value(path) ?? []
-              if (!Array.isArray(currentArray)) return 0
-              const newArray = [...items, ...currentArray]
-              storeApi.set(path as any, newArray)
-              return newArray.length
+            if (prop === 'unshift') {
+              return (...items: any[]) => {
+                const currentArray = storeApi.value(path) ?? []
+                const newArray = [...items, ...currentArray]
+                storeApi.set(path as any, newArray)
+                return newArray.length
+              }
             }
-          }
-          if (prop === 'splice') {
-            return (start: number, deleteCount?: number, ...items: any[]) => {
-              const currentArray = storeApi.value(path) ?? []
-              if (!Array.isArray(currentArray)) return []
-              const newArray = [...currentArray]
-              const deletedItems = newArray.splice(start, deleteCount ?? 0, ...items)
-              storeApi.set(path as any, newArray)
-              return deletedItems
+            if (prop === 'splice') {
+              return (start: number, deleteCount?: number, ...items: any[]) => {
+                const currentArray = storeApi.value(path) ?? []
+                const newArray = [...currentArray]
+                const deletedItems = newArray.splice(start, deleteCount ?? 0, ...items)
+                storeApi.set(path as any, newArray)
+                return deletedItems
+              }
             }
-          }
-          if (prop === 'reverse') {
-            return () => {
-              const currentArray = storeApi.value(path) ?? []
-              if (!Array.isArray(currentArray)) return []
-              const newArray = [...currentArray].reverse()
-              storeApi.set(path as any, newArray)
-              return newArray
+            if (prop === 'reverse') {
+              return () => {
+                const currentArray = storeApi.value(path) ?? []
+                if (!Array.isArray(currentArray)) return []
+                const newArray = [...currentArray].reverse()
+                storeApi.set(path as any, newArray)
+                return newArray
+              }
             }
-          }
-          if (prop === 'sort') {
-            return (compareFn?: (a: any, b: any) => number) => {
-              const currentArray = storeApi.value(path) ?? []
-              if (!Array.isArray(currentArray)) return []
-              const newArray = [...currentArray].sort(compareFn)
-              storeApi.set(path as any, newArray)
-              return newArray
+            if (prop === 'sort') {
+              return (compareFn?: (a: any, b: any) => number) => {
+                const currentArray = storeApi.value(path) ?? []
+                const newArray = [...currentArray].sort(compareFn)
+                storeApi.set(path as any, newArray)
+                return newArray
+              }
             }
-          }
-          if (prop === 'fill') {
-            return (value: any, start?: number, end?: number) => {
-              const currentArray = storeApi.value(path) ?? []
-              if (!Array.isArray(currentArray)) return []
-              const newArray = [...currentArray].fill(value, start, end)
-              storeApi.set(path as any, newArray)
-              return newArray
+            if (prop === 'fill') {
+              return (value: any[], start?: number, end?: number) => {
+                const currentArray = storeApi.value(path) ?? []
+                const newArray = [...currentArray].fill(value, start, end)
+                storeApi.set(path as any, newArray)
+                return newArray
+              }
             }
-          }
-          if (prop === 'copyWithin') {
-            return (target: number, start: number, end?: number) => {
-              const currentArray = storeApi.value(path) ?? []
-              if (!Array.isArray(currentArray)) return []
-              const newArray = [...currentArray].copyWithin(target, start, end)
-              storeApi.set(path as any, newArray)
-              return newArray
+            if (prop === 'copyWithin') {
+              return (target: number, start: number, end?: number) => {
+                const currentArray = storeApi.value(path) ?? []
+                const newArray = [...currentArray].copyWithin(target, start, end)
+                storeApi.set(path as any, newArray)
+                return newArray
+              }
             }
-          }
-          if (prop === 'sortedInsert') {
-            return (cmp: (a: any, b: any) => number, ...items: any[]) => {
-              const currentArray = storeApi.value(path) ?? []
-              if (!Array.isArray(currentArray)) return 0
+            if (prop === 'sortedInsert') {
+              return (cmp: (a: any, b: any) => number, ...items: any[]) => {
+                const currentArray = storeApi.value(path) ?? []
 
-              if (typeof cmp !== 'function') return currentArray.length
+                if (typeof cmp !== 'function') return currentArray.length
 
-              // Create a copy of the current array
-              let newArray = [...currentArray]
+                // Create a copy of the current array
+                let newArray = [...currentArray]
 
-              // Insert each item in sorted order using binary search
-              for (const item of items) {
-                let left = 0
-                let right = newArray.length
+                // Insert each item in sorted order using binary search
+                for (const item of items) {
+                  let left = 0
+                  let right = newArray.length
 
-                // Binary search to find insertion point
-                while (left < right) {
-                  const mid = (left + right) >>> 1
-                  if (cmp(newArray[mid], item) <= 0) {
-                    left = mid + 1
-                  } else {
-                    right = mid
+                  // Binary search to find insertion point
+                  while (left < right) {
+                    const mid = (left + right) >>> 1
+                    if (cmp(newArray[mid], item) <= 0) {
+                      left = mid + 1
+                    } else {
+                      right = mid
+                    }
                   }
+
+                  // Insert at the found position
+                  newArray.splice(left, 0, item)
                 }
 
-                // Insert at the found position
-                newArray.splice(left, 0, item)
+                storeApi.set(path, newArray)
+                return newArray.length
               }
-
-              storeApi.set(path, newArray)
-              return newArray.length
             }
           }
 
