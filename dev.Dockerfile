@@ -12,4 +12,4 @@ USER 1000:1000
 
 WORKDIR /app
 
-CMD ["pnpm", "run", "dev_docker"]
+CMD ["pnpm", "run", "dev"]

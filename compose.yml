@@ -6,6 +6,9 @@ services:
     network_mode: host
     image: godoxy-frontend
     env_file: .env
+    environment:
+      HOST: 127.0.0.1
+      PORT: 3002
     build:
       context: .
       dockerfile: dev.Dockerfile

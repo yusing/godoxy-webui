@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "dev_docker": "pnpm run dev -H 0.0.0.0 -p 3002",
     "build": "next build --turbopack",
     "check": "next lint && tsc --noEmit",
     "lint": "eslint",
