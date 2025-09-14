@@ -17,6 +17,10 @@ function extractHeaders(requestHeaders: Headers, headerNames: string[]) {
   return result
 }
 
+function isWebSocketRequest(request: NextRequest) {
+  return request.headers.get('Upgrade') === 'websocket'
+}
+
 export async function middleware(request: NextRequest) {
   const requestHeaders = extractHeaders(request.headers, [
     'Cookie',
@@ -56,6 +60,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (
+    !isWebSocketRequest(request) &&
     request.nextUrl.pathname !== '/api/v1/auth/callback' &&
     request.nextUrl.pathname !== '/api/v1/version'
   ) {
