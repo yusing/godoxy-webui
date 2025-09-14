@@ -16,6 +16,7 @@ type RouteState = {
   uptime: Record<string, RouteUptimeAggregate>
   displaySettings: RouteDisplaySettings
   logsAutoScroll: boolean
+  mobileDialogOpen: boolean
 }
 
 export const store = createStore<RouteState>('routes', {
@@ -28,6 +29,7 @@ export const store = createStore<RouteState>('routes', {
     hideUptimebar: false,
   },
   logsAutoScroll: true,
+  mobileDialogOpen: false,
 })
 
 export function useSelectedRoute(): string | undefined {

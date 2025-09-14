@@ -4,7 +4,7 @@ import RoutePageHeader from './Header'
 import RouteResponseTimeChart from './ResponseTimeChart'
 import RouteDetails from './RouteDetails'
 
-export default async function RoutePageContent() {
+export default function RoutePageContent() {
   return (
     <div className="content p-4 space-y-4 flex-1">
       <RoutePageHeader />

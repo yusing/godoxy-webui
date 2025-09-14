@@ -24,10 +24,10 @@ import { ScrollArea } from '../ui/scroll-area'
 import { Switch } from '../ui/switch'
 import './style.css'
 
-export default function RoutesSidebar() {
+export default function RoutesSidebar({ className }: { className?: string }) {
   const sidebarRef = useRef<HTMLDivElement>(null)
   return (
-    <div ref={sidebarRef} className="max-w-[35vw] min-w-[330px] flex flex-col">
+    <div ref={sidebarRef} className={cn('flex flex-col', className)}>
       <div className="sidebar-header sticky top-0 px-3 py-3 flex items-center justify-between border-x">
         <Label className="text-sm">Routes</Label>
         <Popover>
@@ -95,7 +95,10 @@ function RoutesSidebarItem({ alias }: { alias: string }) {
         id={`route-${alias}`}
         href={`#${alias}`}
         target="_self"
-        onClick={() => setSelectedRoute(alias)}
+        onClick={() => {
+          setSelectedRoute(alias)
+          store.mobileDialogOpen.set(true)
+        }}
         className={cn(
           'route-item text-left p-3 transition-colors border-x border-b',
           'data-[filtered=true]:hidden',
