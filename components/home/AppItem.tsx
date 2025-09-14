@@ -58,10 +58,10 @@ export default function AppItem({ categoryIndex, appIndex, visibleIndex }: AppIt
 const AppItemInner = forwardRef<HTMLDivElement, AppItemProps>(
   ({ categoryIndex, appIndex, visibleIndex, ...props }, ref) => {
     const item = store.homepageCategories.at(categoryIndex).items.at(appIndex)
-    const alias = item.alias.use()!
-    const widgets = item.widgets.use()!
+    const alias = item.alias.use()
+    const widgets = item.widgets.use()
     const hasWidgets = Array.isArray(widgets) && widgets.length > 0
-    const url = item.url.use()!
+    const url = item.url.use()
 
     return (
       <Card

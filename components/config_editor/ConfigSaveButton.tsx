@@ -6,7 +6,7 @@ import { Button } from '../ui/button'
 import { configStore } from './store'
 
 export default function ConfigSaveButton(props: React.ComponentProps<typeof Button>) {
-  const activeFile = configStore.activeFile.use()!
+  const activeFile = configStore.activeFile.use()
   const content = configStore.content.use()
 
   const [isSaving, setIsSaving] = useState(false)

@@ -6,7 +6,7 @@ import { sectionsByFileType } from './sections'
 import { configStore } from './store'
 
 export default function ConfigContent({ className }: { className?: string }) {
-  const activeFile = configStore.activeFile.use()!
+  const activeFile = configStore.activeFile.use()
   const activeSection = configStore.activeSection.use()
   const isLoading = configStore.isLoading.use()
 

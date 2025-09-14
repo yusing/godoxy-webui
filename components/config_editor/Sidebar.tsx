@@ -81,7 +81,7 @@ export default function ConfigSidebar() {
 }
 
 function FileList() {
-  const files = configStore.files.use()!
+  const files = configStore.files.use()
   const activeFile = configStore.activeFile.use()
 
   return (
@@ -114,7 +114,7 @@ function FileList() {
 }
 
 function Sections() {
-  const activeFile = configStore.activeFile.use()!
+  const activeFile = configStore.activeFile.use()
   const [activeSection, setActiveSection] = configStore.activeSection.useState()
 
   const { label, sections } = sectionsByFileType[activeFile.type]

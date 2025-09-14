@@ -142,7 +142,7 @@ function DockerOnlyMenuItems({
   appIndex: number
 }) {
   const item = store.homepageCategories.at(categoryIndex).items.at(appIndex)
-  const alias = item.alias.use()!
+  const alias = item.alias.use()
   const containerID = item.container_id.use()!
   const status = store.health[alias]?.status.use() ?? 'unknown'
   const [isLoading, setIsLoading] = useState(false)

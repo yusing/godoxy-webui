@@ -182,8 +182,8 @@ function TemperatureTile({ agent }: { agent: string }) {
   let diskTempStatus: 'warning' | 'critical' | null = null
 
   const sensorsState = store.systemInfo[agent]?.sensors.use()
-  const readyState = store.readyState.use()!
-  const temperatureUnit = store.temperatureUnit.use()!
+  const readyState = store.readyState.use()
+  const temperatureUnit = store.temperatureUnit.use()
 
   if (sensorsState) {
     // backward compatibility: sensors can be an object map

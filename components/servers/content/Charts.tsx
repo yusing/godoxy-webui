@@ -108,7 +108,7 @@ function ChartInner({
 
   const maxHeight = `${280 + keys.length * 10}px`
 
-  const period = store.metricsPeriod.use()!
+  const period = store.metricsPeriod.use()
   const formatter = useMemo(
     () => (period === '1d' || period === '1mo' ? formatTimestampAsDate : formatTimestampAsTime),
     [period]
