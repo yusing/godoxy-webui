@@ -82,7 +82,9 @@ function ListInput_<T extends string>({
         <CardTitle>{label}</CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
-      <CardContent className="flex flex-col gap-3">{value.map(renderItem)}</CardContent>
+      {value.length > 0 && (
+        <CardContent className="flex flex-col gap-3">{value.map(renderItem)}</CardContent>
+      )}
       <CardFooter>
         <Button type="button" size="sm" onClick={handleAddItem} className="w-full">
           New item
