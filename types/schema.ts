@@ -7,39 +7,65 @@ type PropertyType = 'string' | 'number' | 'boolean' | 'object' | 'array' | (stri
 export type JSONSchema = {
   title?: string
   description?: string
+  examples?: string[]
   type?: PropertyType | PropertyType[]
   const?: string
   enum?: string[]
   properties?: PropertySchema
   items?: JSONSchema
-  additionalProperties?: boolean
+  additionalProperties?: boolean | JSONSchema
+  propertyNames?: JSONSchema
+  patternProperties?: { [pattern: string]: JSONSchema }
   anyOf?: JSONSchema[]
+  allOf?: JSONSchema[]
+  oneOf?: JSONSchema[]
+  not?: JSONSchema
+  if?: JSONSchema
+  then?: JSONSchema
+  else?: JSONSchema
   required?: string[]
+  dependentRequired?: { [property: string]: string[] }
+  dependentSchemas?: { [property: string]: JSONSchema }
   pattern?: string
   format?: string
   default?: string | number | boolean | null | object | []
   minimum?: number
   maximum?: number
-  exclusiveMinimum?: boolean
-  exclusiveMaximum?: boolean
+  exclusiveMinimum?: boolean | number
+  exclusiveMaximum?: boolean | number
   multipleOf?: number
   maxLength?: number
   minLength?: number
   maxItems?: number
   minItems?: number
+  maxProperties?: number
+  minProperties?: number
   uniqueItems?: boolean
-  ref?: string
+  contains?: JSONSchema
+  maxContains?: number
+  minContains?: number
+  prefixItems?: JSONSchema[]
+  contentEncoding?: string
+  contentMediaType?: string
+  contentSchema?: JSONSchema
+  deprecated?: boolean
+  readOnly?: boolean
+  writeOnly?: boolean
   $ref?: string
   $schema?: string
   $id?: string
+  $anchor?: string
+  $defs?: { [key: string]: JSONSchema }
+  $comment?: string
 }
 
-export type PropertySchema = { [key: string]: JSONSchema }
+export type PropertySchema = { [key: string]: JSONSchema | undefined }
 
 function distinctSchema(schema: PropertySchema): PropertySchema {
   // select one for multiple fields with same description or title
   const distinctSchema: Record<string, JSONSchema & { key?: string }> = {}
   Object.entries(schema).forEach(([key, value]) => {
+    if (!value) return
     const distinctKey = value.title ?? value.description
     if (!distinctKey) {
       console.error('No distinct key found for ' + key)

@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { type MiddlewareCompose, MiddlewareComposeSchema } from '@/types/godoxy'
 import type { MiddlewareFileRef } from '@/types/godoxy/middlewares/middlewares'
-import type { JSONSchema } from '@/types/schema'
 import { Plus, X } from 'lucide-react'
 import React, { useEffect, useMemo } from 'react'
 
@@ -31,7 +30,7 @@ export function MiddlewareEditor({
       label={label}
       nameField="use"
       keyField="use"
-      schema={MiddlewareComposeSchema.definitions.MiddlewareComposeItem as unknown as JSONSchema}
+      schema={MiddlewareComposeSchema.definitions.MiddlewareComposeItem}
       value={workingValue}
       onChange={onChange}
     />
