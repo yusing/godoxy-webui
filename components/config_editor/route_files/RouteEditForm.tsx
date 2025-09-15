@@ -1,4 +1,5 @@
 import { Button, type buttonVariants } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -9,11 +10,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { api } from '@/lib/api-client'
+import { toastError } from '@/lib/toast'
 import { cn } from '@/lib/utils'
 import type { Routes } from '@/types/godoxy'
+import type { SelectProps } from '@radix-ui/react-select'
+import { useQuery } from '@tanstack/react-query'
 import type { VariantProps } from 'class-variance-authority'
 import { ChevronDown, Save, X, type LucideIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import * as utils from './utils'
 
@@ -42,7 +47,7 @@ export default function RouteEditForm({
   cancelButtonVariant?: VariantProps<typeof buttonVariants>['variant']
   cancelButtonClassName?: string
 }) {
-  const [showAdvanced, setShowAdvanced] = useState(false)
+  const [showAdvanced, setShowAdvanced] = useState(true)
   const form = useForm<Routes.Route>({
     defaultValues: {
       ...route,
@@ -187,6 +192,24 @@ export default function RouteEditForm({
           </div>
         )}
 
+        {/* No TLS Verify */}
+        {scheme === 'https' && (
+          <FormField
+            control={form.control}
+            name="no_tls_verify"
+            render={({ field }) => (
+              <div className="flex items-center gap-2">
+                <Label htmlFor="no_tls_verify">No TLS Verify</Label>
+                <Checkbox
+                  id="no_tls_verify"
+                  checked={field.value ?? false}
+                  onCheckedChange={field.onChange}
+                />
+              </div>
+            )}
+          />
+        )}
+
         {/* Root */}
         {scheme === 'fileserver' && (
           <div className="space-y-2">
@@ -211,13 +234,73 @@ export default function RouteEditForm({
 
           {showAdvanced && (
             <div className="border rounded-md p-4 space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Additional configuration options will be available here.
-              </p>
+              <FormField
+                control={form.control}
+                name="agent"
+                render={({ field }) => (
+                  <FormItem>
+                    <Label htmlFor="agent">Agent</Label>
+                    <AgentSelect {...field} />
+                  </FormItem>
+                )}
+              />
             </div>
           )}
         </div>
       </form>
     </Form>
+  )
+}
+
+function AgentSelect({
+  onChange,
+  value,
+  ...props
+}: SelectProps & { onChange?: (value: string) => void; value?: string }) {
+  const {
+    data: agentList,
+    error,
+    isLoading,
+  } = useQuery({
+    queryKey: ['agentList'],
+    queryFn: () => api.agent.list().then(res => res.data),
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+  })
+
+  useEffect(() => {
+    if (error) {
+      toastError(error)
+    }
+  }, [error])
+
+  return (
+    <div className="flex w-full items-center gap-2">
+      <Select onValueChange={onChange} value={value} {...props}>
+        <SelectTrigger className="w-full">
+          <SelectValue placeholder={isLoading ? 'Loading...' : 'Select Agent'} />
+        </SelectTrigger>
+        <SelectContent>
+          {agentList?.map(agent => (
+            <SelectItem
+              key={agent.addr}
+              value={agent.addr}
+            >{`${agent.name} (${agent.addr})`}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="shrink-0"
+        onClick={() => onChange?.('')}
+        disabled={!value}
+      >
+        <X className="size-4" />
+      </Button>
+    </div>
   )
 }
