@@ -2,6 +2,7 @@ import type { DomainOrWildcard, Email } from '../types'
 
 export const AUTOCERT_PROVIDERS = [
   'local',
+  'custom',
   'cloudflare',
   'clouddns',
   'duckdns',
@@ -13,6 +14,7 @@ export type AutocertProvider = (typeof AUTOCERT_PROVIDERS)[number]
 
 export type AutocertConfig =
   | LocalOptions
+  | CustomOptions
   | CloudflareOptions
   | CloudDNSOptions
   | DuckDNSOptions
@@ -20,7 +22,6 @@ export type AutocertConfig =
   | OVHOptionsWithOAuth2Config
   | PorkbunOptions
   | OtherOptions
-  | CustomAutocertConfig
 
 export interface AutocertConfigBase {
   /** ACME email */
@@ -40,6 +41,18 @@ export interface LocalOptions {
   /**  ACME key path */
   key_path?: string
   options?: object | null
+}
+
+export interface CustomOptions extends AutocertConfigBase {
+  provider: 'custom'
+  /** CA Directory URL */
+  ca_dir_url?: string
+  /** CA Certs */
+  ca_certs?: string[]
+  /** EAB Key ID */
+  eab_kid?: string
+  /** EAB HMAC base64 */
+  eab_hmac?: string
 }
 
 export interface CloudflareOptions extends AutocertConfigBase {
@@ -108,10 +121,4 @@ export interface OVHOptionsWithOAuth2Config extends AutocertConfigBase {
 export interface OtherOptions extends AutocertConfigBase {
   provider: string
   options: object
-}
-
-export interface CustomAutocertConfig extends AutocertConfigBase {
-  provider: 'custom'
-  ca_dir_url: string
-  ca_certs: string[]
 }
