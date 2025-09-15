@@ -64,8 +64,8 @@ export default function AppGrid() {
         className="w-full"
       >
         <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 justify-between">
-          <div className="flex items-center gap-2">
-            <TabsList className="flex w-full sm:w-auto gap-1 h-auto p-1">
+          <div className="flex items-center gap-2 w-full">
+            <TabsList className="flex w-full sm:w-auto gap-1 p-1">
               {visibleTabs?.map(category => (
                 <TabsTrigger
                   key={category}
@@ -171,7 +171,7 @@ export default function AppGrid() {
           // workaround for favorites tab, use `All` items instead
           const i = store.homepageCategories.at(category === 'Favorites' ? 0 : index).items
           return (
-            <TabsContent key={category} value={category} className="sm:mt-6">
+            <TabsContent key={category} value={category} className="sm:mt-2">
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
