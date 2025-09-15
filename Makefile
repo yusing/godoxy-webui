@@ -33,6 +33,10 @@ gen-schema:
 			CLASS=Config \
 			OUT=config.schema.json \
 			gen-schema-single
+	make IN=config/autocert.ts \
+			CLASS=AutocertConfig \
+			OUT=autocert.schema.json \
+			gen-schema-single
 	make IN=providers/routes.ts \
 			CLASS=Routes \
 			OUT=routes.schema.json \

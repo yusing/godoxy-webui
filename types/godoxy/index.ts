@@ -20,6 +20,7 @@ import * as Routes from './providers/routes'
 import * as GoDoxy from './types'
 
 import ACLSchema from './acl.schema.json'
+import AutocertSchema from './autocert.schema.json'
 import ConfigSchema from './config.schema.json'
 import DockerRoutesSchema from './docker_routes.schema.json'
 import EntrypointMiddlewaresSchema from './entrypoint_middlewares.schema.json'
@@ -32,6 +33,7 @@ export {
   ACL,
   ACLSchema,
   Autocert,
+  AutocertSchema,
   Config,
   ConfigSchema,
   DockerRoutesSchema,
