@@ -3,6 +3,7 @@
 import { useCallback, type InputHTMLAttributes } from 'react'
 
 import { ListInput } from '@/components/form/ListInput'
+import { MapInput } from '@/components/form/MapInput'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -15,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
-import { Autocert } from '@/types/godoxy'
+import { Autocert, AutocertSchema } from '@/types/godoxy'
 import type { DomainOrWildcard, Email } from '@/types/godoxy/types'
 import { Plus } from 'lucide-react'
 import { AnimatePresence, motion, type HTMLMotionProps } from 'motion/react'
@@ -105,6 +106,12 @@ export default function AutocertConfigContent() {
             options: { api_key: '', secret_api_key: '' },
             ...base,
           } as Autocert.PorkbunOptions
+          break
+        case 'custom':
+          nextCfg = {
+            provider: 'custom',
+            ...base,
+          } as Autocert.CustomOptions
           break
         default:
           nextCfg = { provider: next, options: {}, ...base } as Autocert.AutocertConfig
@@ -202,7 +209,7 @@ export default function AutocertConfigContent() {
         <AnimatePresence initial={false} mode="popLayout">
           {provider !== 'local' && cfg && (
             <TransitionDiv className="border rounded-md p-3" key="provider-options">
-              <div className="text-sm font-semibold">Provider options</div>
+              <div className="text-sm font-semibold mb-3">Provider options</div>
               <DnsProviderOptionsEditor cfg={cfg} onChange={setCfg} />
             </TransitionDiv>
           )}
@@ -292,6 +299,18 @@ function DnsProviderOptionsEditor({
           onChange={v => setOptions({ ...opts, secret_api_key: v })}
         />
       </div>
+    )
+  }
+
+  if (provider === 'custom') {
+    return (
+      <MapInput
+        label="custom"
+        card={false}
+        schema={AutocertSchema.definitions.CustomOptions}
+        value={{ ...cfg }}
+        onChange={onChange}
+      />
     )
   }
 
