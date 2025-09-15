@@ -91,31 +91,35 @@ function MapInput_<T extends Record<string, unknown>>({
   footer,
   onChange,
 }: Readonly<MapInputProps<T> & { schema: JSONSchema }>) {
-  let workingValue: Record<string, unknown> = useMemo(() => (value ? { ...value } : {}), [value])
+  const workingValue: Record<string, unknown> = useMemo(() => {
+    let result: Record<string, unknown> = value ? { ...value } : {}
+
+    if (keyField && Object.keys(result).length === 0) {
+      result = {
+        ...result,
+        [keyField as string]: getDefaultValue(schema?.properties?.[keyField as string]),
+      }
+    }
+
+    if (schema.required) {
+      for (const k of schema.required) {
+        if (result[k] === undefined) {
+          result = {
+            ...result,
+            [k]: getDefaultValue(schema?.properties?.[k]),
+          }
+        }
+      }
+    }
+
+    return result
+  }, [value, keyField, schema])
 
   const isEmpty = useMemo(() => {
     if (!value) return true
     if (Object.keys(workingValue).length === 0) return true
     return false
   }, [value, workingValue])
-
-  if (keyField && Object.keys(workingValue).length === 0) {
-    workingValue = {
-      ...workingValue,
-      [keyField as string]: getDefaultValue(schema?.properties?.[keyField as string]),
-    }
-  }
-
-  if (schema.required) {
-    for (const k of schema.required) {
-      if (workingValue[k] === undefined) {
-        workingValue = {
-          ...workingValue,
-          [k]: getDefaultValue(schema?.properties?.[k]),
-        }
-      }
-    }
-  }
 
   const defaultValues = useMemo(() => {
     if (!schema.properties) return {}
