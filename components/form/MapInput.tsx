@@ -67,6 +67,7 @@ function PureMapInput<T extends Record<string, unknown>>({
       </CardContent>
       <CardFooter>
         <Button
+          type="button"
           size="sm"
           className="w-full"
           onClick={() => onChange({ ...value, ['' as keyof T]: '' } as T)}

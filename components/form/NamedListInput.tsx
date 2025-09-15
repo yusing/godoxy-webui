@@ -90,6 +90,7 @@ function NamedListInput_<IndexType extends string, T extends Record<IndexType, u
                 size="sm"
                 className="w-full"
                 variant="destructive"
+                type="button"
                 onClick={() => handleDeleteItem(index)}
               >
                 {`Delete ${name?.length ? name : `Item ${index + 1}`}`}
@@ -107,7 +108,7 @@ function NamedListInput_<IndexType extends string, T extends Record<IndexType, u
     return (
       <div className="flex flex-col gap-3">
         {listValue.map(renderItem)}
-        <Button size="sm" onClick={handleAddItem} className="w-full">
+        <Button type="button" size="sm" onClick={handleAddItem} className="w-full">
           New item
         </Button>
       </div>
@@ -121,7 +122,7 @@ function NamedListInput_<IndexType extends string, T extends Record<IndexType, u
       </CardHeader>
       <CardContent className="flex flex-col gap-3">{listValue.map(renderItem)}</CardContent>
       <CardFooter>
-        <Button size="sm" onClick={handleAddItem} className="w-full">
+        <Button type="button" size="sm" onClick={handleAddItem} className="w-full">
           New item
         </Button>
       </CardFooter>

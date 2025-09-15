@@ -84,7 +84,7 @@ function ListInput_<T extends string>({
       </CardHeader>
       <CardContent className="flex flex-col gap-3">{value.map(renderItem)}</CardContent>
       <CardFooter>
-        <Button size="sm" onClick={handleAddItem} className="w-full">
+        <Button type="button" size="sm" onClick={handleAddItem} className="w-full">
           New item
         </Button>
       </CardFooter>
