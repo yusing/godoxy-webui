@@ -64,7 +64,7 @@ export default function AppGrid() {
         className="w-full"
       >
         <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 justify-between">
-          <div className="flex items-center gap-2 w-full">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <TabsList className="flex w-full sm:w-auto gap-1 p-1">
               {visibleTabs?.map(category => (
                 <TabsTrigger
