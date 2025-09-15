@@ -139,8 +139,10 @@ export type PathPattern = string & {}
 
 /**
  * Duration
+ * @pattern ^\d+(?:us|ms|s|m|h|d|w|M)$
+ * @type string
  */
-export type Duration = `${number}${'us' | 'ms' | 's' | 'm' | 'h'}`
+export type Duration = `${number}${'us' | 'ms' | 's' | 'm' | 'h' | 'd' | 'w' | 'M'}`
 
 /**
  * Date time
