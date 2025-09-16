@@ -32,6 +32,8 @@ export interface AutocertConfigBase {
   cert_path?: string
   /** ACME key path */
   key_path?: string
+  /** DNS resolvers */
+  resolvers?: string[]
 }
 
 export interface LocalOptions {

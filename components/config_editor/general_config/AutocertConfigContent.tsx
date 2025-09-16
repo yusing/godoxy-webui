@@ -168,7 +168,7 @@ export default function AutocertConfigContent() {
             </div>
 
             <AnimatePresence initial={false} mode="popLayout">
-              {provider !== 'local' && cfg && cfg.provider !== 'local' && (
+              {provider && provider !== 'local' && (
                 <div className="flex flex-col gap-2 sm:col-span-2">
                   <TransitionDiv key="autocert-domains">
                     <LabeledInput
@@ -197,6 +197,27 @@ export default function AutocertConfigContent() {
                       placeholder="*.example.com"
                       value={autocertCfg.domains ?? []}
                       onChange={v => updateCommon({ domains: v })}
+                      card={false}
+                    />
+                    <div className="flex gap-2">
+                      <Label>DNS resolvers</Label>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        title="Add DNS resolver"
+                        onClick={() =>
+                          updateCommon({
+                            resolvers: [...(autocertCfg.resolvers ?? []), ''],
+                          })
+                        }
+                      >
+                        <Plus />
+                      </Button>
+                    </div>
+                    <ListInput
+                      placeholder="1.1.1.1:53"
+                      value={autocertCfg.resolvers ?? []}
+                      onChange={v => updateCommon({ resolvers: v })}
                       card={false}
                     />
                   </TransitionDiv>
