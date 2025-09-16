@@ -1,11 +1,12 @@
 'use client'
 
-import { Trash } from 'lucide-react'
+import { Plus, Trash } from 'lucide-react'
 import React, { useCallback } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card'
+import { Label } from '../ui/label'
 
 type ListInputProps<T extends string> = {
   label?: React.ReactNode
@@ -73,7 +74,23 @@ function ListInput_<T extends string>({
   )
 
   if (!card) {
-    return <div className="flex flex-col gap-3">{value.map(renderItem)}</div>
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Label>{label}</Label>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={handleAddItem}
+            className="size-4"
+          >
+            <Plus />
+          </Button>
+        </div>
+        <div className="flex flex-col gap-3">{value.map(renderItem)}</div>
+      </div>
+    )
   }
 
   return (
