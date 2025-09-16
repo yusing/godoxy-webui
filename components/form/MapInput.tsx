@@ -79,6 +79,20 @@ function PureMapInput<T extends Record<string, unknown>>({
   )
 }
 
+function getTypePriority(type: string) {
+  switch (type) {
+    case 'string':
+      return 0
+    case 'number':
+    case 'integer':
+      return 1
+    case 'boolean':
+      return 2
+    default:
+      return 3
+  }
+}
+
 function MapInput_<T extends Record<string, unknown>>({
   label,
   placeholder,
@@ -95,19 +109,13 @@ function MapInput_<T extends Record<string, unknown>>({
     let result: Record<string, unknown> = value ? { ...value } : {}
 
     if (keyField && Object.keys(result).length === 0) {
-      result = {
-        ...result,
-        [keyField as string]: getDefaultValue(schema?.properties?.[keyField as string]),
-      }
+      result[keyField as string] = getDefaultValue(schema?.properties?.[keyField as string])
     }
 
     if (schema.required) {
       for (const k of schema.required) {
         if (result[k] === undefined) {
-          result = {
-            ...result,
-            [k]: getDefaultValue(schema?.properties?.[k]),
-          }
+          result[k] = getDefaultValue(schema?.properties?.[k])
         }
       }
     }
@@ -151,21 +159,6 @@ function MapInput_<T extends Record<string, unknown>>({
         const type1 = schema.properties?.[key1]?.type as string
         const type2 = schema.properties?.[key2]?.type as string
 
-        // Define type priority order: string, number, boolean first
-        const getTypePriority = (type: string) => {
-          switch (type) {
-            case 'string':
-              return 0
-            case 'number':
-            case 'integer':
-              return 1
-            case 'boolean':
-              return 2
-            default:
-              return 3 // Other types (object, array, etc.) come last
-          }
-        }
-
         const priority1 = getTypePriority(type1)
         const priority2 = getTypePriority(type2)
 
@@ -188,7 +181,7 @@ function MapInput_<T extends Record<string, unknown>>({
           <ListInput
             key={`${index}_list`}
             label={`${String(label)}.${k}`}
-            value={(v as string[] | undefined) ?? []}
+            value={Array.isArray(v) ? v : []}
             description={vSchema?.description}
             onChange={e => {
               onChange({ ...workingValue, [k]: e } as T)
@@ -196,12 +189,12 @@ function MapInput_<T extends Record<string, unknown>>({
           />
         )
       }
-      if (vSchema?.type === 'object' || (v && typeof v === 'object' && !Array.isArray(v))) {
+      if (vSchema?.type === 'object' || typeof v === 'object') {
         return (
           <MapInput
             key={`${index}_map`}
             label={`${String(label)}.${k}`}
-            value={(v as Record<string, unknown> | undefined) ?? {}}
+            value={(typeof v === 'object' ? v : {}) as Record<string, unknown>}
             schema={{
               ...vSchema,
               properties: getPropertySchema(schema, { keyField: k, key: String(v) }),
@@ -222,7 +215,7 @@ function MapInput_<T extends Record<string, unknown>>({
         <FieldInput
           key={`${index}_field`}
           fieldKey={k}
-          fieldValue={(v as unknown) ?? {}}
+          fieldValue={v ?? {}}
           schema={schema}
           placeholder={placeholder}
           allowDelete={allowDelete}
