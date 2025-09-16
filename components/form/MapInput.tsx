@@ -72,7 +72,7 @@ function PureMapInput<T extends Record<string, unknown>>({
       <CardHeader>
         <CardTitle>{label}</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col gap-3"></CardContent>
+      <CardContent className="flex flex-col gap-3">{content}</CardContent>
       <CardFooter>
         <Button
           type="button"
