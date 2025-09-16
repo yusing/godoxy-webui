@@ -28,43 +28,51 @@ function PureMapInput<T extends Record<string, unknown>>({
   placeholder,
   value,
   onChange,
-  // card = true,
+  card = true,
 }: Readonly<Omit<MapInputProps<T>, 'allowDelete' | 'schema' | 'footer'>>) {
   const keys = useMemo(() => Object.keys(value ?? {}), [value])
+
+  const content = (
+    <>
+      {keys.map((k, index) => (
+        <FieldInput
+          key={index}
+          fieldKey={k}
+          fieldValue={value?.[k]}
+          allowDelete
+          schema={undefined}
+          placeholder={placeholder}
+          onKeyChange={(newK, newV) => {
+            const newValue = { ...value, [newK]: newV }
+            if (k !== newK) {
+              delete newValue[k]
+            }
+            onChange(newValue as T)
+          }}
+          onChange={e => {
+            if (e === undefined || e === null) {
+              const newValue = { ...value }
+              delete newValue[k]
+              onChange(newValue as T)
+              return
+            }
+            onChange({ ...value, [k]: e } as T)
+          }}
+        />
+      ))}
+    </>
+  )
+
+  if (!card) {
+    return <div className="flex flex-col gap-3">{content}</div>
+  }
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>{label}</CardTitle>
       </CardHeader>
-      <CardContent className="flex flex-col gap-3">
-        {keys.map((k, index) => (
-          <FieldInput
-            key={index}
-            fieldKey={k}
-            fieldValue={value?.[k]}
-            allowDelete
-            schema={undefined}
-            placeholder={placeholder}
-            onKeyChange={(newK, newV) => {
-              const newValue = { ...value, [newK]: newV }
-              if (k !== newK) {
-                delete newValue[k]
-              }
-              onChange(newValue as T)
-            }}
-            onChange={e => {
-              if (e === undefined || e === null) {
-                const newValue = { ...value }
-                delete newValue[k]
-                onChange(newValue as T)
-                return
-              }
-              onChange({ ...value, [k]: e } as T)
-            }}
-          />
-        ))}
-      </CardContent>
+      <CardContent className="flex flex-col gap-3"></CardContent>
       <CardFooter>
         <Button
           type="button"
