@@ -120,7 +120,6 @@ function FieldInput_<T>({
 
         {allowDelete && !required && (
           <Button
-            className="ml-2"
             type={deleteType === 'delete' ? 'button' : 'reset'}
             variant="destructive"
             onClick={() => onChange(undefined)}

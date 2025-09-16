@@ -60,12 +60,12 @@ function ListInput_<T extends string>({
           />
           <Button
             type="button"
-            variant="ghost"
-            className="text-red-500"
+            variant="destructive"
             onClick={() => handleItemDelete(index)}
             title="Delete"
           >
             <Trash />
+            Delete
           </Button>
         </div>
       )
