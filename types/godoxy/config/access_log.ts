@@ -93,25 +93,15 @@ export type RequestAccessLogFilter<T> = {
 }
 
 export type RequestLogFilters = {
-  /**
-   * Status code filter
-   */
+  /** Status code filter */
   status_code?: RequestAccessLogFilter<StatusCodeRange>
-  /**
-   * Method filter
-   */
+  /** Method filter*/
   method?: RequestAccessLogFilter<HTTPMethod>
-  /**
-   * Host filter
-   */
+  /** Host filter*/
   host?: RequestAccessLogFilter<Hostname>
-  /**
-   * Header filter
-   */
+  /** Header filter*/
   headers?: RequestAccessLogFilter<HTTPHeader>
-  /**
-   * CIDR filter
-   */
+  /** CIDR filter*/
   cidr?: RequestAccessLogFilter<CIDR>
 }
 
@@ -119,44 +109,17 @@ export const LOG_FIELD_MODES = ['keep', 'drop', 'redact'] as const
 export type LogFieldMode = (typeof LOG_FIELD_MODES)[number]
 
 export type LogField = {
-  /**
-   * Default mode
-   */
+  /** Default mode */
   default?: LogFieldMode
-  /**
-   * Field configuration
-   */
-  config: {
-    [key: string]: LogFieldMode
-  }
+  /** Field configuration */
+  config: Record<string, LogFieldMode>
 }
 
-export type RequestLogFields =
-  | {
-      /**
-       * Headers
-       */
-      headers?: LogField
-      /**
-       * Query
-       */
-      query?: LogField
-      /**
-       * Cookies
-       */
-      cookies?: LogField
-    }
-  | {
-      /**
-       * Headers
-       */
-      header?: LogField
-      /**
-       * Query
-       */
-      query?: LogField
-      /**
-       * Cookies
-       */
-      cookie?: LogField
-    }
+export type RequestLogFields = {
+  /** Headers */
+  headers?: LogField
+  /** Query */
+  query?: LogField
+  /** Cookies */
+  cookies?: LogField
+}
