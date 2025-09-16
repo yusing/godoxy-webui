@@ -187,8 +187,9 @@ function MapInput_<T extends Record<string, unknown>>({
       if (vSchema?.type === 'array' || Array.isArray(v)) {
         return (
           <ListInput
+            card={false}
             key={`${index}_list`}
-            label={`${String(label)}.${k}`}
+            label={k}
             value={Array.isArray(v) ? v : []}
             description={vSchema?.description}
             onChange={e => {
