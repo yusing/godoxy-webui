@@ -20,11 +20,11 @@ import type { EntrypointMiddlewares } from '@/types/godoxy/middlewares/middlewar
 import type { MiddlewaresMap } from '@/types/godoxy/middlewares/middlewares'
 import { LOAD_BALANCE_MODES } from '@/types/godoxy/providers/loadbalance'
 import type { SelectProps } from '@radix-ui/react-select'
-import { useQuery } from '@tanstack/react-query'
 import type { VariantProps } from 'class-variance-authority'
 import { ChevronDown, Save, X, type LucideIcon } from 'lucide-react'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useForm, type UseFormReturn } from 'react-hook-form'
+import { useAsync } from 'react-use'
 import { middlewareUseToSnakeCase } from '../middleware_compose/MiddlewareEditor'
 import * as utils from './utils'
 
@@ -464,17 +464,10 @@ function AgentSelect({
   ...props
 }: SelectProps & { onChange?: (value: string) => void; value?: string }) {
   const {
-    data: agentList,
+    value: agentList,
     error,
-    isLoading,
-  } = useQuery({
-    queryKey: ['agentList'],
-    queryFn: () => api.agent.list().then(res => res.data),
-    staleTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
-  })
+    loading,
+  } = useAsync(async () => api.agent.list().then(res => res.data))
 
   useEffect(() => {
     if (error) {
@@ -486,7 +479,7 @@ function AgentSelect({
     <div className="flex items-center gap-2">
       <Select onValueChange={onChange} value={value} {...props}>
         <SelectTrigger className="w-full">
-          <SelectValue placeholder={isLoading ? 'Loading...' : 'Select Agent'} />
+          <SelectValue placeholder={loading ? 'Loading...' : 'Select Agent'} />
         </SelectTrigger>
         <SelectContent>
           {agentList?.map(agent => (

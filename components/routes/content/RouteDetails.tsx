@@ -9,25 +9,21 @@ import { api } from '@/lib/api-client'
 import { formatDuration } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { json } from '@codemirror/lang-json'
-import { useQuery } from '@tanstack/react-query'
 import ReactCodeMirror from '@uiw/react-codemirror'
 import { ArrowRight } from 'lucide-react'
 import { useTheme } from 'next-themes'
+import { useAsync } from 'react-use'
 import ContainerLogs from './ContainerLogs'
 import ContainerLogsHeader from './ContainerLogsHeader'
 
 export default function RouteDetails() {
   const activeRoute = useSelectedRoute()
 
-  const { data: routeDetails, error } = useQuery({
-    queryKey: ['route', activeRoute],
-    queryFn: () =>
-      !activeRoute ? Promise.resolve(null) : api.route.route(activeRoute).then(res => res.data),
-    staleTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
-  })
+  const { value: routeDetails, error } = useAsync(
+    async () =>
+      activeRoute ? api.route.route(activeRoute).then(res => res.data) : Promise.resolve(null),
+    [activeRoute]
+  )
 
   if (!activeRoute) {
     return <div className="p-4 text-muted-foreground">Select a route to view details.</div>

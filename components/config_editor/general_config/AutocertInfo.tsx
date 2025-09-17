@@ -2,25 +2,19 @@ import LoadingRing from '@/components/LoadingRing'
 import { DataList, DataListRow } from '@/components/ui/data-list'
 import { api } from '@/lib/api-client'
 import { formatTimestamp } from '@/lib/format'
-import { useQuery } from '@tanstack/react-query'
+import { useAsync } from 'react-use'
 
 export default function AutocertInfo() {
   const {
-    data: certInfo,
+    value: certInfo,
     error,
-    isLoading,
-  } = useQuery({
-    queryKey: ['autocert.info'],
-    queryFn: () => api.cert.info().then(res => res.data),
-    staleTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
-  })
+    loading,
+  } = useAsync(async () => api.cert.info().then(res => res.data))
+
   if (!certInfo)
     return (
       <div className="flex items-center justify-center h-full">
-        {isLoading ? (
+        {loading ? (
           <LoadingRing />
         ) : error ? (
           <span>Error: {error.message}</span>

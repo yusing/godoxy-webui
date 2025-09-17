@@ -1,4 +1,3 @@
-import QueryProvider from '@/components/QueryProvider'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import RoutePageHeader from './Header'
 import RouteResponseTimeChart from './ResponseTimeChart'
@@ -19,9 +18,7 @@ export default function RoutePageContent() {
           <RouteResponseTimeChart />
         </CardContent>
       </Card>
-      <QueryProvider>
-        <RouteDetails />
-      </QueryProvider>
+      <RouteDetails />
     </div>
   )
 }

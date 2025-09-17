@@ -1,8 +1,8 @@
 import type { HomepageIconMetaSearch } from '@/lib/api'
 import { api } from '@/lib/api-client'
-import { useQuery } from '@tanstack/react-query'
 import { useDebounce } from '@uidotdev/usehooks'
 import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from 'react'
+import { useAsync } from 'react-use'
 import { AppIcon } from './AppIcon'
 import LoadingRing from './LoadingRing'
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from './ui/command'
@@ -52,16 +52,13 @@ export default function IconSearchField({ value, onChange, className }: IconSear
   }, [debouncedSearchValue, onChange])
 
   const {
-    data: icons,
+    value: icons,
     error,
-    isLoading,
-  } = useQuery({
-    queryKey: ['icon-search', debouncedSearchValue],
-    queryFn: () =>
-      api.icons.icons({ keyword: debouncedSearchValue, limit: 5 }).then(res => res.data),
-    enabled: debouncedSearchValue.length > 2,
-    staleTime: 5000,
-  })
+    loading,
+  } = useAsync(
+    async () => api.icons.icons({ keyword: debouncedSearchValue, limit: 5 }).then(res => res.data),
+    [debouncedSearchValue]
+  )
 
   const inputValue = useMemo(() => {
     if (!currentIcon) return searchValue
@@ -74,7 +71,7 @@ export default function IconSearchField({ value, onChange, className }: IconSear
       <CommandInput
         placeholder="Search icons... or paste an image URL"
         value={inputValue}
-        readOnly={isLoading}
+        readOnly={loading}
         onValueChange={v => {
           setState({
             searchValue: v,
@@ -85,7 +82,7 @@ export default function IconSearchField({ value, onChange, className }: IconSear
       />
       <CommandList className={className}>
         <CommandEmpty>
-          {isLoading ? (
+          {loading ? (
             <div className="flex items-center justify-center h-full">
               <LoadingRing />
             </div>

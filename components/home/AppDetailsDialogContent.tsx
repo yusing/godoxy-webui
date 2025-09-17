@@ -3,21 +3,14 @@ import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/di
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { api } from '@/lib/api-client'
-import { useQuery } from '@tanstack/react-query'
 import { Search } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
+import { useAsync } from 'react-use'
 import ObjectDataList from '../ObjectDataList'
 
 export default function AppDetailsDialogContent({ alias }: { alias: string }) {
   const [searchTerm, setSearchTerm] = useState('')
-  const { data: route } = useQuery({
-    queryKey: ['route', alias],
-    queryFn: () => api.route.route(alias).then(r => r.data),
-    staleTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
-  })
+  const { value: route } = useAsync(async () => api.route.route(alias).then(r => r.data), [alias])
 
   const handleSearch = useCallback((value: string) => {
     setSearchTerm(value)
