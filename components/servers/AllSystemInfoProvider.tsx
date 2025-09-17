@@ -5,7 +5,7 @@ import { useWebSocketApi } from '@/hooks/websocket'
 import type { Agent, SystemInfo } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
-import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import { store } from './store'
 
 export default function AllSystemInfoProvider() {
@@ -24,32 +24,25 @@ export default function AllSystemInfoProvider() {
     onClose: () => store.readyState.set(false),
   })
 
-  useQuery({
-    queryKey: ['agent_list'],
-    queryFn: () =>
-      api.agent
-        .list()
-        .then(res => {
-          if (!agent || !res.data.some(a => a.name === agent)) {
-            window.location.hash = ''
-          }
-          store.agents.set(
-            res.data.reduce(
-              (acc, agent) => {
-                acc[agent.name] = agent
-                return acc
-              },
-              {} as Record<string, Agent>
-            )
+  useEffect(() => {
+    api.agent
+      .list()
+      .then(res => {
+        if (!agent || !res.data.some(a => a.name === agent)) {
+          window.location.hash = ''
+        }
+        store.agents.set(
+          res.data.reduce(
+            (acc, agent) => {
+              acc[agent.name] = agent
+              return acc
+            },
+            {} as Record<string, Agent>
           )
-          store.agentList.set(res.data.map(a => a.name))
-        })
-        .then(() => true)
-        .catch(toastError),
-    staleTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
-  })
+        )
+        store.agentList.set(res.data.map(a => a.name))
+      })
+      .catch(toastError)
+  }, [agent])
   return null
 }
