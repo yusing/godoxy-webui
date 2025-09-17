@@ -136,7 +136,12 @@ function MetricTile<P extends FieldPath<SystemInfo>>({
 }) {
   const value = store.use(`systemInfo.${agent}.${field}`)
   const formattedValue = useMemo(
-    () => (value !== undefined ? (formatter ? formatter(value) : String(value)) : undefined),
+    () =>
+      value === undefined || value === null
+        ? undefined
+        : formatter
+          ? formatter(value)
+          : String(value),
     [value, formatter]
   )
   return (
