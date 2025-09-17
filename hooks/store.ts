@@ -283,7 +283,7 @@ function createValuesProxy(storeApi: StoreBase<any>, initialPath = '') {
                 if (typeof cmp !== 'function') return currentArray.length
 
                 // Create a copy of the current array
-                let newArray = [...currentArray]
+                const newArray = [...currentArray]
 
                 // Insert each item in sorted order using binary search
                 for (const item of items) {

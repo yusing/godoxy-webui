@@ -114,7 +114,7 @@ function MapInput_<T extends Record<string, unknown>>({
   onChange,
 }: Readonly<MapInputProps<T> & { schema: JSONSchema }>) {
   const workingValue: Record<string, unknown> = useMemo(() => {
-    let result: Record<string, unknown> = value ? { ...value } : {}
+    const result: Record<string, unknown> = value ? { ...value } : {}
 
     if (keyField && Object.keys(result).length === 0) {
       result[keyField as string] = getDefaultValue(schema?.properties?.[keyField as string])
@@ -199,6 +199,19 @@ function MapInput_<T extends Record<string, unknown>>({
         )
       }
       if (vSchema?.type === 'object' || typeof v === 'object') {
+        // if (schema.additionalProperties || vSchema?.additionalProperties) {
+        //   return (
+        //     <PureMapInput
+        //       key={`${index}_map`}
+        //       label={`${String(label)}.${k}`}
+        //       value={(typeof v === 'object' ? v : {}) as Record<string, unknown>}
+        //       onChange={e => {
+        //         onChange({ ...workingValue, [k]: e } as T)
+        //       }}
+        //       placeholder={placeholder}
+        //     />
+        //   )
+        // }
         return (
           <MapInput
             key={`${index}_map`}

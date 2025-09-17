@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Api, type ErrorResponse } from '@/lib/api'
 import { AxiosError } from 'axios'
 
