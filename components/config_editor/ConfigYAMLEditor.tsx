@@ -1,3 +1,4 @@
+'use client'
 import { ConfigSchema, MiddlewareComposeSchema, RoutesSchema } from '@/types/godoxy'
 import type { ReactCodeMirrorProps } from '@uiw/react-codemirror'
 import YAMLEditor from '../YAMLEditor'

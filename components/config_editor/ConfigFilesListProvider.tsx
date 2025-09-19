@@ -1,3 +1,5 @@
+'use client'
+
 import type { FileType } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import type { ConfigFiles } from '@/types/file'
