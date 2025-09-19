@@ -1,5 +1,7 @@
 import { MapInput } from '@/components/form/MapInput'
 import { NamedListInput } from '@/components/form/NamedListInput'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import { ConfigSchema, MiddlewareComposeSchema } from '@/types/godoxy'
 import type { MiddlewareFileRef } from '@/types/godoxy/middlewares/middlewares'
 import { useMemo } from 'react'
@@ -9,8 +11,22 @@ import { configStore } from '../store'
 export default function EntrypointConfigContent() {
   return (
     <div className="flex flex-col gap-6">
+      <EntrypointProxyProtocolConfig />
       <EntrypointAccessLogConfig />
       <EntrypointMiddlewaresConfig />
+    </div>
+  )
+}
+
+function EntrypointProxyProtocolConfig() {
+  const supportProxyProtocol = configStore.configObject.entrypoint.support_proxy_protocol.use()
+  return (
+    <div className="flex gap-2 border rounded-md p-4">
+      <Label>Support proxy protocol</Label>
+      <Switch
+        checked={supportProxyProtocol}
+        onCheckedChange={configStore.configObject.entrypoint.support_proxy_protocol.set}
+      />
     </div>
   )
 }
@@ -23,7 +39,7 @@ delete accessLogSchema.properties.filters
 delete accessLogSchema.properties.fields
 
 function EntrypointAccessLogConfig() {
-  const accessLog = configStore.configObject.entrypoint.access_log.value
+  const accessLog = configStore.configObject.entrypoint.access_log.use()
   return (
     <MapInput
       label="Access log"
