@@ -56,30 +56,28 @@ export function MiddlewareComposeEditor({
     <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
       <TabsList className="flex w-full flex-wrap gap-1">
         {Object.keys(data).map((k, index) => (
-          <TabsTrigger
-            key={`${index}_tab`}
-            value={k}
-            className="relative flex items-center justify-between gap-2 pr-6"
-          >
-            <span className="truncate">{k}</span>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="absolute right-1 top-1/2 h-4 w-4 -translate-y-1/2 p-0 hover:bg-destructive hover:text-destructive-foreground"
-              onClick={e => {
-                e.stopPropagation()
-                const newData = { ...data }
-                delete newData[k]
-                onChange(newData)
-                if (Object.keys(newData).length > 0) {
-                  setSelectedTab(Object.keys(newData)[0]!)
-                } else {
-                  setSelectedTab(undefined)
-                }
-              }}
-            >
-              <X className="h-3 w-3" />
-            </Button>
+          <TabsTrigger key={`${index}_tab`} value={k} asChild>
+            <div className="relative flex items-center justify-between gap-2 pr-6">
+              <span className="truncate">{k}</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="absolute right-1 top-1/2 h-4 w-4 -translate-y-1/2 p-0 hover:bg-destructive hover:text-destructive-foreground"
+                onClick={e => {
+                  e.stopPropagation()
+                  const newData = { ...data }
+                  delete newData[k]
+                  onChange(newData)
+                  if (Object.keys(newData).length > 0) {
+                    setSelectedTab(Object.keys(newData)[0]!)
+                  } else {
+                    setSelectedTab(undefined)
+                  }
+                }}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
           </TabsTrigger>
         ))}
         <Button

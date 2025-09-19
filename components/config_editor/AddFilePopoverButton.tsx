@@ -70,7 +70,7 @@ export default function AddFilePopoverButton(props: React.ComponentProps<typeof 
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger>
+      <PopoverTrigger asChild>
         <Button {...props}>
           <Plus />
         </Button>
