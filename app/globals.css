@@ -28,8 +28,13 @@
   --color-chart-2: var(--chart-2);
   --color-chart-1: var(--chart-1);
   --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-error: var(--error);
+  --color-error-foreground: var(--error-foreground);
   --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
 
   --color-ring: var(--ring);
   --color-input: var(--input);
@@ -93,9 +98,14 @@
   --chart-3: oklch(0.62 0.11 150); /* green/teal */
   --chart-4: oklch(0.58 0.13 305); /* purple */
   --chart-5: oklch(0.62 0.12 330); /* magenta */
-  --warning: oklch(0.707 0.191 45.98);
-  --error: oklch(0.695 0.191 25.68);
-  --success: oklch(0.707 0.191 142.5);
+  --warning: oklch(0.85 0.12 85);
+  --warning-foreground: oklch(0.25 0.08 85);
+  --error: oklch(0.88 0.14 25);
+  --error-foreground: oklch(0.25 0.08 25);
+  --success: oklch(0.85 0.12 145);
+  --success-foreground: oklch(0.22 0.08 145);
+  --info: oklch(0.87 0.11 230);
+  --info-foreground: oklch(0.25 0.08 230);
   --sidebar: oklch(0.9881 0 0);
   --sidebar-foreground: oklch(0.2645 0 0);
   --sidebar-primary: oklch(0.325 0 0);
@@ -120,7 +130,7 @@
   --sidebar-width: 20rem;
   --sidebar-width-mobile: 18rem;
   --sidebar-width-icon: 3rem;
-  --sidebar-height: calc(100vh - var(--titlebar-height) );
+  --sidebar-height: calc(100vh - var(--titlebar-height));
 }
 
 /* Responsive sidebar widths for smaller desktop sizes */
@@ -167,9 +177,14 @@
   --chart-3: oklch(0.84 0.15 150); /* green/teal */
   --chart-4: oklch(0.8 0.16 305); /* purple */
   --chart-5: oklch(0.84 0.15 330); /* magenta */
-  --warning: oklch(0.707 0.191 45.98);
-  --error: oklch(0.695 0.191 25.68);
-  --success: oklch(0.707 0.191 142.5);
+  --warning: oklch(0.35 0.15 85);
+  --warning-foreground: oklch(0.95 0.08 85);
+  --error: oklch(0.38 0.18 25);
+  --error-foreground: oklch(0.95 0.08 25);
+  --success: oklch(0.35 0.15 145);
+  --success-foreground: oklch(0.95 0.08 145);
+  --info: oklch(0.4 0.14 230);
+  --info-foreground: oklch(0.95 0.08 230);
   --sidebar: oklch(0.2103 0.0059 285.8852);
   --sidebar-foreground: oklch(0.9674 0.0013 286.3752);
   --sidebar-primary: oklch(0.4882 0.2172 264.3763);
