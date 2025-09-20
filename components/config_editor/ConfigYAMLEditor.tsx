@@ -1,14 +1,15 @@
 'use client'
 import { ConfigSchema, MiddlewareComposeSchema, RoutesSchema } from '@/types/godoxy'
+import type { JSONSchema } from '@/types/schema'
 import type { ReactCodeMirrorProps } from '@uiw/react-codemirror'
 import YAMLEditor from '../YAMLEditor'
 import { configStore } from './store'
 
-const schemas: Record<string, unknown> = {
+const schemas: Record<string, JSONSchema> = {
   config: ConfigSchema,
   provider: RoutesSchema,
   middleware: MiddlewareComposeSchema,
-}
+} as const
 
 export default function ConfigYAMLEditor({ ...props }: Omit<ReactCodeMirrorProps, 'onChange'>) {
   const activeFile = configStore.activeFile.use()

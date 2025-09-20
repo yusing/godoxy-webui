@@ -1,5 +1,6 @@
 import { yamlSchemaHover } from 'codemirror-json-schema/yaml'
 
+import type { JSONSchema } from '@/types/schema'
 import { yaml } from '@codemirror/lang-yaml'
 import { linter } from '@codemirror/lint'
 import ReactCodeMirror, { hoverTooltip, type ReactCodeMirrorProps } from '@uiw/react-codemirror'
@@ -18,7 +19,7 @@ const css = `
 }
 `
 export type YAMLEditorProps = {
-  schema: unknown
+  schema?: JSONSchema
   onChange: (value: string) => void
 } & ReactCodeMirrorProps
 
