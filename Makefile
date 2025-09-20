@@ -62,3 +62,7 @@ gen-schema:
 			OUT=maxmind.schema.json \
 			gen-schema-single
 	pnpm format:write
+
+gen-docker-compose-types:
+	[ -f types/compose-spec.json ] || curl -o types/compose-spec.json https://raw.githubusercontent.com/compose-spec/compose-spec/main/schema/compose-spec.json
+	[ -f types/compose-spec.ts ] || pnpx json-schema-to-typescript types/compose-spec.json types/compose-spec.ts
