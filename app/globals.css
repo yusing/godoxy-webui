@@ -210,7 +210,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply text-foreground bg-gradient-to-br from-background to-primary/5;
+    @apply text-foreground bg-background;
   }
   .scrollbar-hidden {
     scrollbar-width: none;
