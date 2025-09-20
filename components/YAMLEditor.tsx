@@ -1,11 +1,9 @@
-import { yamlSchemaHover } from 'codemirror-json-schema/yaml'
-
 import type { JSONSchema } from '@/types/schema'
 import { yaml } from '@codemirror/lang-yaml'
 import { linter } from '@codemirror/lint'
 import ReactCodeMirror, { hoverTooltip, type ReactCodeMirrorProps } from '@uiw/react-codemirror'
 import { stateExtensions } from 'codemirror-json-schema'
-import { yamlSchemaLinter } from 'codemirror-json-schema/yaml'
+import { yamlSchemaHover, yamlSchemaLinter } from 'codemirror-json-schema/yaml'
 import { useTheme } from 'next-themes'
 import { coolGlow, noctisLilac } from 'thememirror'
 
@@ -45,6 +43,7 @@ export default function YAMLEditor({
         onChange={onChange}
         className={className}
         height="100%"
+        style={{ fontWeight: '550' }}
         {...props}
       />
     </>
