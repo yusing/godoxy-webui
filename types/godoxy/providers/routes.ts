@@ -51,16 +51,6 @@ export type ReverseProxyRoute = {
   port?: Port
   /** Agent */
   agent?: string
-  /** Skip TLS verification
-   *
-   * @default false
-   */
-  no_tls_verify?: boolean
-  /** Response header timeout
-   *
-   * @default 60s
-   */
-  response_header_timeout?: Duration
   /** Healthcheck config */
   healthcheck?: HealthcheckConfig
   /** Load balance config */
@@ -71,7 +61,37 @@ export type ReverseProxyRoute = {
   homepage?: HomepageConfig
   /** Access log config */
   access_log?: RequestLogConfig
+} & HTTPConfig
+
+export type HTTPConfig = {
+  /** Skip TLS verification
+   *
+   * @default false
+   */
+  no_tls_verify?: boolean
+  /** Response header timeout
+   *
+   * @default 60s
+   */
+  response_header_timeout?: Duration
+  /** Disable compression
+   *
+   * @default false
+   */
+  disable_compression?: boolean
+  /** SNI server name */
+  ssl_server_name?: string
+  /** Path to trusted CA certificates */
+  ssl_trusted_certificate?: string
+  /** Path to client certificate */
+  ssl_certificate?: string
+  /** Path to client key */
+  ssl_certificate_key?: string
+  /** Allowed TLS protocols */
+  ssl_protocols?: TLSProtocol[]
 }
+
+export type TLSProtocol = 'tlsv1.0' | 'tlsv1.1' | 'tlsv1.2' | 'tlsv1.3'
 
 export type FileServerRoute = {
   /** Alias (subdomain or FDN)
