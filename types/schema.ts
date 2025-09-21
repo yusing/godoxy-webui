@@ -7,7 +7,7 @@ type PropertyType = 'string' | 'number' | 'boolean' | 'object' | 'array' | (stri
 export type JSONSchema = {
   title?: string
   description?: string
-  examples?: string[]
+  examples?: any[]
   type?: PropertyType | PropertyType[]
   const?: string
   enum?: string[]
