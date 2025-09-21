@@ -29,6 +29,7 @@ export default function ConfigStateSyncronizer() {
       configStore.error.reset()
       return
     }
+    configStore.content.reset()
     configStore.isLoading.set(true)
     configStore.error.reset()
     api.file

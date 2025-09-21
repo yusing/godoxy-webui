@@ -93,7 +93,7 @@ export function MiddlewareComposeEditor({
         <TabsContent key={`${k}_content`} value={k} className="mt-4">
           <MiddlewareEditor
             label={k}
-            data={v ?? []}
+            data={Array.isArray(v) ? v : []}
             onChange={v => onChange({ ...data, [k]: v })}
           />
         </TabsContent>
