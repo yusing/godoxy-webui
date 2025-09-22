@@ -7,8 +7,10 @@ import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/sch
 
 import { FieldInput } from '@/components/form/FieldInput'
 import { ListInput } from '@/components/form/ListInput'
+import { Plus } from 'lucide-react'
 import { Badge } from '../ui/badge'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
+import { Label } from '../ui/label'
 
 type MapInputProps<T extends Record<string, unknown>> = {
   label?: ReactNode
@@ -64,7 +66,23 @@ function PureMapInput<T extends Record<string, unknown>>({
   )
 
   if (!card) {
-    return <div className="flex flex-col gap-3">{content}</div>
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Label>{label}</Label>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onChange({ ...value, ['' as keyof T]: '' } as T)}
+            className="size-4"
+          >
+            <Plus />
+          </Button>
+        </div>
+        <div className="flex flex-col gap-3">{content}</div>
+      </div>
+    )
   }
 
   return (
@@ -268,7 +286,23 @@ function MapInput_<T extends Record<string, unknown>>({
   )
 
   if (!card) {
-    return <div className="flex flex-col gap-3">{entries.map(renderItem)}</div>
+    return (
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Label>{label}</Label>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => onChange({ ...value, ['' as keyof T]: '' } as T)}
+            className="size-4"
+          >
+            <Plus />
+          </Button>
+        </div>
+        <div className="flex flex-col gap-3">{entries.map(renderItem)}</div>
+      </div>
+    )
   }
 
   return (
