@@ -30,7 +30,7 @@ const agentTypes = [
   {
     type: 'docker',
     label: 'Docker',
-    icon: <Docker />,
+    icon: <Docker colored />,
   },
   {
     type: 'system',

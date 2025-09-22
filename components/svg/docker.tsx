@@ -1,9 +1,14 @@
 import type { SVGProps } from 'react'
-const Docker = (props: SVGProps<SVGSVGElement>) => (
+const Docker = ({
+  colored = false,
+  ...props
+}: {
+  colored?: boolean
+} & SVGProps<SVGSVGElement>) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
-    fill="#008fe2"
+    fill={colored ? '#008fe2' : 'currentColor'}
     width="1em"
     height="1em"
     {...props}
