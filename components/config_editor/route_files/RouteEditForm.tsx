@@ -25,7 +25,7 @@ import { ChevronDown, Save, X, type LucideIcon } from 'lucide-react'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { useAsync } from 'react-use'
-import { middlewareUseToSnakeCase } from '../middleware_compose/MiddlewareEditor'
+import { middlewareUseToSnakeCase } from '../middleware_compose/utils'
 import * as utils from './utils'
 
 type RouteEditFormProps = {

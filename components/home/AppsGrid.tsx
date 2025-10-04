@@ -3,7 +3,7 @@
 import { CategoryIcon } from '@/components/home/CategoryIcon'
 import { Button } from '@/components/ui/button'
 import { Combobox } from '@/components/ui/combobox'
-import { Kbd } from '@/components/ui/kbd'
+import Kbd from '@/components/ui/kbd'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useWebSocketApi } from '@/hooks/websocket'
 import { type HealthMap, type HomepageCategory } from '@/lib/api'

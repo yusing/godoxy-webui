@@ -5,7 +5,7 @@ import { Switch } from '@/components/ui/switch'
 import { ConfigSchema, MiddlewareComposeSchema } from '@/types/godoxy'
 import type { MiddlewareFileRef } from '@/types/godoxy/middlewares/middlewares'
 import { useMemo } from 'react'
-import { middlewareUseToSnakeCase } from '../middleware_compose/MiddlewareEditor'
+import { middlewareUseToSnakeCase } from '../middleware_compose/utils'
 import { configStore } from '../store'
 
 export default function EntrypointConfigContent() {
