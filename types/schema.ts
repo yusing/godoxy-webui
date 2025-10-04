@@ -7,6 +7,7 @@ type PropertyType = 'string' | 'number' | 'boolean' | 'object' | 'array' | (stri
 export type JSONSchema = {
   title?: string
   description?: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   examples?: any[]
   type?: PropertyType | PropertyType[]
   const?: string

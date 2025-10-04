@@ -1,6 +1,7 @@
 import type { Routes } from '@/types/godoxy'
 import type { Port, StreamPort } from '@/types/godoxy/types'
 import { Folder, Globe, Wifi } from 'lucide-react'
+import { Code } from './Code'
 
 const routeSchemes = [
   {
@@ -78,14 +79,6 @@ const routeSchemes = [
     },
   },
 ] as const
-
-function Code({ children }: { children: React.ReactNode }) {
-  return (
-    <code className="bg-muted relative rounded-md px-[0.3rem] py-[0.2rem] font-mono text-xs font-semibold">
-      {children}
-    </code>
-  )
-}
 
 function getProxyPort(port: Port | StreamPort | number): string {
   const s = String(port).split(':')

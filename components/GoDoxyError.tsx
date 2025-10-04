@@ -33,6 +33,8 @@ function subjectsToLabel(subjects?: string[]): string {
   return subjects.join('.') + ':'
 }
 
+// FIXME: fix this
+// eslint-disable-next-line react-refresh/only-export-components
 export function flattenGoDoxyError(
   input: GoDoxyError,
   level = 0,

@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 import * as React from 'react'
 
-export function Kbd({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) {
+function Kbd({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) {
   return (
     <kbd
       className={cn(

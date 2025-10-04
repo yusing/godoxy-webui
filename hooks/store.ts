@@ -1,5 +1,7 @@
 'use client'
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useCallback, useEffect, useSyncExternalStore, type ReactNode } from 'react'
 import isEqual from 'react-fast-compare'
 import type { FieldPath, FieldPathValue, FieldValues } from 'react-hook-form'
@@ -347,6 +349,7 @@ export function createStore<T extends FieldValues>(namespace: string, defaultVal
       store.get(namespace + '.' + path) as FieldPathValue<T, P>,
     reset: <P extends FieldPath<T>>(path: P) => produce(namespace + '.' + path, undefined),
     subscribe: <P extends FieldPath<T>>(path: P, listener: (value: FieldPathValue<T, P>) => void) =>
+      // eslint-disable-next-line react-hooks/rules-of-hooks
       useSubscribe<FieldPathValue<T, P>>(namespace + '.' + path, listener),
     notify: <P extends FieldPath<T>>(path: P) => {
       const value = getNestedValue(store.get(namespace), path)
