@@ -18,7 +18,7 @@ type ListInputProps<T extends string> = {
   onChange: (v: T[]) => void
 }
 
-function ListInput_<T extends string>({
+export function ListInput<T extends string>({
   label,
   placeholder,
   value,
@@ -27,6 +27,7 @@ function ListInput_<T extends string>({
   card = true,
   onChange,
 }: ListInputProps<T>) {
+  'use memo'
   const handleItemChange = useCallback(
     (index: number, newValue: T) => {
       const newValues = [...value]
@@ -110,5 +111,3 @@ function ListInput_<T extends string>({
     </Card>
   )
 }
-
-export const ListInput = React.memo(ListInput_) as typeof ListInput_

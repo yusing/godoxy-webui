@@ -8,6 +8,11 @@ const config: NextConfig = {
       destination: '/wiki/:path*.html',
     },
   ],
+  experimental: {
+    reactCompiler: {
+      compilationMode: 'annotation',
+    },
+  },
 }
 
 export default config

@@ -36,7 +36,7 @@ type FieldInputProps<T> = {
   deleteType?: 'delete' | 'reset'
 }
 
-function FieldInput_<T>({
+export function FieldInput<T>({
   fieldKey,
   fieldValue,
   schema,
@@ -46,6 +46,8 @@ function FieldInput_<T>({
   allowDelete = true,
   deleteType = 'delete',
 }: Readonly<FieldInputProps<T>>) {
+  'use memo'
+
   const allowedValues = useMemo(
     () => getAllowedValues(schema, fieldKey),
     [schema, fieldKey]
@@ -134,5 +136,3 @@ function FieldInput_<T>({
 }
 
 const SelectItemMemo = memo(SelectItem) as typeof SelectItem
-
-export const FieldInput = memo(FieldInput_) as typeof FieldInput_

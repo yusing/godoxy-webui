@@ -217,19 +217,19 @@ function MapInput_<T extends Record<string, unknown>>({
         )
       }
       if (vSchema?.type === 'object' || typeof v === 'object') {
-        // if (schema.additionalProperties || vSchema?.additionalProperties) {
-        //   return (
-        //     <PureMapInput
-        //       key={`${index}_map`}
-        //       label={`${String(label)}.${k}`}
-        //       value={(typeof v === 'object' ? v : {}) as Record<string, unknown>}
-        //       onChange={e => {
-        //         onChange({ ...workingValue, [k]: e } as T)
-        //       }}
-        //       placeholder={placeholder}
-        //     />
-        //   )
-        // }
+        if (schema.additionalProperties || vSchema?.additionalProperties) {
+          return (
+            <PureMapInput
+              key={`${index}_map`}
+              label={`${String(label)}.${k}`}
+              value={(typeof v === 'object' ? v : {}) as Record<string, unknown>}
+              onChange={e => {
+                onChange({ ...workingValue, [k]: e } as T)
+              }}
+              placeholder={placeholder}
+            />
+          )
+        }
         return (
           <MapInput
             key={`${index}_map`}

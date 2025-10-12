@@ -111,6 +111,8 @@ const categoryIconMap: Record<string, LucideIcon> = {
 }
 
 export function CategoryIcon({ category, className = '', size = 16 }: CategoryIconProps) {
+  'use memo'
+
   const normalizedCategory = category.toLowerCase().replace(/\s+/g, '')
   const IconComponent = categoryIconMap[normalizedCategory] || Grid3X3
 

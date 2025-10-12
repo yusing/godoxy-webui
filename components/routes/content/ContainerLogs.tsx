@@ -134,6 +134,7 @@ function LogProvider({
 }
 
 function LogEntry({ line }: { line: LogLine }) {
+  'use memo'
   const parsedLine = useMemo(() => parseLogLine(line.content), [line.content])
   const lineHTML = useMemo(() => convertANSI.toHtml(parsedLine.content), [parsedLine.content])
 

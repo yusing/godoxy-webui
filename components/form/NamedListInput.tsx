@@ -1,6 +1,6 @@
 'use client'
 
-import { memo, useCallback, useMemo, type ReactNode } from 'react'
+import { useCallback, useMemo, type ReactNode } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
@@ -19,7 +19,7 @@ type NamedListInputProps<IndexType extends string, T extends Record<IndexType, u
   card?: boolean
 }
 
-function NamedListInput_<IndexType extends string, T extends Record<IndexType, unknown>>({
+export function NamedListInput<IndexType extends string, T extends Record<IndexType, unknown>>({
   label,
   placeholder,
   value,
@@ -29,6 +29,7 @@ function NamedListInput_<IndexType extends string, T extends Record<IndexType, u
   schema,
   card = true,
 }: Readonly<NamedListInputProps<IndexType, T>>) {
+  'use memo'
   const listValue: T[] = useMemo(() => (Array.isArray(value) ? value : []), [value])
 
   const defaultValue = useMemo(
@@ -129,5 +130,3 @@ function NamedListInput_<IndexType extends string, T extends Record<IndexType, u
     </Card>
   )
 }
-
-export const NamedListInput = memo(NamedListInput_) as typeof NamedListInput_

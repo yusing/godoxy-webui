@@ -79,6 +79,7 @@ function ChartContainer({
   config: ChartConfig
   children: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>['children']
 }) {
+  'use memo'
   const uniqueId = React.useId()
   const chartId = `chart-${id || uniqueId.replace(/:/g, '')}`
 
@@ -147,6 +148,7 @@ function ChartTooltipContent({
   nameKey,
   labelKey,
 }: CustomTooltipProps) {
+  'use memo'
   const { config } = useChart()
 
   const tooltipLabel = React.useMemo(() => {
@@ -268,6 +270,7 @@ function ChartLegendContent({
   verticalAlign = 'bottom',
   nameKey,
 }: ChartLegendContentProps) {
+  'use memo'
   const { config } = useChart()
 
   if (!payload?.length) {
