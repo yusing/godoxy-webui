@@ -4,7 +4,7 @@ export type ProxmoxConfig = {
   /**
    * API URL
    *
-   * @example https://proxmox.example.com:8006/api/json2
+   * @examples ["https://proxmox.example.com:8006/api/json2"]
    */
   url: URL
   /**

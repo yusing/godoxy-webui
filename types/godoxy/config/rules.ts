@@ -157,7 +157,7 @@ type RuleOnHost = `host ${RulePattern}`
  *
  * Match the request path with the given path pattern.
  *
- * @examples ["path glob(/api/*)", "path regex(/api/[^/]+)", "path /exact")]
+ * @examples ["path glob(/api/*)", "path regex(/api/[^/]+)", "path /exact"]
  */
 type RuleOnPath = `path ${RulePattern}`
 /**

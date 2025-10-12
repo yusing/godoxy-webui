@@ -7,7 +7,7 @@ export type ACLMatcher = IPMatcher | CIDRMatcher | CountryISOMatcher | TimezoneM
  * IP matcher
  *
  * @type string
- * @example ["ip:192.168.1.1"]
+ * @examples ["ip:192.168.1.1"]
  */
 export type IPMatcher = `ip:${IPv4 | IPv6}`
 
@@ -15,7 +15,7 @@ export type IPMatcher = `ip:${IPv4 | IPv6}`
  * CIDR matcher
  *
  * @type string
- * @example ["cidr:192.168.1.0/24"]
+ * @examples ["cidr:192.168.1.0/24"]
  */
 export type CIDRMatcher = `cidr:${CIDR}`
 
@@ -24,7 +24,7 @@ export type CIDRMatcher = `cidr:${CIDR}`
  *
  * @type string
  * @pattern country:\w{2}
- * @example ["country:US"]
+ * @examples ["country:US"]
  */
 export type CountryISOMatcher = `country:${string}`
 
@@ -33,7 +33,7 @@ export type CountryISOMatcher = `country:${string}`
  *
  * @type string
  * @pattern tz:\w+\/\w+
- * @example ["tz:America/New_York"]
+ * @examples ["tz:America/New_York"]
  */
 export type TimezoneMatcher = `tz:${string}/${string}`
 
