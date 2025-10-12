@@ -12,10 +12,12 @@ export default function SystemStatsProvider() {
     onMessage: data =>
       store.systemInfo.set({
         uptime: store.systemInfo.uptime.value,
-        cpuAverage: data.cpu_average,
+        cpuAverage: Math.round(data.cpu_average * 100) / 100,
         rootPartitionUsage:
-          getDiskUsage(data.disks, '/') ?? Object.values(data.disks)[0]?.used_percent ?? 0,
-        memoryUsage: data.memory.used_percent,
+          Math.round(
+            (getDiskUsage(data.disks, '/') ?? Object.values(data.disks)[0]?.used_percent ?? 0) * 100
+          ) / 100,
+        memoryUsage: Math.round(data.memory.used_percent * 100) / 100,
       }),
   })
 
