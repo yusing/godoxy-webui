@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
 import { Input } from '../ui/input'
-import Kbd from '../ui/kbd'
+import { Kbd } from '../ui/kbd'
 import { store } from './store'
 
 function isAlphabetKey(key: string) {
