@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupField } from '@/components/ui/radio-group'
 import { Switch } from '@/components/ui/switch'
 import { ACLSchema } from '@/types/godoxy'
+import { useMemo } from 'react'
 import { configStore } from '../store'
 
 export default function AccessControlConfigContent() {
@@ -51,6 +52,7 @@ export default function AccessControlConfigContent() {
           />
         )}
       </acl.log.Render>
+      <ACLNotifyConfig />
       <acl.allow.Render>
         {(allow, setAllow) => (
           <ListInput label="Allow List" value={allow ?? []} onChange={setAllow} />
@@ -60,5 +62,36 @@ export default function AccessControlConfigContent() {
         {(deny, setDeny) => <ListInput label="Deny List" value={deny ?? []} onChange={setDeny} />}
       </acl.deny.Render>
     </div>
+  )
+}
+
+function ACLNotifyConfig() {
+  const notify = configStore.configObject.acl.notify.use()
+  const notificationProviders = configStore.configObject.providers.notification.use()
+  const providerNames = useMemo(
+    () => notificationProviders?.filter(p => p && typeof p === 'object').map(p => p.name) ?? [],
+    [notificationProviders]
+  )
+  const schema = useMemo(() => {
+    const s = structuredClone(ACLSchema.definitions.ACLConfig.properties.notify)
+    if (providerNames.length == 0) {
+      s.properties.to.type = 'string'
+    } else {
+      // @ts-expect-error this is correct
+      s.properties.to.items.enum = providerNames
+    }
+    return s
+  }, [providerNames])
+  return (
+    <MapInput
+      label="Notify Config"
+      schema={schema}
+      value={notify ?? {}}
+      placeholder={{
+        key: 'to',
+        value: providerNames.length == 0 ? 'No notification providers configured' : undefined,
+      }}
+      onChange={configStore.configObject.acl.notify.set}
+    />
   )
 }
