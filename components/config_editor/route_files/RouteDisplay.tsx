@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { Routes } from '@/types/godoxy'
 import { ArrowRight, Copy, Edit2, Globe, Trash } from 'lucide-react'
+import RouteIcon from './RouteIcon'
 import * as utils from './utils'
 
 export default function RouteDisplay({
@@ -19,7 +20,6 @@ export default function RouteDisplay({
 }) {
   const listeningAddress = utils.getListeningAddress(route)
   const proxyAddress = utils.getProxyAddressOrRoot(route)
-  const Icon = utils.getRouteIcon(route.scheme ?? 'http')
 
   return (
     <div className="space-y-4">
@@ -38,7 +38,8 @@ export default function RouteDisplay({
                     : 'bg-gray-500/30 border-gray-500/20'
             )}
           >
-            <Icon
+            <RouteIcon
+              scheme={route.scheme ?? 'http'}
               className={cn(
                 `h-5 w-5`,
                 route.scheme === 'fileserver'

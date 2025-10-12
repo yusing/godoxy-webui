@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { type MiddlewareCompose, MiddlewareComposeSchema } from '@/types/godoxy'
 import type { MiddlewareFileRef } from '@/types/godoxy/middlewares/middlewares'
 import { Plus, X } from 'lucide-react'
-import React, { useEffect, useMemo } from 'react'
+import React, { useMemo } from 'react'
 import { middlewareUseToSnakeCase } from './utils'
 
 export function MiddlewareEditor({
@@ -45,13 +45,9 @@ export function MiddlewareComposeEditor({
   data: MiddlewareCompose.MiddlewareCompose
   onChange: (v: MiddlewareCompose.MiddlewareCompose) => void
 }) {
-  const [selectedTab, setSelectedTab] = React.useState<string | undefined>(undefined)
-
-  useEffect(() => {
-    if (Object.keys(data).length > 0) {
-      setSelectedTab(Object.keys(data)[0])
-    }
-  }, [data])
+  const [selectedTab, setSelectedTab] = React.useState<string | undefined>(
+    Object.keys(data).length > 0 ? Object.keys(data)[0] : undefined
+  )
 
   return (
     <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">

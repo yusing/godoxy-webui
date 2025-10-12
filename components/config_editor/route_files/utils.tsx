@@ -1,6 +1,5 @@
 import type { Routes } from '@/types/godoxy'
 import type { Port, StreamPort } from '@/types/godoxy/types'
-import { Folder, Globe, Wifi } from 'lucide-react'
 import { Code } from './Code'
 
 const routeSchemes = [
@@ -105,12 +104,6 @@ function getProxyAddressOrRoot(route: Routes.Route): string {
   return `${route.scheme ?? 'http'}://${route.host}:${getProxyPort(route.port || route.scheme === 'http' ? 80 : 443)}`
 }
 
-function getRouteIcon(scheme: Routes.Route['scheme']) {
-  if (scheme === 'fileserver') return Folder
-  if (scheme === 'tcp' || scheme === 'udp') return Wifi
-  return Globe
-}
-
 function getRouteType(scheme: Routes.Route['scheme']) {
   if (scheme === 'fileserver') return 'File Server'
   if (scheme === 'tcp' || scheme === 'udp') return 'Stream'
@@ -122,7 +115,6 @@ export {
   getListeningPort,
   getProxyAddressOrRoot,
   getProxyPort,
-  getRouteIcon,
   getRouteType,
   routeSchemes,
 }

@@ -26,6 +26,7 @@ import { useCallback, useEffect, useMemo } from 'react'
 import { useForm, type UseFormReturn } from 'react-hook-form'
 import { useAsync } from 'react-use'
 import { middlewareUseToSnakeCase } from '../middleware_compose/utils'
+import RouteIcon from './RouteIcon'
 import * as utils from './utils'
 
 type RouteEditFormProps = {
@@ -68,7 +69,6 @@ export default function RouteEditForm({
 
   const scheme = form.watch('scheme')
   const isStream = scheme === 'tcp' || scheme === 'udp'
-  const Icon = utils.getRouteIcon(scheme)
   const SaveButtonIcon = saveButtonIcon
   const CancelButtonIcon = cancelButtonIcon
 
@@ -119,7 +119,7 @@ export default function RouteEditForm({
                   {utils.routeSchemes.map(({ value, label, description }) => (
                     <SelectItem key={value} value={value}>
                       <div className="flex items-center gap-2">
-                        <Icon className="h-4 w-4" />
+                        <RouteIcon scheme={value} className="size-4" />
                         <div className="flex flex-col items-start">
                           <div className="font-medium">{label}</div>
                           <div className="text-xs text-muted-foreground">{description}</div>

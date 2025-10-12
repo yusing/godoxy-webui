@@ -23,8 +23,6 @@ export default function AppItemTooltipContent({ alias }: { alias: string }) {
     return null
   }
 
-  const StatusIcon = getStatusIcon(healthInfo.status)
-
   return (
     <div className="space-y-2 p-2">
       {/* Header with status */}
@@ -35,7 +33,7 @@ export default function AppItemTooltipContent({ alias }: { alias: string }) {
 
       {/* Status */}
       <TooltipItem
-        icon={<StatusIcon className={cn('w-4 h-4', getStatusColor(healthInfo.status))} />}
+        icon={<StatusIcon status={healthInfo.status} className="w-4 h-4 text-muted-foreground" />}
         label="Status"
         value={healthInfo.status}
         valueClassName={cn('capitalize font-medium', getStatusColor(healthInfo.status))}
@@ -68,20 +66,26 @@ export default function AppItemTooltipContent({ alias }: { alias: string }) {
   )
 }
 
-const getStatusIcon = (status: RoutesHealthInfo['status']) => {
+function StatusIcon({
+  status,
+  className,
+}: {
+  status: RoutesHealthInfo['status']
+  className?: string
+}) {
   switch (status) {
     case 'healthy':
-      return CheckCircle
+      return <CheckCircle className={className} />
     case 'unhealthy':
-      return XCircle
+      return <XCircle className={className} />
     case 'error':
-      return AlertCircle
+      return <AlertCircle className={className} />
     case 'napping':
-      return Pause
+      return <Pause className={className} />
     case 'starting':
-      return Play
+      return <Play className={className} />
     default:
-      return HelpCircle
+      return <HelpCircle className={className} />
   }
 }
 

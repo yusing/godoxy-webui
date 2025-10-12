@@ -5,7 +5,7 @@ import { useWebSocketApi } from '@/hooks/websocket'
 import { cn } from '@/lib/utils'
 import Convert from 'ansi-to-html'
 import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useList } from 'react-use'
 import { store } from '../store'
 
@@ -78,11 +78,19 @@ export default function ContainerLogs({ containerId }: { containerId: string }) 
             }
           }}
         >
-          {scrollDirection.current === 'up' ? <ChevronUpIcon /> : <ChevronDownIcon />}
+          <LogChevron direction={scrollDirection} />
         </Button>
       </div>
     </div>
   )
+}
+
+function LogChevron({ direction }: { direction: React.RefObject<'up' | 'down'> }) {
+  const [currentDirection, setCurrentDirection] = useState<'up' | 'down'>('down')
+  useEffect(() => {
+    setCurrentDirection(direction.current)
+  }, [direction])
+  return currentDirection === 'up' ? <ChevronUpIcon /> : <ChevronDownIcon />
 }
 
 function LogProvider({
