@@ -5,8 +5,10 @@ import React, { useCallback } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import type { JSONSchema } from '@/types/schema'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { Label } from '../ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
 
 type ListInputProps<T extends string> = {
   label?: React.ReactNode
@@ -15,6 +17,7 @@ type ListInputProps<T extends string> = {
   required?: boolean
   description?: string
   card?: boolean
+  schema?: JSONSchema
   onChange: (v: T[]) => void
 }
 
@@ -25,6 +28,7 @@ export function ListInput<T extends string>({
   required = false,
   description,
   card = true,
+  schema,
   onChange,
 }: ListInputProps<T>) {
   'use memo'
@@ -54,11 +58,26 @@ export function ListInput<T extends string>({
     (item: T, index: number) => {
       return (
         <div key={index} className="flex items-center gap-2">
-          <Input
-            value={item}
-            placeholder={placeholder}
-            onChange={e => handleItemChange(index, e.target.value as T)}
-          />
+          {schema?.items?.enum ? (
+            <Select value={item} onValueChange={e => handleItemChange(index, e as T)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={placeholder} />
+              </SelectTrigger>
+              <SelectContent>
+                {schema.items.enum.map((item, index) => (
+                  <SelectItem value={item} key={index}>
+                    {item}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <Input
+              value={item}
+              placeholder={placeholder}
+              onChange={e => handleItemChange(index, e.target.value as T)}
+            />
+          )}
           <Button
             type="button"
             variant="destructive"
@@ -71,7 +90,7 @@ export function ListInput<T extends string>({
         </div>
       )
     },
-    [handleItemChange, handleItemDelete, placeholder]
+    [handleItemChange, handleItemDelete, placeholder, schema]
   )
 
   if (!card) {

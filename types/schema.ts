@@ -154,6 +154,9 @@ export function getAllowedValues(
   keyField: string
 ): string[] | undefined {
   if (!schema) return undefined
+  if (schema.items?.enum) {
+    return schema.items.enum
+  }
   if (schema.anyOf) {
     const items = distinct(
       schema.anyOf.reduce((acc, v) => {

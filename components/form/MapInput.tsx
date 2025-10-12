@@ -1,6 +1,6 @@
 'use client'
 
-import { memo, useCallback, useMemo, type ReactNode } from 'react'
+import { useCallback, useMemo, type ReactNode } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
@@ -131,6 +131,8 @@ function MapInput_<T extends Record<string, unknown>>({
   footer,
   onChange,
 }: Readonly<MapInputProps<T> & { schema: JSONSchema }>) {
+  'use memo'
+
   const workingValue: Record<string, unknown> = useMemo(() => {
     const result: Record<string, unknown> = value ? { ...value } : {}
 
@@ -209,6 +211,7 @@ function MapInput_<T extends Record<string, unknown>>({
             key={`${index}_list`}
             label={k}
             value={Array.isArray(v) ? v : []}
+            schema={vSchema}
             description={vSchema?.description}
             onChange={e => {
               onChange({ ...workingValue, [k]: e } as T)
@@ -324,7 +327,5 @@ export function MapInput<T extends Record<string, unknown>>({
   if (!schema) {
     return <PureMapInput {...props} />
   }
-  return <MapInputMemo {...props} schema={schema} />
+  return <MapInput_ {...props} schema={schema} />
 }
-
-const MapInputMemo = memo(MapInput_) as typeof MapInput_
