@@ -1,4 +1,4 @@
-import type { CIDR, IPv4, IPv6 } from '../types'
+import type { CIDR, Duration, IPv4, IPv6 } from '../types'
 import type { ACLLogConfig } from './access_log'
 
 export type ACLMatcher = IPMatcher | CIDRMatcher | CountryISOMatcher | TimezoneMatcher
@@ -63,4 +63,23 @@ export type ACLConfig = {
    * ACL logger
    */
   log?: ACLLogConfig
+  /**
+   * ACL Summary notifer
+   */
+  notify?: {
+    /**
+     * Notification interval
+     * @default 1m
+     */
+    interval?: Duration
+    /**
+     * Notification provider names
+     */
+    to?: string[]
+    /**
+     * Include allowed IPs?
+     * @default false
+     */
+    include_allowed?: boolean
+  }
 }
