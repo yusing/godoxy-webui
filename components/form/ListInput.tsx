@@ -89,6 +89,7 @@ export function ListInput<T extends string>({
             <Plus />
           </Button>
         </div>
+        {description && <Label className="text-muted-foreground text-xs">{description}</Label>}
         <div className="flex flex-col gap-3">{value.map(renderItem)}</div>
       </div>
     )
