@@ -10,7 +10,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
-import { Input } from '../ui/input'
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+  InputGroupText,
+} from '../ui/input-group'
 import { Kbd } from '../ui/kbd'
 import { store } from './store'
 
@@ -51,8 +57,8 @@ export default function Searchbox() {
       </store.searchEngine.Render>
       <store.searchQuery.Render>
         {(searchQuery, setSearchQuery) => (
-          <>
-            <Input
+          <InputGroup>
+            <InputGroupInput
               ref={searchInputRef}
               placeholder="Search apps or terms..."
               type="text"
@@ -84,15 +90,9 @@ export default function Searchbox() {
                 }
               }}
             />
-            <div
-              className={cn(
-                'absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-muted-foreground flex items-center gap-2'
-              )}
-            >
-              {searchQuery.length > 0 && (
-                <button
-                  type="button"
-                  className="p-0.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground"
+            {searchQuery.length > 0 && (
+              <InputGroupAddon align="inline-end">
+                <InputGroupButton
                   aria-label="Clear search"
                   onClick={() => {
                     setSearchQuery('')
@@ -100,11 +100,15 @@ export default function Searchbox() {
                   }}
                 >
                   <X className="size-4" />
-                </button>
-              )}
-              {<Kbd>{useSearchEngine ? 'Enter' : 'A-Z'}</Kbd>}
-            </div>
-          </>
+                </InputGroupButton>
+              </InputGroupAddon>
+            )}
+            <InputGroupAddon align="inline-end">
+              <InputGroupText>
+                <Kbd>{useSearchEngine ? 'Enter' : 'A-Z'}</Kbd>
+              </InputGroupText>
+            </InputGroupAddon>
+          </InputGroup>
         )}
       </store.searchQuery.Render>
     </div>
