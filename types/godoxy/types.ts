@@ -47,12 +47,16 @@ export type HTTPCookie = string & {}
 
 /**
  * Status code
+ * @minimum 100
+ * @maximum 599
  */
-export type StatusCode = number
+export type StatusCode = number | `${number}`
 /**
  * Status code range
+ * @minimum 100
+ * @maximum 599
  */
-export type StatusCodeRange = number | `${number}` | `${number}-${number}`
+export type StatusCodeRange = StatusCode | `${StatusCode}-${StatusCode}`
 
 /**
  * Domain name
@@ -106,8 +110,10 @@ export type Port = number | `${number}`
  *
  * @pattern ^\d+:\d+$
  * @type string
+ * @minimum 0
+ * @maximum 65535
  */
-export type StreamPort = string & {}
+export type StreamPort = Port | `${Port}:${Port}`
 
 /**
  * Email address
@@ -157,3 +163,16 @@ export type DateTime = string & {}
  * @type string
  */
 export type Glob = string & {}
+
+/**
+ * Go template
+ * @type string
+ * @description A template is a string that contains variables enclosed in curly braces.
+ * @examples ["{{ .Request.Method }} {{ .Request.URL }} {{ .Response.StatusCode }}"]
+ */
+export type Template = string & {}
+
+/**
+ * Log level
+ */
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error' | 'fatal' | 'panic'

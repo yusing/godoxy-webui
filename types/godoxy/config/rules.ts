@@ -4,7 +4,9 @@ import type {
   HTTPHeader,
   HTTPMethod,
   HTTPQuery,
+  LogLevel,
   StatusCode,
+  Template,
   URI,
   URL,
 } from '../types'
@@ -19,7 +21,7 @@ import type {
  *   "form key value",
  *   "post_form key value",
  *   "method GET",
- *   "path /api/*",
+ *   "path glob(/api/*)",
  *   "remote 127.0.0.1",
  *   "route immich",
  *   "basic_auth admin $2y$05$N3ZiFNDXVSMZ/OtcuSzGrOEBp15dqw6kQ9OJWvJSlgi9/zJ9LuCrm",
@@ -38,104 +40,68 @@ import type {
  */
 export type RuleOn =
   | RuleOnHeader
-  | RuleOnHeaderAnyValue
   | RuleOnQuery
-  | RuleOnQueryAnyValue
   | RuleOnCookie
-  | RuleOnCookieAnyValue
   | RuleOnForm
-  | RuleOnFormAnyValue
   | RuleOnPostForm
-  | RuleOnPostFormAnyValue
   | RuleOnHost
   | RuleOnMethod
   | RuleOnPath
   | RuleOnRemote
   | RuleOnRoute
   | RuleOnBasicAuth
+  | RuleOnStatusCode
+  | RuleOnResponseHeader
 
 type RulePattern = `regex(${string})` | `glob(${string})` | (string & {})
 
+type OptionalPattern<T extends string> = T | `${T} ${RulePattern}`
+
 /**
- * header {key} {value}
+ * header {key} [{value}]
  *
- * Match the request header with the given key and value pattern.
+ * When value is provided, match the request header with the given key and value pattern.
+ * Otherwise, match the request header when the given key exists.
  *
- * @examples ["header Content-Type application/json"]
+ * @examples ["header Content-Type", "header Content-Type application/json"]
  */
-type RuleOnHeader = `header ${HTTPHeader} ${RulePattern}`
+type RuleOnHeader = OptionalPattern<`header ${HTTPHeader}`>
 /**
- * header {key}
+ * query {key} [{value}]
  *
- * Match the request header with the given key.
+ * When value is provided, match the request query with the given key and value pattern.
+ * Otherwise, match the request query when the given key exists.
  *
- * @examples ["header Content-Type"]
+ * @examples ["query key", "query key value"]
  */
-type RuleOnHeaderAnyValue = `header ${HTTPHeader}`
+type RuleOnQuery = OptionalPattern<`query ${HTTPQuery}`>
 /**
- * query {key} {value}
+ * cookie {key} [{value}]
  *
- * Match the request query with the given key and value pattern.
+ * When value is provided, match the request cookie with the given key and value pattern.
+ * Otherwise, match the request cookie when the given key exists.
  *
- * @examples ["query key value"]
+ * @examples ["cookie key", "cookie key value"]
  */
-type RuleOnQuery = `query ${HTTPQuery} ${RulePattern}`
+type RuleOnCookie = OptionalPattern<`cookie ${HTTPCookie}`>
 /**
- * query {key}
+ * form {key} [{value}]
  *
- * Match the request query with the given key.
- *
- * @examples ["query key"]
- */
-type RuleOnQueryAnyValue = `query ${HTTPQuery}`
-/**
- * cookie {key} {value}
- *
- * Match the request cookie with the given key and value pattern.
- *
- * @examples ["cookie key value"]
- */
-type RuleOnCookie = `cookie ${HTTPCookie} ${RulePattern}`
-/**
- * cookie {key}
- *
- * Match the request cookie with the given key.
- *
- * @examples ["cookie key"]
- */
-type RuleOnCookieAnyValue = `cookie ${HTTPCookie}`
-/**
- * form {key} {value}
- *
- * Match the request form with the given key and value pattern.
+ * When value is provided, match the request form with the given key and value pattern.
+ * Otherwise, match the request form when the given key exists.
  *
  * @examples ["form key value"]
  */
-type RuleOnForm = `form ${string} ${RulePattern}`
+type RuleOnForm = OptionalPattern<`form ${string}`>
 /**
- * form {key}
+ * post_form {key} [{value}]
  *
- * Match the request form with the given key.
- *
- * @examples ["form key"]
- */
-type RuleOnFormAnyValue = `form ${string}`
-/**
- * post_form {key} {value}
- *
- * Match the request post form with the given key and value pattern.
+ * When value is provided, match the request post form with the given key and value pattern.
+ * Otherwise, match the request post form when the given key exists.
  *
  * @examples ["post_form key value"]
  */
-type RuleOnPostForm = `post_form ${string} ${RulePattern}`
-/**
- * post_form {key}
- *
- * Match the request post form with the given key.
- *
- * @examples ["post_form key"]
- */
-type RuleOnPostFormAnyValue = `post_form ${string}`
+type RuleOnPostForm = OptionalPattern<`post_form ${string}`>
 /**
  * method {http_method}
  *
@@ -184,6 +150,28 @@ type RuleOnRoute = `route ${RulePattern}`
  * @examples ["basic_auth admin $2y$05$N3ZiFNDXVSMZ/OtcuSzGrOEBp15dqw6kQ9OJWvJSlgi9/zJ9LuCrm"]
  */
 type RuleOnBasicAuth = `basic_auth ${string} ${string}`
+/**
+ * status {status_code}
+ * status {status_code}-{status_code}
+ * status {1|2|3|4|5}xx
+ *
+ * Match the request status code with the given status code.
+ *
+ * @examples ["status 404", "status 200-300", "status 2xx"]
+ */
+type RuleOnStatusCode =
+  | `status ${StatusCode}`
+  | `status ${StatusCode}-${StatusCode}`
+  | `status ${1 | 2 | 3 | 4 | 5}xx`
+/**
+ * resp_header {key} [{value}]
+ *
+ * When value is provided, match the response header with the given key and value pattern.
+ * Otherwise, match the response header when the given key exists.
+ *
+ * @examples ["resp_header Content-Type", "resp_header Content-Type application/json"]
+ */
+type RuleOnResponseHeader = OptionalPattern<`resp_header ${HTTPHeader}`>
 
 /**
  * Rule do
@@ -212,6 +200,8 @@ export type RuleDo =
   | RuleDoSet
   | RuleDoAdd
   | RuleDoRemove
+  | RuleDoLog
+  | RuleDoNotify
   | RuleDoPass
 
 /**
@@ -269,7 +259,7 @@ type RuleDoRequireBasicAuth = `require_basic_auth ${string}`
  *
  * @examples ["set headers Content-Type application/json"]
  */
-type RuleDoSet = `set ${Field} ${string} ${string}`
+type RuleDoSet = `set ${RuleModifyTarget}`
 /**
  * add {field} {key} {value}
  *
@@ -277,7 +267,7 @@ type RuleDoSet = `set ${Field} ${string} ${string}`
  *
  * @examples ["add headers Content-Type application/json"]
  */
-type RuleDoAdd = `add ${Field} ${string} ${string}`
+type RuleDoAdd = `add ${RuleModifyTarget}`
 /**
  * remove {field} {key}
  *
@@ -285,7 +275,24 @@ type RuleDoAdd = `add ${Field} ${string} ${string}`
  *
  * @examples ["remove headers Content-Type"]
  */
-type RuleDoRemove = `remove ${Field} ${string}`
+type RuleDoRemove = `remove ${RuleModifyTarget}`
+/**
+ * log {level} {path} {template}
+ *
+ * Log the given level, path and template.
+ * For stdout and stderr, use /dev/stdout and /dev/stderr respectively.
+ *
+ * @examples ["log info /dev/stdout \"{{ .Request.Method }} {{ .Request.URL }} {{ .Response.StatusCode }}\""]
+ */
+type RuleDoLog = `log ${LogLevel} ${string} ${Template}`
+/**
+ * notify {level} {service_name} {template}
+ *
+ * Notify the given level, service name and template. Service must be in `providers.notification`
+ *
+ * @examples ["notify info ntfy \"Received request to {{ .Request.URL }}\" \"{{ .Request.Method }} {{ .Response.StatusCode }}\""]
+ */
+type RuleDoNotify = `notify ${LogLevel} ${string} ${Template}`
 /**
  * pass
  *
@@ -299,4 +306,41 @@ type RuleDoPass = `pass`
  *
  * The field to operate on.
  */
-type Field = 'headers' | 'query' | 'cookies'
+
+type RuleModifyTarget =
+  | RuleModifyHeader
+  | RuleModifyResponseHeader
+  | RuleModifyQuery
+  | RuleModifyCookie
+  | RuleModifyBody
+  | RuleModifyResponseBody
+  | RuleModifyStatusCode
+
+/**
+ * header {key} {template}
+ */
+type RuleModifyHeader = `header ${HTTPHeader} ${Template}`
+/**
+ * resp_header {key} {template}
+ */
+type RuleModifyResponseHeader = `resp_header ${HTTPHeader} ${Template}`
+/**
+ * query {key} {template}
+ */
+type RuleModifyQuery = `query ${HTTPQuery} ${Template}`
+/**
+ * cookie {key} {template}
+ */
+type RuleModifyCookie = `cookie ${HTTPCookie} ${Template}`
+/**
+ * body {template}
+ */
+type RuleModifyBody = `body ${Template}`
+/**
+ * resp_body {template}
+ */
+type RuleModifyResponseBody = `resp_body ${Template}`
+/**
+ * status_code {template}
+ */
+type RuleModifyStatusCode = `status_code ${StatusCode}`
