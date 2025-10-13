@@ -166,10 +166,10 @@ export default function RouteEditForm({
                     <Input
                       id="listen_port"
                       placeholder="tcp"
-                      value={utils.getListeningPort(String(field.value))}
+                      value={utils.getListeningPort(field.value ?? 0)}
                       onChange={e => {
                         field.onChange(
-                          `${e.target.value}:${utils.getProxyPort(String(field.value))}`
+                          `${e.target.value}:${utils.getProxyPort(field.value ?? 0)}`
                         )
                       }}
                     />
@@ -186,10 +186,10 @@ export default function RouteEditForm({
                   <Input
                     id="proxy_port"
                     placeholder="3000"
-                    value={utils.getProxyPort(String(field.value))}
+                    value={utils.getProxyPort(field.value ?? 0)}
                     onChange={e => {
                       field.onChange(
-                        `${utils.getListeningPort(String(field.value))}:${e.target.value}`
+                        `${utils.getListeningPort(field.value ?? 0)}:${e.target.value}`
                       )
                     }}
                   />

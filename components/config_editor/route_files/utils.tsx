@@ -85,7 +85,7 @@ function getProxyPort(port: Port | StreamPort | number): string {
   return s[0]!
 }
 
-function getListeningPort(port: StreamPort | number): string {
+function getListeningPort(port: StreamPort | Port | number): string {
   const s = String(port).split(':')
   if (s.length === 1) return '0'
   return s[0]!
@@ -116,5 +116,6 @@ export {
   getProxyAddressOrRoot,
   getProxyPort,
   getRouteType,
-  routeSchemes,
+  routeSchemes
 }
+
