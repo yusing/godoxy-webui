@@ -3,21 +3,18 @@ services:
   frontend:
     container_name: godoxy-frontend-next-dev
     restart: no
-    network_mode: host
     image: godoxy-frontend
     env_file: .env
-    environment:
-      HOST: 127.0.0.1
-      PORT: 3002
     build:
       context: .
       dockerfile: dev.Dockerfile
     volumes:
       - .:/app
+    tmpfs:
+      - /var/cache/nginx
     labels:
       proxy.aliases: godoxy-dev
       proxy.*: |
-        port: 3002
         healthcheck:
           disabled: true
         homepage:

@@ -28,7 +28,9 @@ COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-RUN bun run build
+# for lite image, we need to export the build
+RUN cp lite.next.config.ts next.config.ts && \
+    bun run build
 
 # Rebuild the source code only when needed
 FROM wiki-deps AS wiki-builder
@@ -39,26 +41,25 @@ RUN sed -i 's|srcDir: "src",|srcDir: "src", base: "/wiki",|' .vitepress/config.m
 RUN sed -i 's|link: "/"|link: "/../", rel: "noopener noreferrer", target: "_self"|' .vitepress/config.mts && \
     bun --bun run docs:build
 
-# Production image, copy all the files and run next
-FROM base AS release
+# Production image, copy all the files and run nginx
+FROM nginx:1-alpine
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-USER 1001:1001
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+USER nginx
 
 WORKDIR /app
 
-COPY --from=prerelease --chown=1001:1001 /app/.next/standalone ./
-COPY --from=prerelease --chown=1001:1001 /app/.next/static ./.next/static
-COPY --from=prerelease --chown=1001:1001 /app/public ./public
-COPY --from=wiki-builder --chown=1001:1001 /src/.vitepress/dist ./public/wiki
+COPY --from=prerelease --chown=nginx:nginx /app/out ./out
+COPY --from=wiki-builder --chown=nginx:nginx /src/.vitepress/dist ./out/wiki
 
-EXPOSE 3000
+EXPOSE 80
 
-ENV PORT=3000
 ENV NODE_ENV=production
 
 LABEL "proxy.#1.rule_file"="embed://webui.yml"
 
-CMD ["server.js"]
+CMD ["nginx", "-g", "daemon off;"]
