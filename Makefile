@@ -20,6 +20,8 @@ update-wiki:
 test-run:
 	docker compose -f test-run.compose.yml up --build --pull=never
 
+test-run-lite:
+	docker compose -f test-run.lite.compose.yml up --build --pull=never
 
 gen-schema-single:
 	pnpx ts-json-schema-generator --minify --no-type-check -e all --no-ref-encode -f ./tsconfig.json -o "${SCHEMA_DIR}/${OUT}" -p "${SCHEMA_DIR}/${IN}" -t ${CLASS}

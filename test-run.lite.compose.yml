@@ -1,0 +1,19 @@
+services:
+  frontend:
+    image: godoxy-webui:lite
+    build:
+      context: .
+      dockerfile: lite.Dockerfile
+    container_name: godoxy-frontend-next-lite
+    restart: unless-stopped
+    env_file: .env
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx:uid=101,gid=101
+      - /run:uid=101,gid=101
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - all
+    labels:
+      proxy.aliases: godoxy-next-lite
