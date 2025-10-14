@@ -89,7 +89,7 @@ jobs:
           file: ${{ matrix.dockerfile }}
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
-          outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}${{ matrix.tag_suffix }},push-by-digest=true,name-canonical=true,push=true
+          outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
           cache-from: |
             type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-${{ env.PLATFORM_PAIR }}-${{ inputs.tag }}${{ matrix.tag_suffix }}
           cache-to: |
@@ -98,7 +98,7 @@ jobs:
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}${{ matrix.tag_suffix }}
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true
 
@@ -149,7 +149,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}${{ matrix.tag_suffix }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=${{ inputs.tag }}${{ matrix.tag_suffix }},event=branch
             type=raw,value=latest${{ matrix.tag_suffix }},event=branch
@@ -170,7 +170,7 @@ jobs:
           shopt -s nullglob
 
           variant="${{ matrix.variant }}"
-          registry_image="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}${{ matrix.tag_suffix }}"
+          registry_image="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
 
           files=(${variant}-*)
           if [ ${#files[@]} -eq 0 ]; then
@@ -195,13 +195,13 @@ jobs:
         if: inputs.old_image_name != ''
         run: |
           docker buildx imagetools create -t ${{ env.REGISTRY }}/${{ env.OLD_IMAGE_NAME }}:${{ steps.meta.outputs.version }}\
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}${{ matrix.tag_suffix }}:${{ steps.meta.outputs.version }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
 
       - name: Inspect image
         run: |
-          docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}${{ matrix.tag_suffix }}:${{ steps.meta.outputs.version }}
+          docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ steps.meta.outputs.version }}
 
       - name: Inspect image (old)
         if: inputs.old_image_name != ''
         run: |
-          docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.OLD_IMAGE_NAME }}${{ matrix.tag_suffix }}:${{ steps.meta.outputs.version }}
+          docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.OLD_IMAGE_NAME }}:${{ steps.meta.outputs.version }}
