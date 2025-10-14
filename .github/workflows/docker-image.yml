@@ -104,15 +104,15 @@ jobs:
 
       - name: Export digest
         run: |
-          mkdir -p "/tmp/digests/${{ matrix.variant }}"
+          mkdir -p /tmp/digests
           digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${{ matrix.variant }}/${digest#sha256:}"
+          touch "/tmp/digests/${{ matrix.variant }}-${digest#sha256:}"
 
       - name: Upload digest
         uses: actions/upload-artifact@v4
         with:
           name: digests-${{ env.PLATFORM_PAIR }}
-          path: /tmp/digests/${{ matrix.variant }}
+          path: /tmp/digests/*
           if-no-files-found: error
           retention-days: 1
 
@@ -164,10 +164,32 @@ jobs:
 
       - name: Create manifest list and push
         id: push
-        working-directory: /tmp/digests/${{ matrix.variant }}
+        working-directory: /tmp/digests
         run: |
-          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
-            $(printf '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}${{ matrix.tag_suffix }}@sha256:%s ' *)
+          set -euo pipefail
+          shopt -s nullglob
+
+          variant="${{ matrix.variant }}"
+          registry_image="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}${{ matrix.tag_suffix }}"
+
+          files=(${variant}-*)
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "No digests found for variant ${variant}"
+            exit 1
+          fi
+
+          tag_args=()
+          while IFS= read -r tag; do
+            tag_args+=("-t" "$tag")
+          done < <(jq -cr '.tags[]' <<< "$DOCKER_METADATA_OUTPUT_JSON")
+
+          image_args=()
+          for file in "${files[@]}"; do
+            digest="${file#${variant}-}"
+            image_args+=("${registry_image}@sha256:${digest}")
+          done
+
+          docker buildx imagetools create "${tag_args[@]}" "${image_args[@]}"
 
       - name: Old image name
         if: inputs.old_image_name != ''
