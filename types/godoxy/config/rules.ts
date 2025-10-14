@@ -225,9 +225,9 @@ type RuleDoServe = `serve ${URI}`
  *
  * Proxy the request to the given URL.
  *
- * @examples ["proxy http://localhost:8080"]
+ * @examples ["proxy http://localhost:8080", "proxy /api/v1/"]
  */
-type RuleDoProxy = `proxy ${URL}`
+type RuleDoProxy = `proxy ${URL | URI}`
 /**
  * redirect {url|path}
  *
@@ -235,7 +235,7 @@ type RuleDoProxy = `proxy ${URL}`
  *
  * @examples ["redirect https://example.com", "redirect /index.html"]
  */
-type RuleDoRedirect = `redirect ${URL}` | `redirect ${URI}`
+type RuleDoRedirect = `redirect ${URL | URI}`
 /**
  * error {status_code} {message}
  *

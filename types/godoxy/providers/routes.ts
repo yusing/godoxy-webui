@@ -26,12 +26,27 @@ export type RouteRule =
       /** Rule do */
       do: RuleDo
     }
+
+/** Local rule file */
+type LocalRuleFile = `file://${string}`
+/** Rule preset file */
+type RulePresetFile = `embed://${string}`
+
+type WithRuleOptions =
+  | {
+      /** Route Rules */
+      rules?: RouteRule[]
+    }
+  | {
+      /** Route Rule file */
+      rule_file?: LocalRuleFile | RulePresetFile
+    }
+
 export type Route = (ReverseProxyRoute | FileServerRoute | StreamRoute) & {
-  /** Route Rules */
-  rules?: RouteRule[]
   /** Route agent */
   agent?: string
-}
+} & WithRuleOptions
+
 export type Routes = {
   [key: string]: Route
 }
