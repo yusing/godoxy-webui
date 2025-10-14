@@ -1,8 +1,8 @@
 # Docker stuff
 Dockerfile
-dev.Dockerfile
-compose.yml
-test-run.compose.yml
+*.Dockerfile
+*.compose.yml
+godoxy-rules.yml
 
 .dockerignore
 .git

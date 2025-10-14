@@ -4,17 +4,13 @@ services:
     build: .
     container_name: godoxy-frontend-next
     restart: unless-stopped
-    network_mode: host # do not change this
     env_file: .env
-    user: 1000:1000
     read_only: true
+    tmpfs:
+      - /app/.next/cache
     security_opt:
       - no-new-privileges:true
     cap_drop:
       - all
-    environment:
-      HOSTNAME: 127.0.0.1
-      PORT: 3004
     labels:
       proxy.aliases: godoxy-next
-      proxy.#1.port: 3004

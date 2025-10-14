@@ -1,68 +1,64 @@
-FROM node:lts-alpine AS node
-FROM oven/bun:1-alpine AS bun
-
-FROM node AS base
-# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
-RUN apk add --no-cache libc6-compat
+FROM oven/bun:1-alpine AS base
 
 HEALTHCHECK NONE
 
-FROM bun AS wiki-deps
+FROM base AS wiki-deps
 WORKDIR /src
 
 # git is for building wiki (vitepress deps)
-RUN apk add --no-cache git
+RUN apk add --no-cache git=2.45.4-r0
 
 # Install dependencies based on the preferred package manager
-COPY public/wiki/package.json public/wiki/bun.lock ./
+COPY wiki/package.json wiki/bun.lock ./
 RUN bun i -D --frozen-lockfile
 
-# Install dependencies only when needed
-FROM base AS webui-deps
+# install dependencies into temp directory
+# this will cache them and speed up future builds
+FROM base AS install
+RUN mkdir -p /temp/dev
+COPY package.json bun.lock /temp/dev/
+WORKDIR /temp/dev
+RUN bun install --frozen-lockfile
+
+# copy node_modules from temp directory
+# then copy all (non-ignored) project files into the image
+FROM base AS prerelease
 WORKDIR /app
-
-# Install dependencies based on the preferred package manager
-COPY package.json pnpm-lock.yaml ./
-RUN corepack enable pnpm && \
-    pnpm i --frozen-lockfile --ignore-scripts
-
-# Rebuild the source code only when needed
-FROM webui-deps AS webui-builder
+COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN --mount=type=cache,target=/app/.next/cache pnpm run build
+ENV NODE_ENV=production
+RUN bun run build
 
 # Rebuild the source code only when needed
 FROM wiki-deps AS wiki-builder
 WORKDIR /src
-COPY public/wiki .
+COPY wiki .
 RUN sed -i 's|srcDir: "src",|srcDir: "src", base: "/wiki",|' .vitepress/config.mts
 # redirect back to GoDoxy WebUI on the same tab when pressing "Home"
-RUN sed -i 's|link: "/"|link: "/../", rel: "noopener noreferrer", target: "_self"|' .vitepress/config.mts
-RUN bun run docs:build
+RUN sed -i 's|link: "/"|link: "/../", rel: "noopener noreferrer", target: "_self"|' .vitepress/config.mts && \
+    bun --bun run docs:build
 
 # Production image, copy all the files and run next
-FROM gcr.io/distroless/nodejs22-debian12:nonroot AS runner
-WORKDIR /app
+FROM base AS release
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-COPY --from=webui-builder /app/public ./public
+USER 1001:1001
 
-# Automatically leverage output traces to reduce image size
-# https://nextjs.org/docs/advanced-features/output-file-tracing
-COPY --from=webui-builder /app/.next/standalone ./
-COPY --from=webui-builder /app/.next/static ./.next/static
+WORKDIR /app
 
-COPY --from=wiki-builder /src/.vitepress/dist ./public/wiki
+COPY --from=prerelease --chown=1001:1001 /app/.next/standalone ./
+COPY --from=prerelease --chown=1001:1001 /app/.next/static ./.next/static
+COPY --from=prerelease --chown=1001:1001 /app/public ./public
+COPY --from=wiki-builder --chown=1001:1001 /src/.vitepress/dist ./public/wiki
 
 EXPOSE 3000
 
 ENV PORT=3000
 ENV NODE_ENV=production
-ENV HOSTNAME="127.0.0.1"
 
-USER 1001:1001
+LABEL "proxy.#1.rule_file"="embed://webui.yml"
 
 CMD ["server.js"]
