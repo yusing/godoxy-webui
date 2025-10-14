@@ -104,15 +104,15 @@ jobs:
 
       - name: Export digest
         run: |
-          mkdir -p /tmp/digests
+          mkdir -p "/tmp/digests/${{ matrix.variant }}"
           digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
+          touch "/tmp/digests/${{ matrix.variant }}/${digest#sha256:}"
 
       - name: Upload digest
         uses: actions/upload-artifact@v4
         with:
           name: digests-${{ env.PLATFORM_PAIR }}
-          path: /tmp/digests/*
+          path: /tmp/digests/${{ matrix.variant }}
           if-no-files-found: error
           retention-days: 1
 
@@ -164,7 +164,7 @@ jobs:
 
       - name: Create manifest list and push
         id: push
-        working-directory: /tmp/digests
+        working-directory: /tmp/digests/${{ matrix.variant }}
         run: |
           docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
             $(printf '${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}${{ matrix.tag_suffix }}@sha256:%s ' *)
