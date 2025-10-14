@@ -125,6 +125,15 @@ jobs:
       packages: write
       id-token: write
 
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: normal
+            tag_suffix: ""
+          - variant: lite
+            tag_suffix: -lite
+
     steps:
       - name: Download digests
         uses: actions/download-artifact@v4
