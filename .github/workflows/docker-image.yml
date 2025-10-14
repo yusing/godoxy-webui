@@ -28,22 +28,22 @@ jobs:
             platform: linux/amd64
             variant: normal
             dockerfile: Dockerfile
-            tag_suffix: :latest
+            tag_suffix: ""
           - runner: ubuntu-24.04-arm
             platform: linux/arm64
             variant: normal
             dockerfile: Dockerfile
-            tag_suffix: :latest
+            tag_suffix: ""
           - runner: ubuntu-latest
             platform: linux/amd64
             variant: lite
             dockerfile: lite.Dockerfile
-            tag_suffix: :lite
+            tag_suffix: -lite
           - runner: ubuntu-24.04-arm
             platform: linux/arm64
             variant: lite
             dockerfile: lite.Dockerfile
-            tag_suffix: :lite
+            tag_suffix: -lite
 
     name: Build ${{ matrix.platform }} (${{ matrix.variant }})
     runs-on: ${{ matrix.runner }}
