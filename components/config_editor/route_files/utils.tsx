@@ -116,6 +116,5 @@ export {
   getProxyAddressOrRoot,
   getProxyPort,
   getRouteType,
-  routeSchemes
+  routeSchemes,
 }
-

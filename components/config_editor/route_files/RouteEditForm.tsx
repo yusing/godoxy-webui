@@ -168,9 +168,7 @@ export default function RouteEditForm({
                       placeholder="tcp"
                       value={utils.getListeningPort(field.value ?? 0)}
                       onChange={e => {
-                        field.onChange(
-                          `${e.target.value}:${utils.getProxyPort(field.value ?? 0)}`
-                        )
+                        field.onChange(`${e.target.value}:${utils.getProxyPort(field.value ?? 0)}`)
                       }}
                     />
                   </FormItem>
