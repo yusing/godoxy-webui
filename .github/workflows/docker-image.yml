@@ -28,22 +28,22 @@ jobs:
             platform: linux/amd64
             variant: normal
             dockerfile: Dockerfile
-            tag_suffix: ""
+            tag: ${{ inputs.tag }}
           - runner: ubuntu-24.04-arm
             platform: linux/arm64
             variant: normal
             dockerfile: Dockerfile
-            tag_suffix: ""
+            tag: ${{ inputs.tag }}
           - runner: ubuntu-latest
             platform: linux/amd64
             variant: lite
             dockerfile: lite.Dockerfile
-            tag_suffix: -lite
+            tag: ${{ inputs.tag }}-lite
           - runner: ubuntu-24.04-arm
             platform: linux/arm64
             variant: lite
             dockerfile: lite.Dockerfile
-            tag_suffix: -lite
+            tag: ${{ inputs.tag }}-lite
 
     name: Build ${{ matrix.platform }} (${{ matrix.variant }})
     runs-on: ${{ matrix.runner }}
@@ -66,9 +66,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ inputs.tag }}${{ matrix.tag_suffix }},event=branch
-            type=raw,value=latest${{ matrix.tag_suffix }},event=branch
-            type=ref,event=tag,suffix=${{ matrix.tag_suffix }}
+            type=raw,value=${{ matrix.tag }},event=branch
+            type=ref,event=tag,suffix=${{ matrix.tag }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -91,9 +90,9 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=image,name=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }},push-by-digest=true,name-canonical=true,push=true
           cache-from: |
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-${{ env.PLATFORM_PAIR }}-${{ inputs.tag }}${{ matrix.tag_suffix }}
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-${{ env.PLATFORM_PAIR }}-${{ matrix.tag }}
           cache-to: |
-            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-${{ env.PLATFORM_PAIR }}-${{ inputs.tag }}${{ matrix.tag_suffix }},mode=max
+            type=registry,ref=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:buildcache-${{ env.PLATFORM_PAIR }}-${{ matrix.tag }},mode=max
 
       - name: Generate artifact attestation
         uses: actions/attest-build-provenance@v1
@@ -130,9 +129,9 @@ jobs:
       matrix:
         include:
           - variant: normal
-            tag_suffix: ""
+            tag: ${{ inputs.tag }}
           - variant: lite
-            tag_suffix: -lite
+            tag: ${{ inputs.tag }}-lite
 
     steps:
       - name: Download digests
@@ -151,9 +150,8 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=${{ inputs.tag }}${{ matrix.tag_suffix }},event=branch
-            type=raw,value=latest${{ matrix.tag_suffix }},event=branch
-            type=ref,event=tag,suffix=${{ matrix.tag_suffix }}
+            type=raw,value=${{ matrix.tag }},event=branch
+            type=ref,event=tag,suffix=${{ matrix.tag }}
 
       - name: Login to registry
         uses: docker/login-action@v3
