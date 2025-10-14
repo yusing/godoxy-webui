@@ -9,7 +9,7 @@ dev:
 	docker compose up --build --pull=never
 
 commit-push:
-	pnpm format:write
+	bun format:write
 	git add .
 	git commit
 	git push
@@ -24,7 +24,7 @@ test-run-lite:
 	docker compose -f test-run.lite.compose.yml up --build --pull=never
 
 gen-schema-single:
-	pnpx ts-json-schema-generator --minify --no-type-check -e all --no-ref-encode -f ./tsconfig.json -o "${SCHEMA_DIR}/${OUT}" -p "${SCHEMA_DIR}/${IN}" -t ${CLASS}
+	bunx --bun ts-json-schema-generator --minify --no-type-check -e all --no-ref-encode -f ./tsconfig.json -o "${SCHEMA_DIR}/${OUT}" -p "${SCHEMA_DIR}/${IN}" -t ${CLASS}
 	# minify
 	# python3 -c "import json; f=open('${SCHEMA_DIR}/${OUT}', 'r'); j=json.load(f); f.close(); f=open('${SCHEMA_DIR}/${OUT}', 'w'); json.dump(j, f, separators=(',', ':'));"
 	# deference
@@ -64,8 +64,8 @@ gen-schema:
 			CLASS=MaxmindConfig \
 			OUT=maxmind.schema.json \
 			gen-schema-single
-	pnpm format:write
+	bun format:write
 
 gen-docker-compose-types:
 	[ -f types/compose-spec.json ] || curl -o types/compose-spec.json https://raw.githubusercontent.com/compose-spec/compose-spec/main/schema/compose-spec.json
-	[ -f types/compose-spec.ts ] || pnpx json-schema-to-typescript types/compose-spec.json types/compose-spec.ts
+	[ -f types/compose-spec.ts ] || bunx json-schema-to-typescript types/compose-spec.json types/compose-spec.ts
