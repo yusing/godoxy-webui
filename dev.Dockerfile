@@ -11,4 +11,4 @@ WORKDIR /app
 
 EXPOSE 3000
 
-CMD ["bun", "run", "dev"]
+CMD ["bun", "--bun", "run", "dev"]

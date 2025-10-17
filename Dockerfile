@@ -28,7 +28,7 @@ COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-RUN bun run build
+RUN bun --bun run build
 
 # Rebuild the source code only when needed
 FROM wiki-deps AS wiki-builder
