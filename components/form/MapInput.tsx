@@ -1,12 +1,13 @@
 'use client'
 
-import { useCallback, useMemo, type ReactNode } from 'react'
+import { useCallback, useMemo, useRef, type ReactNode } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
 
 import { FieldInput } from '@/components/form/FieldInput'
 import { ListInput } from '@/components/form/ListInput'
+import { randomUUID } from 'crypto'
 import { Plus } from 'lucide-react'
 import { Badge } from '../ui/badge'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
@@ -32,36 +33,61 @@ function PureMapInput<T extends Record<string, unknown>>({
   onChange,
   card = true,
 }: Readonly<Omit<MapInputProps<T>, 'allowDelete' | 'schema' | 'footer'>>) {
-  const keys = useMemo(() => Object.keys(value ?? {}), [value])
+  // Maintain stable order: keep existing order, append newly added keys at the end
+  const pureKeysRef = useRef<string[]>([])
+  const keys = useMemo(() => {
+    const current = Object.keys(value ?? {})
+    const currentSet = new Set(current)
+    const ordered: string[] = pureKeysRef.current.filter(k => currentSet.has(k))
+    for (const k of ordered) currentSet.delete(k)
+    for (const k of currentSet) ordered.push(k)
+    pureKeysRef.current = ordered
+    return ordered
+  }, [value])
 
   const content = (
     <>
-      {keys.map((k, index) => (
-        <FieldInput
-          key={index}
-          fieldKey={k}
-          fieldValue={value?.[k]}
-          allowDelete
-          schema={undefined}
-          placeholder={placeholder}
-          onKeyChange={(newK, newV) => {
-            const newValue = { ...value, [newK]: newV }
-            if (k !== newK) {
-              delete newValue[k]
-            }
-            onChange(newValue as T)
-          }}
-          onChange={e => {
-            if (e === undefined || e === null) {
-              const newValue = { ...value }
-              delete newValue[k]
+      {keys.map((k, index) => {
+        const displayKey = k.replace(/__temp__\d+$/, '')
+        const actualKey = k
+
+        return (
+          <FieldInput
+            key={index}
+            fieldKey={displayKey}
+            fieldValue={value?.[k]}
+            allowDelete
+            schema={undefined}
+            placeholder={placeholder}
+            onKeyChange={(newK, newV) => {
+              // If renaming to an existing key (collision), use temporary key
+              if (newK !== displayKey && value && newK in value) {
+                const tempKey = `${newK}__temp__${randomUUID()}`
+                const newValue = { ...value, [tempKey]: newV }
+                delete newValue[actualKey]
+                onChange(newValue as T)
+                return
+              }
+
+              // Normal rename
+              const newValue = { ...value, [newK]: newV }
+              if (actualKey !== newK) {
+                delete newValue[actualKey]
+              }
               onChange(newValue as T)
-              return
-            }
-            onChange({ ...value, [k]: e } as T)
-          }}
-        />
-      ))}
+            }}
+            onChange={e => {
+              if (e === undefined || e === null) {
+                const newValue = { ...value }
+                delete newValue[actualKey]
+                onChange(newValue as T)
+                return
+              }
+              onChange({ ...value, [actualKey]: e } as T)
+            }}
+          />
+        )
+      })}
     </>
   )
 
