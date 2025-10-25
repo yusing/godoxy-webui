@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, type InputHTMLAttributes } from 'react'
+import { Suspense, useCallback, type InputHTMLAttributes } from 'react'
 
 import { ListInput } from '@/components/form/ListInput'
 import { MapInput } from '@/components/form/MapInput'
@@ -137,7 +137,9 @@ export default function AutocertConfigContent() {
         <Card>
           <CardHeader className="flex items-center justify-between">
             <CardTitle>Current certificate</CardTitle>
-            <AutocertRenewDialogButton />
+            <Suspense>
+              <AutocertRenewDialogButton />
+            </Suspense>
           </CardHeader>
           <CardContent>
             <AutocertInfo />

@@ -5,7 +5,7 @@ import { useWebSocketApi } from '@/hooks/websocket'
 import { cn } from '@/lib/utils'
 import Convert from 'ansi-to-html'
 import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useList } from 'react-use'
 import { store } from '../store'
 
@@ -44,13 +44,42 @@ export default function ContainerLogs({ containerId }: { containerId: string }) 
 
   return (
     <div className="relative">
-      <LogProvider
-        containerId={containerId}
-        push={push}
-        idRef={idRef}
-        autoScroll={autoScroll}
+      <Suspense>
+        <LogProvider
+          containerId={containerId}
+          push={push}
+          idRef={idRef}
+          autoScroll={autoScroll}
+          logsRef={logsRef}
+        />
+      </Suspense>
+      <ContainerLogsInner
+        lines={lines}
         logsRef={logsRef}
+        topRef={topRef}
+        bottomRef={bottomRef}
+        scrollDirection={scrollDirection}
       />
+    </div>
+  )
+}
+
+function ContainerLogsInner({
+  lines,
+  logsRef,
+  topRef,
+  bottomRef,
+  scrollDirection,
+}: {
+  lines: LogLine[]
+  logsRef: React.RefObject<HTMLDivElement | null>
+  topRef: React.RefObject<HTMLDivElement | null>
+  bottomRef: React.RefObject<HTMLDivElement | null>
+  scrollDirection: React.RefObject<'up' | 'down'>
+}) {
+  'use memo'
+  return (
+    <>
       <div className="flex flex-col gap-1 overflow-auto h-full max-h-[45vh]" ref={logsRef}>
         <div ref={topRef} />
         {lines.length === 0 ? (
@@ -81,7 +110,7 @@ export default function ContainerLogs({ containerId }: { containerId: string }) 
           <LogChevron direction={scrollDirection} />
         </Button>
       </div>
-    </div>
+    </>
   )
 }
 

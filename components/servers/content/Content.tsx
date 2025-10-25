@@ -13,7 +13,7 @@ import { useFragment } from '@/hooks/fragment'
 import type { MetricsPeriod } from '@/lib/api'
 import { formatBytes, formatTemperature } from '@/lib/format'
 import { Globe } from 'lucide-react'
-import { useCallback, useMemo } from 'react'
+import { Suspense, useCallback, useMemo } from 'react'
 import { store } from '../store'
 import MetricChart from './Charts'
 
@@ -54,7 +54,9 @@ function SystemInfoGraphsPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <SystemInfoGraphsProvider agent={agent} period={period} />
+      <Suspense>
+        <SystemInfoGraphsProvider agent={agent} period={period} />
+      </Suspense>
       <div className="flex items-start justify-between">
         <div className="flex flex-col gap-1">
           <h2 className="text-xl font-medium">

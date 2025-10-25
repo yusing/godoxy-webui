@@ -1,6 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { Clock, Cpu, HardDrive, MemoryStick, type LucideIcon } from 'lucide-react'
+import { Suspense } from 'react'
 import type { FieldPath } from 'react-hook-form'
 import type { Store } from './store'
 import SystemStatsProvider from './SystemStatsProvider'
@@ -29,7 +30,9 @@ export default function SystemStats() {
           </CardContent>
         </Card>
       ))}
-      <SystemStatsProvider />
+      <Suspense>
+        <SystemStatsProvider />
+      </Suspense>
     </div>
   )
 }

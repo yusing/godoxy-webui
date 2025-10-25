@@ -10,7 +10,7 @@ import { useWebSocketApi } from '@/hooks/websocket'
 import type { RouteUptimeAggregate, UptimeAggregate } from '@/lib/api'
 import { toastError } from '@/lib/toast'
 import { cn } from '@/lib/utils'
-import { useEffect, useRef } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 import { Label } from '../ui/label'
 import RoutePercentageText from './PercentageText'
 import RoutesSidebarSearchBox from './SearchBox'
@@ -43,7 +43,9 @@ export default function RoutesSidebar({ className }: { className?: string }) {
       </div>
       <RoutesSidebarSearchBox />
       <RoutesSidebarItemList />
-      <RoutesUptimeProvider sidebarRef={sidebarRef} />
+      <Suspense>
+        <RoutesUptimeProvider sidebarRef={sidebarRef} />
+      </Suspense>
       <SelectedRouteResetter />
       <ScrollIntoSelectedRoute />
     </div>

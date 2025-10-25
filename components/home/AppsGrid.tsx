@@ -9,7 +9,7 @@ import { useWebSocketApi } from '@/hooks/websocket'
 import { type HealthMap, type HomepageCategory } from '@/lib/api'
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from 'lucide-react'
 import { motion } from 'motion/react'
-import { useEffect, useMemo } from 'react'
+import { Suspense, useEffect, useMemo } from 'react'
 import AppCategory from './AppCategory'
 import ArrowNavigation from './ArrowNavigation'
 import Searchbox from './Searchbox'
@@ -17,10 +17,11 @@ import SettingsPopover from './SettingsPopover'
 import { store } from './store'
 
 export default function AppGrid() {
-  const [activeCategory, setActiveCategory] = store.navigation.activeCategory.useState()
+  const [activeCategoryValue, setActiveCategory] = store.navigation.activeCategory.useState()
 
   const categories = store.homepageCategories.use()
   const categoryNames = useMemo(() => categories.map(cat => cat.name), [categories])
+  const sortMethod = store.settings.sortMethod.use()
 
   const maxTabsWithoutCombobox = 5
   const comboboxStartIndex = 5
@@ -35,27 +36,30 @@ export default function AppGrid() {
     return list.slice(comboboxStartIndex)
   }, [categoryNames])
 
-  useEffect(() => {
-    if (!categoryNames.length) return
-    if (!categoryNames.includes(activeCategory)) {
-      setActiveCategory(categoryNames[0] ?? 'All')
+  const activeCategory = useMemo(() => {
+    if (!categoryNames.length) return 'All'
+    if (!categoryNames.includes(activeCategoryValue)) {
+      return categoryNames[0] ?? 'All'
     }
 
     // if current category is Favorites and there are no favorites, set to All
     if (
-      activeCategory === 'Favorites' &&
+      activeCategoryValue === 'Favorites' &&
       !store.homepageCategories
-        .at(categoryNames.indexOf(activeCategory))
+        .at(categoryNames.indexOf(activeCategoryValue))
         .items.value.some(c => c.favorite)
     ) {
-      setActiveCategory('All')
+      return 'All'
     }
-  }, [categoryNames, activeCategory, setActiveCategory, visibleTabs])
+    return activeCategoryValue
+  }, [activeCategoryValue, categoryNames])
 
   return (
     <div className="space-y-4">
-      <HealthWatcher />
-      <HomepageItemsProvider />
+      <Suspense>
+        <HealthWatcher />
+        <HomepageItemsProvider sortMethod={sortMethod} />
+      </Suspense>
       <PendingFavoritesResetter activeCategory={activeCategory} />
       <ArrowNavigation />
       <Tabs
@@ -190,9 +194,11 @@ export default function AppGrid() {
   )
 }
 
-function HomepageItemsProvider() {
-  const sortMethod = store.settings.sortMethod.use()
-
+function HomepageItemsProvider({
+  sortMethod,
+}: {
+  sortMethod: 'alphabetical' | 'clicks' | 'custom'
+}) {
   useWebSocketApi<HomepageCategory[]>({
     endpoint: '/homepage/items',
     query: { sort_method: sortMethod },
