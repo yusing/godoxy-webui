@@ -2,17 +2,11 @@ import type { NextConfig } from 'next'
 
 const config: NextConfig = {
   output: 'export',
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  cacheComponents: true, // Partial Pre-Rendering (Next.js 16)
   images: {
     unoptimized: true,
   },
-  experimental: {
-    reactCompiler: {
-      compilationMode: 'annotation',
-    },
-  },
+  reactCompiler: true,
 }
 
 export default config

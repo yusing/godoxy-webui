@@ -8,6 +8,9 @@ SCHEMA_DIR := types/godoxy
 dev:
 	docker compose up --build --pull=never
 
+dev-lite:
+	DOCKERFILE=lite.dev.Dockerfile docker compose up --build --pull=never
+
 commit-push:
 	bun format:write
 	git add .

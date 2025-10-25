@@ -2,8 +2,9 @@ import type { NextConfig } from 'next'
 
 const config: NextConfig = {
   output: 'standalone',
-  eslint: {
-    ignoreDuringBuilds: true,
+  cacheComponents: true, // Partial Pre-Rendering (Next.js 16)
+  experimental: {
+    turbopackFileSystemCacheForDev: true,
   },
   rewrites: async () => [
     {
@@ -11,11 +12,10 @@ const config: NextConfig = {
       destination: '/wiki/:path*.html',
     },
   ],
-  experimental: {
-    reactCompiler: {
-      compilationMode: 'annotation',
-    },
-  },
+  // reactCompiler: {
+  //   // compilationMode: 'annotation',
+  //   compilationMode: 'infer',
+  // },
 }
 
 export default config

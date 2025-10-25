@@ -11,6 +11,4 @@ WORKDIR /app
 
 EXPOSE 3000
 
-LABEL "proxy.#1.rule_file"="embed://webui.yml"
-
-CMD ["bun", "--bun", "run", "dev"]
+CMD ["bun", "run", "dev"]

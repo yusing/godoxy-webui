@@ -7,7 +7,7 @@ services:
     env_file: .env
     build:
       context: .
-      dockerfile: dev.Dockerfile
+      dockerfile: ${DOCKERFILE:-dev.Dockerfile}
     volumes:
       - .:/app
     tmpfs:
