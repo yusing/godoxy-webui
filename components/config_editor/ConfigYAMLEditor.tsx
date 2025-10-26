@@ -2,6 +2,7 @@
 import { ConfigSchema, MiddlewareComposeSchema, RoutesSchema } from '@/types/godoxy'
 import type { JSONSchema } from '@/types/schema'
 import type { ReactCodeMirrorProps } from '@uiw/react-codemirror'
+import { CodeMirror } from '../ObjectDataList'
 import YAMLEditor from '../YAMLEditor'
 import { configStore } from './store'
 
@@ -18,11 +19,11 @@ export default function ConfigYAMLEditor({ ...props }: Omit<ReactCodeMirrorProps
   const isLoading = configStore.isLoading.use()
 
   if (error) {
-    return <YAMLEditor readOnly value={error} onChange={() => {}} schema={undefined} />
+    return <CodeMirror readOnly value={error} />
   }
 
   if (isLoading) {
-    return <YAMLEditor readOnly value="Loading..." onChange={() => {}} schema={undefined} />
+    return <CodeMirror readOnly value="Loading..." />
   }
 
   return (

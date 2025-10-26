@@ -1,21 +1,11 @@
 import type { JSONSchema } from '@/types/schema'
 import { yaml } from '@codemirror/lang-yaml'
 import { linter } from '@codemirror/lint'
-import ReactCodeMirror, { hoverTooltip, type ReactCodeMirrorProps } from '@uiw/react-codemirror'
+import { hoverTooltip, type ReactCodeMirrorProps } from '@uiw/react-codemirror'
 import { stateExtensions } from 'codemirror-json-schema'
 import { yamlSchemaHover, yamlSchemaLinter } from 'codemirror-json-schema/yaml'
-import { useTheme } from 'next-themes'
-import { coolGlow, noctisLilac } from 'thememirror'
+import { CodeMirror } from './ObjectDataList'
 
-const css = `
-.cm-gutters,
-.cm-editor {
-  background-color: transparent !important;
-}
-.cm-scroller {
-  overflow: auto !important;
-}
-`
 export type YAMLEditorProps = {
   schema?: JSONSchema
   onChange: (value: string) => void
@@ -28,25 +18,18 @@ export default function YAMLEditor({
   className,
   ...props
 }: YAMLEditorProps) {
-  const { theme: nextTheme } = useTheme()
-  const theme = nextTheme === 'light' ? noctisLilac : coolGlow
-
   return (
-    <>
-      <style>{css}</style>
-      <ReactCodeMirror
-        extensions={[yaml(), ...yamlSchemaExtensions(schema)]}
-        theme={theme}
-        autoFocus
-        basicSetup
-        value={value}
-        onChange={onChange}
-        className={className}
-        height="100%"
-        style={{ fontWeight: '550' }}
-        {...props}
-      />
-    </>
+    <CodeMirror
+      extensions={[yaml(), ...yamlSchemaExtensions(schema)]}
+      autoFocus
+      basicSetup
+      readOnly={!onChange}
+      value={value ?? ''}
+      setValue={onChange}
+      className={className}
+      language="yaml"
+      {...props}
+    />
   )
 }
 

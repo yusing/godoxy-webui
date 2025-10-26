@@ -23,13 +23,13 @@ export default function ConfigPage() {
           </div>
           {/* 3/5 */}
           <Card className="flex flex-col h-full overflow-hidden">
-            <CardHeader className="flex-shrink-0">
+            <CardHeader className="shrink-0">
               <CardTitle>YAML Editor</CardTitle>
             </CardHeader>
-            <CardContent className="flex-1 min-h-0 overflow-hidden w-full h-full">
-              <ConfigYAMLEditor className="min-w-[500px] border rounded-md w-full h-full" />
+            <CardContent className="flex-1 min-h-0 overflow-hidden">
+              <ConfigYAMLEditor className="ring-1 ring-inset ring-border rounded-md" />
             </CardContent>
-            <CardFooter className="flex-shrink-0">
+            <CardFooter className="shrink-0">
               <ConfigValidationError />
             </CardFooter>
           </Card>

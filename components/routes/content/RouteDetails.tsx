@@ -1,5 +1,6 @@
 'use client'
 
+import { CodeMirror } from '@/components/ObjectDataList'
 import { useSelectedRoute } from '@/components/routes/store'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -8,11 +9,10 @@ import { Label } from '@/components/ui/label'
 import { api } from '@/lib/api-client'
 import { formatDuration } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import { json } from '@codemirror/lang-json'
-import ReactCodeMirror from '@uiw/react-codemirror'
+import { yaml } from '@codemirror/lang-yaml'
 import { ArrowRight } from 'lucide-react'
-import { useTheme } from 'next-themes'
 import { useAsync } from 'react-use'
+import { stringify as stringifyYAML } from 'yaml'
 import ContainerLogs from './ContainerLogs'
 import ContainerLogsHeader from './ContainerLogsHeader'
 
@@ -352,11 +352,11 @@ export default function RouteDetails() {
             <CardTitle>Load Balancer</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm">
-              <pre className="bg-muted p-3 rounded-md overflow-x-auto">
-                {JSON.stringify(routeDetails.load_balance, null, 2)}
-              </pre>
-            </div>
+            <CodeMirror
+              className="mt-1"
+              value={stringifyYAML(routeDetails.load_balance)}
+              extensions={[yaml()]}
+            />
           </CardContent>
         </Card>
       )}
@@ -367,14 +367,7 @@ export default function RouteDetails() {
             <CardTitle>Middlewares</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {Object.entries(routeDetails.middlewares).map(([key, value]) => (
-                <div key={key} className="border rounded-lg p-2">
-                  <div className="font-medium text-sm">{key}</div>
-                  <JSONCodeMirror value={value} />
-                </div>
-              ))}
-            </div>
+            <CodeMirror value={stringifyYAML(routeDetails.middlewares)} extensions={[yaml()]} />
           </CardContent>
         </Card>
       )}
@@ -388,18 +381,22 @@ export default function RouteDetails() {
             {routeDetails.access_log && (
               <div>
                 <Title>Access Log</Title>
-                <div className="text-sm mt-1">
-                  <JSONCodeMirror value={routeDetails.access_log} />
-                </div>
+                <CodeMirror
+                  className="mt-1"
+                  value={stringifyYAML(routeDetails.access_log)}
+                  extensions={[yaml()]}
+                />
               </div>
             )}
 
             {routeDetails.idlewatcher && (
               <div>
                 <Title>Idle Watcher</Title>
-                <div className="text-sm mt-1">
-                  <JSONCodeMirror value={routeDetails.idlewatcher} />
-                </div>
+                <CodeMirror
+                  className="mt-1"
+                  value={stringifyYAML(routeDetails.idlewatcher)}
+                  extensions={[yaml()]}
+                />
               </div>
             )}
           </CardContent>
@@ -437,19 +434,5 @@ function Item({
         </div>
       )}
     </div>
-  )
-}
-
-function JSONCodeMirror({ value }: { value: unknown }) {
-  const { resolvedTheme } = useTheme()
-  return (
-    <ReactCodeMirror
-      className="text-xs mt-2"
-      readOnly
-      value={JSON.stringify(value, null, 2)}
-      theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
-      extensions={[json()]}
-      basicSetup={false}
-    />
   )
 }

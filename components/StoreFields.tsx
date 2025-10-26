@@ -2,6 +2,7 @@
 
 import type { NodeMethods } from '@/hooks/store'
 import { useEffect, useMemo, type ComponentProps } from 'react'
+import { CodeMirror } from './ObjectDataList'
 import { Input } from './ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import { Textarea } from './ui/textarea'
@@ -86,4 +87,12 @@ function StoreTextarea({
   )
 }
 
-export { StoreInput, StoreSelect, StoreTextarea }
+function StoreCodeMirror({
+  state,
+  ...props
+}: { state: NodeMethods<string> } & Omit<ComponentProps<typeof CodeMirror>, 'value' | 'setValue'>) {
+  const [value, setValue] = state.useState()
+  return <CodeMirror value={value} setValue={setValue} {...props} />
+}
+
+export { StoreCodeMirror, StoreInput, StoreSelect, StoreTextarea }

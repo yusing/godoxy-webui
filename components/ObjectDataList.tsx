@@ -1,11 +1,16 @@
 import { cn } from '@/lib/utils'
 import { html } from '@codemirror/lang-html'
 import { json } from '@codemirror/lang-json'
-import ReactCodeMirror, { EditorView, type Extension } from '@uiw/react-codemirror'
+import ReactCodeMirror, {
+  EditorView,
+  type Extension,
+  type ReactCodeMirrorProps,
+} from '@uiw/react-codemirror'
 import { CopyIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { memo, useCallback, type ReactNode } from 'react'
 import { toast } from 'sonner'
+import { coolGlow, noctisLilac } from 'thememirror'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
@@ -100,7 +105,11 @@ const ObjectDataList = memo(function ObjectDataList({
   }
 
   return (
-    <DataListRow label={k ?? ''} value={<Value v={v} />} className="w-full break-words text-sm" />
+    <DataListRow
+      label={k ?? ''}
+      value={<Value v={v} />}
+      className="w-full wrap-break-word text-sm"
+    />
   )
 })
 
@@ -111,11 +120,7 @@ const Value = memo(function Value({ v }: { v: unknown }) {
   if (typeof v === 'string') {
     if (v.startsWith('<!DOCTYPE html>') || (v.startsWith('<') && v.endsWith('>'))) {
       processedValue = (
-        <ReadonlyCodeMirror
-          value={v}
-          extensions={[html(), EditorView.lineWrapping]}
-          language="html"
-        />
+        <CodeMirror value={v} extensions={[html(), EditorView.lineWrapping]} language="html" />
       )
       stringify = false
     } else if (
@@ -123,11 +128,7 @@ const Value = memo(function Value({ v }: { v: unknown }) {
       v.includes('"')
     ) {
       processedValue = (
-        <ReadonlyCodeMirror
-          value={v}
-          extensions={[json(), EditorView.lineWrapping]}
-          language="json"
-        />
+        <CodeMirror value={v} extensions={[json(), EditorView.lineWrapping]} language="json" />
       )
       stringify = false
     }
@@ -140,17 +141,22 @@ const Value = memo(function Value({ v }: { v: unknown }) {
   return processedValue
 })
 
-export const ReadonlyCodeMirror = memo(function ReadonlyCodeMirror({
+export const CodeMirror = memo(function ({
   className,
   value,
+  setValue,
+  readOnly = true,
   extensions,
   language,
+  ...props
 }: {
   className?: string
   value: string
-  extensions: Extension[]
+  setValue?: (value: string) => void
+  readOnly?: boolean
+  extensions?: Extension[]
   language?: string
-}) {
+} & Omit<ReactCodeMirrorProps, 'value' | 'onChange'>) {
   const { resolvedTheme } = useTheme()
 
   const handleCopy = useCallback(async () => {
@@ -163,32 +169,47 @@ export const ReadonlyCodeMirror = memo(function ReadonlyCodeMirror({
   }, [value])
 
   return (
-    <div className={cn('relative min-h-[100px]', className)}>
+    <div
+      className={cn(
+        'block relative py-1 min-h-[100px]',
+        className,
+        'max-w-full max-h-full overflow-auto'
+      )}
+    >
+      <style>
+        {`
+        .cm-gutters,
+        .cm-editor {
+          background-color: transparent !important;
+        }
+        .cm-scroller {
+          overflow-x: unset !important;
+        }
+        `}
+      </style>
       <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
-        {language && <Badge variant={'outline'}>{language.toUpperCase()}</Badge>}
+        {language && <Badge variant="outline">{language.toUpperCase()}</Badge>}
         <Button
           size="icon"
           type="button"
           onClick={handleCopy}
           aria-label="Copy code"
           variant="ghost"
-          className="h-3 w-3"
+          className="size-6"
         >
-          <CopyIcon />
+          <CopyIcon className="size-3" />
         </Button>
       </div>
       <ReactCodeMirror
         value={value}
-        readOnly
-        theme={resolvedTheme === 'dark' ? 'dark' : 'light'}
+        onChange={setValue}
+        readOnly={readOnly}
+        theme={resolvedTheme === 'light' ? noctisLilac : coolGlow}
         extensions={extensions}
-        basicSetup={false}
-        style={{
-          minHeight: '100px',
-          height: '100%',
-          width: '100%',
-          fontSize: '12px',
-        }}
+        basicSetup={!readOnly}
+        height="100%"
+        style={{ fontWeight: '550' }}
+        {...props}
       />
     </div>
   )
