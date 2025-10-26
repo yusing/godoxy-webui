@@ -29,7 +29,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 # for lite image, we need to export the build
-RUN cp lite.next.config.ts next.config.ts && \
+RUN cp lite-next.config.ts next.config.ts && \
     bun --bun run build
 
 # Rebuild the source code only when needed
