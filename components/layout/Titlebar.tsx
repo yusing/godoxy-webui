@@ -2,7 +2,7 @@ import { ModeToggle } from '@/components/ui/theme-toggle'
 import { cn } from '@/lib/utils'
 import Logo from '@/public/web-app-manifest-192x192.png'
 import { siteConfig } from '@/site-config'
-import { BookOpenText, Code, Grid3X3, Route, Server } from 'lucide-react'
+import { BookOpenText, Code, FlaskConical, Grid3X3, Route, Server } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import LogoutButton from '../LogoutButton'
@@ -19,6 +19,7 @@ const pages: Page[] = [
   { href: '/', Icon: Grid3X3, label: 'Apps' },
   { href: '/config', Icon: Code, label: 'Config', desktopOnly: true },
   { href: '/routes', Icon: Route, label: 'Routes' },
+  { href: '/playground', Icon: FlaskConical, label: 'Playground' },
   { href: '/servers', Icon: Server, label: 'Servers' },
   { href: '/wiki/Home', Icon: BookOpenText, label: 'Wiki' },
 ] as const
@@ -27,7 +28,7 @@ export default function Titlebar() {
   return (
     <div
       id="titlebar"
-      className="titlebar hidden data-[hidden=false]:flex data-[sidebar-open=true]:ml-[var(--sidebar-width)] fixed top-0 inset-x-0 items-center justify-between px-4 border-b surface z-40 backdrop-blur-sm"
+      className="titlebar hidden data-[hidden=false]:flex data-[sidebar-open=true]:ml-(--sidebar-width) fixed top-0 inset-x-0 items-center justify-between px-4 border-b surface z-40 backdrop-blur-sm"
     >
       <div className="flex items-center gap-2">
         <Image src={Logo} alt="GoDoxy" width={24} height={24} />
@@ -59,7 +60,8 @@ function Item({ href, Icon, label, desktopOnly }: Page) {
       title={label}
     >
       <div className="flex items-center gap-2 hover:text-foreground">
-        <Icon className="size-4" /> <span className="hidden sm:inline">{label}</span>
+        <Icon className="size-4" />
+        <span className="hidden sm:inline">{label}</span>
       </div>
     </Link>
   )
