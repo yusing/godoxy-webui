@@ -8,8 +8,11 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { useWebSocketApi } from '@/hooks/websocket'
+import Convert from 'ansi-to-html'
 import { RefreshCcwIcon } from 'lucide-react'
 import { useCallback, useState } from 'react'
+
+const convert = new Convert()
 
 export default function AutocertRenewDialogButton() {
   const [open, setOpen] = useState(false)
@@ -49,11 +52,13 @@ export default function AutocertRenewDialogButton() {
           {log.length === 0 ? (
             <div className="text-muted-foreground">Waiting for logs...</div>
           ) : (
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-1 leading-relaxed">
               {log.map((line, i) => (
-                <pre key={i} className="whitespace-pre-wrap text-xs">
-                  {line}
-                </pre>
+                <pre
+                  key={i}
+                  className="whitespace-pre-wrap text-xs"
+                  dangerouslySetInnerHTML={{ __html: convert.toHtml(line) }}
+                />
               ))}
             </div>
           )}
