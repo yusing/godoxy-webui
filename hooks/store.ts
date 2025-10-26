@@ -65,7 +65,7 @@ export type Store<T extends FieldValues> = StoreBase<T> & {
 }
 
 /** Common methods available on any deep proxy node */
-type NodeMethods<T> = {
+export type NodeMethods<T> = {
   /** Subscribe and read the value at path. Re-renders when the value changes. */
   use(): T
   /** Convenience hook returning [value, setValue] for the path. */
@@ -88,6 +88,9 @@ type NodeMethods<T> = {
   Render: (props: {
     children: (value: T, update: (value: T | undefined) => void) => ReactNode
   }) => ReactNode
+
+  /** The field name for the proxy. */
+  field: string
 }
 
 type Prettify<T> = {
@@ -310,6 +313,10 @@ function createValuesProxy(storeApi: StoreBase<any>, initialPath = '') {
                 return newArray.length
               }
             }
+          }
+
+          if (prop === 'field') {
+            return path
           }
 
           if (typeof prop === 'string' || typeof prop === 'number') {
