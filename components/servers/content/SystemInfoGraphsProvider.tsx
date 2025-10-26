@@ -52,7 +52,11 @@ function PerAggregateProvider({
       aggregate: mode,
       agent_name: agent === 'Main Server' ? '' : agent,
     },
-    onMessage: data => store.systemInfoGraphs[agent]?.[period]?.[mode]?.set(data),
+    onMessage: data => {
+      // @ts-expect-error - Entries only exists in response from agent v0.19.x
+      if (data.data.Entries) data.data = data.data.Entries // backwards compatibility
+      store.systemInfoGraphs[agent]?.[period]?.[mode]?.set(data)
+    },
   })
 
   // no UI
