@@ -1,4 +1,4 @@
-import type { RoutesHealthInfo } from '@/lib/api'
+import type { HealthInfo } from '@/lib/api'
 import type { ComponentProps } from 'react'
 
 export const healthStatuses: HealthStatusType[] = [
@@ -10,7 +10,7 @@ export const healthStatuses: HealthStatusType[] = [
   'unknown',
   'stopped',
 ] as const
-export type HealthStatusType = RoutesHealthInfo['status'] | 'stopped'
+export type HealthStatusType = HealthInfo['status'] | 'stopped'
 
 export const healthStatusColorsBg: Record<HealthStatusType, ComponentProps<'span'>['className']> = {
   healthy: 'bg-green-500',
@@ -32,9 +32,9 @@ export const healthStatusColorsFg: Record<HealthStatusType, string> = {
   stopped: 'text-gray-500',
 } as const
 
-export type HealthMap = Record<string, RoutesHealthInfo>
+export type HealthMap = Record<string, HealthInfo>
 
-export const healthInfoUnknown: RoutesHealthInfo = {
+export const healthInfoUnknown: HealthInfo = {
   status: 'unknown',
   uptime: -1,
   latency: -1,

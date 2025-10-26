@@ -9,7 +9,7 @@ import AppEditDialogContent from './AppEditDialogContent'
 import { store } from './store'
 
 import { store as routesStore } from '@/components/routes/store'
-import type { RoutesHealthInfo } from '@/lib/api'
+import type { HealthInfo } from '@/lib/api'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { Separator } from '../ui/separator'
@@ -116,21 +116,21 @@ const containerItems = [
     icon: Play,
     api: api.docker.start,
     className: 'text-success',
-    enableIf: (status: RoutesHealthInfo['status']) => status !== 'healthy',
+    enableIf: (status: HealthInfo['status']) => status !== 'healthy',
   },
   {
     label: 'Stop',
     icon: Square,
     api: api.docker.stop,
     className: 'text-error',
-    enableIf: (status: RoutesHealthInfo['status']) => status !== 'napping',
+    enableIf: (status: HealthInfo['status']) => status !== 'napping',
   },
   {
     label: 'Restart',
     icon: RotateCcw,
     api: api.docker.restart,
     className: 'text-warning',
-    enableIf: (status: RoutesHealthInfo['status']) => status !== 'napping',
+    enableIf: (status: HealthInfo['status']) => status !== 'napping',
   },
 ] as const
 

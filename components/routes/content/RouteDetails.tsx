@@ -77,8 +77,8 @@ export default function RouteDetails() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Item title="Listening Port" value={routeDetails.port.listening} />
-            <Item title="Origin Port" value={routeDetails.port.proxy} />
+            <Item title="Listening Port" value={routeDetails.port?.listening} />
+            <Item title="Origin Port" value={routeDetails.port?.proxy} />
           </div>
         </CardContent>
       </Card>

@@ -17,9 +17,8 @@ function getClassName(status: HealthStatusType) {
       return 'bg-blue-500'
     case 'error':
       return 'bg-red-500'
-    case 'unknown':
-      return 'bg-gray-500'
     case 'stopped':
       return 'bg-gray-500'
   }
+  return 'bg-gray-500'
 }
