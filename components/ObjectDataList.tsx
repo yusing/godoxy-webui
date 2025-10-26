@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils'
 import { html } from '@codemirror/lang-html'
 import { json } from '@codemirror/lang-json'
 import ReactCodeMirror, { EditorView, type Extension } from '@uiw/react-codemirror'
@@ -139,11 +140,13 @@ const Value = memo(function Value({ v }: { v: unknown }) {
   return processedValue
 })
 
-const ReadonlyCodeMirror = memo(function ReadonlyCodeMirror({
+export const ReadonlyCodeMirror = memo(function ReadonlyCodeMirror({
+  className,
   value,
   extensions,
   language,
 }: {
+  className?: string
   value: string
   extensions: Extension[]
   language?: string
@@ -160,7 +163,7 @@ const ReadonlyCodeMirror = memo(function ReadonlyCodeMirror({
   }, [value])
 
   return (
-    <div className="relative min-h-[100px]">
+    <div className={cn('relative min-h-[100px]', className)}>
       <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
         {language && <Badge variant={'outline'}>{language.toUpperCase()}</Badge>}
         <Button
