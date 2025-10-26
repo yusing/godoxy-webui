@@ -470,12 +470,20 @@ export interface MemVirtualMemoryStat {
    * This value is computed from the kernel specific values.
    */
   available: number
+  /** Total amount of RAM on this system */
+  total: number
   /**
    * RAM used by programs
    *
    * This value is computed from the kernel specific values.
    */
   used: number
+  /**
+   * Percentage of RAM used by programs
+   *
+   * This value is computed from the kernel specific values.
+   */
+  used_percent: number
 }
 
 export type MetricsPeriod = '5m' | '15m' | '1h' | '1d' | '1mo'

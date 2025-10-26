@@ -1,4 +1,4 @@
-import type { RoutesHealthInfo } from '@/lib/api'
+import type { HealthInfo } from '@/lib/api'
 import { formatDuration } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import {
@@ -66,13 +66,7 @@ export default function AppItemTooltipContent({ alias }: { alias: string }) {
   )
 }
 
-function StatusIcon({
-  status,
-  className,
-}: {
-  status: RoutesHealthInfo['status']
-  className?: string
-}) {
+function StatusIcon({ status, className }: { status: HealthInfo['status']; className?: string }) {
   switch (status) {
     case 'healthy':
       return <CheckCircle className={className} />
@@ -89,7 +83,7 @@ function StatusIcon({
   }
 }
 
-const getStatusColor = (status: RoutesHealthInfo['status']) => {
+const getStatusColor = (status: HealthInfo['status']) => {
   switch (status) {
     case 'healthy':
       return 'text-green-600 dark:text-green-400'
