@@ -154,7 +154,7 @@ export const TreeProvider = ({
 export type TreeViewProps = HTMLAttributes<HTMLDivElement>
 
 export const TreeView = ({ className, children, ...props }: TreeViewProps) => (
-  <div className={cn('p-2', className)} {...props}>
+  <div className={className} {...props}>
     {children}
   </div>
 )
@@ -222,7 +222,7 @@ export const TreeNodeTrigger = ({
   return (
     <motion.div
       className={cn(
-        'group relative mx-1 flex cursor-pointer items-center rounded-md px-3 py-2 transition-all duration-200',
+        'group relative flex cursor-pointer items-center rounded-md py-2 transition-all duration-200',
         'hover:bg-accent/50',
         isSelected && 'bg-accent/80',
         className
@@ -232,7 +232,7 @@ export const TreeNodeTrigger = ({
         handleSelection(nodeId, e.ctrlKey || e.metaKey)
         onClick?.(e)
       }}
-      style={{ paddingLeft: level * (indent ?? 0) + 8 }}
+      style={{ paddingLeft: level * (indent ?? 0) }}
       whileTap={{ scale: 0.98, transition: { duration: 0.1 } }}
       {...props}
     >

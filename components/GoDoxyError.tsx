@@ -12,6 +12,8 @@ import {
   TreeProvider,
   TreeView,
 } from '@/components/ui/kibo-ui/tree'
+import { AlertCircleIcon } from 'lucide-react'
+import { Alert, AlertDescription, AlertTitle } from './ui/alert'
 
 export type GoDoxyError = string | Record<string, unknown> | WithSubject | NestedError
 type WithSubject = { subjects: string[]; err: GoDoxyError }
@@ -194,6 +196,18 @@ type TreeSpec = {
   children: TreeSpec[]
 }
 
+export function GoDoxyErrorAlert({ err, title }: { err: GoDoxyError; title: string }) {
+  return (
+    <Alert variant="destructive">
+      <AlertCircleIcon />
+      <AlertTitle>{title}</AlertTitle>
+      <AlertDescription className="-ml-5 max-h-[150px] overflow-y-auto">
+        {err && <GoDoxyErrorText err={err} />}
+      </AlertDescription>
+    </Alert>
+  )
+}
+
 export function GoDoxyErrorText({ err, level }: { err: GoDoxyError; level?: number }) {
   const baseLevel = level ?? 0
   const rows = useMemo(() => flattenGoDoxyError(err, baseLevel), [err, baseLevel])
@@ -238,7 +252,7 @@ function renderNodes(nodes: TreeSpec[], parentLevel = 0) {
       <TreeNode key={node.id} nodeId={node.id} level={node.level} isLast={isLast}>
         <TreeNodeTrigger className="py-0.5">
           <TreeExpander hasChildren={hasChildren} />
-          <TreeLabel>{node.label}</TreeLabel>
+          <TreeLabel className="text-wrap wrap-break-word">{node.label}</TreeLabel>
         </TreeNodeTrigger>
         {hasChildren && (
           <TreeNodeContent hasChildren>
