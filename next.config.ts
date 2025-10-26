@@ -2,9 +2,9 @@ import type { NextConfig } from 'next'
 
 const config: NextConfig = {
   output: 'standalone',
-  cacheComponents: true, // Partial Pre-Rendering (Next.js 16)
+  cacheComponents: process.env.NODE_ENV !== 'development', // Partial Pre-Rendering (Next.js 16)
   experimental: {
-    turbopackFileSystemCacheForDev: true,
+    turbopackFileSystemCacheForDev: process.env.NODE_ENV === 'development',
   },
   rewrites: async () => [
     {
@@ -12,6 +12,7 @@ const config: NextConfig = {
       destination: '/wiki/:path*.html',
     },
   ],
+  // uncomment this when https://github.com/oven-sh/bun/issues/23554 is fixed
   // reactCompiler: {
   //   // compilationMode: 'annotation',
   //   compilationMode: 'infer',
