@@ -150,7 +150,6 @@ export interface ContainerStats {
 export type ContainerStopMethod = 'pause' | 'stop' | 'kill'
 
 export interface DiskIOCountersStat {
-  /** godoxy */
   iops: number
   /**
    * ReadCount        uint64 `json:"readCount"`
@@ -172,11 +171,9 @@ export interface DiskIOCountersStat {
    */
   read_bytes: number
   read_count: number
-  /** godoxy */
   read_speed: number
   write_bytes: number
   write_count: number
-  /** godoxy */
   write_speed: number
 }
 
@@ -229,9 +226,19 @@ export interface ErrorResponse {
 
 export type FileType = 'config' | 'provider' | 'middleware'
 
-export interface GithubComYusingGoProxyInternalRouteTypesPort {
-  listening: number
-  proxy: number
+export interface FinalRequest {
+  body: string
+  headers: Record<string, string[]>
+  host: string
+  method: string
+  path: string
+  query: Record<string, string[]>
+}
+
+export interface FinalResponse {
+  body: string
+  headers: Record<string, string[]>
+  statusCode: number
 }
 
 export interface HTTPHeader {
@@ -254,6 +261,23 @@ export interface HealthExtra {
   pool: Record<string, any>
 }
 
+export interface HealthInfo {
+  detail: string
+  /** latency in microseconds */
+  latency: number
+  status: 'healthy' | 'unhealthy' | 'napping' | 'starting' | 'error' | 'unknown'
+  /** uptime in milliseconds */
+  uptime: number
+}
+
+export interface HealthInfoWithoutDetail {
+  /** latency in microseconds */
+  latency: number
+  status: 'healthy' | 'unhealthy' | 'napping' | 'starting' | 'error' | 'unknown'
+  /** uptime in milliseconds */
+  uptime: number
+}
+
 export interface HealthJSON {
   config: HealthCheckConfig
   detail: string
@@ -271,7 +295,7 @@ export interface HealthJSON {
   url: string
 }
 
-export type HealthMap = Record<string, RoutesHealthInfo>
+export type HealthMap = Record<string, HealthInfo>
 
 export interface HomepageCategory {
   items: HomepageItem[]
@@ -279,7 +303,6 @@ export interface HomepageCategory {
 }
 
 export interface HomepageFetchResult {
-  errMsg: string
   icon: number[]
   statusCode: number
 }
@@ -448,28 +471,36 @@ export interface MemVirtualMemoryStat {
    */
   available: number
   /**
-   * This is the kernel's notion of free memory; RAM chips whose bits nobody
-   * cares about the value of right now. For a human consumable number,
-   * Available is what you really want.
-   */
-  free: number
-  /** Total amount of RAM on this system */
-  total: number
-  /**
    * RAM used by programs
    *
    * This value is computed from the kernel specific values.
    */
   used: number
-  /**
-   * Percentage of RAM used by programs
-   *
-   * This value is computed from the kernel specific values.
-   */
-  used_percent: number
 }
 
 export type MetricsPeriod = '5m' | '15m' | '1h' | '1d' | '1mo'
+
+export interface MockCookie {
+  name: string
+  value: string
+}
+
+export interface MockRequest {
+  body: string
+  cookies: MockCookie[]
+  headers: Record<string, string[]>
+  host: string
+  method: string
+  path: string
+  query: Record<string, string[]>
+  remoteIP: string
+}
+
+export interface MockResponse {
+  body: string
+  headers: Record<string, string[]>
+  statusCode: number
+}
 
 export interface NetIOCountersStat {
   /** number of bytes received */
@@ -507,6 +538,34 @@ export interface PEMPairResponse {
   cert: string
   /** @format base64 */
   key: string
+}
+
+export interface ParsedRule {
+  do: string
+  isResponseRule: boolean
+  name: string
+  on: string
+  validationError: any
+}
+
+export interface PlaygroundRequest {
+  mockRequest?: MockRequest
+  mockResponse?: MockResponse
+  rules: RouteApiRawRule[]
+}
+
+export interface PlaygroundResponse {
+  executionError: any
+  finalRequest: FinalRequest
+  finalResponse: FinalResponse
+  matchedRules: string[]
+  parsedRules: ParsedRule[]
+  upstreamCalled: boolean
+}
+
+export interface Port {
+  listening: number
+  proxy: number
 }
 
 export interface ProviderStats {
@@ -563,15 +622,31 @@ export interface Route {
   middlewares?: Record<string, TypesLabelMap>
   no_tls_verify: boolean
   path_patterns?: string[] | null
-  port: GithubComYusingGoProxyInternalRouteTypesPort
+  port: Port
   /** for backward compatibility */
   provider?: string | null
   purl: string
   response_header_timeout: number
   root: string
-  /** @uniqueItems true */
+  rule_file?: string | null
   rules: RulesRule[]
-  scheme: RouteScheme
+  scheme: 'http' | 'https' | 'tcp' | 'udp' | 'fileserver'
+  /** Path to client certificate */
+  ssl_certificate: string
+  /** Path to client certificate key */
+  ssl_certificate_key: string
+  /** Allowed TLS protocols */
+  ssl_protocols: string[]
+  /** SSL/TLS proxy options (nginx-like) */
+  ssl_server_name: string
+  /** Path to trusted CA certificates */
+  ssl_trusted_certificate: string
+}
+
+export interface RouteApiRawRule {
+  do: string
+  name: string
+  on: string
 }
 
 export type RouteApiRoutesByProvider = Record<string, RouteRoute[]>
@@ -602,18 +677,26 @@ export interface RouteRoute {
   middlewares?: Record<string, TypesLabelMap>
   no_tls_verify: boolean
   path_patterns?: string[] | null
-  port: GithubComYusingGoProxyInternalRouteTypesPort
+  port: Port
   /** for backward compatibility */
   provider?: string | null
   purl: string
   response_header_timeout: number
   root: string
-  /** @uniqueItems true */
+  rule_file?: string | null
   rules: RulesRule[]
-  scheme: RouteScheme
+  scheme: 'http' | 'https' | 'tcp' | 'udp' | 'fileserver'
+  /** Path to client certificate */
+  ssl_certificate: string
+  /** Path to client certificate key */
+  ssl_certificate_key: string
+  /** Allowed TLS protocols */
+  ssl_protocols: string[]
+  /** SSL/TLS proxy options (nginx-like) */
+  ssl_server_name: string
+  /** Path to trusted CA certificates */
+  ssl_trusted_certificate: string
 }
-
-export type RouteScheme = 'http' | 'https' | 'tcp' | 'udp' | 'fileserver'
 
 export interface RouteStats {
   error: number
@@ -631,7 +714,7 @@ export interface RouteStatus {
 }
 
 export interface RouteStatusesByAlias {
-  statuses: Record<string, RoutesHealthInfo>
+  statuses: Record<string, HealthInfoWithoutDetail>
   timestamp: number
 }
 
@@ -644,15 +727,6 @@ export interface RouteUptimeAggregate {
   idle: number
   is_docker: boolean
   statuses: RouteStatus[]
-  uptime: number
-}
-
-export interface RoutesHealthInfo {
-  detail: string
-  /** latency in microseconds */
-  latency: number
-  status: 'healthy' | 'unhealthy' | 'napping' | 'starting' | 'error' | 'unknown'
-  /** uptime in milliseconds */
   uptime: number
 }
 
@@ -784,7 +858,6 @@ export namespace Agent {
    * @request GET:/agent/list
    * @response `200` `(Agent)[]` OK
    * @response `403` `ErrorResponse` Forbidden
-   * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace List {
     export type RequestParams = {}
@@ -841,7 +914,7 @@ export namespace Auth {
    * @summary Check authentication status
    * @request HEAD:/auth/check
    * @response `200` `string` OK
-   * @response `403` `string` Forbidden: use X-Redirect-To header to redirect to login page
+   * @response `302` `string` Redirects to login page or IdP
    */
   export namespace Check {
     export type RequestParams = {}
@@ -858,7 +931,6 @@ export namespace Auth {
    * @summary Login
    * @request POST:/auth/login
    * @response `302` `string` Redirects to login page or IdP
-   * @response `403` `string` Forbidden(webui): follow X-Redirect-To header
    * @response `429` `string` Too Many Requests
    */
   export namespace Login {
@@ -874,10 +946,28 @@ export namespace Auth {
    * @tags auth
    * @name Logout
    * @summary Logout
-   * @request POST:/auth/logout
+   * @request GET:/auth/logout
    * @response `302` `string` Redirects to home page
    */
   export namespace Logout {
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = any
+  }
+
+  /**
+   * @description Logs out the user by invalidating the token
+   * @tags auth
+   * @name Logout2
+   * @summary Logout
+   * @request POST:/auth/logout
+   * @originalName logout
+   * @duplicate
+   * @response `302` `string` Redirects to home page
+   */
+  export namespace Logout2 {
     export type RequestParams = {}
     export type RequestQuery = {}
     export type RequestBody = never
@@ -1621,6 +1711,24 @@ export namespace Route {
   }
 
   /**
+   * @description Test rules against mock request/response
+   * @tags route
+   * @name Playground
+   * @summary Rule Playground
+   * @request POST:/route/playground
+   * @response `200` `PlaygroundResponse` OK
+   * @response `400` `ErrorResponse` Bad Request
+   * @response `403` `ErrorResponse` Forbidden
+   */
+  export namespace Playground {
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = PlaygroundRequest
+    export type RequestHeaders = {}
+    export type ResponseBody = PlaygroundResponse
+  }
+
+  /**
    * @description List route providers
    * @tags route, websocket
    * @name Providers
@@ -1900,7 +2008,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/agent/list
      * @response `200` `(Agent)[]` OK
      * @response `403` `ErrorResponse` Forbidden
-     * @response `500` `ErrorResponse` Internal Server Error
      */
     list: (params: RequestParams = {}) =>
       this.request<Agent[], ErrorResponse>({
@@ -1963,7 +2070,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Check authentication status
      * @request HEAD:/auth/check
      * @response `200` `string` OK
-     * @response `403` `string` Forbidden: use X-Redirect-To header to redirect to login page
+     * @response `302` `string` Redirects to login page or IdP
      */
     check: (params: RequestParams = {}) =>
       this.request<string, string>({
@@ -1980,7 +2087,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @summary Login
      * @request POST:/auth/login
      * @response `302` `string` Redirects to login page or IdP
-     * @response `403` `string` Forbidden(webui): follow X-Redirect-To header
      * @response `429` `string` Too Many Requests
      */
     login: (params: RequestParams = {}) =>
@@ -1996,10 +2102,28 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags auth
      * @name Logout
      * @summary Logout
-     * @request POST:/auth/logout
+     * @request GET:/auth/logout
      * @response `302` `string` Redirects to home page
      */
     logout: (params: RequestParams = {}) =>
+      this.request<any, string>({
+        path: `/auth/logout`,
+        method: 'GET',
+        ...params,
+      }),
+
+    /**
+     * @description Logs out the user by invalidating the token
+     *
+     * @tags auth
+     * @name Logout2
+     * @summary Logout
+     * @request POST:/auth/logout
+     * @originalName logout
+     * @duplicate
+     * @response `302` `string` Redirects to home page
+     */
+    logout2: (params: RequestParams = {}) =>
       this.request<any, string>({
         path: `/auth/logout`,
         method: 'POST',
@@ -2846,6 +2970,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/route/list`,
         method: 'GET',
         query: query,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Test rules against mock request/response
+     *
+     * @tags route
+     * @name Playground
+     * @summary Rule Playground
+     * @request POST:/route/playground
+     * @response `200` `PlaygroundResponse` OK
+     * @response `400` `ErrorResponse` Bad Request
+     * @response `403` `ErrorResponse` Forbidden
+     */
+    playground: (request: PlaygroundRequest, params: RequestParams = {}) =>
+      this.request<PlaygroundResponse, ErrorResponse>({
+        path: `/route/playground`,
+        method: 'POST',
+        body: request,
         type: ContentType.Json,
         format: 'json',
         ...params,
