@@ -3,6 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import * as React from 'react'
 
 import { cn } from '@/lib/utils'
+import { Loader2 } from 'lucide-react'
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-sm text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
@@ -37,12 +38,29 @@ function Button({
   variant,
   size,
   asChild = false,
+  isLoading = false,
+  loadingText = 'Loading...',
   ...props
 }: React.ComponentProps<'button'> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean
+    isLoading?: boolean
+    loadingText?: string
   }) {
   const Comp = asChild ? Slot : 'button'
+
+  if (isLoading) {
+    return (
+      <Comp
+        data-slot="button"
+        disabled={true}
+        className={cn(buttonVariants({ variant, size, className }))}
+        {...props}
+      >
+        <Loader2 className="size-4 animate-spin" /> {loadingText}
+      </Comp>
+    )
+  }
 
   return (
     <Comp
