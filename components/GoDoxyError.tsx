@@ -12,8 +12,12 @@ import {
   TreeProvider,
   TreeView,
 } from '@/components/ui/kibo-ui/tree'
+import Convert from 'ansi-to-html'
 import { AlertCircleIcon } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from './ui/alert'
+
+const convertANSI = new Convert()
+const ansiRegex = /(\x1b\[[0-9;]*m)/g
 
 export type GoDoxyError = string | Record<string, unknown> | WithSubject | NestedError
 type WithSubject = { subjects: string[]; err: GoDoxyError }
@@ -223,7 +227,7 @@ export function GoDoxyErrorText({ err, level }: { err: GoDoxyError; level?: numb
         label: r.subjects ? (
           <SubjectText subjects={r.subjects} message={r.message} />
         ) : (
-          <span>{r.text}</span>
+          <SpanWithANSI text={r.text} />
         ),
         children: [],
       }
@@ -276,10 +280,22 @@ function SubjectText({
 }) {
   return (
     <div className={className}>
-      <span>{subjects.slice(0, -1).join('.')}</span>
+      <SpanWithANSI text={subjects.slice(0, -1).join('.')} />
       {subjects.length > 1 ? '.' : ''}
-      <span className="font-semibold">{subjects.slice(-1)}</span>
-      {message ? ` ${message}` : ''}
+      <span className="font-semibold">
+        {subjects.slice(-1).map((s, idx) => (
+          <SpanWithANSI key={idx} text={s} />
+        ))}
+      </span>
+      {message ? <SpanWithANSI text={' ' + message} /> : ''}
     </div>
   )
+}
+
+function SpanWithANSI({ text }: { text?: string }) {
+  if (!text) return null
+  if (ansiRegex.test(text)) {
+    return <span dangerouslySetInnerHTML={{ __html: convertANSI.toHtml(text) }} />
+  }
+  return <span>{text}</span>
 }
