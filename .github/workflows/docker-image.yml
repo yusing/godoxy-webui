@@ -92,9 +92,9 @@ jobs:
 
       - name: Export digest
         run: |
-          mkdir -p /tmp/digests
+          mkdir -p /tmp/digests${{ inputs.suffix }}
           digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
+          touch "/tmp/digests${{ inputs.suffix }}/${digest#sha256:}"
 
       - name: Upload digest
         uses: actions/upload-artifact@v4
