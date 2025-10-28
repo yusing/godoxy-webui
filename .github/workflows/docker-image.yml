@@ -9,14 +9,10 @@ on:
       image_name:
         required: true
         type: string
-      old_image_name:
-        required: false
-        type: string
 
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ inputs.image_name }}
-  OLD_IMAGE_NAME: ${{ inputs.old_image_name }}
 
 jobs:
   build:
@@ -232,20 +228,7 @@ jobs:
 
           docker buildx imagetools create "${tag_args[@]}" "${image_args[@]}"
 
-      - name: Old image name
-        if: inputs.old_image_name != ''
-        run: |
-          VERSION="${{ steps.meta-normal.outputs.version || steps.meta-lite.outputs.version }}"
-          docker buildx imagetools create -t ${{ env.REGISTRY }}/${{ env.OLD_IMAGE_NAME }}:${VERSION}\
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION}
-
       - name: Inspect image
         run: |
           VERSION="${{ steps.meta-normal.outputs.version || steps.meta-lite.outputs.version }}"
           docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${VERSION}
-
-      - name: Inspect image (old)
-        if: inputs.old_image_name != ''
-        run: |
-          VERSION="${{ steps.meta-normal.outputs.version || steps.meta-lite.outputs.version }}"
-          docker buildx imagetools inspect ${{ env.REGISTRY }}/${{ env.OLD_IMAGE_NAME }}:${VERSION}
