@@ -2,10 +2,13 @@ import type { NextConfig } from 'next'
 
 const config: NextConfig = {
   output: 'standalone',
-  cacheComponents: process.env.NODE_ENV !== 'development', // Partial Pre-Rendering (Next.js 16)
-  experimental: {
-    turbopackFileSystemCacheForDev: process.env.NODE_ENV === 'development',
-  },
+
+  // does not work with GoDoxy when modifying html body
+  // cacheComponents: process.env.NODE_ENV !== 'development', // Partial Pre-Rendering (Next.js 16)
+  enablePrerenderSourceMaps: true,
+  // experimental: {
+  //   turbopackFileSystemCacheForDev: process.env.NODE_ENV === 'development',
+  // },
   rewrites: async () => [
     {
       source: '/wiki/:path*',
