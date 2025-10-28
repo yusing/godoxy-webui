@@ -3,11 +3,11 @@ name: Docker Image CI (nightly)
 on:
   push:
     branches:
-      - "*" # matches every branch that doesn't contain a '/'
-      - "*/*" # matches every branch containing a single '/'
-      - "**" # matches every branch
-      - "!dependabot/*"
-      - "!main" # excludes main
+      - '*' # matches every branch that doesn't contain a '/'
+      - '*/*' # matches every branch containing a single '/'
+      - '**' # matches every branch
+      - '!dependabot/*'
+      - '!main' # excludes main
 
 jobs:
   build-nightly:
@@ -15,3 +15,10 @@ jobs:
     with:
       image_name: ${{ github.repository_owner }}/godoxy-frontend
       tag: nightly
+  build-nightly-lite:
+    uses: ./.github/workflows/docker-image.yml
+    with:
+      image_name: ${{ github.repository_owner }}/godoxy-frontend-lite
+      tag: nightly
+      suffix: -lite
+      dockerfile: lite.Dockerfile

@@ -17,6 +17,9 @@ import { json } from '@codemirror/lang-json'
 import { yaml } from '@codemirror/lang-yaml'
 import { EditorView } from '@uiw/react-codemirror'
 import { Check, X } from 'lucide-react'
+import { motion } from 'motion/react'
+import { useEffect, useRef, useState } from 'react'
+import isEqual from 'react-fast-compare'
 import { stringify as stringifyYAML } from 'yaml'
 import { GoDoxyErrorAlert, type GoDoxyError } from '../GoDoxyError'
 import { CodeMirror } from '../ObjectDataList'
@@ -24,6 +27,15 @@ import { store } from './store'
 
 export default function ResultsDisplay() {
   const response = store.playgroundResponse.use()
+  const prevRef = useRef<typeof response>(null)
+  const [animKey, setAnimKey] = useState(0)
+
+  useEffect(() => {
+    if (!isEqual(response, prevRef.current)) {
+      setAnimKey(prev => prev + 1)
+      prevRef.current = response
+    }
+  }, [response])
 
   if (!response) {
     return (
@@ -50,7 +62,13 @@ export default function ResultsDisplay() {
       </CardHeader>
       <CardContent className="flex-1 min-h-0 overflow-hidden">
         <ScrollArea className="h-full">
-          <div className="space-y-6 pr-4">
+          <motion.div
+            key={animKey}
+            initial={{ opacity: 0.3 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.7, ease: 'easeOut' }}
+            className="space-y-6 pr-4"
+          >
             {response.executionError && (
               <GoDoxyErrorAlert title="Execution Error" err={response.executionError} />
             )}
@@ -73,9 +91,9 @@ export default function ResultsDisplay() {
                       <TableRow key={index}>
                         <TableCell>
                           {rule.validationError ? (
-                            <X className="h-4 w-4 text-error" />
+                            <X className="h-4 w-4 text-error-foreground" />
                           ) : (
-                            <Check className="h-4 w-4 text-success" />
+                            <Check className="h-4 w-4 text-success-foreground" />
                           )}
                         </TableCell>
                         <TableCell className="font-medium">{rule.name}</TableCell>
@@ -206,7 +224,7 @@ export default function ResultsDisplay() {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </ScrollArea>
       </CardContent>
     </Card>

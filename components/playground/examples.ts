@@ -81,4 +81,188 @@ export const examples: PlaygroundExample[] = [
       remoteIP: '127.0.0.1',
     },
   },
+  {
+    name: 'CORS Preflight',
+    description: 'Handles OPTIONS preflight and sets CORS headers',
+    rules: `- name: cors preflight
+  on: |
+    method OPTIONS
+    header Origin
+    header Access-Control-Request-Method
+  do: |
+    set headers Access-Control-Allow-Origin $header(Origin)
+    set headers Access-Control-Allow-Methods GET,POST,PUT,PATCH,DELETE,OPTIONS
+    set headers Access-Control-Allow-Headers $header(Access-Control-Request-Headers)
+    set headers Access-Control-Allow-Credentials true
+    error "204" ""
+- name: cors simple
+  on: header Origin
+  do: |
+    set headers Access-Control-Allow-Origin $header(Origin)
+    set headers Access-Control-Allow-Credentials true
+    pass`,
+    mockRequest: {
+      method: 'OPTIONS',
+      path: '/api/users',
+      host: 'localhost',
+      headers: {
+        Origin: ['https://example.com'],
+        'Access-Control-Request-Method': ['GET'],
+        'Access-Control-Request-Headers': ['Content-Type'],
+      },
+      query: {},
+      cookies: [],
+      body: '',
+      remoteIP: '127.0.0.1',
+    },
+  },
+  {
+    name: 'A/B Routing via Cookie',
+    description: 'Routes to backend-b if exp_group=B cookie is present',
+    rules: `- name: experiment group B
+  on: cookie exp_group B
+  do: proxy http://backend-b:8080
+- name: experiment default (group A)
+  do: proxy http://backend-a:8080`,
+    mockRequest: {
+      method: 'GET',
+      path: '/feature',
+      host: 'localhost',
+      headers: {
+        Cookie: ['exp_group=B'],
+      },
+      query: {},
+      cookies: [],
+      body: '',
+      remoteIP: '127.0.0.1',
+    },
+  },
+  {
+    name: 'Maintenance Mode',
+    description: 'Returns 503 for /api/** paths',
+    rules: `- name: maintenance api
+  on: path glob(/api/**)
+  do: error "503" "Service under maintenance"
+- name: default
+  do: pass`,
+    mockRequest: {
+      method: 'GET',
+      path: '/api/data',
+      host: 'localhost',
+      headers: {},
+      query: {},
+      cookies: [],
+      body: '',
+      remoteIP: '127.0.0.1',
+    },
+  },
+  {
+    name: 'SPA Under Subpath',
+    description: 'Serves /app with index.html fallback',
+    rules: `- name: static assets under /app
+  on: path glob(/app/static/**)
+  do: serve /var/www/app/static
+- name: spa fallback under /app
+  on: |
+    method GET
+    path glob(/app/**)
+  do: |
+    rewrite /app /app/index.html
+    serve /var/www/app`,
+    mockRequest: {
+      method: 'GET',
+      path: '/app/users',
+      host: 'localhost',
+      headers: {},
+      query: {},
+      cookies: [],
+      body: '',
+      remoteIP: '127.0.0.1',
+    },
+  },
+  {
+    name: 'Request Mutations',
+    description: 'Mutates headers, query and cookies before proxy',
+    rules: `- name: request mutations
+  on: path glob(/api/**)
+  do: |
+    set headers X-Request-Id $header(X-Request-Id)
+    add headers X-Forwarded-For $remote_host
+    remove headers X-Secret
+    add query debug true
+    set cookies locale en-US
+    proxy http://api-server:8080`,
+    mockRequest: {
+      method: 'GET',
+      path: '/api/items',
+      host: 'localhost',
+      headers: {
+        'X-Request-Id': ['req-123'],
+      },
+      query: {},
+      cookies: [],
+      body: '',
+      remoteIP: '127.0.0.1',
+    },
+  },
+  {
+    name: 'Proxy Then Log',
+    description: 'Logs status and content-type after upstream response',
+    rules: `- name: proxy and log json responses
+  on: path glob(/api/**)
+  do: |
+    proxy http://api-server:8080
+    log info /dev/stdout "Status=$status_code CT=$resp_header(Content-Type)"`,
+    mockRequest: {
+      method: 'GET',
+      path: '/api/ping',
+      host: 'localhost',
+      headers: {},
+      query: {},
+      cookies: [],
+      body: '',
+      remoteIP: '127.0.0.1',
+    },
+  },
+  {
+    name: 'Env-based Upstream',
+    description: 'Uses ${SERVICE_HOST}:${SERVICE_PORT} for proxy target',
+    rules: `- name: route by env-configured upstream
+  on: path glob(/service/**)
+  do: proxy https://\${SERVICE_HOST}:\${SERVICE_PORT}`,
+    mockRequest: {
+      method: 'GET',
+      path: '/service/health',
+      host: 'localhost',
+      headers: {},
+      query: {},
+      cookies: [],
+      body: '',
+      remoteIP: '127.0.0.1',
+    },
+  },
+  {
+    name: 'WebSocket Upgrade',
+    description: 'Passes upgrade requests through to upstream',
+    rules: `- name: websocket upgrade
+  on: |
+    header Connection Upgrade
+    header Upgrade websocket
+  do: pass
+- name: default
+  do: proxy http://ws-backend:8080`,
+    mockRequest: {
+      method: 'GET',
+      path: '/socket',
+      host: 'localhost',
+      headers: {
+        Connection: ['Upgrade'],
+        Upgrade: ['websocket'],
+      },
+      query: {},
+      cookies: [],
+      body: '',
+      remoteIP: '127.0.0.1',
+    },
+  },
 ]

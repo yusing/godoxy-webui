@@ -465,7 +465,7 @@ function AgentSelect({
     value: agentList,
     error,
     loading,
-  } = useAsync(async () => api.agent.list().then(res => res.data))
+  } = useAsync(async () => await api.agent.list().then(res => res.data))
 
   useEffect(() => {
     if (error) {
@@ -481,10 +481,17 @@ function AgentSelect({
         </SelectTrigger>
         <SelectContent>
           {agentList?.map(agent => (
-            <SelectItem
-              key={agent.addr}
-              value={agent.addr}
-            >{`${agent.name} (${agent.addr})`}</SelectItem>
+            <SelectItem key={agent.addr} value={agent.addr}>
+              <span className="font-medium">
+                {agent.name}@{agent.addr}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                <span className="font-semibold">Version:</span> {agent.version}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                <span className="font-semibold">Runtime:</span> {agent.runtime}
+              </span>
+            </SelectItem>
           ))}
         </SelectContent>
       </Select>

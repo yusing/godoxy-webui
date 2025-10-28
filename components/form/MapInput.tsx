@@ -10,11 +10,12 @@ import { ListInput } from '@/components/form/ListInput'
 import { randomUUID } from 'crypto'
 import { Plus } from 'lucide-react'
 import { Badge } from '../ui/badge'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { Label } from '../ui/label'
 
 type MapInputProps<T extends Record<string, unknown>> = {
   label?: ReactNode
+  description?: ReactNode
   placeholder?: { key?: string; value?: string }
   value: T | undefined
   keyField?: keyof T
@@ -28,10 +29,11 @@ type MapInputProps<T extends Record<string, unknown>> = {
 
 function PureMapInput<T extends Record<string, unknown>>({
   label,
+  description,
   placeholder,
   value,
   onChange,
-  card = true,
+  card = false,
 }: Readonly<Omit<MapInputProps<T>, 'allowDelete' | 'schema' | 'footer'>>) {
   // Maintain stable order: keep existing order, append newly added keys at the end
   const pureKeysRef = useRef<string[]>([])
@@ -106,6 +108,7 @@ function PureMapInput<T extends Record<string, unknown>>({
             <Plus />
           </Button>
         </div>
+        {description && <Label className="text-muted-foreground text-xs">{description}</Label>}
         <div className="flex flex-col gap-3">{content}</div>
       </div>
     )
@@ -115,6 +118,7 @@ function PureMapInput<T extends Record<string, unknown>>({
     <Card>
       <CardHeader>
         <CardTitle>{label}</CardTitle>
+        {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent className="flex flex-col gap-3">{content}</CardContent>
       <CardFooter>
@@ -147,6 +151,7 @@ function getTypePriority(type: string) {
 
 function MapInput_<T extends Record<string, unknown>>({
   label,
+  description,
   placeholder,
   value,
   keyField,
@@ -249,8 +254,10 @@ function MapInput_<T extends Record<string, unknown>>({
         if (schema.additionalProperties || vSchema?.additionalProperties) {
           return (
             <PureMapInput
+              card={false}
               key={`${index}_map`}
-              label={`${String(label)}.${k}`}
+              description={vSchema?.title || vSchema?.description}
+              label={k}
               value={(typeof v === 'object' ? v : {}) as Record<string, unknown>}
               onChange={e => {
                 onChange({ ...workingValue, [k]: e } as T)
@@ -261,8 +268,10 @@ function MapInput_<T extends Record<string, unknown>>({
         }
         return (
           <MapInput
+            card={false}
             key={`${index}_map`}
-            label={`${String(label)}.${k}`}
+            label={k}
+            description={vSchema?.title || vSchema?.description}
             value={(typeof v === 'object' ? v : {}) as Record<string, unknown>}
             schema={{
               ...vSchema,
@@ -329,6 +338,7 @@ function MapInput_<T extends Record<string, unknown>>({
             <Plus />
           </Button>
         </div>
+        {description && <Label className="text-muted-foreground text-xs">{description}</Label>}
         <div className="flex flex-col gap-3">{entries.map(renderItem)}</div>
       </div>
     )
@@ -340,6 +350,7 @@ function MapInput_<T extends Record<string, unknown>>({
         <CardTitle>{label}</CardTitle>
         {isEmpty && <Badge variant={'secondary'}>Not set</Badge>}
       </CardHeader>
+      {description && <CardDescription>{description}</CardDescription>}
       <CardContent className="flex flex-col gap-3">{entries.map(renderItem)}</CardContent>
       {footer && <CardFooter>{footer}</CardFooter>}
     </Card>

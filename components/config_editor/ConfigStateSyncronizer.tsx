@@ -17,7 +17,10 @@ export default function ConfigStateSyncronizer() {
         type: configStore.activeFile.type.value ?? 'config',
         filename: configStore.activeFile.filename.value ?? 'config.yml',
       })
-      .then(r => configStore.content.set(r.data))
+      .then(r => {
+        configStore.content.set(r.data)
+        configStore.error.reset()
+      })
       .catch(err => configStore.error.set(formatErrorString(err)))
       .finally(() => configStore.isLoading.set(false))
   })
