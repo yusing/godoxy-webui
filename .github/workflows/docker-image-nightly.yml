@@ -18,7 +18,7 @@ jobs:
   build-nightly-lite:
     uses: ./.github/workflows/docker-image.yml
     with:
-      image_name: ${{ github.repository_owner }}/godoxy-frontend-lite
+      image_name: ${{ github.repository_owner }}/godoxy-frontend
       tag: nightly
       suffix: -lite
       dockerfile: lite.Dockerfile
