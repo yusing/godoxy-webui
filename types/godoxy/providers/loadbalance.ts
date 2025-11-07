@@ -1,4 +1,5 @@
 import type { RealIP } from '../middlewares/middlewares'
+import type { Duration } from '../types'
 
 export const LOAD_BALANCE_MODES = ['round_robin', 'least_conn', 'ip_hash'] as const
 export type LoadBalanceMode = (typeof LOAD_BALANCE_MODES)[number]
@@ -15,6 +16,16 @@ export type LoadBalanceConfigBase = {
    * @maximum 100
    */
   weight?: number
+  /** Enable sticky sessions
+   *
+   * @default false
+   */
+  sticky?: boolean
+  /** Maximum age of sticky sessions
+   *
+   * @default 1h
+   */
+  sticky_max_age?: Duration
 }
 
 export type LoadBalanceConfig = LoadBalanceConfigBase &
@@ -28,7 +39,7 @@ export type LoadBalanceConfig = LoadBalanceConfigBase &
 export type IPHashLoadBalanceConfig = {
   mode: 'ip_hash'
   /** Real IP config */
-  config: RealIP
+  options: RealIP
 }
 
 export type LeastConnLoadBalanceConfig = {
