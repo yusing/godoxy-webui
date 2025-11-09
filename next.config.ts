@@ -15,11 +15,9 @@ const config: NextConfig = {
       destination: '/wiki/:path*.html',
     },
   ],
-  // uncomment this when https://github.com/oven-sh/bun/issues/23554 is fixed
-  // reactCompiler: {
-  //   // compilationMode: 'annotation',
-  //   compilationMode: 'infer',
-  // },
+  reactCompiler: {
+    compilationMode: 'annotation',
+  },
 }
 
 export default config

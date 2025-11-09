@@ -5,8 +5,9 @@ const config: NextConfig = {
   images: {
     unoptimized: true,
   },
-  // uncomment this when https://github.com/oven-sh/bun/issues/23554 is fixed
-  // reactCompiler: true,
+  reactCompiler: {
+    compilationMode: 'annotation',
+  },
 }
 
 export default config

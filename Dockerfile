@@ -1,4 +1,4 @@
-FROM oven/bun:1-alpine AS base
+FROM oven/bun:1.3.2-alpine AS base
 
 HEALTHCHECK NONE
 
@@ -6,7 +6,7 @@ FROM base AS wiki-deps
 WORKDIR /src
 
 # git is for building wiki (vitepress deps)
-RUN apk add --no-cache git=2.45.4-r0
+RUN apk add --no-cache git=2.49.1-r0
 
 # Install dependencies based on the preferred package manager
 COPY wiki/package.json wiki/bun.lock ./
