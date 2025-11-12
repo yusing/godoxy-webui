@@ -215,4 +215,6 @@ export const CodeMirror = memo(function ({
   )
 })
 
+CodeMirror.displayName = 'CodeMirror'
+
 export default ObjectDataList

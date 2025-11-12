@@ -18,8 +18,7 @@ import { yaml } from '@codemirror/lang-yaml'
 import { EditorView } from '@uiw/react-codemirror'
 import { Check, X } from 'lucide-react'
 import { motion } from 'motion/react'
-import { useEffect, useRef, useState } from 'react'
-import isEqual from 'react-fast-compare'
+import { useState } from 'react'
 import { stringify as stringifyYAML } from 'yaml'
 import { GoDoxyErrorAlert, type GoDoxyError } from '../GoDoxyError'
 import { CodeMirror } from '../ObjectDataList'
@@ -27,15 +26,11 @@ import { store } from './store'
 
 export default function ResultsDisplay() {
   const response = store.playgroundResponse.use()
-  const prevRef = useRef<typeof response>(null)
   const [animKey, setAnimKey] = useState(0)
 
-  useEffect(() => {
-    if (!isEqual(response, prevRef.current)) {
-      setAnimKey(prev => prev + 1)
-      prevRef.current = response
-    }
-  }, [response])
+  store.playgroundResponse.subscribe(() => {
+    setAnimKey(prev => prev + 1)
+  })
 
   if (!response) {
     return (

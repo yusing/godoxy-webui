@@ -27,10 +27,10 @@ export default function PlaygroundPage() {
           <TabsContent value="rules" className="flex-1 mt-2 overflow-hidden">
             <RulesEditor />
           </TabsContent>
-          <TabsContent value="request" className="flex-1 mt-2 overflow-hidden">
+          <TabsContent value="request" className="flex-1 mt-2 overflow-y-auto">
             <MockRequestForm />
           </TabsContent>
-          <TabsContent value="response" className="flex-1 mt-2 overflow-hidden">
+          <TabsContent value="response" className="flex-1 mt-2 overflow-y-auto">
             <MockResponseForm />
           </TabsContent>
         </Tabs>
