@@ -8,17 +8,17 @@ export default function RouteProviderConfigContent() {
     <div className="flex flex-col gap-4">
       <providers.include.Render>
         {(include, setInclude) => (
-          <ListInput label="Include Files" value={include ?? []} onChange={setInclude} />
+          <ListInput card label="Include Files" value={include ?? []} onChange={setInclude} />
         )}
       </providers.include.Render>
       <providers.agents.Render>
         {(agents, setAgents) => (
-          <ListInput label="Agents" value={agents ?? []} onChange={setAgents} />
+          <ListInput card label="Agents" value={agents ?? []} onChange={setAgents} />
         )}
       </providers.agents.Render>
       <providers.docker.Render>
         {(docker, setDocker) => (
-          <MapInput label="Docker" value={docker ?? {}} onChange={setDocker} />
+          <MapInput card label="Docker" value={docker ?? {}} onChange={setDocker} />
         )}
       </providers.docker.Render>
     </div>

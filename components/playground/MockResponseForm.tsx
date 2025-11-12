@@ -1,10 +1,10 @@
 'use client'
 
 import { MapInput } from '@/components/form/MapInput'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
 import { json } from '@codemirror/lang-json'
-import { StoreCodeMirror, StoreInput } from '../StoreFields'
+import { FieldGroup, FieldLegend, FieldSet } from '../ui/field'
+import { StoreCodeMirrorField } from '../ui/store/CodeMirror'
+import { StoreInputField } from '../ui/store/Input'
 import { store } from './store'
 
 // Convert Record<string, string[]> to Record<string, string> for UI
@@ -21,15 +21,10 @@ const toArrayRecord = (record: Record<string, string>): Record<string, string[]>
 
 export default function MockResponseForm() {
   return (
-    <Card className="flex flex-col h-full">
-      <CardHeader>
-        <CardTitle>Mock Response</CardTitle>
-      </CardHeader>
-      <CardContent className="flex-1 overflow-y-auto space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="statusCode">Status Code</Label>
-          <StoreInput state={store.mockResponse.statusCode} type="number" placeholder="200" />
-        </div>
+    <FieldSet>
+      <FieldLegend>Mock Response</FieldLegend>
+      <FieldGroup>
+        <StoreInputField state={store.mockResponse.statusCode} type="number" placeholder="200" />
 
         <store.mockResponse.headers.Render>
           {(value, update) => (
@@ -43,11 +38,14 @@ export default function MockResponseForm() {
           )}
         </store.mockResponse.headers.Render>
 
-        <div className="space-y-2">
-          <Label htmlFor="responseBody">Body</Label>
-          <StoreCodeMirror readOnly={false} state={store.mockResponse.body} extensions={[json()]} />
-        </div>
-      </CardContent>
-    </Card>
+        <StoreCodeMirrorField
+          className="border rounded-md"
+          readOnly={false}
+          state={store.mockResponse.body}
+          language="json"
+          extensions={[json()]}
+        />
+      </FieldGroup>
+    </FieldSet>
   )
 }

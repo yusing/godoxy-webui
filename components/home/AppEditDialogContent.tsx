@@ -1,8 +1,8 @@
+import { useForm } from '@/hooks/store/form'
 import { type HomepageItem } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
 import { useCallback, useMemo } from 'react'
-import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { AppIcon } from '../AppIcon'
 import IconSearchField from '../IconSearchField'
@@ -14,8 +14,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
-import { Input } from '../ui/input'
+import { Field, FieldLabel } from '../ui/field'
+import { StoreFormInputField } from '../ui/store/Input'
 import { store } from './store'
 
 export default function AppEditDialogContent({
@@ -25,7 +25,8 @@ export default function AppEditDialogContent({
   categoryIndex: number
   appIndex: number
 }) {
-  const app = store.use(`homepageCategories.${categoryIndex}.items.${appIndex}`)!
+  const app = store.homepageCategories.at(categoryIndex).items.at(appIndex).use()
+
   const icon = useMemo(() => {
     if (app.icon) return app.icon
     return (app.name || app.alias)
@@ -36,11 +37,9 @@ export default function AppEditDialogContent({
   }, [app.icon, app.name, app.alias])
 
   const form = useForm<HomepageItem>({
-    defaultValues: {
-      ...app,
-      name: app.name || app.alias,
-      icon,
-    },
+    ...app,
+    name: app.name || app.alias,
+    icon,
   })
 
   const onSubmit = useCallback(
@@ -54,7 +53,7 @@ export default function AppEditDialogContent({
           async () => await api.homepage.setItemVisible({ which: [newItem.alias], value: true })
         )
         .then(() => {
-          store.set(`homepageCategories.${categoryIndex}.items.${appIndex}`, newItem)
+          store.homepageCategories.at(categoryIndex).items.at(appIndex).set(newItem)
           store.openedDialog.set(null)
           toast.success('App saved successfully')
         })
@@ -69,86 +68,32 @@ export default function AppEditDialogContent({
         <DialogTitle>Edit App</DialogTitle>
         <DialogDescription>Make change to the app here. Click save to apply.</DialogDescription>
       </DialogHeader>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6 py-2">
-          <div className="flex items-start gap-4">
-            <div className="hidden sm:flex h-full items-center shrink-0 border-2 p-2 rounded-xl">
-              <FormField
-                control={form.control}
-                name={'icon'}
-                render={({ field }) => (
-                  <FormControl>
-                    <AppIcon size={36} alias={app.alias} url={field.value} />
-                  </FormControl>
-                )}
-              />
-            </div>
-            <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name={'name'}
-                rules={{ required: 'Name is required' }}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>App name</FormLabel>
-                    <FormControl>
-                      <Input {...field} required />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={'category'}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 py-2">
+        <div className="flex items-start gap-4">
+          <div className="hidden sm:flex h-full items-center shrink-0 border-2 p-2 rounded-xl">
+            <form.icon.Render>
+              {icon => <AppIcon size={36} alias={app.alias} url={icon} />}
+            </form.icon.Render>
           </div>
-          <FormField
-            control={form.control}
-            name={'description'}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Description</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name={'icon'}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Icon</FormLabel>
-                <FormControl>
-                  <IconSearchField {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button type="button" variant="outline">
-                Cancel
-              </Button>
-            </DialogClose>
-            <Button type="submit">Save</Button>
-          </DialogFooter>
-        </form>
-      </Form>
+          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <StoreFormInputField state={form.name} title="App name" />
+            <StoreFormInputField state={form.category} title="Category" />
+          </div>
+        </div>
+        <StoreFormInputField state={form.description} title="Description" />
+        <Field>
+          <FieldLabel>Icon</FieldLabel>
+          <IconSearchField state={form.icon} />
+        </Field>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button type="button" variant="outline">
+              Cancel
+            </Button>
+          </DialogClose>
+          <Button type="submit">Save</Button>
+        </DialogFooter>
+      </form>
     </>
   )
 }

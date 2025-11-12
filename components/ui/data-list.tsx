@@ -38,11 +38,9 @@ function DataListRow({
   // On desktop: show label and value side by side, 1:2 ratio
   return (
     <div className={cn('flex flex-col sm:flex-row sm:gap-4 items-center', className)} {...props}>
-      <span className="text-muted-foreground w-[var(--data-list-label-width)] font-medium">
-        {label}
-      </span>
+      <span className="text-muted-foreground w-(--data-list-label-width) font-medium">{label}</span>
       {seperator}
-      <span className="min-w-0 w-full break-words">{value}</span>
+      <span className="min-w-0 w-full wrap-break-word">{value}</span>
     </div>
   )
 }

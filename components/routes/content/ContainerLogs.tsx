@@ -202,16 +202,12 @@ function stripTimestamp(line: string) {
     // json
     return line
   }
-  return (
-    line
-      .replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[.,]\d*)?Z/, '')
-      .replace(
-        // eslint-disable-next-line no-control-regex
-        /(?:\u001b\[\d{2}m)?(?:\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}[-/]\d{1,2}[-/]\d{4})[,\s]*/,
-        ''
-      )
-      // eslint-disable-next-line no-control-regex
-      .replace(/(?:\d{1,2}:\d{1,2}(?::\d{1,2})?\s*(?:[ap]m)?(?:\u001b\[32m)?)(?:[.,]\d*)?/i, '')
-      .replace('[]', '')
-  )
+  return line
+    .replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[.,]\d*)?Z/, '')
+    .replace(
+      /(?:\u001b\[\d{2}m)?(?:\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}[-/]\d{1,2}[-/]\d{4})[,\s]*/,
+      ''
+    )
+    .replace(/(?:\d{1,2}:\d{1,2}(?::\d{1,2})?\s*(?:[ap]m)?(?:\u001b\[32m)?)(?:[.,]\d*)?/i, '')
+    .replace('[]', '')
 }

@@ -70,7 +70,9 @@ function RouteCardContent({
         onCancel={() => setIsEditing(false)}
         onSave={v => {
           setIsEditing(false)
-          onSave(alias, v)
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { alias: _, ...rest } = v // exclude alias from the saved route, we don't want this in route files
+          onSave(alias, rest)
         }}
       />
     )

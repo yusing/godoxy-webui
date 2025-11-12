@@ -48,7 +48,7 @@ function TooltipContent({
         {...props}
       >
         {children}
-        <TooltipPrimitive.Arrow className="bg-accent/70 fill-accent/70 z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-[2px]" />
+        <TooltipPrimitive.Arrow className="bg-accent/70 fill-accent/70 z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-[2px]" />
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
   )
@@ -67,14 +67,14 @@ function TooltipItem({ icon, label, value, valueClassName, isLastItem }: Tooltip
     <div
       className={cn('flex items-start gap-3 py-1.5', !isLastItem && 'border-b border-border/30')}
     >
-      <div className="flex-shrink-0 mt-0.5">{icon}</div>
+      <div className="shrink-0 mt-0.5">{icon}</div>
       <div className="flex flex-col gap-0.5 min-w-0 flex-1">
         <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
           {label}
         </div>
         <div
           className={cn(
-            'text-sm font-medium break-words leading-tight',
+            'text-sm font-medium wrap-break-word leading-tight',
             valueClassName || 'text-foreground'
           )}
         >

@@ -12,7 +12,7 @@ function Card({ className, shrink = false, ...props }: CardProps) {
     <div
       data-slot="card"
       className={cn(
-        'flex flex-col gap-4 rounded-md border shadow-sm',
+        'flex flex-col gap-4 rounded-xl border shadow-sm',
         shrink ? 'py-2 sm:py-4' : 'py-4',
         className
       )}

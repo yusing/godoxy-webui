@@ -202,7 +202,7 @@ type TreeSpec = {
 
 export function GoDoxyErrorAlert({ err, title }: { err: GoDoxyError; title: string }) {
   return (
-    <Alert variant="destructive">
+    <Alert variant="error">
       <AlertCircleIcon />
       <AlertTitle>{title}</AlertTitle>
       <AlertDescription className="-ml-5 max-h-[150px] overflow-y-auto">

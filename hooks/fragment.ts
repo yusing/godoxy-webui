@@ -1,36 +1,40 @@
 import { usePathname } from 'next/navigation'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useSyncExternalStore } from 'react'
+
+function createFragmentStore(pathname: string) {
+  let currentPathname = typeof window !== 'undefined' ? window.location.pathname : undefined
+
+  function getSnapshot() {
+    // Reset fragment when pathname changes
+    if (currentPathname !== pathname) {
+      currentPathname = pathname
+      return undefined
+    }
+    return typeof window !== 'undefined' ? window.location.hash?.slice(1) : undefined
+  }
+
+  function subscribe(callback: () => void) {
+    if (typeof window === 'undefined') {
+      return () => {}
+    }
+
+    window.addEventListener('hashchange', callback)
+    return () => {
+      window.removeEventListener('hashchange', callback)
+    }
+  }
+
+  return { getSnapshot, subscribe }
+}
 
 export function useFragment(): string | undefined {
-  const [fragment, setFragment] = useState<string | undefined>(
-    typeof window !== 'undefined' ? window.location.hash?.slice(1) : undefined
-  )
-
-  const currentPathname = useRef(
-    typeof window !== 'undefined' ? window.location.pathname : undefined
-  )
-
-  useEffect(() => {
-    const onhashchange = () => {
-      setFragment(window.location.hash?.slice(1))
-    }
-    window.addEventListener('hashchange', onhashchange)
-    return () => {
-      window.removeEventListener('hashchange', onhashchange)
-    }
-  }, [])
-
   const pathname = usePathname()
 
-  useEffect(() => {
-    // Reset fragment when navigating to a different pathname
-    if (typeof window !== 'undefined') {
-      if (currentPathname.current !== pathname) {
-        currentPathname.current = pathname
-        setFragment(undefined)
-      }
-    }
-  }, [pathname])
+  // Create a store instance for the current pathname
+  const store = useMemo(() => createFragmentStore(pathname), [pathname])
+
+  // Get the fragment from the external store
+  const fragment = useSyncExternalStore(store.subscribe, store.getSnapshot, () => undefined)
 
   // decode the fragment to handle %20 etc
   const decodedFragment = useMemo(() => decodeURIComponent(fragment ?? ''), [fragment])

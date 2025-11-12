@@ -1,4 +1,4 @@
-FROM oven/bun:1-alpine AS base
+FROM oven/bun:1.3.2-alpine AS base
 
 HEALTHCHECK NONE
 
@@ -11,4 +11,4 @@ WORKDIR /app
 
 EXPOSE 3000
 
-CMD ["bun", "run", "dev"]
+CMD ["bun", "--bun", "run", "dev"]

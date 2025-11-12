@@ -90,16 +90,16 @@ export const examples: PlaygroundExample[] = [
     header Origin
     header Access-Control-Request-Method
   do: |
-    set headers Access-Control-Allow-Origin $header(Origin)
-    set headers Access-Control-Allow-Methods GET,POST,PUT,PATCH,DELETE,OPTIONS
-    set headers Access-Control-Allow-Headers $header(Access-Control-Request-Headers)
-    set headers Access-Control-Allow-Credentials true
+    set header Access-Control-Allow-Origin $header(Origin)
+    set header Access-Control-Allow-Methods GET,POST,PUT,PATCH,DELETE,OPTIONS
+    set header Access-Control-Allow-Headers $header(Access-Control-Request-Headers)
+    set header Access-Control-Allow-Credentials true
     error "204" ""
 - name: cors simple
   on: header Origin
   do: |
-    set headers Access-Control-Allow-Origin $header(Origin)
-    set headers Access-Control-Allow-Credentials true
+    set header Access-Control-Allow-Origin $header(Origin)
+    set header Access-Control-Allow-Credentials true
     pass`,
     mockRequest: {
       method: 'OPTIONS',
@@ -186,11 +186,11 @@ export const examples: PlaygroundExample[] = [
     rules: `- name: request mutations
   on: path glob(/api/**)
   do: |
-    set headers X-Request-Id $header(X-Request-Id)
-    add headers X-Forwarded-For $remote_host
-    remove headers X-Secret
+    set header X-Request-Id $header(X-Request-Id)
+    add header X-Forwarded-For $remote_host
+    remove header X-Secret
     add query debug true
-    set cookies locale en-US
+    set cookie locale en-US
     proxy http://api-server:8080`,
     mockRequest: {
       method: 'GET',
@@ -206,13 +206,13 @@ export const examples: PlaygroundExample[] = [
     },
   },
   {
-    name: 'Proxy Then Log',
+    name: 'Log then Proxy',
     description: 'Logs status and content-type after upstream response',
-    rules: `- name: proxy and log json responses
+    rules: `- name: log and proxy json responses
   on: path glob(/api/**)
   do: |
-    proxy http://api-server:8080
-    log info /dev/stdout "Status=$status_code CT=$resp_header(Content-Type)"`,
+    log info /dev/stdout "Status=$status_code CT=$resp_header(Content-Type)"
+    proxy http://api-server:8080`,
     mockRequest: {
       method: 'GET',
       path: '/api/ping',

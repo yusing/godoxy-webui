@@ -1,7 +1,7 @@
 'use client'
 import { formatDuration } from '@/lib/format'
+import type { FieldPath } from '@/types/path'
 import { useMemo } from 'react'
-import type { FieldPath } from 'react-hook-form'
 import { Progress } from '../ui/progress'
 import { store, type Store } from './store'
 

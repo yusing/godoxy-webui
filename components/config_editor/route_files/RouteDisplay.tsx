@@ -28,7 +28,7 @@ export default function RouteDisplay({
         <div className="flex items-center gap-3">
           <div
             className={cn(
-              'flex-shrink-0 rounded-lg p-2 border',
+              'shrink-0 rounded-lg p-2 border',
               route.scheme === 'fileserver'
                 ? 'bg-green-500/30 border-green-500/20'
                 : route.scheme === 'tcp' || route.scheme === 'udp'
