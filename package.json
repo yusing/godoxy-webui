@@ -57,7 +57,6 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-fast-compare": "^3.2.2",
-    "react-hook-form": "^7.66.0",
     "react-scan": "^0.4.3",
     "react-use": "^17.6.0",
     "react-use-websocket": "^4.13.0",

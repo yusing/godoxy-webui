@@ -46,7 +46,6 @@
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
         "react-fast-compare": "^3.2.2",
-        "react-hook-form": "^7.66.0",
         "react-scan": "^0.4.3",
         "react-use": "^17.6.0",
         "react-use-websocket": "^4.13.0",
@@ -61,7 +60,7 @@
         "zod": "^4.1.12",
       },
       "devDependencies": {
-        "@apidevtools/json-schema-ref-parser": "^15.1.0",
+        "@apidevtools/json-schema-ref-parser": "^15.1.1",
         "@eslint/compat": "^1.4.1",
         "@eslint/eslintrc": "^3.3.1",
         "@eslint/js": "^9.39.1",
