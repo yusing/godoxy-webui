@@ -1,6 +1,6 @@
 import type { FieldValues } from '@/types/path'
 import { createRootNode } from './node'
-import { createStoreRoot } from './root'
+import { createStoreRoot, type StoreOptions } from './root'
 import type { DeepProxy, State, StoreRoot } from './types'
 
 export { createStore, type Store }
@@ -20,8 +20,12 @@ type Store<T extends FieldValues> = StoreRoot<T> & {
   [K in keyof T]: NonNullable<T[K]> extends object ? DeepProxy<T[K]> : State<T[K]>
 }
 
-function createStore<T extends FieldValues>(namespace: string, defaultValue: T): Store<T> {
-  const storeApi = createStoreRoot<T>(namespace, defaultValue)
+function createStore<T extends FieldValues>(
+  namespace: string,
+  defaultValue: T,
+  options: StoreOptions = {}
+): Store<T> {
+  const storeApi = createStoreRoot<T>(namespace, defaultValue, options)
   return new Proxy(storeApi, {
     get(target, prop) {
       if (prop in target) {

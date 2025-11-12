@@ -3,7 +3,16 @@ import { useEffect, useRef, useSyncExternalStore } from 'react'
 import isEqual from 'react-fast-compare'
 import { localStorageDelete, localStorageGet, localStorageSet } from './local_storage'
 
-export { getNestedValue, getSnapshot, notifyListeners, produce, setLeaf, useObject, useSubscribe }
+export {
+  getNestedValue,
+  getSnapshot,
+  joinPath,
+  notifyListeners,
+  produce,
+  setLeaf,
+  useObject,
+  useSubscribe,
+}
 
 const memoryStore = new Map<string, unknown>()
 
@@ -13,6 +22,11 @@ type KeyValueStore = {
   set: (key: string, value: unknown, memoryOnly?: boolean) => void
   delete: (key: string, memoryOnly?: boolean) => void
   readonly size: number
+}
+
+function joinPath(namespace: string, path?: string): string {
+  if (!path) return namespace
+  return namespace + '.' + path
 }
 
 // Path traversal utilities
@@ -336,11 +350,14 @@ function subscribe(key: string, listener: () => void) {
 /** Core mutation function that updates store and notifies listeners. */
 function produce(key: string, value: unknown, skipUpdate = false, memoryOnly = false) {
   const current = store.get(key)
-  if (isEqual(current, value)) return
 
   if (value === undefined) {
+    skipUpdate = current === undefined
+    console.log('delete', key)
     store.delete(key, memoryOnly)
   } else {
+    if (isEqual(current, value)) return
+    console.log('set', key, value)
     store.set(key, value, memoryOnly)
   }
 
@@ -352,7 +369,7 @@ function produce(key: string, value: unknown, skipUpdate = false, memoryOnly = f
 
 /** React hook: subscribe to and read a namespaced path value. */
 function useObject<T extends FieldValues, P extends FieldPath<T>>(key: string, path?: P) {
-  const fullKey = path ? key + '.' + path : key
+  const fullKey = joinPath(key, path)
   const value = useSyncExternalStore(
     listener => subscribe(fullKey, listener),
     () => getSnapshot(fullKey),
@@ -387,7 +404,7 @@ function setLeaf<T extends FieldValues, P extends FieldPath<T>>(
   skipUpdate = false,
   memoryOnly = false
 ) {
-  const fullKey = key + '.' + path
+  const fullKey = joinPath(key, path)
   produce(fullKey, value, skipUpdate, memoryOnly)
 }
 

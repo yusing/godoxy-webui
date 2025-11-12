@@ -42,9 +42,7 @@ type FormComponentProps<
 >
 
 type StoreFieldPropsCommon<T, Form = false> = {
-  state: Form extends true
-    ? FormState<T> | FormState<T | undefined>
-    : State<T> | State<T | undefined>
+  state: Form extends true ? FormState<T> : State<T>
   /** Field id
    * @default state.field
    */

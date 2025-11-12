@@ -9,12 +9,15 @@ import { createStoreRoot } from './root'
 import type { ArrayProxy, State, StoreRoot } from './types'
 export {
   useForm,
+  type CreateFormOptions,
   type DeepNonNullable,
   type FormArrayProxy,
   type FormDeepProxy,
   type FormState,
   type FormStore,
 }
+
+import { pascalCase } from 'change-case'
 
 type FormCommon = {
   /** Subscribe and read the error at path. Re-renders when the error changes. */
@@ -56,13 +59,17 @@ type FormStore<T extends FieldValues> = FormDeepProxy<T> & {
   handleSubmit(onSubmit: (values: T) => void): (e: React.FormEvent) => void
 }
 
-type Validator<T extends FieldValues> = (
+type NoEmptyValidator = 'not-empty'
+type RegexValidator = RegExp
+type FunctionValidator<T extends FieldValues> = (
   value: FieldPathValue<T, FieldPath<T>> | undefined,
   state: FormStore<T>
 ) => string | undefined
 
+type Validator<T extends FieldValues> = NoEmptyValidator | RegexValidator | FunctionValidator<T>
+
 type FieldConfig<T extends FieldValues> = {
-  validator?: Validator<T>
+  validate?: Validator<T>
 }
 
 type CreateFormOptions<T extends FieldValues> = Partial<Record<FieldPath<T>, FieldConfig<T>>>
@@ -103,7 +110,7 @@ function useForm<T extends FieldValues>(
 
   for (const entry of Object.entries(fieldConfigs)) {
     const [path, config] = entry as [FieldPath<T>, FieldConfig<T>]
-    const validator = config?.validator
+    const validator = getValidator(path, config?.validate)
 
     if (validator) {
       storeApi.subscribe(path, (value: FieldPathValue<T, FieldPath<T>>) => {
@@ -141,4 +148,55 @@ const createFormProxy = (
       get: () => setError,
     },
   })
+}
+
+function getValidator<T extends FieldValues>(
+  field: FieldPath<T>,
+  validator: Validator<T> | undefined
+): FunctionValidator<T> | undefined {
+  if (!validator) {
+    return undefined
+  }
+  if (validator === 'not-empty') {
+    return (value: FieldPathValue<T, FieldPath<T>> | undefined) => validateNoEmpty<T>(field, value)
+  }
+  if (validator instanceof RegExp) {
+    return (value: FieldPathValue<T, FieldPath<T>> | undefined) =>
+      validateRegex<T>(field, value, validator)
+  }
+  return validator
+}
+
+function validateNoEmpty<T extends FieldValues>(
+  field: FieldPath<T>,
+  value: FieldPathValue<T, FieldPath<T>> | undefined
+) {
+  if (!stringValue(value)) {
+    return `${pascalCase(field)} is required`
+  }
+  return undefined
+}
+
+function validateRegex<T extends FieldValues>(
+  field: FieldPath<T>,
+  value: FieldPathValue<T, FieldPath<T>> | undefined,
+  regex: RegExp
+) {
+  if (!regex.test(stringValue(value))) {
+    return `${pascalCase(field)} is invalid`
+  }
+  return undefined
+}
+
+function stringValue(v: any) {
+  if (typeof v === 'string') {
+    return v
+  }
+  if (typeof v === 'number') {
+    return String(v)
+  }
+  if (typeof v === 'boolean') {
+    return String(v)
+  }
+  return ''
 }

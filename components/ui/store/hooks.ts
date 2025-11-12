@@ -1,9 +1,9 @@
 'use client'
 
 import type { State } from '@/hooks/store/types'
+import { pascalCase } from 'change-case'
 import { useMemo } from 'react'
 import type { Option, Options, Stringable } from './types'
-import { toTitleCase } from './utils'
 
 function useIdTitle<T>({
   state,
@@ -15,7 +15,7 @@ function useIdTitle<T>({
   title?: string
 }) {
   const fieldId = useMemo(() => id ?? state.field, [id, state.field])
-  const fieldTitle = useMemo(() => (title ? title : toTitleCase(fieldId)), [title, fieldId])
+  const fieldTitle = useMemo(() => (title ? title : pascalCase(fieldId)), [title, fieldId])
   return { fieldId, fieldTitle }
 }
 

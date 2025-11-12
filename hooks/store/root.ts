@@ -3,6 +3,7 @@ import { useCallback, useRef } from 'react'
 import {
   getNestedValue,
   getSnapshot,
+  joinPath,
   notifyListeners,
   produce,
   setLeaf,
@@ -11,7 +12,7 @@ import {
 } from './impl'
 import type { StoreRenderProps, StoreRoot, StoreShowProps } from './types'
 
-export { createStoreRoot }
+export { createStoreRoot, type StoreOptions }
 
 type StoreOptions = {
   memoryOnly?: boolean
@@ -23,6 +24,9 @@ function createStoreRoot<T extends FieldValues>(
   options: StoreOptions = {}
 ) {
   const memoryOnly = options?.memoryOnly ?? false
+  if (memoryOnly) {
+    produce(namespace, undefined, true, false) // clear localStorage value
+  }
   produce(namespace, { ...defaultValue, ...(getSnapshot(namespace) ?? {}) }, true, true)
 
   const storeApi: StoreRoot<T> = {
@@ -44,18 +48,18 @@ function createStoreRoot<T extends FieldValues>(
       return setLeaf<T, P>(namespace, path, newValue, skipUpdate, memoryOnly)
     },
     value: <P extends FieldPath<T>>(path: P) =>
-      getSnapshot(namespace + '.' + path) as FieldPathValue<T, P>,
+      getSnapshot(joinPath(namespace, path)) as FieldPathValue<T, P>,
     reset: <P extends FieldPath<T>>(path: P) =>
-      produce(namespace + '.' + path, undefined, false, memoryOnly),
+      produce(joinPath(namespace, path), undefined, false, memoryOnly),
     subscribe: <P extends FieldPath<T>>(path: P, listener: (value: FieldPathValue<T, P>) => void) =>
       // eslint-disable-next-line react-hooks/rules-of-hooks
-      useSubscribe<FieldPathValue<T, P>>(namespace + '.' + path, listener),
+      useSubscribe<FieldPathValue<T, P>>(joinPath(namespace, path), listener),
     notify: <P extends FieldPath<T>>(path: P) => {
       const value = getNestedValue(getSnapshot(namespace), path)
-      return notifyListeners(namespace + '.' + path, value, value, true, true)
+      return notifyListeners(joinPath(namespace, path), value, value, true, true)
     },
     useState: <P extends FieldPath<T>>(path: P) => {
-      const fullPathRef = useRef(namespace + '.' + path)
+      const fullPathRef = useRef(joinPath(namespace, path))
       const setValue = useCallback(
         <V extends FieldPathValue<T, P> | undefined>(value: V | ((prev: V) => V)) => {
           if (typeof value === 'function') {
@@ -70,7 +74,7 @@ function createStoreRoot<T extends FieldValues>(
       return [useObject<T, P>(fullPathRef.current), setValue] as const
     },
     Render: <P extends FieldPath<T>>({ path, children }: StoreRenderProps<T, P>) => {
-      const fullPathRef = useRef(namespace + '.' + path)
+      const fullPathRef = useRef(joinPath(namespace, path))
       const value = useObject<T, P>(fullPathRef.current)
       const update = useCallback(
         (

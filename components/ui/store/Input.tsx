@@ -89,18 +89,21 @@ function StorePasswordField<T extends Stringable>({ ...props }: PasswordFieldPro
       type={isVisible ? 'text' : 'password'}
       {...props}
       addons={[
-        <InputGroupAddon align={'inline-end'}>
-          <Button
-            aria-hidden
-            type="button"
-            variant={'ghost'}
-            size={'icon'}
-            className="opacity-70 hover:opacity-100 size-8"
-            onClick={() => setIsVisible(!isVisible)}
-          >
-            {isVisible ? <EyeClosed /> : <Eye />}
-          </Button>
-        </InputGroupAddon>,
+        {
+          align: 'inline-end',
+          children: (
+            <Button
+              aria-hidden
+              type="button"
+              variant={'ghost'}
+              size={'icon'}
+              className="opacity-70 hover:opacity-100 size-8"
+              onClick={() => setIsVisible(!isVisible)}
+            >
+              {isVisible ? <EyeClosed /> : <Eye />}
+            </Button>
+          ),
+        },
       ]}
     />
   )

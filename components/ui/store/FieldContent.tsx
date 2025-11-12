@@ -1,6 +1,5 @@
 'use client'
 
-import { cn } from '@/lib/utils'
 import { Info } from 'lucide-react'
 import { FieldContent, FieldDescription, FieldLabel } from '../field'
 import { Tooltip, TooltipContent, TooltipTrigger } from '../tooltip'
@@ -21,14 +20,13 @@ function StoreFieldContent<T, Form = false>({
   title,
   description,
   descriptionVariant = 'inline',
-  className,
   ...labelProps
 }: FieldContentProps<T, Form>) {
   const { fieldId, fieldTitle } = useIdTitle({ state, id, title })
 
   return (
     <FieldContent className="flex-none">
-      <FieldLabel htmlFor={fieldId} className={cn('text-xs', className)} {...labelProps}>
+      <FieldLabel htmlFor={fieldId} {...labelProps}>
         {fieldTitle}
         {descriptionVariant === 'tooltip' && description && (
           <Tooltip>
