@@ -2,10 +2,9 @@
 
 import * as RadioGroupPrimitive from '@radix-ui/react-radio-group'
 import { CircleIcon } from 'lucide-react'
-import * as React from 'react'
 
 import { cn } from '@/lib/utils'
-import { Label } from './label'
+import { FieldLabel } from './field'
 
 function RadioGroup({
   className,
@@ -51,7 +50,7 @@ function RadioGroupField({
   return (
     <div className={cn('flex items-center gap-1.5', className)}>
       <RadioGroupItem {...props} />
-      <Label htmlFor={props.id}>{label}</Label>
+      <FieldLabel htmlFor={props.id}>{label}</FieldLabel>
     </div>
   )
 }
