@@ -30,7 +30,7 @@ export type LoadBalanceConfigBase = {
 
 export type LoadBalanceConfig = LoadBalanceConfigBase &
   (
-    | object // linking other routes
+    | { mode: undefined } // linking other routes
     | RoundRobinLoadBalanceConfig
     | LeastConnLoadBalanceConfig
     | IPHashLoadBalanceConfig

@@ -68,9 +68,7 @@ type OmitUse<T extends MiddlewareComposeBase> = Omit<T, 'use'>
 // type LooseUse<Use extends string> = _LooseUseInternal<Use>[number];
 type LooseUse<Use extends string> = Use
 
-type KeyOptMapping<T extends MiddlewareComposeBase> = {
-  [key in T['use']]: OmitUse<T>
-} & {
+type KeyOptMapping<T extends MiddlewareComposeBase> = Record<T['use'], OmitUse<T>> & {
   /**
    * Bypass rules
    */
