@@ -1,7 +1,6 @@
 import { useMemoryStore, type FormState, type MemoryStore } from '@/hooks/store'
 import type { HomepageIconMetaSearch } from '@/lib/api'
 import { api } from '@/lib/api-client'
-import { useDebounce } from '@uidotdev/usehooks'
 import { useEffect, useMemo } from 'react'
 import { useAsync } from 'react-use'
 import { AppIcon } from './AppIcon'
@@ -47,7 +46,41 @@ export default function IconSearchField({ state: iconState, className }: IconSea
     variant: null,
   })
 
-  const debouncedSearchValue = useDebounce(state.searchValue.value, 300)
+  return (
+    <Command shouldFilter={false}>
+      <state.Render>
+        {(value, setValue) => {
+          const inputValue = getDisplayValue(value)
+          return (
+            <CommandInput
+              placeholder="Search icons... or paste an image URL"
+              value={inputValue}
+              onValueChange={v => {
+                setValue({
+                  searchValue: v,
+                  currentIcon: null,
+                  variant: null,
+                })
+              }}
+            />
+          )
+        }}
+      </state.Render>
+      <CommandList className={className}>
+        <IconItems state={state} iconState={iconState} />
+      </CommandList>
+    </Command>
+  )
+}
+
+function IconItems({
+  state,
+  iconState,
+}: {
+  state: MemoryStore<IconSearchFieldState>
+  iconState: FormState<string>
+}) {
+  const debouncedSearchValue = state.searchValue.useDebounce(300)
   useEffect(() => {
     // Propagate only the debounced value to parent so external consumers
     // don't trigger requests on every keystroke.
@@ -66,79 +99,53 @@ export default function IconSearchField({ state: iconState, className }: IconSea
   )
 
   return (
-    <Command shouldFilter={false}>
-      <state.Render>
-        {(value, setValue) => {
-          const inputValue = getDisplayValue(value)
-          return (
-            <CommandInput
-              placeholder="Search icons... or paste an image URL"
-              value={inputValue}
-              readOnly={loading}
-              onValueChange={v => {
-                setValue({
-                  searchValue: v,
-                  currentIcon: null,
-                  variant: null,
-                })
-              }}
-            />
-          )
-        }}
-      </state.Render>
-      <CommandList className={className}>
-        <CommandEmpty>
-          {loading ? (
-            <div className="flex items-center justify-center h-full">
-              <LoadingRing />
-            </div>
-          ) : error ? (
-            'Error loading icons'
-          ) : (
-            'No icons found'
-          )}
-        </CommandEmpty>
-        {icons?.map(icon => (
-          <CommandItem
-            key={`${icon.Source}:${icon.Ref}`}
-            value={`${icon.Source} ${icon.Ref}`}
-            className="flex items-center"
+    <>
+      <CommandEmpty>
+        {loading ? (
+          <div className="flex items-center justify-center h-full">
+            <LoadingRing />
+          </div>
+        ) : error ? (
+          'Error loading icons'
+        ) : (
+          'No icons found'
+        )}
+      </CommandEmpty>
+      {icons?.map(icon => (
+        <CommandItem
+          key={`${icon.Source}:${icon.Ref}`}
+          value={`${icon.Source} ${icon.Ref}`}
+          className="flex items-center"
+        >
+          <span className="text-xs text-muted-foreground shrink-0">{icon.Source}</span>
+          <button
+            onClick={() => {
+              state.set({
+                searchValue: icon.Ref,
+                currentIcon: icon,
+                variant: null,
+              })
+              iconState.set(iconURL(icon))
+            }}
+            className="text-left"
           >
-            <span className="text-xs text-muted-foreground shrink-0">{icon.Source}</span>
-            <button
-              onClick={() => {
-                state.set({
-                  searchValue: icon.Ref,
-                  currentIcon: icon,
-                  variant: null,
-                })
-                iconState.set(iconURL(icon))
-              }}
-              className="text-left"
-            >
-              {icon.Ref}
-            </button>
-            <IconVariantIconButton icon={icon} variant={null} state={state} iconState={iconState} />
-            {icon.Light && (
-              <IconVariantIconButton
-                icon={icon}
-                variant="light"
-                state={state}
-                iconState={iconState}
-              />
-            )}
-            {icon.Dark && (
-              <IconVariantIconButton
-                icon={icon}
-                variant="dark"
-                state={state}
-                iconState={iconState}
-              />
-            )}
-          </CommandItem>
-        ))}
-      </CommandList>
-    </Command>
+            {icon.Ref}
+          </button>
+          <IconVariantIconButton icon={icon} variant={null} state={state} iconState={iconState} />
+          {icon.Light && (
+            <IconVariantIconButton
+              icon={icon}
+              variant="light"
+              state={state}
+              iconState={iconState}
+            />
+          )}
+          {icon.Dark && (
+            <IconVariantIconButton icon={icon} variant="dark" state={state} iconState={iconState} />
+          )}
+        </CommandItem>
+      ))}
+    </>
   )
 }
 
