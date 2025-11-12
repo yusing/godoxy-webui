@@ -6,9 +6,11 @@ import RulesEditor from '@/components/playground/RulesEditor'
 import RunButton from '@/components/playground/RunButton'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
+const wide = 'xl'
+
 export default function PlaygroundPage() {
   return (
-    <div className="w-full h-full px-4 grid grid-cols-1 xl:grid-cols-2 gap-4 py-4">
+    <div className={`w-full h-full px-4 grid grid-cols-1 ${wide}:grid-cols-2 gap-4 py-4`}>
       <div className="flex flex-col gap-4 overflow-hidden">
         <div className="flex items-center justify-between gap-4">
           <h1 className="text-2xl font-bold">Rules Playground</h1>
@@ -35,8 +37,7 @@ export default function PlaygroundPage() {
           </TabsContent>
         </Tabs>
       </div>
-
-      <div className="overflow-hidden">
+      <div className={`overflow-hidden border-t ${wide}:border-t-0 pt-4 ${wide}:pt-0`}>
         <ResultsDisplay />
       </div>
     </div>
