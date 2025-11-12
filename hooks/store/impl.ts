@@ -354,11 +354,9 @@ function produce(key: string, value: unknown, skipUpdate = false, memoryOnly = f
 
   if (value === undefined) {
     skipUpdate = current === undefined
-    console.log('delete', key)
     store.delete(key, memoryOnly)
   } else {
     if (isEqual(current, value)) return
-    console.log('set', key, value)
     store.set(key, value, memoryOnly)
   }
 
