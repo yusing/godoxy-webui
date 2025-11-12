@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import Code from '@/components/ui/code'
 import {
   Dialog,
@@ -10,22 +9,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { type AgentContainerRuntime, type NewAgentRequest, type NewAgentResponse } from '@/lib/api'
+import { useMemoryStore } from '@/hooks/store'
+import { useForm } from '@/hooks/store/form'
+import { createMixedState } from '@/hooks/store/mixed_state'
+import { type NewAgentRequest, type NewAgentResponse } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
 import { cn } from '@/lib/utils'
 import type { Config } from '@/types/godoxy'
-import { Check, Info, Plus } from 'lucide-react'
+import { Check, Plus } from 'lucide-react'
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { parse as parseYAML, stringify as stringifyYAML } from 'yaml'
 import Docker from '../svg/docker'
 import Linux from '../svg/linux'
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
+import { FieldGroup } from '../ui/field'
+import { StoreCheckboxField, StoreFormCheckboxField } from '../ui/store/Checkbox'
+import { StoreFormInputField } from '../ui/store/Input'
+import { StoreFormRadioField } from '../ui/store/Radio'
 const agentTypes = [
   {
     type: 'docker',
@@ -58,44 +59,52 @@ const minWidth = 'min-w-[120px]'
 
 export function AddAgentDialogButton() {
   const [open, setOpen] = useState(false)
-  const [copyLoading, setCopyLoading] = useState(false)
-  const [addLoading, setAddLoading] = useState(false)
+
   const form = useForm<NewAgentRequest>({
-    defaultValues: {
-      name: '',
-      host: '',
-      port: 8890,
-      nightly: false,
-      container_runtime: 'docker',
-      type: 'docker',
-    },
+    name: '',
+    host: '',
+    port: 8890,
+    nightly: false,
+    container_runtime: 'docker',
+    type: 'docker',
   })
 
-  const agentType = form.watch('type')
-  const [explicitOnly, setExplicitOnly] = useState(false)
-  const [addToConfig, setAddToConfig] = useState(true)
-  const [agent, setAgent] = useState<NewAgentResponse | null>(null)
+  const states = useMemoryStore({
+    explicitOnly: false,
+    addToConfig: true,
+    addLoading: false,
+    copyLoading: false,
+    agent: undefined as NewAgentResponse | undefined,
+  })
+
+  const buttonState = createMixedState(
+    states.copyLoading,
+    states.addLoading,
+    states.agent,
+    form.type
+  )
 
   const handleCopyCompose = (form: NewAgentRequest) => {
     const req = { ...form }
-    if (explicitOnly) {
+    if (states.explicitOnly.value) {
       req.name += '!'
     }
-    setCopyLoading(true)
+    states.copyLoading.set(true)
     api.agent
       .create(req)
       .then(async res => {
         await navigator.clipboard.writeText(res.data.compose)
         toast.success('Copied to clipboard')
-        setAgent(res.data)
+        states.agent.set(res.data)
       })
       .catch(toastError)
-      .finally(() => setCopyLoading(false))
+      .finally(() => states.copyLoading.set(false))
   }
 
   const handleAddAgent = (form: NewAgentRequest) => {
+    const agent = states.agent.value
     if (!agent) return
-    setAddLoading(true)
+    states.addLoading.set(true)
     api.agent
       .verify({
         host: `${form.host}:${form.port}`,
@@ -104,18 +113,18 @@ export function AddAgentDialogButton() {
         container_runtime: form.container_runtime ?? 'docker',
       })
       .then(async e => {
-        if (addToConfig) {
+        if (states.addToConfig.value) {
           await addAgentToConfig(form.host, form.port)
         }
         return e
       })
       .then(async res => {
-        setAgent(null)
+        states.agent.set(undefined)
         setOpen(false)
         toast.success('Agent added', { description: res.data.message })
       })
       .catch(toastError)
-      .finally(() => setAddLoading(false))
+      .finally(() => states.addLoading.set(false))
   }
 
   return (
@@ -130,190 +139,115 @@ export function AddAgentDialogButton() {
         <DialogHeader>
           <div className="flex flex-col gap-2">
             <DialogTitle>Add New Agent</DialogTitle>
-            <div className="grid grid-cols-2 mt-2 border rounded-md">
-              {agentTypes.map(({ type, label, icon }) => (
-                <button
-                  key={type}
-                  type="button"
-                  className={cn('px-3 py-1.5 flex items-center justify-between', {
-                    'bg-accent/50 text-accent-foreground ring-1 rounded-md': type === agentType,
-                  })}
-                  onClick={() => form.setValue('type', type as NewAgentRequest['type'])}
-                >
-                  <div className="flex items-center gap-2">
-                    {icon}
-                    {label}
+            <form.type.Render>
+              {(agentType, setAgentType) => (
+                <>
+                  <div className="grid grid-cols-2 mt-2 border rounded-md">
+                    {agentTypes.map(({ type, label, icon }) => (
+                      <button
+                        key={type}
+                        type="button"
+                        className={cn('px-3 py-1.5 flex items-center justify-between', {
+                          'bg-accent/50 text-accent-foreground ring-1 rounded-md':
+                            type === agentType,
+                        })}
+                        onClick={() => setAgentType(type as NewAgentRequest['type'])}
+                      >
+                        <div className="flex items-center gap-2">
+                          {icon}
+                          {label}
+                        </div>
+                        {type === agentType && <Check className="size-4" />}
+                      </button>
+                    ))}
                   </div>
-                  {type === agentType && <Check className="size-4" />}
-                </button>
-              ))}
-            </div>
-            <DialogDescription>
-              The agent must be running on the system to connect.
-              <br /> Copy the {agentType === 'docker' ? (
-                <Code>compose.yml</Code>
-              ) : (
-                'shell command'
-              )}{' '}
-              below to add the agent to the system.
-            </DialogDescription>
+                  <DialogDescription>
+                    The agent must be running on the system to connect.
+                    <br /> Copy the{' '}
+                    {agentType === 'docker' ? <Code>compose.yml</Code> : 'shell command'} below to
+                    add the agent to the system.
+                  </DialogDescription>
+                </>
+              )}
+            </form.type.Render>
           </div>
         </DialogHeader>
-        <Form {...form}>
-          <div className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem className="flex items-center gap-3">
-                  <FormLabel className={minWidth}>Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
+        <FieldGroup className="gap-4">
+          <StoreFormInputField
+            state={form.name}
+            orientation="horizontal"
+            labelProps={{ className: minWidth }}
+          />
+          <StoreFormInputField
+            state={form.host}
+            title="Host / IP"
+            orientation="horizontal"
+            labelProps={{ className: minWidth }}
+          />
+          <StoreFormInputField
+            state={form.port}
+            type="number"
+            orientation="horizontal"
+            labelProps={{ className: minWidth }}
+          />
+          <StoreFormRadioField
+            state={form.container_runtime}
+            title="Runtime"
+            orientation="horizontal"
+            options={['docker', 'podman']}
+            labelProps={{ className: minWidth }}
+          />
+          <StoreCheckboxField
+            state={states.addToConfig}
+            title="Add to Config"
+            description={
+              <>
+                Add agent to <Code>config.yml</Code> under <Code>providers.agents</Code>
+                <br /> This will remove all comments from the config file
+              </>
+            }
+            labelProps={{ className: minWidth }}
+          />
+          <StoreCheckboxField
+            state={states.explicitOnly}
+            title="Explicit Only"
+            description={
+              <>
+                Only containers with GoDoxy labels <Code>proxy.*</Code> will be proxied
+              </>
+            }
+            labelProps={{ className: minWidth }}
+          />
+          <form.type.Show on={type => type === 'docker'}>
+            <StoreFormCheckboxField
+              state={form.nightly}
+              title="Nightly"
+              description="Nightly builds are less stable and may contain bugs"
+              labelProps={{ className: minWidth }}
             />
-            <FormField
-              control={form.control}
-              name="host"
-              render={({ field }) => (
-                <FormItem className="flex items-center gap-3">
-                  <FormLabel className={minWidth}>Host / IP</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="port"
-              render={({ field }) => (
-                <FormItem className="flex items-center gap-3">
-                  <FormLabel className={minWidth}>Port</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      {...field}
-                      onChange={e => field.onChange(+e.target.value)}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="container_runtime"
-              render={({ field }) => (
-                <FormItem className="flex items-center gap-3">
-                  <FormLabel className={minWidth}>Runtime</FormLabel>
-                  <FormControl>
-                    <RadioGroup
-                      value={field.value ?? 'docker'}
-                      onValueChange={e => field.onChange(e as AgentContainerRuntime)}
-                      className="grid-cols-3 w-full"
-                    >
-                      <FormItem className="flex items-center gap-3">
-                        <FormControl>
-                          <RadioGroupItem value="docker" />
-                        </FormControl>
-                        <FormLabel className={minWidth}>Docker</FormLabel>
-                      </FormItem>
-                      <FormItem className="flex items-center gap-3">
-                        <FormControl>
-                          <RadioGroupItem value="podman" />
-                        </FormControl>
-                        <FormLabel className={minWidth}>Podman</FormLabel>
-                      </FormItem>
-                      {/* <FormItem className="flex items-center gap-3">
-                        <FormControl>
-                          <RadioGroupItem value="nerdctl" disabled={agentType !== 'system'} />
-                        </FormControl>
-                        <FormLabel className={minWidth}>Nerdctl</FormLabel>
-                      </FormItem> */}
-                    </RadioGroup>
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            <div className="flex items-center gap-3">
-              <FormLabel className={minWidth}>
-                Add to Config
-                <ToggleTip>
-                  Add agent to <Code>config.yml</Code> under <Code>providers.agents</Code>
-                  <br /> This will remove all comments from the config file
-                </ToggleTip>
-              </FormLabel>
-              <FormControl>
-                <Checkbox
-                  checked={addToConfig}
-                  onCheckedChange={checked => setAddToConfig(checked === true)}
-                />
-              </FormControl>
-            </div>
-            <div className="flex items-center gap-3">
-              <FormLabel className={cn(minWidth)}>
-                Explicit Only
-                <ToggleTip>
-                  When enabled, only containers with GoDoxy labels <Code>proxy.*</Code> will be
-                  proxied
-                </ToggleTip>
-              </FormLabel>
-              <FormControl>
-                <Checkbox
-                  checked={explicitOnly}
-                  onCheckedChange={checked => setExplicitOnly(checked === true)}
-                />
-              </FormControl>
-            </div>
-            {agentType === 'docker' && (
-              <FormField
-                control={form.control}
-                name="nightly"
-                render={({ field }) => (
-                  <FormItem className="flex items-center gap-3">
-                    <FormLabel className={minWidth}>
-                      Nightly
-                      <ToggleTip>Nightly builds are less stable and may contain bugs</ToggleTip>
-                    </FormLabel>
-                    <FormControl>
-                      <Checkbox
-                        checked={!!field.value}
-                        onCheckedChange={checked => field.onChange(checked === true)}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-            )}
-          </div>
-        </Form>
+          </form.type.Show>
+        </FieldGroup>
         <DialogFooter>
-          <Button
-            variant={'ghost'}
-            disabled={copyLoading}
-            onClick={form.handleSubmit(handleCopyCompose)}
-          >
-            {copyLoading
-              ? 'Creating certificates…'
-              : `Copy ${agentType === 'docker' ? 'docker compose' : 'shell command'}`}
-          </Button>
-          <Button disabled={!agent || addLoading} onClick={form.handleSubmit(handleAddAgent)}>
-            {addLoading ? 'Adding…' : 'Add Agent'}
-          </Button>
+          <buttonState.Render>
+            {([copyLoading, addLoading, agent, type]) => (
+              <>
+                <Button
+                  variant={'ghost'}
+                  disabled={copyLoading}
+                  onClick={form.handleSubmit(handleCopyCompose)}
+                >
+                  {copyLoading
+                    ? 'Creating certificates…'
+                    : `Copy ${type === 'docker' ? 'docker compose' : 'shell command'}`}
+                </Button>
+                <Button disabled={!agent || addLoading} onClick={form.handleSubmit(handleAddAgent)}>
+                  {addLoading ? 'Adding…' : 'Add Agent'}
+                </Button>
+              </>
+            )}
+          </buttonState.Render>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
-}
-
-function ToggleTip({ className, children }: { className?: string; children: React.ReactNode }) {
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Info className={cn('size-4 m-0.5 ml-auto', className)} />
-      </TooltipTrigger>
-      <TooltipContent>{children}</TooltipContent>
-    </Tooltip>
   )
 }

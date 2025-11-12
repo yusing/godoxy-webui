@@ -3,6 +3,7 @@
 import type { DiskUsageStat, SensorsTemperatureStat, SystemInfo } from '@/lib/api'
 import { formatBytes, formatShortTime, formatTemperature } from '@/lib/format'
 import { cn } from '@/lib/utils'
+import type { FieldPath, FieldPathValue } from '@/types/path'
 import {
   Activity,
   ArrowDown,
@@ -13,7 +14,6 @@ import {
   LucideHardDrive,
 } from 'lucide-react'
 import { useMemo, type ElementType } from 'react'
-import type { FieldPath, FieldPathValue } from 'react-hook-form'
 import { Label } from '../ui/label'
 import { RadioGroup, RadioGroupField } from '../ui/radio-group'
 import { Skeleton } from '../ui/skeleton'
@@ -25,7 +25,7 @@ export default function ServersSidebar() {
 
   return (
     <div className="content scrollbar-hidden flex flex-col w-full md:w-[600px] md:max-w-[35vw] lg:max-w-[50vw] border">
-      <div className="sticky top-0 z-10 px-4 py-3 flex items-center justify-between backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="sticky top-0 z-10 px-4 py-3 flex items-center justify-between backdrop-blur supports-backdrop-filter:bg-background/60">
         <Label className="text-sm">Servers</Label>
         <div className="flex items-center gap-2">
           <Label className="text-xs md:text-sm text-muted-foreground">Temperature Unit</Label>

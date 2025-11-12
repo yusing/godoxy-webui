@@ -1,38 +1,37 @@
 import { NamedListInput } from '@/components/form/NamedListInput'
 import { Button, type buttonVariants } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldLegend,
+  FieldSeparator,
+  FieldSet,
+} from '@/components/ui/field'
+import { StoreFormCheckboxField } from '@/components/ui/store/Checkbox'
+import { StoreFormInputField, StoreInputField } from '@/components/ui/store/Input'
+import { StoreFormSelectField } from '@/components/ui/store/Select'
+import { useForm, type FormState, type FormStore } from '@/hooks/store/form'
 import { api } from '@/lib/api-client'
-import { toastError } from '@/lib/toast'
-import { cn } from '@/lib/utils'
 import { MiddlewareComposeSchema, type Routes } from '@/types/godoxy'
 import type { EntrypointMiddlewares } from '@/types/godoxy/middlewares/middleware_compose'
 import type { MiddlewaresMap } from '@/types/godoxy/middlewares/middlewares'
 import { LOAD_BALANCE_MODES } from '@/types/godoxy/providers/loadbalance'
-import type { SelectProps } from '@radix-ui/react-select'
+import type { StreamPort } from '@/types/godoxy/types'
 import type { VariantProps } from 'class-variance-authority'
 import { ChevronDown, Save, X, type LucideIcon } from 'lucide-react'
 import { useCallback, useEffect, useMemo } from 'react'
-import { useForm, type UseFormReturn } from 'react-hook-form'
 import { useAsync } from 'react-use'
 import { middlewareUseToSnakeCase } from '../middleware_compose/utils'
-import RouteIcon from './RouteIcon'
 import * as utils from './utils'
 
 type RouteEditFormProps = {
   route: Routes.Route
   alias: string
-  onCancel: (form: UseFormReturn<Routes.Route>) => void
+  onCancel: (form: FormStore<Routes.Route>) => void
+  onUpdate?: (route: Routes.Route) => void
   onSave: (route: Routes.Route) => void
   headerText?: string
   saveButtonIcon?: LucideIcon
@@ -43,10 +42,21 @@ type RouteEditFormProps = {
   cancelButtonClassName?: string
 }
 
+function isStream(scheme: string | undefined) {
+  if (scheme === undefined) return false // defaults to http
+  return scheme === 'tcp' || scheme === 'udp'
+}
+
+function isHTTP(scheme: string | undefined) {
+  if (scheme === undefined) return true // defaults to http
+  return scheme === 'http' || scheme === 'https'
+}
+
 export default function RouteEditForm({
   route,
   alias,
   onCancel,
+  onUpdate,
   onSave,
   headerText = 'Edit Route',
   saveButtonIcon = Save,
@@ -56,367 +66,245 @@ export default function RouteEditForm({
   cancelButtonVariant = 'ghost',
   cancelButtonClassName,
 }: RouteEditFormProps) {
-  const form = useForm<Routes.Route>({
-    defaultValues: {
+  const form = useForm<Routes.Route>(
+    {
       ...route,
       alias: alias,
-      // @ts-expect-error intended
-      scheme: 'scheme' in route ? route.scheme : 'http',
+      scheme: route.scheme || 'http',
       host: 'host' in route ? route.host : 'localhost',
+      // @ts-expect-error intended
       port: 'port' in route ? route.port : 3000,
     },
-  })
+    {
+      alias: {
+        validate: value => {
+          if (!value) return 'Alias is required'
+          return undefined
+        },
+      },
+    }
+  )
 
-  const scheme = form.watch('scheme')
-  const isStream = scheme === 'tcp' || scheme === 'udp'
+  /* For type safety, we need to cast the form to the specific type */
+  const streamForm = form as FormStore<Routes.StreamRoute>
+  const fsForm = form as unknown as FormStore<Routes.FileServerRoute>
+
+  if (onUpdate) {
+    form.subscribe(onUpdate)
+  }
+
+  // const scheme = form.watch('scheme')
+  // const isStream = scheme === 'tcp' || scheme === 'udp'
   const SaveButtonIcon = saveButtonIcon
   const CancelButtonIcon = cancelButtonIcon
 
   return (
-    <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(values => {
-          onSave(values)
-          form.reset()
-        })}
-        className="space-y-4"
-      >
-        {/* Header with save/cancel buttons */}
-        <div className="flex items-center justify-between gap-4 px-0.5">
-          <h3 className="text-lg font-semibold">{headerText}</h3>
-          <div className="flex gap-2">
-            <Button type="submit" size="sm">
-              <SaveButtonIcon className="size-4" />
-              {saveButtonText}
-            </Button>
-            <Button
-              type="button"
-              variant={cancelButtonVariant}
-              size="sm"
-              onClick={() => onCancel(form)}
-              className={cancelButtonClassName}
-            >
-              <CancelButtonIcon className="size-4" />
-              {cancelButtonText}
-            </Button>
-          </div>
+    <form
+      onSubmit={form.handleSubmit(values => {
+        onSave(values)
+        form.reset()
+      })}
+      className="space-y-4"
+    >
+      {/* Header with save/cancel buttons */}
+      <div className="flex items-center justify-between gap-4 px-0.5">
+        <h3 className="text-lg font-semibold">{headerText}</h3>
+        <div className="flex gap-2">
+          <Button type="submit" size="sm">
+            <SaveButtonIcon className="size-4" />
+            {saveButtonText}
+          </Button>
+          <Button
+            type="button"
+            variant={cancelButtonVariant}
+            size="sm"
+            onClick={() => onCancel(form)}
+            className={cancelButtonClassName}
+          >
+            <CancelButtonIcon className="size-4" />
+            {cancelButtonText}
+          </Button>
         </div>
+      </div>
 
-        {/* Route Type */}
-        <FormField
-          control={form.control}
-          name="scheme"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Route Type</FormLabel>
-              <Select value={field.value ?? 'http'} onValueChange={field.onChange}>
-                <FormControl>
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {utils.routeSchemes.map(({ value, label, description }) => (
-                    <SelectItem key={value} value={value}>
-                      <div className="flex items-center gap-2">
-                        <RouteIcon scheme={value} className="size-4" />
-                        <div className="flex flex-col items-start">
-                          <div className="font-medium">{label}</div>
-                          <div className="text-xs text-muted-foreground">{description}</div>
-                        </div>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </FormItem>
-          )}
-        />
+      {/* Route Type */}
+      <StoreFormSelectField defaultValue="http" state={form.scheme} options={utils.routeSchemes} />
 
-        {/* Alias */}
-        <div className="space-y-2">
-          <FormLabel>
-            Alias <span className="text-destructive">*</span>
-          </FormLabel>
-          <Input
-            id="alias"
-            placeholder="app or app.example.com"
-            {...form.register('alias', { required: 'Alias is required' })}
-          />
-          {form.formState.errors.alias && (
-            <p className="text-destructive text-sm">{form.formState.errors.alias.message}</p>
-          )}
-        </div>
+      {/* Alias */}
+      <StoreFormInputField
+        state={form.alias}
+        title="Alias"
+        required
+        placeholder="app or app.example.com"
+      />
 
-        {/* Host and Port */}
-        {scheme !== 'fileserver' && (
-          <div className={cn('grid grid-cols-2 gap-4', isStream && 'grid-cols-3')}>
-            <div className="space-y-2">
-              <FormLabel>Host</FormLabel>
-              <Input id="host" placeholder="localhost" {...form.register('host')} />
-            </div>
+      {/* Host and Port */}
+      <form.scheme.Show on={scheme => scheme !== 'fileserver'}>
+        <FieldSet className="flex-row">
+          <StoreFormInputField state={streamForm.host} title="Host" placeholder="localhost" />
 
-            {isStream && (
-              <FormField
-                control={form.control}
-                name="port"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Listen Port</FormLabel>
-                    <Input
-                      id="listen_port"
+          <form.scheme.Render>
+            {scheme => {
+              return (
+                <>
+                  {/** Listening Port */}
+                  {isStream(scheme) && (
+                    <StoreInputField
+                      state={streamForm.port.derived({
+                        from: v => utils.getListeningPort(v ?? 0),
+                        to: v =>
+                          `${v}:${utils.getProxyPort(streamForm.port.value ?? 0)}` as StreamPort,
+                      })}
+                      title="Listen Port"
                       placeholder="tcp"
-                      value={utils.getListeningPort(field.value ?? 0)}
-                      onChange={e => {
-                        field.onChange(`${e.target.value}:${utils.getProxyPort(field.value ?? 0)}`)
-                      }}
+                      type="number"
+                      min={0} // 0 means random port
+                      max={65535}
                     />
-                  </FormItem>
-                )}
-              ></FormField>
-            )}
-            <FormField
-              control={form.control}
-              name="port"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Proxy Port</FormLabel>
-                  <Input
-                    id="proxy_port"
+                  )}
+                  {/** Proxy Port */}
+                  <StoreInputField
+                    state={streamForm.port.derived({
+                      from: v => utils.getProxyPort(v ?? 0),
+                      to: v => {
+                        if (!isStream(scheme)) {
+                          return v as StreamPort
+                        }
+                        return `${utils.getListeningPort(streamForm.port.value ?? 0)}:${v}` as StreamPort
+                      },
+                    })}
+                    title="Proxy Port"
                     placeholder="3000"
-                    value={utils.getProxyPort(field.value ?? 0)}
-                    onChange={e => {
-                      field.onChange(
-                        `${utils.getListeningPort(field.value ?? 0)}:${e.target.value}`
-                      )
-                    }}
+                    type="number"
+                    min={1} // proxy port cannot be 0
+                    max={65535}
                   />
-                </FormItem>
-              )}
-            />
-          </div>
-        )}
+                </>
+              )
+            }}
+          </form.scheme.Render>
+        </FieldSet>
+      </form.scheme.Show>
 
-        {/* Root */}
-        {scheme === 'fileserver' && (
-          <div className="space-y-2">
-            <FormLabel>Root</FormLabel>
-            <Input id="root" placeholder="/path/to/files" {...form.register('root')} />
-          </div>
-        )}
+      {/* Root */}
+      <form.scheme.Show on={scheme => scheme === 'fileserver'}>
+        <StoreFormInputField
+          state={fsForm.root}
+          title="Root"
+          placeholder="/path/to/files"
+          required
+        />
+      </form.scheme.Show>
 
-        {/* Advanced Options */}
-        <AdvancedOptions form={form} />
-      </form>
-    </Form>
+      {/* Advanced Options */}
+      <AdvancedOptions form={form} />
+    </form>
   )
 }
 
-function AdvancedOptions({ form }: { form: UseFormReturn<Routes.Route> }) {
-  const scheme = form.watch('scheme')
-  const isHTTP = scheme === 'http' || scheme === 'https'
+function AdvancedOptions({ form }: { form: FormStore<Routes.Route> }) {
+  const rpForm = form as FormStore<Routes.ReverseProxyRoute>
+
   return (
     <Collapsible defaultOpen>
       <CollapsibleTrigger asChild>
         <Button
           type="button"
-          variant="ghost"
-          className="w-full justify-between p-2 h-auto text-muted-foreground"
+          variant="outline"
+          className="w-full justify-start text-muted-foreground"
         >
-          <span>Advanced Options</span>
           <ChevronDown className="size-4" />
+          <span>Advanced Options</span>
         </Button>
       </CollapsibleTrigger>
-      <CollapsibleContent className="mt-4 space-y-4">
-        <FormField
-          control={form.control}
-          name="agent"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Agent</FormLabel>
-              <AgentSelect {...field} />
-            </FormItem>
-          )}
-        />
+      <CollapsibleContent className="mt-4 flex flex-col gap-4">
+        <form.scheme.Show on={scheme => isHTTP(scheme)}>
+          <FieldSet>
+            <FieldLegend variant="label">HTTP Config</FieldLegend>
+            <FieldDescription>Configure HTTP-specific settings</FieldDescription>
+            <FieldGroup className="gap-4">
+              <AgentSelect state={form.agent} />
 
-        {/* No TLS Verify - for HTTPS proxy */}
-        {scheme === 'https' && (
-          <FormField
-            control={form.control}
-            name="no_tls_verify"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-sm font-medium">No TLS Verify</FormLabel>
-                    <p className="text-xs text-muted-foreground">
-                      Skip TLS certificate verification
-                    </p>
-                  </div>
-                  <Checkbox
-                    id="no_tls_verify"
-                    checked={field.value ?? false}
-                    onCheckedChange={field.onChange}
-                    className="ml-4"
-                  />
-                </div>
-              </FormItem>
-            )}
-          />
-        )}
-
-        {/* Response Header Timeout - for HTTP/HTTPS proxy */}
-        {isHTTP && (
-          <FormField
-            control={form.control}
-            name="response_header_timeout"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Response Header Timeout</FormLabel>
-                <Input
-                  id="response_header_timeout"
-                  placeholder="60s"
-                  value={field.value ?? ''}
-                  onChange={field.onChange}
+              {/* No TLS Verify - for HTTPS proxy */}
+              <form.scheme.Show on={scheme => scheme === 'https'}>
+                <StoreFormCheckboxField
+                  state={rpForm.no_tls_verify}
+                  title="No TLS Verify"
+                  description="Skip TLS certificate verification"
                 />
-                <p className="text-xs text-muted-foreground">Duration format: 30s, 5m, 1h, etc.</p>
-              </FormItem>
-            )}
-          />
-        )}
+              </form.scheme.Show>
+
+              {/* Response Header Timeout - for HTTP/HTTPS proxy */}
+              <StoreFormInputField
+                state={rpForm.response_header_timeout}
+                title="Response Header Timeout"
+                placeholder="60s"
+                description="Duration format: 30s, 5m, 1h, etc."
+              />
+            </FieldGroup>
+          </FieldSet>
+        </form.scheme.Show>
 
         {/* Healthcheck - for all route types */}
-        <FormField
-          control={form.control}
-          name="healthcheck"
-          render={({ field }) => (
-            <FormItem>
-              <Label>Healthcheck</Label>
-              <div className="space-y-2 border rounded-md p-3">
-                <div className="flex items-center gap-2">
-                  <FormLabel className="text-sm">Disable</FormLabel>
-                  <Checkbox
-                    id="healthcheck_disable"
-                    checked={field.value?.disable ?? false}
-                    onCheckedChange={checked =>
-                      field.onChange({ ...field.value, disable: checked })
-                    }
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Input
-                    placeholder="/"
-                    value={field.value?.path ?? ''}
-                    onChange={e => field.onChange({ ...field.value, path: e.target.value })}
-                    disabled={field.value?.disable}
-                  />
-                  <p className="text-xs text-muted-foreground">Path</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <FormLabel className="text-sm">Use GET</FormLabel>
-                  <Checkbox
-                    id="healthcheck_use_get"
-                    checked={field.value?.use_get ?? false}
-                    onCheckedChange={checked =>
-                      field.onChange({ ...field.value, use_get: checked })
-                    }
-                    disabled={field.value?.disable}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-1">
-                    <Input
-                      placeholder="5s"
-                      value={field.value?.interval ?? ''}
-                      onChange={e => field.onChange({ ...field.value, interval: e.target.value })}
-                      disabled={field.value?.disable}
-                    />
-                    <p className="text-xs text-muted-foreground">Interval</p>
-                  </div>
-                  <div className="space-y-1">
-                    <Input
-                      placeholder="5s"
-                      value={field.value?.timeout ?? ''}
-                      onChange={e => field.onChange({ ...field.value, timeout: e.target.value })}
-                      disabled={field.value?.disable}
-                    />
-                    <p className="text-xs text-muted-foreground">Timeout</p>
-                  </div>
-                </div>
-              </div>
-            </FormItem>
-          )}
-        />
+        <FieldSeparator />
+        <FieldSet>
+          <FieldLegend variant="label">Healthcheck</FieldLegend>
+          <FieldDescription>Monitor the health of the route</FieldDescription>
+          <FieldGroup className="gap-4">
+            <StoreFormCheckboxField state={form.healthcheck.disable} title="Disable" />
+            <StoreFormInputField state={form.healthcheck.path} title="Path" placeholder="/" />
+            <StoreFormCheckboxField state={form.healthcheck.use_get} title="Use GET" />
+            <StoreFormInputField
+              state={form.healthcheck.interval}
+              title="Interval"
+              placeholder="5s"
+            />
+            <StoreFormInputField
+              state={form.healthcheck.timeout}
+              title="Timeout"
+              placeholder="5s"
+            />
+          </FieldGroup>
+        </FieldSet>
 
         {/* Load Balance - for HTTP/HTTPS proxy */}
-        {isHTTP && (
-          <FormItem>
-            <FormLabel>Load Balance</FormLabel>
-            <div className="space-y-4 border rounded-md p-3">
-              <FormField
-                control={form.control}
-                name="load_balance.mode"
-                render={({ field: modeField }) => (
-                  <FormItem>
-                    <FormLabel>Mode</FormLabel>
-                    <Select value={modeField.value ?? ''} onValueChange={modeField.onChange}>
-                      <FormControl>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select load balance mode" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {LOAD_BALANCE_MODES.map(mode => (
-                          <SelectItem key={mode} value={mode}>
-                            {mode.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
+        <form.scheme.Show on={scheme => isHTTP(scheme)}>
+          <FieldSeparator />
+          <FieldSet>
+            <FieldLegend variant="label">Load Balance</FieldLegend>
+            <FieldDescription>Route requests to multiple upstreams</FieldDescription>
+            <FieldGroup className="gap-4">
+              <StoreFormSelectField
+                state={rpForm.load_balance.mode}
+                title="Mode"
+                defaultValue="round_robin"
+                placeholder="Round Robin"
+                options={LOAD_BALANCE_MODES.map(mode => ({
+                  value: mode,
+                  label: mode.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                }))}
               />
-              <FormField
-                control={form.control}
-                name="load_balance.link"
-                render={({ field: linkField }) => (
-                  <FormItem>
-                    <FormLabel>Route Link</FormLabel>
-                    <FormControl>
-                      <Input placeholder="route-alias" {...linkField} />
-                    </FormControl>
-                  </FormItem>
-                )}
+              <StoreFormInputField
+                state={rpForm.load_balance.link}
+                title="Route Link"
+                placeholder="route-alias"
               />
-            </div>
-          </FormItem>
-        )}
+            </FieldGroup>
+          </FieldSet>
+        </form.scheme.Show>
 
         {/* Middleware */}
-        {isHTTP && (
-          <FormField
-            control={form.control}
-            name="middlewares"
-            render={({ field }) => (
-              <RouteMiddlewareEditor
-                onChange={field.onChange}
-                value={field.value ?? ({} as MiddlewaresMap)}
-              />
-            )}
-          />
-        )}
+        <form.scheme.Show on={scheme => isHTTP(scheme)}>
+          <RouteMiddlewareEditor state={rpForm.middlewares} />
+        </form.scheme.Show>
       </CollapsibleContent>
     </Collapsible>
   )
 }
 
-function RouteMiddlewareEditor({
-  onChange,
-  value,
-}: {
-  onChange: (value: MiddlewaresMap) => void
-  value: MiddlewaresMap
-}) {
+function RouteMiddlewareEditor({ state }: { state: FormState<MiddlewaresMap | undefined> }) {
+  const [value, setValue] = state.useState()
+
   const workingValue: EntrypointMiddlewares = useMemo(() => {
     if (!value) return []
     return Object.entries(value).map(([key, value]) => ({
@@ -427,7 +315,7 @@ function RouteMiddlewareEditor({
 
   const onChangeMiddleware = useCallback(
     (data: EntrypointMiddlewares) => {
-      onChange(
+      setValue(
         data.reduce((acc, item) => {
           // @ts-expect-error intended
           acc[item.use] = item
@@ -437,12 +325,12 @@ function RouteMiddlewareEditor({
         }, {} as MiddlewaresMap)
       )
     },
-    [onChange]
+    [setValue]
   )
 
   return (
-    <FormItem>
-      <FormLabel>Middlewares</FormLabel>
+    <Field>
+      <FieldLabel>Middlewares</FieldLabel>
       <NamedListInput
         label=""
         card={false}
@@ -452,15 +340,11 @@ function RouteMiddlewareEditor({
         value={workingValue}
         onChange={onChangeMiddleware}
       />
-    </FormItem>
+    </Field>
   )
 }
 
-function AgentSelect({
-  onChange,
-  value,
-  ...props
-}: SelectProps & { onChange?: (value: string) => void; value?: string }) {
+function AgentSelect({ state }: { state: FormState<string | undefined> }) {
   const {
     value: agentList,
     error,
@@ -469,42 +353,48 @@ function AgentSelect({
 
   useEffect(() => {
     if (error) {
-      toastError(error)
+      state.setError(error.message)
     }
-  }, [error])
+  }, [error, state])
 
   return (
-    <div className="flex items-center gap-2">
-      <Select onValueChange={onChange} value={value} {...props}>
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder={loading ? 'Loading...' : 'Select Agent'} />
-        </SelectTrigger>
-        <SelectContent>
-          {agentList?.map(agent => (
-            <SelectItem key={agent.addr} value={agent.addr}>
+    <div className="flex items-end gap-2">
+      <StoreFormSelectField
+        state={state}
+        placeholder={loading ? 'Loading...' : 'Select Agent'}
+        options={(agentList ?? []).map(agent => ({
+          value: agent.addr,
+          label: (
+            <div className="flex flex-col">
               <span className="font-medium">
                 {agent.name}@{agent.addr}
               </span>
-              <span className="text-xs text-muted-foreground">
-                <span className="font-semibold">Version:</span> {agent.version}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                <span className="font-semibold">Runtime:</span> {agent.runtime}
-              </span>
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        className="shrink-0"
-        onClick={() => onChange?.('')}
-        disabled={!value}
-      >
-        <X className="size-4" />
-      </Button>
+              <div className="flex gap-1">
+                <span className="text-xs text-muted-foreground">
+                  <span className="font-semibold">Version:</span> {agent.version}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  <span className="font-semibold">Runtime:</span> {agent.runtime}
+                </span>
+              </div>
+            </div>
+          ),
+        }))}
+      />
+      <state.Render>
+        {(value, setValue) => (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="shrink-0"
+            onClick={() => setValue(undefined)}
+            disabled={!value}
+          >
+            <X className="size-4" />
+          </Button>
+        )}
+      </state.Render>
     </div>
   )
 }

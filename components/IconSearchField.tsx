@@ -1,7 +1,8 @@
+import { useMemoryStore, type FormState, type MemoryStore } from '@/hooks/store'
 import type { HomepageIconMetaSearch } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { useDebounce } from '@uidotdev/usehooks'
-import { useEffect, useMemo, useState, type Dispatch, type SetStateAction } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useAsync } from 'react-use'
 import { AppIcon } from './AppIcon'
 import LoadingRing from './LoadingRing'
@@ -23,9 +24,8 @@ function asSearchValue(fullValue: string) {
 }
 
 type IconSearchFieldProps = {
+  state: FormState<string>
   className?: string
-  value: string
-  onChange: (value: string) => void
 }
 
 type IconSearchFieldState = {
@@ -34,22 +34,27 @@ type IconSearchFieldState = {
   variant: 'dark' | 'light' | null
 }
 
-export default function IconSearchField({ value, onChange, className }: IconSearchFieldProps) {
-  const [state, setState] = useState<IconSearchFieldState>({
-    searchValue: asSearchValue(value),
+function getDisplayValue(state: IconSearchFieldState) {
+  if (!state.currentIcon) return state.searchValue
+  if (!state.variant) return iconURL(state.currentIcon)
+  return iconURLVariant(state.currentIcon, state.variant)
+}
+
+export default function IconSearchField({ state: iconState, className }: IconSearchFieldProps) {
+  const state = useMemoryStore<IconSearchFieldState>({
+    searchValue: asSearchValue(iconState.value),
     currentIcon: null,
     variant: null,
   })
-  const { searchValue, currentIcon, variant } = state
 
-  const debouncedSearchValue = useDebounce(searchValue, 300)
+  const debouncedSearchValue = useDebounce(state.searchValue.value, 300)
   useEffect(() => {
     // Propagate only the debounced value to parent so external consumers
     // don't trigger requests on every keystroke.
     if (debouncedSearchValue !== undefined) {
-      onChange(debouncedSearchValue)
+      iconState.set(debouncedSearchValue)
     }
-  }, [debouncedSearchValue, onChange])
+  }, [debouncedSearchValue, iconState])
 
   const {
     value: icons,
@@ -60,26 +65,27 @@ export default function IconSearchField({ value, onChange, className }: IconSear
     [debouncedSearchValue]
   )
 
-  const inputValue = useMemo(() => {
-    if (!currentIcon) return searchValue
-    if (!variant) return iconURL(currentIcon)
-    return iconURLVariant(currentIcon, variant)
-  }, [currentIcon, variant, searchValue])
-
   return (
     <Command shouldFilter={false}>
-      <CommandInput
-        placeholder="Search icons... or paste an image URL"
-        value={inputValue}
-        readOnly={loading}
-        onValueChange={v => {
-          setState({
-            searchValue: v,
-            currentIcon: null,
-            variant: null,
-          })
+      <state.Render>
+        {(value, setValue) => {
+          const inputValue = getDisplayValue(value)
+          return (
+            <CommandInput
+              placeholder="Search icons... or paste an image URL"
+              value={inputValue}
+              readOnly={loading}
+              onValueChange={v => {
+                setValue({
+                  searchValue: v,
+                  currentIcon: null,
+                  variant: null,
+                })
+              }}
+            />
+          )
         }}
-      />
+      </state.Render>
       <CommandList className={className}>
         <CommandEmpty>
           {loading ? (
@@ -101,37 +107,32 @@ export default function IconSearchField({ value, onChange, className }: IconSear
             <span className="text-xs text-muted-foreground shrink-0">{icon.Source}</span>
             <button
               onClick={() => {
-                setState({
+                state.set({
                   searchValue: icon.Ref,
                   currentIcon: icon,
                   variant: null,
                 })
-                onChange(iconURL(icon))
+                iconState.set(iconURL(icon))
               }}
               className="text-left"
             >
               {icon.Ref}
             </button>
-            <IconVariantIconButton
-              icon={icon}
-              variant={null}
-              setState={setState}
-              onChange={onChange}
-            />
+            <IconVariantIconButton icon={icon} variant={null} state={state} iconState={iconState} />
             {icon.Light && (
               <IconVariantIconButton
                 icon={icon}
                 variant="light"
-                setState={setState}
-                onChange={onChange}
+                state={state}
+                iconState={iconState}
               />
             )}
             {icon.Dark && (
               <IconVariantIconButton
                 icon={icon}
                 variant="dark"
-                setState={setState}
-                onChange={onChange}
+                state={state}
+                iconState={iconState}
               />
             )}
           </CommandItem>
@@ -144,13 +145,13 @@ export default function IconSearchField({ value, onChange, className }: IconSear
 function IconVariantIconButton({
   icon,
   variant,
-  setState,
-  onChange,
+  state,
+  iconState,
 }: {
   icon: HomepageIconMetaSearch
   variant: IconSearchFieldState['variant']
-  setState: Dispatch<SetStateAction<IconSearchFieldState>>
-  onChange: (value: string) => void
+  state: MemoryStore<IconSearchFieldState>
+  iconState: FormState<string>
 }) {
   const url = useMemo(() => {
     if (!variant) return iconURL(icon)
@@ -161,12 +162,12 @@ function IconVariantIconButton({
     <button
       type="button"
       onClick={() => {
-        setState(prev => ({
+        state.set(prev => ({
           searchValue: prev.searchValue,
           currentIcon: icon,
           variant: variant,
         }))
-        onChange(url)
+        iconState.set(url)
       }}
     >
       <AppIcon size={28} url={url} />
