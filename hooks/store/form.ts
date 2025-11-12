@@ -2,11 +2,13 @@
 'use client'
 
 import type { FieldPath, FieldPathValue, FieldValues } from '@/types/path'
+import { pascalCase } from 'change-case'
 import { useId } from 'react'
 import { getSnapshot, produce } from './impl'
 import { createNode } from './node'
 import { createStoreRoot } from './root'
 import type { ArrayProxy, State, StoreRoot } from './types'
+
 export {
   useForm,
   type CreateFormOptions,
@@ -16,8 +18,6 @@ export {
   type FormState,
   type FormStore,
 }
-
-import { pascalCase } from 'change-case'
 
 type FormCommon = {
   /** Subscribe and read the error at path. Re-renders when the error changes. */
