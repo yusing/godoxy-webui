@@ -1,7 +1,7 @@
 'use client'
 
 import type { State } from '@/hooks/store/types'
-import { pascalCase } from 'change-case'
+import { capitalCase } from 'change-case'
 import { useMemo } from 'react'
 import type { Option, Options, Stringable } from './types'
 
@@ -15,7 +15,7 @@ function useIdTitle<T>({
   title?: string
 }) {
   const fieldId = useMemo(() => id ?? state.field, [id, state.field])
-  const fieldTitle = useMemo(() => (title ? title : pascalCase(fieldId)), [title, fieldId])
+  const fieldTitle = useMemo(() => (title ? title : capitalCase(fieldId)), [title, fieldId])
   return { fieldId, fieldTitle }
 }
 
@@ -31,7 +31,9 @@ function useResolveMultipleChoices({
   const resolvedOptions: Readonly<Option[]> = useMemo(
     () =>
       options.map(option =>
-        typeof option === 'string' ? { label: option, value: option, icon: undefined } : option
+        typeof option === 'string'
+          ? { label: capitalCase(option), value: option, icon: undefined } // display_name => Display Name
+          : option
       ),
     [options]
   )
