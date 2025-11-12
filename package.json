@@ -49,7 +49,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "codemirror-json-schema": "^0.8.1",
-    "lucide-react": "^0.548.0",
+    "lucide-react": "^0.553.0",
     "motion": "^12.23.24",
     "next": "^16.0.1",
     "next-themes": "^0.4.6",
@@ -61,10 +61,10 @@
     "react-scan": "^0.4.3",
     "react-use": "^17.6.0",
     "react-use-websocket": "^4.13.0",
-    "recharts": "^3.3.0",
+    "recharts": "^3.4.1",
     "shiki": "1.29.2",
     "sonner": "^2.0.7",
-    "tailwind-merge": "^3.3.1",
+    "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.17",
     "thememirror": "^2.0.1",
     "tw-animate-css": "^1.4.0",
@@ -72,7 +72,7 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@apidevtools/json-schema-ref-parser": "^14.2.1",
+    "@apidevtools/json-schema-ref-parser": "^15.1.1",
     "@eslint/compat": "^1.4.1",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.39.1",
@@ -80,11 +80,11 @@
     "@react-types/shared": "^3.32.1",
     "@types/bun": "^1.3.2",
     "@types/eslint": "^9.6.1",
-    "@types/node": "^24.10.0",
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "@typescript-eslint/eslint-plugin": "^8.46.3",
-    "@typescript-eslint/parser": "^8.46.3",
+    "@types/node": "^24.10.1",
+    "@types/react": "^19.2.3",
+    "@types/react-dom": "^19.2.3",
+    "@typescript-eslint/eslint-plugin": "^8.46.4",
+    "@typescript-eslint/parser": "^8.46.4",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9.39.1",
     "eslint-config-next": "^16.0.1",
@@ -96,6 +96,6 @@
     "eslint-plugin-react-refresh": "^0.4.24",
     "prettier": "^3.6.2",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.3"
+    "typescript-eslint": "^8.46.4"
   }
 }
