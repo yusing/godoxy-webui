@@ -7,6 +7,7 @@ import {
   notifyListeners,
   produce,
   setLeaf,
+  useDebounce,
   useObject,
   useSubscribe,
 } from './impl'
@@ -31,6 +32,8 @@ function createStoreRoot<T extends FieldValues>(
 
   const storeApi: StoreRoot<T> = {
     use: <P extends FieldPath<T>>(path: P) => useObject<T, P>(namespace, path),
+    useDebounce: <P extends FieldPath<T>>(path: P, delay: number) =>
+      useDebounce<T, P>(namespace, path, delay),
     set: <P extends FieldPath<T>>(
       path: P,
       value:

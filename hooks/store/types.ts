@@ -64,6 +64,8 @@ type StoreSetStateAction<T> = (
 type StoreRoot<T extends FieldValues> = {
   /** Subscribe and read the value at path. Re-renders when the value changes. */
   use: <P extends FieldPath<T>>(path: P) => FieldPathValue<T, P> | undefined
+  /** Subscribe and read the debounced value at path. Re-renders when the value changes. */
+  useDebounce: <P extends FieldPath<T>>(path: P, delay: number) => FieldPathValue<T, P> | undefined
   /** Set value at path (creates intermediate nodes as needed). */
   set: <P extends FieldPath<T>>(
     path: P,
@@ -103,6 +105,8 @@ type State<T> = {
   readonly field: string
   /** Subscribe and read the value at path. Re-renders when the value changes. */
   use(): T
+  /** Subscribe and read the debounced value at path. Re-renders when the value changes. */
+  useDebounce(delay: number): T
   /** Convenience hook returning [value, setValue] for the path. */
   useState(): readonly [T, (value: T | undefined) => void]
   /** Set value at path (creates intermediate nodes as needed). */

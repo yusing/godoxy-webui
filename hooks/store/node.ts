@@ -37,6 +37,9 @@ function createNode(
         if (prop === 'use') {
           return () => from(storeApi.use(path))
         }
+        if (prop === 'useDebounce') {
+          return (delay: number) => from(storeApi.useDebounce(path, delay))
+        }
         if (prop === 'useState') {
           return () => [from(storeApi.use(path)), (value: any) => storeApi.set(path, to(value))]
         }

@@ -1,5 +1,5 @@
 import type { FieldPath, FieldPathValue, FieldValues } from '@/types/path'
-import { useEffect, useRef, useSyncExternalStore } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import isEqual from 'react-fast-compare'
 import { localStorageDelete, localStorageGet, localStorageSet } from './local_storage'
 
@@ -10,6 +10,7 @@ export {
   notifyListeners,
   produce,
   setLeaf,
+  useDebounce,
   useObject,
   useSubscribe,
 }
@@ -377,6 +378,45 @@ function useObject<T extends FieldValues, P extends FieldPath<T>>(key: string, p
   )
 
   return value as FieldPathValue<T, P> | undefined
+}
+
+/** React hook: subscribe to and read a namespaced path debounced value. */
+function useDebounce<T extends FieldValues, P extends FieldPath<T>>(
+  key: string,
+  path: P,
+  delay: number
+): FieldPathValue<T, P> | undefined {
+  const fullKey = joinPath(key, path)
+  const currentValue = useSyncExternalStore(
+    listener => subscribe(fullKey, listener),
+    () => getSnapshot(fullKey),
+    () => getSnapshot(fullKey)
+  ) as FieldPathValue<T, P> | undefined
+
+  const [debouncedValue, setDebouncedValue] = useState<FieldPathValue<T, P> | undefined>(
+    currentValue
+  )
+  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined)
+
+  useEffect(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current)
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      if (!isEqual(debouncedValue, currentValue)) {
+        setDebouncedValue(currentValue)
+      }
+    }, delay)
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current)
+      }
+    }
+  }, [currentValue, delay, debouncedValue])
+
+  return debouncedValue as FieldPathValue<T, P> | undefined
 }
 
 /** Effectful subscription helper that calls onChange with the latest value. */
