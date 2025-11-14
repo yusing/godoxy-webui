@@ -1,5 +1,4 @@
 import LoadingRing from '@/components/LoadingRing'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useWebSocketApi } from '@/hooks/websocket'
 import { cn } from '@/lib/utils'
@@ -168,12 +167,16 @@ function LogEntry({ line }: { line: LogLine }) {
   const lineHTML = useMemo(() => convertANSI.toHtml(parsedLine.content), [parsedLine.content])
 
   return (
-    <div className={cn('w-full font-mono', 'flex gap-2', line.id % 2 && 'bg-muted')}>
-      <Badge className="min-w-fit" variant={'outline'}>
-        {parsedLine.time}
-      </Badge>
+    <div
+      className={cn(
+        'w-full font-mono font-medium items-center',
+        'flex gap-2',
+        line.id % 2 && 'bg-muted'
+      )}
+    >
+      <div className="min-w-fit h-min border rounded-md px-2 py-0.5 text-xs">{parsedLine.time}</div>
       <pre
-        className="whitespace-pre-wrap text-wrap text-xs"
+        className="whitespace-pre-wrap text-wrap text-xs leading-none"
         dangerouslySetInnerHTML={{ __html: lineHTML }}
       />
     </div>
