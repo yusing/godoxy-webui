@@ -40,6 +40,16 @@ export default function RouteDetails() {
     return <div className="p-4 text-muted-foreground">No route details available.</div>
   }
 
+  // load balancer routes do not have healthcheck
+  routeDetails.healthcheck ??= {
+    disable: false,
+    interval: 0,
+    timeout: 0,
+    retries: 0,
+    use_get: false,
+    path: '/',
+  }
+
   return (
     <div className="space-y-6 w-full">
       {routeDetails.container && (
