@@ -12,6 +12,7 @@ import { store as routesStore } from '@/components/routes/store'
 import type { HealthInfo } from '@/lib/api'
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
+import { encodeRouteKey } from '../routes/utils'
 import { Separator } from '../ui/separator'
 
 export default function AppItemContextMenuContent({
@@ -26,6 +27,7 @@ export default function AppItemContextMenuContent({
     [categoryIndex, appIndex]
   )
   const alias = item.alias.use()
+  const routeKey = encodeRouteKey(alias)
 
   const toggleVisibility = () => {
     const newVisible = !item.show.value
@@ -94,7 +96,7 @@ export default function AppItemContextMenuContent({
             </>
           )}
         </item.show.Render>
-        <Link href={`/routes#${alias}`} onClick={() => routesStore.requestedRoute.set(alias)}>
+        <Link href={`/routes#${routeKey}`} onClick={() => routesStore.requestedRoute.set(routeKey)}>
           <ContextMenuItem>
             <Info className="w-4 h-4" />
             Details
