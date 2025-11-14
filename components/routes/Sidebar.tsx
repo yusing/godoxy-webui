@@ -5,6 +5,7 @@ import {
   store,
   useSelectedRoute,
   type RouteDisplaySettings,
+  type RouteKey,
 } from '@/components/routes/store'
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { RouteUptimeAggregate, UptimeAggregate } from '@/lib/api'
@@ -23,6 +24,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { ScrollArea } from '../ui/scroll-area'
 import { Switch } from '../ui/switch'
 import './style.css'
+import { decodeRouteKey, encodeRouteKey } from './utils'
 
 export default function RoutesSidebar({ className }: { className?: string }) {
   const sidebarRef = useRef<HTMLDivElement>(null)
@@ -71,17 +73,18 @@ function RoutesSidebarItemList() {
     <ScrollArea>
       <div className="sidebar-item-list border-b">
         {keys.map(key => {
-          return <RoutesSidebarItem key={key} alias={key} />
+          return <RoutesSidebarItem key={key} routeKey={key} alias={decodeRouteKey(key)} />
         })}
       </div>
     </ScrollArea>
   )
 }
 
-function RoutesSidebarItem({ alias }: { alias: string }) {
+function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: RouteKey }) {
   const { hideUnknown, dockerOnly } = store.displaySettings.use() ?? {}
-  const currentStatus = store.uptime[alias]?.current_status.use()
-  const isDocker = store.uptime[alias]?.is_docker.use()
+  const currentStatus = store.uptime[routeKey]?.current_status.use()
+  const isDocker = store.uptime[routeKey]?.is_docker.use()
+  const displayName = store.uptime[routeKey]?.display_name.use()
 
   if (hideUnknown && currentStatus === 'unknown') {
     return null
@@ -94,11 +97,11 @@ function RoutesSidebarItem({ alias }: { alias: string }) {
   return (
     <div className="flex flex-col">
       <a
-        id={`route-${alias}`}
-        href={`#${alias}`}
+        id={`route-${routeKey}`}
+        // href={`#${key}`}
         target="_self"
         onClick={() => {
-          setSelectedRoute(alias)
+          setSelectedRoute(routeKey)
           store.mobileDialogOpen.set(true)
         }}
         className={cn(
@@ -111,16 +114,14 @@ function RoutesSidebarItem({ alias }: { alias: string }) {
         <div className="flex justify-between items-center gap-4 flex-1">
           <div className="mt-0.5 flex items-center gap-2">
             <AppIcon alias={alias} size={18} />
-            <store.Render path={`uptime.${alias}.display_name`}>
-              {displayName => <Label className="route-display-name">{displayName || alias}</Label>}
-            </store.Render>
+            <Label className="route-display-name">{displayName || alias}</Label>
           </div>
           <Label className="text-sm">
-            <RoutePercentageText alias={alias} />
+            <RoutePercentageText routeKey={routeKey} />
           </Label>
         </div>
         <div className="mt-2">
-          <RouteUptimeBar alias={alias} />
+          <RouteUptimeBar routeKey={routeKey} />
         </div>
       </a>
     </div>
@@ -138,13 +139,13 @@ function RoutesUptimeProvider({
       period: '1d',
     },
     onMessage: uptime => {
-      const keys = uptime.data.map(route => route.alias)
+      const keys = uptime.data.map(route => encodeRouteKey(route.alias))
       store.set('routeKeys', keys.toSorted())
       store.set(
         'uptime',
-        uptime.data.reduce(
-          (acc, route) => {
-            acc[route.alias] = route
+        keys.reduce(
+          (acc, key, index) => {
+            acc[key] = uptime.data[index]!
             return acc
           },
           {} as Record<string, RouteUptimeAggregate>

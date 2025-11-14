@@ -13,6 +13,7 @@ import { yaml } from '@codemirror/lang-yaml'
 import { ArrowRight } from 'lucide-react'
 import { useAsync } from 'react-use'
 import { stringify as stringifyYAML } from 'yaml'
+import { decodeRouteKey } from '../utils'
 import ContainerLogs from './ContainerLogs'
 import ContainerLogsHeader from './ContainerLogsHeader'
 
@@ -21,7 +22,9 @@ export default function RouteDetails() {
 
   const { value: routeDetails, error } = useAsync(
     async () =>
-      activeRoute ? api.route.route(activeRoute).then(res => res.data) : Promise.resolve(null),
+      activeRoute
+        ? api.route.route(decodeRouteKey(activeRoute)).then(res => res.data)
+        : Promise.resolve(null),
     [activeRoute]
   )
 
