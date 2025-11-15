@@ -6,6 +6,10 @@ on:
       tag:
         required: true
         type: string
+      latest:
+        required: false
+        type: boolean
+        default: true
       suffix:
         required: false
         type: string
@@ -53,7 +57,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          flavor: suffix=${{ inputs.suffix }}
+          flavor: |
+            latest=${{ inputs.latest }}
+            suffix=${{ inputs.suffix }}
           tags: |
             type=raw,value=${{ inputs.tag }}
             type=ref,event=tag
@@ -134,7 +140,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          flavor: suffix=${{ inputs.suffix }}
+          flavor: |
+            latest=${{ inputs.latest }}
+            suffix=${{ inputs.suffix }}
           tags: |
             type=raw,value=${{ inputs.tag }}
             type=ref,event=tag
