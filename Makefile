@@ -31,7 +31,7 @@ gen-schema-single:
 	# minify
 	# python3 -c "import json; f=open('${SCHEMA_DIR}/${OUT}', 'r'); j=json.load(f); f.close(); f=open('${SCHEMA_DIR}/${OUT}', 'w'); json.dump(j, f, separators=(',', ':'));"
 	# deference
-	node ${SCHEMA_DIR}/deref.ts ${SCHEMA_DIR}/${OUT} > ${SCHEMA_DIR}/${OUT}.deref.json
+	bun --bun ${SCHEMA_DIR}/deref.ts ${SCHEMA_DIR}/${OUT} > ${SCHEMA_DIR}/${OUT}.deref.json
 	mv ${SCHEMA_DIR}/${OUT}.deref.json ${SCHEMA_DIR}/${OUT}
 
 gen-schema:
