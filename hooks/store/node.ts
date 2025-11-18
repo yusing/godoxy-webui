@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import type { FieldValues } from '@/types/path'
 import { useState } from 'react'
-import type { DerivedStateProps, StoreRoot } from './types'
+import type { DerivedStateProps, State, StoreRoot } from './types'
 
 export { createNode, createRootNode, type Extension }
 
 /** Build a deep proxy for dynamic path access under a namespace. */
-function createRootNode(storeApi: StoreRoot<any>, initialPath = '') {
+function createRootNode<T extends FieldValues>(storeApi: StoreRoot<T>, initialPath = ''): State<T> {
   const proxyCache = new Map<string, any>()
   return createNode(storeApi, initialPath, proxyCache)
 }
@@ -15,14 +16,14 @@ type Extension = {
   set?: (value: any) => boolean
 }
 
-function createNode(
+function createNode<T extends FieldValues>(
   storeApi: StoreRoot<any>,
   path: string,
   cache: Map<string, any>,
   extensions?: Record<string | symbol, Extension>,
   from = unchanged,
   to = unchanged
-) {
+): State<T> {
   const isDerived = from !== unchanged || to !== unchanged
   if (!isDerived && cache.has(path)) {
     return cache.get(path)
@@ -243,7 +244,7 @@ function createNode(
   if (!isDerived) {
     cache.set(path, proxy)
   }
-  return proxy
+  return proxy as State<T>
 }
 
 function unchanged(value: any) {

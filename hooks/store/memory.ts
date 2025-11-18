@@ -29,5 +29,5 @@ function useMemoryStore<T extends FieldValues>(defaultValue: T): MemoryStore<T> 
   const storeApi = createStoreRoot(namespace, defaultValue, {
     memoryOnly: true,
   })
-  return createRootNode(storeApi)
+  return createRootNode(storeApi) as MemoryStore<T>
 }
