@@ -83,13 +83,20 @@ function useForm<T extends FieldValues>(
   const errorNamespace = `errors.${namespace}`
 
   const storeApi = createStoreRoot<T>(namespace, defaultValue, { memoryOnly: true })
-  const errorStore = createStoreRoot<Record<string, string | undefined>>(errorNamespace, {})
+  const errorStore = createStoreRoot<Record<string, string | undefined>>(
+    errorNamespace,
+    {},
+    { memoryOnly: true }
+  )
 
   const formStore = {
     clearErrors: () => produce(errorNamespace, undefined, false, true),
     handleSubmit: (onSubmit: (value: T) => void) => (e: React.FormEvent) => {
       e.preventDefault()
-      onSubmit(getSnapshot(namespace) as T)
+      // disable submit if there are errors
+      if (Object.keys(getSnapshot(errorNamespace) ?? {}).length === 0) {
+        onSubmit(getSnapshot(namespace) as T)
+      }
     },
   }
 
@@ -115,7 +122,11 @@ function useForm<T extends FieldValues>(
     if (validator) {
       storeApi.subscribe(path, (value: FieldPathValue<T, FieldPath<T>>) => {
         const error = validator(value, store)
-        errorStore.set(path, error as any)
+        if (!error) {
+          errorStore.reset(path)
+        } else {
+          errorStore.set(path, error as any)
+        }
       })
     }
   }
