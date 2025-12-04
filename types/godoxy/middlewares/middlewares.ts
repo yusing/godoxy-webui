@@ -76,7 +76,8 @@ type KeyOptMapping<T extends MiddlewareComposeBase> = Record<T['use'], OmitUse<T
 }
 
 export interface MiddlewaresMap
-  extends KeyOptMapping<CustomErrorPage>,
+  extends
+    KeyOptMapping<CustomErrorPage>,
     KeyOptMapping<RedirectHTTP>,
     KeyOptMapping<SetXForwarded>,
     KeyOptMapping<HideXForwarded>,

@@ -1,3 +1,4 @@
+import type { HealthcheckConfig } from '../providers/healthcheck'
 import type { DomainName } from '../types'
 import type { ACLConfig } from './acl'
 import type { AutocertConfig } from './autocert'
@@ -27,5 +28,8 @@ export type Config = {
    * @default 3
    * @minimum 1
    */
+  defaults?: {
+    healthcheck?: HealthcheckConfig
+  }
   timeout_shutdown?: number
 }
