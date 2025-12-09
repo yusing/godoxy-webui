@@ -1,5 +1,4 @@
-import type { FormState } from '@/hooks/store'
-import type { State } from '@/hooks/store/types'
+import type { FormState, State } from 'juststore'
 import type React from 'react'
 import type { ComponentProps } from 'react'
 import type { FieldLabel } from '../field'

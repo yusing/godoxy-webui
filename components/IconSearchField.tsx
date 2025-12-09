@@ -1,6 +1,6 @@
-import { useMemoryStore, type FormState, type MemoryStore } from '@/hooks/store'
 import type { HomepageIconMetaSearch } from '@/lib/api'
 import { api } from '@/lib/api-client'
+import { useMemoryStore, type FormState, type MemoryStore } from 'juststore'
 import { useEffect, useMemo } from 'react'
 import { useAsync } from 'react-use'
 import { AppIcon } from './AppIcon'

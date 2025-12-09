@@ -1,7 +1,7 @@
 'use client'
 
-import type { State } from '@/hooks/store/types'
 import { capitalCase } from 'change-case'
+import type { State } from 'juststore'
 import { useMemo } from 'react'
 import type { Option, Options, Stringable } from './types'
 

@@ -1,8 +1,8 @@
 'use client'
 
+import { useFragment } from '@/hooks/fragment'
 import type { RouteUptimeAggregate } from '@/lib/api'
-import { useFragment } from '../../hooks/fragment'
-import { createStore } from '../../hooks/store'
+import { createStore } from 'juststore'
 
 export type RouteDisplaySettings = {
   dockerOnly: boolean

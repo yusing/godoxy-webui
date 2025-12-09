@@ -1,5 +1,5 @@
-import { useForm, type FormStore } from '@/hooks/store/form'
 import type { FileType } from '@/lib/api'
+import { useForm, type FormStore } from 'juststore'
 import { Plus } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '../ui/button'

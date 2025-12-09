@@ -3,7 +3,7 @@
 import type { DiskUsageStat, SensorsTemperatureStat, SystemInfo } from '@/lib/api'
 import { formatBytes, formatShortTime, formatTemperature } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import type { FieldPath, FieldPathValue } from '@/types/path'
+import type { FieldPath, FieldPathValue } from 'juststore'
 import {
   Activity,
   ArrowDown,

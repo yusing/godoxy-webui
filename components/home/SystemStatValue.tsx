@@ -1,6 +1,6 @@
 'use client'
 import { formatDuration } from '@/lib/format'
-import type { FieldPath } from '@/types/path'
+import type { FieldPath } from 'juststore'
 import { useMemo } from 'react'
 import { Progress } from '../ui/progress'
 import { store, type Store } from './store'

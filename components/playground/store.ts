@@ -1,7 +1,7 @@
 'use client'
 
-import { createStore } from '@/hooks/store'
 import type { MockRequest, MockResponse, PlaygroundResponse } from '@/lib/api'
+import { createStore } from 'juststore'
 
 export interface PlaygroundState {
   rules: string

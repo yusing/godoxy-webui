@@ -17,7 +17,7 @@ import RoutePercentageText from './PercentageText'
 import RoutesSidebarSearchBox from './SearchBox'
 import RouteUptimeBar from './UptimeBar'
 
-import type { FieldPath } from '@/types/path'
+import type { FieldPath } from 'juststore'
 import { FilterIcon } from 'lucide-react'
 import { AppIcon } from '../AppIcon'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
