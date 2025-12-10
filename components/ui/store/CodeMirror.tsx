@@ -1,10 +1,10 @@
 'use client'
 
 import { CodeMirror } from '@/components/ObjectDataList'
+import { StoreLabel } from '@/components/store/Label'
+import type { FormComponentProps, Prettify, StoreFieldPropsCommon } from '@/components/store/types'
 import { useMemo } from 'react'
 import { Field, FieldDescription } from '../field'
-import { StoreLabel } from './Label'
-import type { FormComponentProps, Prettify, StoreFieldPropsCommon } from './types'
 
 type CodeMirrorFieldProps<Form = false> = Prettify<
   StoreFieldPropsCommon<string, Form> & FormComponentProps<typeof CodeMirror>

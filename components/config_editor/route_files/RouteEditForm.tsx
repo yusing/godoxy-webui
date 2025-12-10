@@ -1,4 +1,7 @@
 import { NamedListInput } from '@/components/form/NamedListInput'
+import { StoreFormCheckboxField } from '@/components/store/Checkbox'
+import { StoreFormInputField, StoreInputField } from '@/components/store/Input'
+import { StoreFormSelectField } from '@/components/store/Select'
 import { Button, type buttonVariants } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
@@ -10,9 +13,6 @@ import {
   FieldSeparator,
   FieldSet,
 } from '@/components/ui/field'
-import { StoreFormCheckboxField } from '@/components/ui/store/Checkbox'
-import { StoreFormInputField, StoreInputField } from '@/components/ui/store/Input'
-import { StoreFormSelectField } from '@/components/ui/store/Select'
 import { api } from '@/lib/api-client'
 import { MiddlewareComposeSchema, type Routes } from '@/types/godoxy'
 import type { EntrypointMiddlewares } from '@/types/godoxy/middlewares/middleware_compose'

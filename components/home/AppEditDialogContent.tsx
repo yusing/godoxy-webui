@@ -1,3 +1,4 @@
+import { StoreFormInputField } from '@/components/store/Input'
 import { type HomepageItem } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
@@ -15,7 +16,6 @@ import {
   DialogTitle,
 } from '../ui/dialog'
 import { Field, FieldLabel } from '../ui/field'
-import { StoreFormInputField } from '../ui/store/Input'
 import { store } from './store'
 
 export default function AppEditDialogContent({

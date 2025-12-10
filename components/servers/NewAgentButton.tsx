@@ -1,3 +1,6 @@
+import { StoreCheckboxField, StoreFormCheckboxField } from '@/components/store/Checkbox'
+import { StoreFormInputField } from '@/components/store/Input'
+import { StoreFormRadioField } from '@/components/store/Radio'
 import { Button } from '@/components/ui/button'
 import Code from '@/components/ui/code'
 import {
@@ -22,9 +25,6 @@ import { parse as parseYAML, stringify as stringifyYAML } from 'yaml'
 import Docker from '../svg/docker'
 import Linux from '../svg/linux'
 import { FieldGroup } from '../ui/field'
-import { StoreCheckboxField, StoreFormCheckboxField } from '../ui/store/Checkbox'
-import { StoreFormInputField } from '../ui/store/Input'
-import { StoreFormRadioField } from '../ui/store/Radio'
 const agentTypes = [
   {
     type: 'docker',

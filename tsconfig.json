@@ -31,6 +31,7 @@
     ],
     "paths": {
       "@/*": ["./*"],
+      "@/components/store/*": ["./juststore-shadcn/src/components/store/*"],
       "@/public/*": ["./public/*"]
     }
   },
