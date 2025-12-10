@@ -1,4 +1,4 @@
-FROM oven/bun:1.3.3-alpine AS base
+FROM oven/bun:1.3.4-alpine AS base
 
 HEALTHCHECK NONE
 
