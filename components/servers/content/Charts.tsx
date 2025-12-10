@@ -67,7 +67,7 @@ export default function MetricChart({
   agent: string
   yAxisFormatter: (value: number) => string
 }) {
-  const agg = store.systemInfoGraphs[agent]?.[period]?.[type]?.data.use() ?? []
+  const agg = store.use(`systemInfoGraphs.${agent}.${period}.${type}.data`) ?? []
 
   const hasData = agg && agg.length > 0
 

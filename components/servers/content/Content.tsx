@@ -29,8 +29,8 @@ function SystemInfoGraphsPage() {
   const selectedAgent = useFragment()
   const agent = useMemo(() => selectedAgent || 'Main Server', [selectedAgent])
 
-  const period = store.use('metricsPeriod')!
-  const temperatureUnit = store.use('temperatureUnit')!
+  const period = store.metricsPeriod.use()
+  const temperatureUnit = store.temperatureUnit.use()
 
   const byteSizeFormatter = useCallback((value: number) => formatBytes(value, { precision: 0 }), [])
   const speedFormatter = useCallback(
