@@ -46,7 +46,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "codemirror-json-schema-refined": "^0.8.2",
-    "juststore": "0.0.5",
+    "juststore": "0.1.2",
     "lucide-react": "^0.556.0",
     "motion": "^12.23.25",
     "next": "^16.0.8",

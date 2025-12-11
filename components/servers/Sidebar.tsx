@@ -1,6 +1,6 @@
 'use client'
 
-import type { DiskUsageStat, SensorsTemperatureStat, SystemInfo } from '@/lib/api'
+import type { DiskUsageStat, SystemInfo } from '@/lib/api'
 import { formatBytes, formatShortTime, formatTemperature } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import type { FieldPath, FieldPathValue } from 'juststore'
@@ -13,12 +13,12 @@ import {
   LucideCpu,
   LucideHardDrive,
 } from 'lucide-react'
-import { useMemo, type ElementType } from 'react'
+import { type ElementType } from 'react'
 import { Label } from '../ui/label'
 import { RadioGroup, RadioGroupField } from '../ui/radio-group'
 import { Skeleton } from '../ui/skeleton'
 import { AddAgentDialogButton } from './NewAgentButton'
-import { store } from './store'
+import { store, useSensorsInfo } from './store'
 
 export default function ServersSidebar() {
   const agentList = store.agentList.use() ?? []
@@ -134,15 +134,8 @@ function MetricTile<P extends FieldPath<SystemInfo>>({
   formatter?: (value: FieldPathValue<SystemInfo, P>) => string
   label?: string
 }) {
-  const value = store.use(`systemInfo.${agent}.${field}`)
-  const formattedValue = useMemo(
-    () =>
-      value === undefined || value === null
-        ? undefined
-        : formatter
-          ? formatter(value)
-          : String(value),
-    [value, formatter]
+  const formattedValue = store.useCompute(`systemInfo.${agent}.${field}`, value =>
+    value === undefined || value === null ? undefined : formatter ? formatter(value) : String(value)
   )
   return (
     <div className="flex flex-col items-center justify-center text-center min-w-0">
@@ -171,51 +164,10 @@ function formatTopDiskShort(disks: Record<string, DiskUsageStat>): string {
   return `${formatPercent(root.used_percent)}`
 }
 
-const cpuSensorKeys = [
-  'coretemp_package_id_0',
-  'coretemp_package_id_1',
-  'coretemp_physical_id_0',
-  'coretemp_physical_id_1',
-  'cpu_thermal',
-]
-
 function TemperatureTile({ agent }: { agent: string }) {
-  // Compute CPU and Disk temps using known sensor name hints from sensorIcons
-  let cpuTemp: number | null = null
-  let cpuTempStatus: 'warning' | 'critical' | null = null
-  let diskTemp: number | null = null
-  let diskTempStatus: 'warning' | 'critical' | null = null
-
-  const sensorsState = store.systemInfo[agent]?.sensors.use()
   const readyState = store.readyState.use()
   const temperatureUnit = store.temperatureUnit.use()
-
-  if (sensorsState) {
-    // backward compatibility: sensors can be an object map
-    const sensors = Array.isArray(sensorsState)
-      ? sensorsState
-      : (Object.values(sensorsState) as SensorsTemperatureStat[])
-
-    for (const s of sensors) {
-      if (!Number.isFinite(s.temperature)) continue
-      if (diskTemp === null && s.name === 'nvme_composite') {
-        diskTemp = s.temperature
-        if (s.temperature >= s.critical) {
-          diskTempStatus = 'critical'
-        } else if (s.temperature >= s.high) {
-          diskTempStatus = 'warning'
-        }
-      } else if (cpuTemp === null && cpuSensorKeys.includes(s.name)) {
-        cpuTemp = s.temperature
-        if (s.temperature >= s.critical) {
-          cpuTempStatus = 'critical'
-        } else if (s.temperature >= s.high) {
-          cpuTempStatus = 'warning'
-        }
-      }
-      if (diskTemp !== null && cpuTemp !== null) break
-    }
-  }
+  const { cpuTemp, cpuTempStatus, diskTemp, diskTempStatus } = useSensorsInfo(agent)
 
   const CpuTemp = !readyState ? (
     <Skeleton className="h-4 w-8" />

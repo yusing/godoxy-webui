@@ -49,7 +49,7 @@ export default function AccessControlConfigContent() {
 
 function ACLNotifyConfig() {
   const notify = configStore.configObject.acl.notify.use()
-  const providerNames = configStore.configObject.providers.notification.compute(
+  const providerNames = configStore.configObject.providers.notification.useCompute(
     p => p?.map(p => p.name) ?? []
   )
   const schema = useMemo(() => {
