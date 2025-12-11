@@ -1,5 +1,5 @@
-import { ListInput } from '@/components/form/ListInput'
 import { MapInput } from '@/components/form/MapInput'
+import { StoreListInput } from '@/components/form/StoreListInput'
 import { StoreCheckboxField } from '@/components/store/Checkbox'
 import { StoreRadioField } from '@/components/store/Radio'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -35,14 +35,8 @@ export default function AccessControlConfigContent() {
         )}
       </acl.log.Render>
       <ACLNotifyConfig />
-      <acl.allow.Render>
-        {(allow, setAllow) => (
-          <ListInput label="Allow List" value={allow ?? []} onChange={setAllow} />
-        )}
-      </acl.allow.Render>
-      <acl.deny.Render>
-        {(deny, setDeny) => <ListInput label="Deny List" value={deny ?? []} onChange={setDeny} />}
-      </acl.deny.Render>
+      <StoreListInput label="Allow List" state={acl.allow} />
+      <StoreListInput label="Deny List" state={acl.deny} />
     </div>
   )
 }

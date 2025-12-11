@@ -1,7 +1,7 @@
 'use client'
 
 import { RefreshCcw, Trash } from 'lucide-react'
-import { memo, useMemo } from 'react'
+import { useMemo } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -23,31 +23,27 @@ import {
   isToggleType,
   type JSONSchema,
 } from '@/types/schema'
+import type { State } from 'juststore'
 import { Label } from '../ui/label'
 
-type FieldInputProps<T> = {
-  fieldKey: string
-  fieldValue: T
+type StoreFieldInputProps<T> = {
+  state: State<T>
   schema: JSONSchema | undefined
   placeholder: { key?: string; value?: string } | undefined
   onKeyChange: (key: string, value: unknown) => void
-  onChange: (v: unknown) => void
   allowDelete: boolean
   deleteType?: 'delete' | 'reset'
 }
 
-export function FieldInput<T>({
-  fieldKey,
-  fieldValue,
+export function StoreFieldInput<T>({
+  state,
   schema,
   placeholder,
   onKeyChange,
-  onChange,
   allowDelete = true,
   deleteType = 'delete',
-}: Readonly<FieldInputProps<T>>) {
-  'use memo'
-
+}: Readonly<StoreFieldInputProps<T>>) {
+  const fieldKey = state.field
   const allowedValues = useMemo(
     () => getAllowedValues(schema, fieldKey)?.filter(e => e !== ''),
     [schema, fieldKey]
@@ -68,7 +64,7 @@ export function FieldInput<T>({
           <Input
             value={fieldKey}
             placeholder={placeholder?.key ?? 'Key'}
-            onChange={({ target: { value } }) => onKeyChange(value, fieldValue)}
+            onChange={({ target: { value } }) => onKeyChange(value, state.value)}
             className="max-w-[220px]"
           />
         ) : title ? (
@@ -88,43 +84,53 @@ export function FieldInput<T>({
           </div>
         )}
 
-        {allowedValues && allowedValues.length > 0 ? (
-          <Select
-            value={typeof fieldValue === 'string' ? fieldValue : String(fieldValue)}
-            onValueChange={onChange}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder={placeholder?.value ?? 'Value'} />
-            </SelectTrigger>
-            <SelectContent>
-              {allowedValues.map(item => (
-                <SelectItemMemo value={item} key={item}>
-                  {item}
-                </SelectItemMemo>
-              ))}
-            </SelectContent>
-          </Select>
-        ) : isInputType(vSchema) ? (
-          <Input
-            value={typeof fieldValue === 'string' ? fieldValue : String(fieldValue)}
-            type={getInputType(vSchema?.type)}
-            placeholder={placeholder?.value ?? 'Value'}
-            onChange={({ target: { value } }) => onChange(value)}
-          />
-        ) : isToggleType(vSchema) ? (
-          <div className="w-full flex items-center">
-            <Checkbox
-              checked={Boolean(fieldValue)}
-              onCheckedChange={checked => onChange(Boolean(checked))}
-            />
-          </div>
-        ) : null}
+        <state.Render>
+          {(fieldValue, update) => {
+            if (allowedValues && allowedValues.length > 0)
+              return (
+                <Select
+                  value={typeof fieldValue === 'string' ? fieldValue : String(fieldValue)}
+                  onValueChange={value => update(value as T)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={placeholder?.value ?? 'Value'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {allowedValues.map(item => (
+                      <SelectItem value={item} key={item}>
+                        {item}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )
+            if (isInputType(vSchema))
+              return (
+                <Input
+                  value={typeof fieldValue === 'string' ? fieldValue : String(fieldValue)}
+                  type={getInputType(vSchema?.type)}
+                  placeholder={placeholder?.value ?? 'Value'}
+                  onChange={({ target: { value } }) => update(value as T)}
+                />
+              )
+            if (isToggleType(vSchema))
+              return (
+                <div className="w-full flex items-center">
+                  <Checkbox
+                    checked={Boolean(fieldValue)}
+                    onCheckedChange={checked => update(Boolean(checked) as T)}
+                  />
+                </div>
+              )
+            return null
+          }}
+        </state.Render>
 
         {allowDelete && !required && (
           <Button
             type={deleteType === 'delete' ? 'button' : 'reset'}
             variant="destructive"
-            onClick={() => onChange(undefined)}
+            onClick={state.reset}
           >
             {deleteType === 'delete' ? <Trash /> : <RefreshCcw />}
             {deleteType === 'delete' ? 'Delete' : 'Reset'}
@@ -134,5 +140,3 @@ export function FieldInput<T>({
     </div>
   )
 }
-
-const SelectItemMemo = memo(SelectItem) as typeof SelectItem
