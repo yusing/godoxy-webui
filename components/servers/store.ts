@@ -46,7 +46,7 @@ export function useSensorsInfo(agent: string) {
     // backward compatibility: sensors can be an object map
     const sensors = Array.isArray(value)
       ? value
-      : (Object.values(value) as SensorsTemperatureStat[])
+      : (Object.values(value ?? {}) as SensorsTemperatureStat[])
 
     type Status = 'warning' | 'critical'
 
