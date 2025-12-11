@@ -1,7 +1,6 @@
 'use client'
 import { formatDuration } from '@/lib/format'
 import type { FieldPath } from 'juststore'
-import { useMemo } from 'react'
 import { Progress } from '../ui/progress'
 import { store, type Store } from './store'
 
@@ -14,8 +13,8 @@ export default function SystemStatValue({
   type: 'text' | 'progress' | 'duration'
   label: string
 }) {
-  const value = store.systemInfo[valueKey].use()
-  const displayValue = useMemo(() => {
+  const state = store.systemInfo[valueKey]
+  const displayValue = state.useCompute(value => {
     if (type === 'duration') {
       return formatDuration(value, { unit: 's' })
     }
@@ -23,7 +22,7 @@ export default function SystemStatValue({
       return `${value}%`
     }
     return String(value)
-  }, [value, type])
+  })
   return (
     <div className="flex-1 min-w-0">
       <p className="text-sm font-medium text-muted-foreground hidden sm:block">{label}</p>
@@ -33,7 +32,9 @@ export default function SystemStatValue({
         <div className="space-y-2">
           <p className="text-sm sm:text-base font-semibold">{displayValue}</p>
           {type === 'progress' && (
-            <Progress value={value as number} className="h-2 hidden sm:block" />
+            <state.Render>
+              {value => <Progress value={value} className="h-2 hidden sm:block" />}
+            </state.Render>
           )}
         </div>
       )}

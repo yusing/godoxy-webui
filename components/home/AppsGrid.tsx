@@ -19,8 +19,9 @@ import { store } from './store'
 export default function AppGrid() {
   const [activeCategoryValue, setActiveCategory] = store.navigation.activeCategory.useState()
 
-  const categories = store.homepageCategories.use()
-  const categoryNames = useMemo(() => categories.map(cat => cat.name), [categories])
+  const categoryNames = store.homepageCategories.useCompute(categories =>
+    categories.map(cat => cat.name)
+  )
   const sortMethod = store.settings.sortMethod.use()
 
   const maxTabsWithoutCombobox = 5

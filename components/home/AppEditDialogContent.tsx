@@ -3,7 +3,7 @@ import { type HomepageItem } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
 import { useForm } from 'juststore'
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 import { toast } from 'sonner'
 import { AppIcon } from '../AppIcon'
 import IconSearchField from '../IconSearchField'
@@ -25,16 +25,17 @@ export default function AppEditDialogContent({
   categoryIndex: number
   appIndex: number
 }) {
-  const app = store.homepageCategories.at(categoryIndex).items.at(appIndex).use()
+  const state = store.homepageCategories.at(categoryIndex).items.at(appIndex)
 
-  const icon = useMemo(() => {
-    if (app.icon) return app.icon
+  const app = state.use()
+  const icon = state.icon.useCompute(icon => {
+    if (icon) return icon
     return (app.name || app.alias)
       .split('.')[0]!
       .toLowerCase()
       .replaceAll(' ', '-')
       .replaceAll('_', '-')
-  }, [app.icon, app.name, app.alias])
+  })
 
   const form = useForm<HomepageItem>({
     ...app,

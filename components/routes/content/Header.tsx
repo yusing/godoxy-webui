@@ -2,14 +2,13 @@
 import { store, useSelectedRoute } from '@/components/routes/store'
 import { Label } from '@/components/ui/label'
 import { formatPercent } from '@/lib/format'
-import { useMemo } from 'react'
 
 export default function RoutePageHeader() {
   const selected = useSelectedRoute()
   const displayName = store.uptime[selected]?.display_name.use()
-  const uptime = store.uptime[selected]?.uptime.use()
-  const percentage = useMemo(() => (uptime ? formatPercent(uptime) : undefined), [uptime])
-
+  const percentage = store.uptime[selected]?.uptime.useCompute(uptime =>
+    uptime ? formatPercent(uptime) : undefined
+  )
   if (!selected) {
     return null
   }
