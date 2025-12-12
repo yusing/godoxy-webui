@@ -1,17 +1,14 @@
-import { MapInput } from '@/components/form/MapInput'
+import { StoreMapInput } from '@/components/form/StoreMapInput'
 import { MaxmindSchema } from '@/types/godoxy'
 import { configStore } from '../store'
 
 export default function MaxmindConfigContent() {
-  const [maxmindConfig, setMaxmindConfig] = configStore.configObject.providers.maxmind.useState()
-
   return (
-    <MapInput
+    <StoreMapInput
       label="Maxmind"
       card={false}
       schema={MaxmindSchema.definitions.MaxmindConfig}
-      value={maxmindConfig}
-      onChange={setMaxmindConfig}
+      state={configStore.configObject.providers.maxmind}
     />
   )
 }

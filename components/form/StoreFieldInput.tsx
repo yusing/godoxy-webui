@@ -16,6 +16,7 @@ import {
 import { cn } from '@/lib/utils'
 import {
   getAllowedValues,
+  getDefaultValue,
   getInputType,
   getRequired,
   getTitle,
@@ -30,9 +31,10 @@ type StoreFieldInputProps<T> = {
   state: State<T>
   schema: JSONSchema | undefined
   placeholder: { key?: string; value?: string } | undefined
-  onKeyChange: (key: string, value: unknown) => void
+  onKeyChange: (newKey: string) => void
   allowDelete: boolean
   deleteType?: 'delete' | 'reset'
+  onReset?: () => void
 }
 
 export function StoreFieldInput<T>({
@@ -42,6 +44,7 @@ export function StoreFieldInput<T>({
   onKeyChange,
   allowDelete = true,
   deleteType = 'delete',
+  onReset,
 }: Readonly<StoreFieldInputProps<T>>) {
   const fieldKey = state.field
   const allowedValues = useMemo(
@@ -64,7 +67,7 @@ export function StoreFieldInput<T>({
           <Input
             value={fieldKey}
             placeholder={placeholder?.key ?? 'Key'}
-            onChange={({ target: { value } }) => onKeyChange(value, state.value)}
+            onChange={({ target: { value } }) => onKeyChange(value)}
             className="max-w-[220px]"
           />
         ) : title ? (
@@ -86,6 +89,8 @@ export function StoreFieldInput<T>({
 
         <state.Render>
           {(fieldValue, update) => {
+            // if undefined, display the default value
+            fieldValue ??= getDefaultValue(vSchema) as T
             if (allowedValues && allowedValues.length > 0)
               return (
                 <Select
@@ -130,7 +135,10 @@ export function StoreFieldInput<T>({
           <Button
             type={deleteType === 'delete' ? 'button' : 'reset'}
             variant="destructive"
-            onClick={state.reset}
+            onClick={() => {
+              state.reset()
+              onReset?.()
+            }}
           >
             {deleteType === 'delete' ? <Trash /> : <RefreshCcw />}
             {deleteType === 'delete' ? 'Delete' : 'Reset'}

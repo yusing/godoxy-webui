@@ -1,5 +1,6 @@
 import { MapInput } from '@/components/form/MapInput'
 import { StoreListInput } from '@/components/form/StoreListInput'
+import { StoreMapInput } from '@/components/form/StoreMapInput'
 import { StoreCheckboxField } from '@/components/store/Checkbox'
 import { StoreRadioField } from '@/components/store/Radio'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -24,16 +25,11 @@ export default function AccessControlConfigContent() {
           />
         </CardContent>
       </Card>
-      <acl.log.Render>
-        {(log, setLog) => (
-          <MapInput
-            label="Log Config"
-            schema={ACLSchema.definitions.ACLLogConfig}
-            value={log ?? {}}
-            onChange={setLog}
-          />
-        )}
-      </acl.log.Render>
+      <StoreMapInput
+        label="Log Config"
+        schema={ACLSchema.definitions.ACLLogConfig}
+        state={acl.log}
+      />
       <ACLNotifyConfig />
       <StoreListInput label="Allow List" state={acl.allow} />
       <StoreListInput label="Deny List" state={acl.deny} />

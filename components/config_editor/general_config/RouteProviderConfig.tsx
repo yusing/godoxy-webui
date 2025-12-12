@@ -1,5 +1,5 @@
-import { MapInput } from '@/components/form/MapInput'
 import { StoreListInput } from '@/components/form/StoreListInput'
+import { StoreMapInput } from '@/components/form/StoreMapInput'
 import { configStore } from '../store'
 
 export default function RouteProviderConfigContent() {
@@ -8,11 +8,7 @@ export default function RouteProviderConfigContent() {
     <div className="flex flex-col gap-4">
       <StoreListInput card label="Include Files" state={providers.include} />
       <StoreListInput card label="Agents" state={providers.agents} />
-      <providers.docker.Render>
-        {(docker, setDocker) => (
-          <MapInput card label="Docker" value={docker ?? {}} onChange={setDocker} />
-        )}
-      </providers.docker.Render>
+      <StoreMapInput card label="Docker" state={providers.docker} />
     </div>
   )
 }
