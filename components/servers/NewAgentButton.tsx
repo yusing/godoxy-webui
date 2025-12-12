@@ -1,3 +1,6 @@
+import { StoreCheckboxField, StoreFormCheckboxField } from '@/components/store/Checkbox'
+import { StoreFormInputField } from '@/components/store/Input'
+import { StoreFormRadioField } from '@/components/store/Radio'
 import { Button } from '@/components/ui/button'
 import Code from '@/components/ui/code'
 import {
@@ -9,14 +12,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { useMemoryStore } from '@/hooks/store'
-import { useForm } from '@/hooks/store/form'
-import { createMixedState } from '@/hooks/store/mixed_state'
 import { type NewAgentRequest, type NewAgentResponse } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
 import { cn } from '@/lib/utils'
 import type { Config } from '@/types/godoxy'
+import { createMixedState, useForm, useMemoryStore } from 'juststore'
 import { Check, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -24,9 +25,6 @@ import { parse as parseYAML, stringify as stringifyYAML } from 'yaml'
 import Docker from '../svg/docker'
 import Linux from '../svg/linux'
 import { FieldGroup } from '../ui/field'
-import { StoreCheckboxField, StoreFormCheckboxField } from '../ui/store/Checkbox'
-import { StoreFormInputField } from '../ui/store/Input'
-import { StoreFormRadioField } from '../ui/store/Radio'
 const agentTypes = [
   {
     type: 'docker',

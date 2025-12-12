@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import type { FieldPath } from '@/types/path'
+import type { FieldPath } from 'juststore'
 import { Clock, Cpu, HardDrive, MemoryStick, type LucideIcon } from 'lucide-react'
 import { Suspense } from 'react'
 import type { Store } from './store'

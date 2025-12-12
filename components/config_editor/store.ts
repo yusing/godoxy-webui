@@ -1,7 +1,7 @@
 import type { GoDoxyError } from '@/components/GoDoxyError'
-import { createStore, type Store } from '@/hooks/store'
 import type { ConfigFile, ConfigFiles } from '@/types/file'
 import type { Config, MiddlewareCompose, Routes } from '@/types/godoxy'
+import { createStore, type Store } from 'juststore'
 
 type ConfigState<
   T extends Config.Config | Routes.Routes | MiddlewareCompose.MiddlewareCompose,

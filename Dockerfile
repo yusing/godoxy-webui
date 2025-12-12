@@ -1,4 +1,4 @@
-FROM oven/bun:1.3.2-alpine AS base
+FROM oven/bun:1.3.4-alpine AS base
 
 HEALTHCHECK NONE
 
@@ -17,6 +17,7 @@ RUN bun i -D --frozen-lockfile
 FROM base AS install
 RUN mkdir -p /temp/dev
 COPY package.json bun.lock /temp/dev/
+COPY juststore/package.json juststore/bun.lock /temp/dev/juststore/
 WORKDIR /temp/dev
 RUN bun install --frozen-lockfile
 

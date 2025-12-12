@@ -1,5 +1,5 @@
 import type { HealthMap, HomepageCategory } from '@/lib/api'
-import { createStore } from '../../hooks/store'
+import { createStore } from 'juststore'
 
 export type ItemState = {
   show: boolean

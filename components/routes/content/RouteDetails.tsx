@@ -13,6 +13,7 @@ import { yaml } from '@codemirror/lang-yaml'
 import { ArrowRight } from 'lucide-react'
 import { useAsync } from 'react-use'
 import { stringify as stringifyYAML } from 'yaml'
+import { decodeRouteKey } from '../utils'
 import ContainerLogs from './ContainerLogs'
 import ContainerLogsHeader from './ContainerLogsHeader'
 
@@ -21,7 +22,9 @@ export default function RouteDetails() {
 
   const { value: routeDetails, error } = useAsync(
     async () =>
-      activeRoute ? api.route.route(activeRoute).then(res => res.data) : Promise.resolve(null),
+      activeRoute
+        ? api.route.route(decodeRouteKey(activeRoute)).then(res => res.data)
+        : Promise.resolve(null),
     [activeRoute]
   )
 
@@ -35,6 +38,16 @@ export default function RouteDetails() {
 
   if (!routeDetails) {
     return <div className="p-4 text-muted-foreground">No route details available.</div>
+  }
+
+  // load balancer routes do not have healthcheck
+  routeDetails.healthcheck ??= {
+    disable: false,
+    interval: 0,
+    timeout: 0,
+    retries: 0,
+    use_get: false,
+    path: '/',
   }
 
   return (

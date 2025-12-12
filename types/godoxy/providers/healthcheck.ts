@@ -32,4 +32,10 @@ export type HealthcheckConfig = {
    * @default 5s
    */
   timeout?: Duration
+  /** Retries
+   *
+   * @example -1 (immediate), >=0 (threshold)
+   * @default 3
+   */
+  retries?: number
 }

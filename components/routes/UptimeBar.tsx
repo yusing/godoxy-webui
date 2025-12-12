@@ -1,4 +1,4 @@
-import { store } from '@/components/routes/store'
+import { store, type RouteKey } from '@/components/routes/store'
 import type { RouteStatus } from '@/lib/api'
 import { formatTimestamp } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -6,8 +6,8 @@ import { healthStatusColorsFg } from '@/types/health'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import isEqual from 'react-fast-compare'
 
-export default function RouteUptimeBar({ alias }: { alias: string }) {
-  const statuses = store.uptime[alias]?.statuses.use() ?? []
+export default function RouteUptimeBar({ routeKey }: { routeKey: RouteKey }) {
+  const statuses = store.uptime[routeKey]?.statuses.use() ?? []
   const hideUptimeBar = store.displaySettings.hideUptimebar.use()
 
   if (hideUptimeBar) return null

@@ -106,9 +106,9 @@ export interface ContainerImage {
   version: string
 }
 
-export interface ContainerPort {
+export interface ContainerPortSummary {
   /** Host IP address that the container's port is mapped to */
-  IP: string
+  IP: NetipAddr
   /**
    * Port on the container
    * Required: true
@@ -119,6 +119,7 @@ export interface ContainerPort {
   /**
    * type
    * Required: true
+   * Enum: ["tcp","udp","sctp"]
    */
   Type: string
 }
@@ -192,6 +193,27 @@ export interface DockerConfig {
   docker_host: string
 }
 
+export interface DockerapiRestartRequest {
+  id: string
+  /**
+   * Signal (optional) is the signal to send to the container to (gracefully)
+   * stop it before forcibly terminating the container with SIGKILL after the
+   * timeout expires. If no value is set, the default (SIGTERM) is used.
+   */
+  signal?: string
+  /**
+   * Timeout (optional) is the timeout (in seconds) to wait for the container
+   * to stop gracefully before forcibly terminating it with SIGKILL.
+   *
+   * - Use nil to use the default timeout (10 seconds).
+   * - Use '-1' to wait indefinitely.
+   * - Use '0' to not wait for the container to exit gracefully, and
+   *   immediately proceeds to forcibly terminating the container.
+   * - Other positive values are used as timeout (in seconds).
+   */
+  timeout?: number
+}
+
 export interface DockerapiStartRequest {
   checkpointDir?: string
   checkpointID?: string
@@ -203,7 +225,7 @@ export interface DockerapiStopRequest {
   /**
    * Signal (optional) is the signal to send to the container to (gracefully)
    * stop it before forcibly terminating the container with SIGKILL after the
-   * timeout expires. If not value is set, the default (SIGTERM) is used.
+   * timeout expires. If no value is set, the default (SIGTERM) is used.
    */
   signal?: string
   /**
@@ -427,6 +449,8 @@ export interface LoadBalancerConfig {
   link: string
   mode: LoadBalancerMode
   options: Record<string, any>
+  sticky: boolean
+  sticky_max_age: TimeDuration
   weight: number
 }
 
@@ -520,6 +544,8 @@ export interface NetIOCountersStat {
   /** godoxy */
   upload_speed: number
 }
+
+export type NetipAddr = string
 
 export interface NewAgentRequest {
   /** @default "docker" */
@@ -620,7 +646,8 @@ export interface Route {
   excluded_reason?: string | null
   /** for swagger */
   health: HealthJSON
-  healthcheck: HealthCheckConfig
+  /** null on load-balancer routes */
+  healthcheck?: HealthCheckConfig | null
   homepage: HomepageItemConfig
   host: string
   idlewatcher?: IdlewatcherConfig | null
@@ -675,7 +702,8 @@ export interface RouteRoute {
   excluded_reason?: string | null
   /** for swagger */
   health: HealthJSON
-  healthcheck: HealthCheckConfig
+  /** null on load-balancer routes */
+  healthcheck?: HealthCheckConfig | null
   homepage: HomepageItemConfig
   host: string
   idlewatcher?: IdlewatcherConfig | null
@@ -818,7 +846,7 @@ export type TimeDuration =
 
 export type TypesLabelMap = Record<string, any>
 
-export type TypesPortMapping = Record<string, ContainerPort>
+export type TypesPortMapping = Record<string, ContainerPortSummary>
 
 export interface UptimeAggregate {
   data: RouteUptimeAggregate[]
@@ -1132,7 +1160,7 @@ export namespace Docker {
   export namespace Restart {
     export type RequestParams = {}
     export type RequestQuery = {}
-    export type RequestBody = DockerapiStopRequest
+    export type RequestBody = DockerapiRestartRequest
     export type RequestHeaders = {}
     export type ResponseBody = SuccessResponse
   }
@@ -2287,7 +2315,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @response `404` `ErrorResponse` Container not found
      * @response `500` `ErrorResponse` Internal Server Error
      */
-    restart: (request: DockerapiStopRequest, params: RequestParams = {}) =>
+    restart: (request: DockerapiRestartRequest, params: RequestParams = {}) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/docker/restart`,
         method: 'POST',

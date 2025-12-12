@@ -102,7 +102,7 @@ function FileList() {
                 }
                 className={cn(isActive && 'bg-sidebar-accent text-sidebar-accent-foreground')}
               >
-                <File className="w-4 h-4 mr-2 flex-shrink-0" />
+                <File className="w-4 h-4 mr-2 shrink-0" />
                 <span className="truncate">{file.filename}</span>
               </CommandItem>
             )
@@ -115,16 +115,16 @@ function FileList() {
 
 function Sections() {
   const activeFile = configStore.activeFile.use()
-  const [activeSection, setActiveSection] = configStore.activeSection.useState()
+  const activeSection = configStore.activeSection.use()
 
   const { label, sections } = sectionsByFileType[activeFile.type]
 
   // if current section is not in sections, set it to the first section
   useEffect(() => {
     if (!sections.some(section => section.id === activeSection)) {
-      setActiveSection(sections[0]!.id)
+      configStore.activeSection.set(sections[0]!.id)
     }
-  }, [activeSection, sections, setActiveSection])
+  }, [activeSection, sections])
 
   return (
     <SidebarGroup>
@@ -142,13 +142,13 @@ function Sections() {
                     'justify-between',
                     isActive && 'bg-sidebar-accent text-sidebar-accent-foreground'
                   )}
-                  onClick={() => setActiveSection(section.id)}
+                  onClick={() => configStore.activeSection.set(section.id)}
                 >
                   <div className="flex items-center gap-2">
-                    <Icon className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                    <Icon className="w-4 h-4 mt-0.5 shrink-0" />
                     <span>{section.label}</span>
                   </div>
-                  {isActive && <ChevronRight className="w-4 h-4 flex-shrink-0" />}
+                  {isActive && <ChevronRight className="w-4 h-4 shrink-0" />}
                 </SidebarMenuButton>
               </SidebarMenuItem>
             )

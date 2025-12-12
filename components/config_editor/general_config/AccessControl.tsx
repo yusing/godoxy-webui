@@ -1,8 +1,9 @@
-import { ListInput } from '@/components/form/ListInput'
 import { MapInput } from '@/components/form/MapInput'
+import { StoreListInput } from '@/components/form/StoreListInput'
+import { StoreMapInput } from '@/components/form/StoreMapInput'
+import { StoreCheckboxField } from '@/components/store/Checkbox'
+import { StoreRadioField } from '@/components/store/Radio'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { StoreCheckboxField } from '@/components/ui/store/Checkbox'
-import { StoreRadioField } from '@/components/ui/store/Radio'
 import { ACLSchema } from '@/types/godoxy'
 import { useMemo } from 'react'
 import { configStore } from '../store'
@@ -24,35 +25,22 @@ export default function AccessControlConfigContent() {
           />
         </CardContent>
       </Card>
-      <acl.log.Render>
-        {(log, setLog) => (
-          <MapInput
-            label="Log Config"
-            schema={ACLSchema.definitions.ACLLogConfig}
-            value={log ?? {}}
-            onChange={setLog}
-          />
-        )}
-      </acl.log.Render>
+      <StoreMapInput
+        label="Log Config"
+        schema={ACLSchema.definitions.ACLLogConfig}
+        state={acl.log}
+      />
       <ACLNotifyConfig />
-      <acl.allow.Render>
-        {(allow, setAllow) => (
-          <ListInput label="Allow List" value={allow ?? []} onChange={setAllow} />
-        )}
-      </acl.allow.Render>
-      <acl.deny.Render>
-        {(deny, setDeny) => <ListInput label="Deny List" value={deny ?? []} onChange={setDeny} />}
-      </acl.deny.Render>
+      <StoreListInput label="Allow List" state={acl.allow} />
+      <StoreListInput label="Deny List" state={acl.deny} />
     </div>
   )
 }
 
 function ACLNotifyConfig() {
   const notify = configStore.configObject.acl.notify.use()
-  const notificationProviders = configStore.configObject.providers.notification.use()
-  const providerNames = useMemo(
-    () => notificationProviders?.filter(p => p && typeof p === 'object').map(p => p.name) ?? [],
-    [notificationProviders]
+  const providerNames = configStore.configObject.providers.notification.useCompute(
+    p => p?.map(p => p.name) ?? []
   )
   const schema = useMemo(() => {
     const s = structuredClone(ACLSchema.definitions.ACLConfig.properties.notify)

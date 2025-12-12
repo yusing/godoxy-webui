@@ -13,6 +13,8 @@ import { Badge } from '../ui/badge'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { Label } from '../ui/label'
 
+export { MapInput, type MapInputProps }
+
 type MapInputProps<T extends Record<string, unknown>> = {
   label?: ReactNode
   description?: ReactNode
@@ -359,10 +361,7 @@ function MapInput_<T extends Record<string, unknown>>({
   )
 }
 
-export function MapInput<T extends Record<string, unknown>>({
-  schema,
-  ...props
-}: MapInputProps<T>) {
+function MapInput<T extends Record<string, unknown>>({ schema, ...props }: MapInputProps<T>) {
   if (!schema) {
     return <PureMapInput {...props} />
   }

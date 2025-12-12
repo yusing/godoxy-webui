@@ -1,10 +1,10 @@
 'use client'
 
 import { MapInput } from '@/components/form/MapInput'
+import { StoreInputField } from '@/components/store/Input'
 import { json } from '@codemirror/lang-json'
 import { FieldGroup, FieldLegend, FieldSet } from '../ui/field'
 import { StoreCodeMirrorField } from '../ui/store/CodeMirror'
-import { StoreInputField } from '../ui/store/Input'
 import { store } from './store'
 
 // Convert Record<string, string[]> to Record<string, string> for UI

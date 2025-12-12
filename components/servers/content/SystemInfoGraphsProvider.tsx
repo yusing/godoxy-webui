@@ -55,7 +55,7 @@ function PerAggregateProvider({
     onMessage: data => {
       // @ts-expect-error - Entries only exists in response from agent v0.19.x
       if (data.data.Entries) data.data = data.data.Entries // backwards compatibility
-      store.systemInfoGraphs[agent]?.[period]?.[mode]?.set(data)
+      store.set(`systemInfoGraphs.${agent}.${period}.${mode}`, data)
     },
   })
 

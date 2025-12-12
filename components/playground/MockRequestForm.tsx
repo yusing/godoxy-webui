@@ -1,13 +1,13 @@
 'use client'
 
 import { MapInput } from '@/components/form/MapInput'
+import { StoreInputField } from '@/components/store/Input'
+import { StoreSelectField } from '@/components/store/Select'
 import type { MockCookie } from '@/lib/api'
 import { HTTP_METHODS } from '@/types/godoxy/types'
 import { json } from '@codemirror/lang-json'
 import { FieldGroup, FieldLegend, FieldSet } from '../ui/field'
 import { StoreCodeMirrorField } from '../ui/store/CodeMirror'
-import { StoreInputField } from '../ui/store/Input'
-import { StoreSelectField } from '../ui/store/Select'
 import { store } from './store'
 
 // Convert Record<string, string[]> to Record<string, string> for UI
