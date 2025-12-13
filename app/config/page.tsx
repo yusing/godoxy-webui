@@ -15,14 +15,14 @@ export default function ConfigPage() {
       <ConfigStateSyncronizer />
       <ConfigSidebar />
       <SidebarInset>
-        <div className="w-full h-full px-4 grid grid-cols-2 xl:grid-cols-[3fr_2fr] gap-4 py-2">
+        <div className="w-full h-full px-4 grid grid-cols-2 xl:grid-cols-[3fr_2fr] gap-4">
           <div className="overflow-y-hidden">
-            <ScrollArea className="h-full">
+            <ScrollArea className="h-full pb-4">
               <ConfigContent className="min-w-fit max-w-[50vw]" />
             </ScrollArea>
           </div>
           {/* 3/5 */}
-          <Card className="flex flex-col h-full overflow-hidden">
+          <Card className="flex flex-col h-full overflow-hidden rounded-none border-0 border-l">
             <CardHeader className="shrink-0">
               <CardTitle>YAML Editor</CardTitle>
             </CardHeader>
