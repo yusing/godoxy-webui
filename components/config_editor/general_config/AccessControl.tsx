@@ -38,7 +38,7 @@ export default function AccessControlConfigContent() {
 }
 
 function ACLNotifyConfig() {
-  const notify = configStore.configObject.acl.notify.use()
+  const notify = configStore.use('configObject.acl.notify')
   const providerNames = configStore.configObject.providers.notification.useCompute(
     p => p?.map(p => p.name) ?? []
   )
@@ -61,7 +61,7 @@ function ACLNotifyConfig() {
         key: 'to',
         value: providerNames.length == 0 ? 'No notification providers configured' : undefined,
       }}
-      onChange={configStore.configObject.acl.notify.set}
+      onChange={value => configStore.set('configObject.acl.notify', value)}
     />
   )
 }

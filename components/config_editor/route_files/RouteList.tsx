@@ -31,8 +31,8 @@ export default function RouteList() {
   return (
     <div className="flex flex-col gap-4 overflow-y-auto h-full">
       {Object.entries(routes ?? {}).map(([key, value]) => (
-        <Card key={key}>
-          <CardContent>
+        <Card key={key} className="p-2">
+          <CardContent className="px-2">
             <RouteCardContent
               alias={key}
               route={value ?? {}}
