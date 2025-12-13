@@ -110,7 +110,21 @@ function getRouteType(scheme: Routes.Route['scheme']) {
   return 'Reverse Proxy'
 }
 
+function getIconColorsByScheme(scheme: Routes.Route['scheme']): [string, string] {
+  switch (getRouteType(scheme)) {
+    case 'File Server':
+      return ['bg-green-500/30 border-green-500/20', 'text-green-400']
+    case 'Stream':
+      return ['bg-indigo-500/30 border-indigo-500/20', 'text-indigo-400']
+    case 'Reverse Proxy':
+      return ['bg-blue-500/30 border-blue-500/20', 'text-blue-400']
+    default:
+      return ['bg-gray-500/30 border-gray-500/20', 'text-gray-400']
+  }
+}
+
 export {
+  getIconColorsByScheme,
   getListeningAddress,
   getListeningPort,
   getProxyAddressOrRoot,
