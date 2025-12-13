@@ -12,8 +12,9 @@ import { Plus } from 'lucide-react'
 import { Badge } from '../ui/badge'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { Label } from '../ui/label'
+import { compareKeys } from './utils'
 
-export { MapInput, type MapInputProps }
+export { MapInput, PureMapInput, type MapInputProps, type PureMapInputProps }
 
 type MapInputProps<T extends Record<string, unknown>> = {
   label?: ReactNode
@@ -29,6 +30,11 @@ type MapInputProps<T extends Record<string, unknown>> = {
   onChange: (v: T) => void
 }
 
+type PureMapInputProps<T extends Record<string, unknown>> = Omit<
+  MapInputProps<T>,
+  'allowDelete' | 'schema' | 'footer'
+>
+
 function PureMapInput<T extends Record<string, unknown>>({
   label,
   description,
@@ -36,7 +42,7 @@ function PureMapInput<T extends Record<string, unknown>>({
   value,
   onChange,
   card = false,
-}: Readonly<Omit<MapInputProps<T>, 'allowDelete' | 'schema' | 'footer'>>) {
+}: Readonly<PureMapInputProps<T>>) {
   // Maintain stable order: keep existing order, append newly added keys at the end
   const pureKeysRef = useRef<string[]>([])
   const keys = useMemo(() => {
@@ -139,20 +145,6 @@ function PureMapInput<T extends Record<string, unknown>>({
   )
 }
 
-function getTypePriority(type: string) {
-  switch (type) {
-    case 'string':
-      return 0
-    case 'number':
-    case 'integer':
-      return 1
-    case 'boolean':
-      return 2
-    default:
-      return 3
-  }
-}
-
 function MapInput_<T extends Record<string, unknown>>({
   label,
   description,
@@ -213,26 +205,14 @@ function MapInput_<T extends Record<string, unknown>>({
 
   const entries = useMemo(
     () =>
-      Object.entries(merged).sort(([key1], [key2]) => {
-        // Priority 1: keyField and nameField come first
-        if (key1 === (keyField as string) || key1 === (nameField as string)) return -1
-        if (key2 === (keyField as string) || key2 === (nameField as string)) return 1
-
-        // Get types for comparison
-        const type1 = schema.properties?.[key1]?.type as string
-        const type2 = schema.properties?.[key2]?.type as string
-
-        const priority1 = getTypePriority(type1)
-        const priority2 = getTypePriority(type2)
-
-        // Priority 2: Sort by type priority
-        if (priority1 !== priority2) {
-          return priority1 - priority2
-        }
-
-        // Priority 3: Alphabetical sort within same type
-        return key1.localeCompare(key2)
-      }),
+      Object.entries(merged).sort(([key1], [key2]) =>
+        compareKeys(key1, key2, {
+          keyField: String(keyField),
+          nameField: String(nameField),
+          schema,
+          defaultValues: merged,
+        })
+      ),
     [merged, keyField, nameField, schema]
   )
 
