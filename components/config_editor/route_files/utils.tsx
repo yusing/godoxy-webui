@@ -101,7 +101,7 @@ function getListeningAddress(route: Routes.Route): string | undefined {
 
 function getProxyAddressOrRoot(route: Routes.Route): string {
   if (route.scheme === 'fileserver') return route.root
-  return `${route.scheme ?? 'http'}://${route.host}:${getProxyPort(route.port || route.scheme === 'http' ? 80 : 443)}`
+  return `${route.scheme ?? 'http'}://${route.host}:${getProxyPort(route.port || (route.scheme === 'http' ? 80 : 443))}`
 }
 
 function getRouteType(scheme: Routes.Route['scheme']) {
