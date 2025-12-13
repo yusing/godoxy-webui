@@ -24,7 +24,7 @@ export default function RouteDisplay({
   const [iconColor, textColor] = utils.getIconColorsByScheme(route.scheme)
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Header with icon, title and edit button */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
