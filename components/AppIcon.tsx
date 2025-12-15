@@ -1,53 +1,65 @@
 import { cn } from '@/lib/utils'
-import { memo, useMemo } from 'react'
+import { useTheme } from 'next-themes'
+import { useMemo } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 
-interface AppIconProps {
+export { AppIcon, type AppIconProps }
+type AppIconProps = {
   size?: number | string
+  className?: string
   alias?: string
   url?: string
-  className?: string
+  /** mutually exclusive with variant */
+  themeAware?: boolean
+  /** mutually exclusive with themeAware */
+  variant?: 'light' | 'dark'
+  fallback?: React.ReactNode
 }
 
-function AppIcon_({ size, alias, url, className }: AppIconProps) {
+function AppIcon({
+  size,
+  className,
+  alias,
+  url,
+  variant,
+  fallback,
+  themeAware = false,
+}: AppIconProps) {
+  'use memo'
+
+  const { theme } = useTheme()
+
   const appIconUrl = useMemo(() => {
-    let iconURL = `/api/v1/favicon`
-    if (url) {
-      iconURL += `?url=${encodeURIComponent(url)}`
-    } else if (alias) {
-      iconURL += `?alias=${alias}`
-    } else {
-      return undefined
+    const iconURL = `/api/v1/favicon`
+    const query = new URLSearchParams()
+    if (variant) {
+      query.set('variant', variant)
+    } else if (themeAware && theme) {
+      switch (theme) {
+        case 'dark':
+          query.set('variant', 'light')
+          break
+        case 'light':
+          query.set('variant', 'dark')
+          break
+      }
     }
-    return iconURL
-  }, [alias, url])
+    if (url) {
+      query.set('url', url)
+    }
+    if (alias) {
+      query.set('alias', alias)
+    }
+    return `${iconURL}?${query.toString()}`
+  }, [variant, themeAware, theme, alias, url])
 
   return (
     <Avatar className={cn('rounded-md', className)} style={{ width: size, height: size }}>
       <AvatarImage src={appIconUrl} />
       {/* Fallback to use item alias first if both provided */}
       <AvatarFallback>
-        {url && alias ? (
-          <AppIcon size={size} alias={alias} />
-        ) : alias ? (
-          alias.slice(0, 2).toUpperCase()
-        ) : (
-          '?'
-        )}
+        {fallback ? fallback : alias ? alias.slice(0, 2).toUpperCase() : '?'}
       </AvatarFallback>
     </Avatar>
   )
 }
-
-export const AppIcon = memo(AppIcon_, (prev, next) => {
-  return (
-    prev.alias === next.alias &&
-    prev.url === next.url &&
-    prev.size === next.size &&
-    prev.className === next.className
-  )
-}) as typeof AppIcon_ & {
-  displayName: string
-}
-
-AppIcon.displayName = 'AppIcon'
