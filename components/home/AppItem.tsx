@@ -2,7 +2,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import type { HomepageItem } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { cn } from '@/lib/utils'
-import { createMixedState, type ObjectState } from 'juststore'
+import { type ObjectState } from 'juststore'
 import Link from 'next/link'
 import { forwardRef, useMemo } from 'react'
 import { AppIcon } from '../AppIcon'
@@ -57,7 +57,6 @@ const AppItemInner = forwardRef<
   HTMLDivElement,
   { state: ObjectState<HomepageItem>; visibleIndex: number }
 >(({ visibleIndex, state, ...props }, ref) => {
-  const iconState = createMixedState(state.icon, store.ui.iconThemeAware)
   const [alias, url, widgets, hasWidgets] = state.useCompute(item => [
     item.alias,
     item.url,
@@ -92,16 +91,9 @@ const AppItemInner = forwardRef<
           <store.Render path={`health.${alias}.status`}>
             {status => <HealthBubble status={status} />}
           </store.Render>
-          <iconState.Render>
-            {([icon, themeAware]) => (
-              <AppIcon
-                themeAware={themeAware}
-                className="size-6"
-                alias={alias}
-                url={icon || undefined}
-              />
-            )}
-          </iconState.Render>
+          <state.icon.Render>
+            {icon => <ThemeAwareAppIcon alias={alias} url={icon || undefined} />}
+          </state.icon.Render>
           <div className="flex-1 flex flex-col items-start truncate shrink-0">
             <state.name.Render>
               {name => <h3 className="font-medium text-sm">{name || alias}</h3>}
@@ -139,3 +131,8 @@ const AppItemInner = forwardRef<
 })
 
 AppItemInner.displayName = 'AppItem'
+
+function ThemeAwareAppIcon({ alias, url }: { alias: string; url?: string }) {
+  const themeAware = store.ui.iconThemeAware.use()
+  return <AppIcon themeAware={themeAware} alias={alias} url={url} />
+}
