@@ -27,15 +27,15 @@ function AppIcon({
 }: AppIconProps) {
   'use memo'
 
-  const { theme } = useTheme()
+  const { resolvedTheme } = useTheme()
 
   const appIconUrl = useMemo(() => {
     const iconURL = `/api/v1/favicon`
     const query = new URLSearchParams()
     if (variant) {
       query.set('variant', variant)
-    } else if (themeAware && theme) {
-      switch (theme) {
+    } else if (themeAware && resolvedTheme) {
+      switch (resolvedTheme) {
         case 'dark':
           query.set('variant', 'light')
           break
@@ -51,7 +51,7 @@ function AppIcon({
       query.set('alias', alias)
     }
     return `${iconURL}?${query.toString()}`
-  }, [variant, themeAware, theme, alias, url])
+  }, [variant, themeAware, resolvedTheme, alias, url])
 
   return (
     <Avatar className={cn('rounded-md', className)} style={{ width: size, height: size }}>
