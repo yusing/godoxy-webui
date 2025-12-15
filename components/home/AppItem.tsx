@@ -102,7 +102,7 @@ const AppItemInner = forwardRef<
               />
             )}
           </iconState.Render>
-          <div className="flex-1 flex flex-col items-start truncate">
+          <div className="flex-1 flex flex-col items-start truncate shrink-0">
             <state.name.Render>
               {name => <h3 className="font-medium text-sm">{name || alias}</h3>}
             </state.name.Render>
@@ -117,7 +117,7 @@ const AppItemInner = forwardRef<
         </div>
 
         {hasWidgets && (
-          <div className="w-full space-y-3 mt-3">
+          <div className="w-full space-y-3 mt-3 shrink-0">
             <div
               className={cn(
                 'grid gap-2',

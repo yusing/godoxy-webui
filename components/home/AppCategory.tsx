@@ -2,6 +2,7 @@ import type { HomepageItem } from '@/lib/api'
 import { match } from '@/lib/match'
 import { useEffect, useMemo } from 'react'
 import AppCategoryEmpty from './AppCategoryEmpty'
+import AppCategorySegmented from './AppCategorySegmented'
 import AppItem from './AppItem'
 import { store, type ItemState } from './store'
 
@@ -49,13 +50,27 @@ export default function AppCategory({
     () => getItemState(items, searchQuery, category),
     [items, searchQuery, category]
   )
+  const segmented = store.ui.segmentedByCategories.use()
+
+  const shouldSegment = useMemo(
+    () => segmented && (category === 'All' || category === 'Favorites'),
+    [segmented, category]
+  )
 
   useEffect(() => {
-    store.itemState.set(itemState)
-  }, [itemState])
+    if (!shouldSegment) {
+      store.itemState.set(itemState)
+    }
+  }, [itemState, shouldSegment])
 
   if (isEmpty) {
     return <AppCategoryEmpty />
+  }
+
+  if (shouldSegment) {
+    return (
+      <AppCategorySegmented categoryIndex={categoryIndex} items={items} itemState={itemState} />
+    )
   }
 
   return (

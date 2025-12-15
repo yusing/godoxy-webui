@@ -73,6 +73,12 @@ export default function SettingsPopover() {
                 </div>
               }
             />
+            <StoreSwitchField
+              state={store.ui.segmentedByCategories}
+              title="Segment by Categories"
+              labelPlacement="right"
+              description="Group items into category sections in All/Favorites."
+            />
           </div>
           <store.ui.showKeyboardHints.Render>
             {showKeyboardHints =>

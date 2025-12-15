@@ -19,6 +19,7 @@ export type Store = {
   ui: {
     showKeyboardHints: boolean
     iconThemeAware: boolean
+    segmentedByCategories: boolean // in 'All' and 'Favorites' categories
   }
   navigation: {
     activeCategory: string
@@ -54,6 +55,7 @@ export const store = createStore<Store>('homepage', {
   ui: {
     showKeyboardHints: true,
     iconThemeAware: false,
+    segmentedByCategories: false,
   },
   navigation: {
     activeCategory: 'Favorites',
