@@ -1,13 +1,14 @@
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Field, FieldLabel } from '@/components/ui/field'
+import { Separator } from '@/components/ui/separator'
 import { StoreCheckboxField } from '@/juststore-shadcn/src/components/store/Checkbox'
 import { isEqual } from '@/juststore/src/impl'
 import { cn } from '@/lib/utils'
 import type { Routes } from '@/types/godoxy'
 import type { CIDR } from '@/types/godoxy/types'
 import type { State } from 'juststore'
-import { ArrowRight, Copy, Edit2, Globe, Trash } from 'lucide-react'
+import { ArrowRight, Copy, Edit2, Trash } from 'lucide-react'
 import { routesConfigStore as store } from '../store'
 import RouteIcon from './RouteIcon'
 import * as utils from './utils'
@@ -59,9 +60,7 @@ export default function RouteDisplay({
       </div>
 
       {/* Connection details */}
-      <div className="flex items-center gap-2 text-muted-foreground text-xs">
-        <Globe className="h-4 w-4" />
-
+      <div className="flex items-center gap-1 text-muted-foreground text-xs px-1 ml-9.5">
         {listeningAddress && (
           <>
             <span className="font-mono">{listeningAddress}</span>
@@ -71,6 +70,7 @@ export default function RouteDisplay({
         <span className="font-mono">{proxyAddress}</span>
       </div>
 
+      <Separator />
       <QuickSettings alias={alias} />
     </div>
   )
@@ -85,7 +85,7 @@ const DEFAULT_CIDR_ALLOW = [
 
 function QuickSettings({ alias }: { alias: string }) {
   return (
-    <div className="flex flex-wrap gap-4 bg-card py-1 px-2 rounded-md">
+    <div className="flex flex-wrap gap-4 rounded-md">
       <LANOnlyToggle alias={alias} />
       <HealthCheckToggle alias={alias} />
       <ShowOnDashboardToggle alias={alias} />
