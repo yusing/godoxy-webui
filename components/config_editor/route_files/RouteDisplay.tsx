@@ -85,7 +85,7 @@ const DEFAULT_CIDR_ALLOW = [
 
 function QuickSettings({ alias }: { alias: string }) {
   return (
-    <div className="flex gap-2 bg-card py-1 px-2 rounded-md">
+    <div className="flex flex-wrap gap-4 bg-card py-1 px-2 rounded-md">
       <LANOnlyToggle alias={alias} />
       <HealthCheckToggle alias={alias} />
       <ShowOnDashboardToggle alias={alias} />
@@ -136,6 +136,7 @@ function LANOnlyToggle({ alias }: { alias: string }) {
             ? 'Remove default CIDR whitelist'
             : 'Add default CIDR whitelist'
       }
+      className="w-auto shrink-0"
     >
       <Checkbox
         id="lan-only"
