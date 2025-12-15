@@ -9,46 +9,37 @@ import AppEditDialogContent from './AppEditDialogContent'
 import { store } from './store'
 
 import { store as routesStore } from '@/components/routes/store'
-import type { HealthInfo } from '@/lib/api'
-import { useMemo, useState } from 'react'
+import type { ObjectState } from '@/juststore/src'
+import type { HealthInfo, HomepageItem } from '@/lib/api'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import { encodeRouteKey } from '../routes/utils'
 import { Separator } from '../ui/separator'
 
-export default function AppItemContextMenuContent({
-  categoryIndex,
-  appIndex,
-}: {
-  categoryIndex: number
-  appIndex: number
-}) {
-  const item = useMemo(
-    () => store.homepageCategories.at(categoryIndex).items.at(appIndex),
-    [categoryIndex, appIndex]
-  )
-  const alias = item.alias.use()
+export default function AppItemContextMenuContent({ state }: { state: ObjectState<HomepageItem> }) {
+  const alias = state.alias.use()
   const routeKey = encodeRouteKey(alias)
 
   const toggleVisibility = () => {
-    const newVisible = !item.show.value
+    const newVisible = !state.show.value
     api.homepage
       .setItemVisible({
         value: newVisible,
         which: [alias],
       })
-      .then(() => item.show.set(newVisible))
+      .then(() => state.show.set(newVisible))
       .catch(toastError)
   }
 
   const toggleFavorite = () => {
-    const newFavorite = !item.favorite.value
+    const newFavorite = !state.favorite.value
     api.homepage
       .setItemFavorite({
         value: newFavorite,
         which: [alias],
       })
       .then(() => {
-        item.favorite.set(newFavorite)
+        state.favorite.set(newFavorite)
         if (newFavorite) {
           store.pendingFavorites.set(true)
         }
@@ -65,7 +56,7 @@ export default function AppItemContextMenuContent({
             Edit
           </ContextMenuItem>
         </DialogTrigger>
-        <item.show.Render>
+        <state.show.Render>
           {visible => (
             <>
               {visible ? (
@@ -81,7 +72,7 @@ export default function AppItemContextMenuContent({
               )}
               {/* Only visible items can be favorites */}
               {visible && (
-                <item.favorite.Render>
+                <state.favorite.Render>
                   {favorite => (
                     <ContextMenuItem
                       onClick={toggleFavorite}
@@ -91,22 +82,22 @@ export default function AppItemContextMenuContent({
                       {favorite ? 'Remove favorite' : 'Favorite'}
                     </ContextMenuItem>
                   )}
-                </item.favorite.Render>
+                </state.favorite.Render>
               )}
             </>
           )}
-        </item.show.Render>
+        </state.show.Render>
         <Link href={`/routes#${routeKey}`} onClick={() => routesStore.requestedRoute.set(routeKey)}>
           <ContextMenuItem>
             <Info className="w-4 h-4" />
             Details
           </ContextMenuItem>
         </Link>
-        <DockerOnlyMenuItems categoryIndex={categoryIndex} appIndex={appIndex} />
+        <DockerOnlyMenuItems state={state} />
       </ContextMenuContent>
       <DialogOverlay className="backdrop-blur-xs" />
       <DialogContent className="min-w-[40vw] overflow-x-hidden">
-        <AppItemDialogContent categoryIndex={categoryIndex} appIndex={appIndex} />
+        <AppItemDialogContent state={state} />
       </DialogContent>
     </>
   )
@@ -136,16 +127,9 @@ const containerItems = [
   },
 ] as const
 
-function DockerOnlyMenuItems({
-  categoryIndex,
-  appIndex,
-}: {
-  categoryIndex: number
-  appIndex: number
-}) {
-  const item = store.homepageCategories.at(categoryIndex).items.at(appIndex)
-  const alias = item.alias.use()
-  const containerID = item.container_id.use()!
+function DockerOnlyMenuItems({ state }: { state: ObjectState<HomepageItem> }) {
+  const alias = state.alias.use()
+  const containerID = state.container_id?.use()
   const status = store.health[alias]?.status.use() ?? 'unknown'
   const [isLoading, setIsLoading] = useState(false)
 
@@ -178,17 +162,11 @@ function DockerOnlyMenuItems({
   )
 }
 
-function AppItemDialogContent({
-  categoryIndex,
-  appIndex,
-}: {
-  categoryIndex: number
-  appIndex: number
-}) {
+function AppItemDialogContent({ state }: { state: ObjectState<HomepageItem> }) {
   const openedDialog = store.use('openedDialog')
 
   if (openedDialog === 'edit') {
-    return <AppEditDialogContent categoryIndex={categoryIndex} appIndex={appIndex} />
+    return <AppEditDialogContent state={state} />
   }
   // if (openedDialog === 'details') {
   //   return <AppDetailsDialogContent alias={alias} />

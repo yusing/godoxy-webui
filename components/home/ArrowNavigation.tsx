@@ -85,9 +85,7 @@ function handleNextCategory() {
 }
 
 function getVisibleItems() {
-  const itemState = store.itemState.value ?? {}
-  if (!Object.values(itemState).length) return []
-  return Object.values(itemState).filter(item => item.show)
+  return store.itemState.value
 }
 
 // Handle keyboard navigation

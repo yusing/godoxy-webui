@@ -184,7 +184,7 @@ export default function AppGrid() {
                 transition={{ duration: 0.2, ease: 'easeInOut' }}
               >
                 <i.Render>
-                  {items => <AppCategory index={index} category={category} items={items} />}
+                  {items => <AppCategory categoryIndex={index} category={category} items={items} />}
                 </i.Render>
               </motion.div>
             </TabsContent>

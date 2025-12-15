@@ -2,7 +2,7 @@ import { StoreFormInputField } from '@/components/store/Input'
 import { type HomepageItem } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
-import { useForm } from 'juststore'
+import { useForm, type ObjectState } from 'juststore'
 import { useCallback } from 'react'
 import { toast } from 'sonner'
 import { AppIcon } from '../AppIcon'
@@ -18,15 +18,7 @@ import {
 import { Field, FieldLabel } from '../ui/field'
 import { store } from './store'
 
-export default function AppEditDialogContent({
-  categoryIndex,
-  appIndex,
-}: {
-  categoryIndex: number
-  appIndex: number
-}) {
-  const state = store.homepageCategories.at(categoryIndex).items.at(appIndex)
-
+export default function AppEditDialogContent({ state }: { state: ObjectState<HomepageItem> }) {
   const app = state.use()
   const icon = state.icon.useCompute(icon => {
     if (icon) return icon
@@ -54,13 +46,13 @@ export default function AppEditDialogContent({
           async () => await api.homepage.setItemVisible({ which: [newItem.alias], value: true })
         )
         .then(() => {
-          store.homepageCategories.at(categoryIndex).items.at(appIndex).set(newItem)
+          state.set(newItem)
           store.openedDialog.set(null)
           toast.success('App saved successfully')
         })
         .catch(toastError)
     },
-    [app.icon, categoryIndex, appIndex]
+    [app.icon, state]
   )
 
   return (

@@ -2,15 +2,16 @@ import type { HealthMap, HomepageCategory } from '@/lib/api'
 import { createStore } from 'juststore'
 
 export type ItemState = {
-  show: boolean
+  alias: string
   index: number
+  visibleIndex: number
 }
 
 export type Store = {
   systemInfo: SystemInfoSimple
   homepageCategories: HomepageCategory[]
   searchQuery: string
-  itemState: Record<string, ItemState>
+  itemState: Array<ItemState>
   health: HealthMap
   pendingFavorites: boolean
   openedDialog: 'edit' | 'details' | null
@@ -45,7 +46,7 @@ export const store = createStore<Store>('homepage', {
   },
   homepageCategories: [],
   searchQuery: '',
-  itemState: {},
+  itemState: [],
   health: {},
   pendingFavorites: false,
   openedDialog: null,

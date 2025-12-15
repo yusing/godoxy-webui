@@ -81,10 +81,7 @@ export default function Searchbox() {
                   e.preventDefault()
                   e.stopPropagation()
                   // if no results, search it on configured search engine
-                  if (
-                    searchQuery.length > 2 &&
-                    Object.values(store.itemState.value).every(item => item.show === false)
-                  ) {
+                  if (searchQuery.length > 2 && store.itemState.length === 0) {
                     window.open(buildSearchUrl(searchQuery), '_blank')
                   }
                 }
