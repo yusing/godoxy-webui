@@ -1,3 +1,4 @@
+import { AppIcon } from '@/components/AppIcon'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Field, FieldLabel } from '@/components/ui/field'
@@ -29,15 +30,31 @@ export default function RouteDisplay({
   const listeningAddress = utils.getListeningAddress(route)
   const proxyAddress = utils.getProxyAddressOrRoot(route)
 
-  const [iconColor, textColor] = utils.getIconColorsByScheme(route.scheme)
+  const [iconBg, iconFg] = utils.getIconColorsByScheme(route.scheme)
 
   return (
     <div className="space-y-2.5">
       {/* Header with icon, title and edit button */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className={cn('shrink-0 rounded-lg p-1.5 border', iconColor)}>
-            <RouteIcon scheme={route.scheme ?? 'http'} className={cn(`size-4`, textColor)} />
+          <div
+            className={cn(
+              'shrink-0 rounded-lg p-1.5 border',
+              iconBg, // fallback only
+              'not-has-[svg]:bg-gray-500/30 not-has-[svg]:border-gray-500/20' // gray bg for app icon
+            )}
+          >
+            <AppIcon
+              alias={alias}
+              className="size-4"
+              fallback={
+                <RouteIcon
+                  scheme={route.scheme ?? 'http'}
+                  className={iconFg}
+                  data-slot="fallback"
+                />
+              }
+            />
           </div>
           <div>
             <h3 className="font-semibold text">{alias}</h3>
