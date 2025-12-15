@@ -1,4 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card'
+import { createMixedState } from '@/juststore/src'
 import { api } from '@/lib/api-client'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
@@ -57,11 +58,14 @@ export default function AppItem({ categoryIndex, appIndex, visibleIndex }: AppIt
 
 const AppItemInner = forwardRef<HTMLDivElement, AppItemProps>(
   ({ categoryIndex, appIndex, visibleIndex, ...props }, ref) => {
-    const item = store.homepageCategories.at(categoryIndex).items.at(appIndex)
-    const alias = item.alias.use()
-    const widgets = item.widgets.use()
-    const hasWidgets = Array.isArray(widgets) && widgets.length > 0
-    const url = item.url.use()
+    const state = store.homepageCategories.at(categoryIndex).items.at(appIndex)
+    const iconState = createMixedState(state.icon, store.ui.iconThemeAware)
+    const [alias, url, widgets, hasWidgets] = state.useCompute(item => [
+      item.alias,
+      item.url,
+      item.widgets,
+      Array.isArray(item.widgets) && item.widgets.length > 0,
+    ])
 
     return (
       <Card
@@ -88,22 +92,29 @@ const AppItemInner = forwardRef<HTMLDivElement, AppItemProps>(
         <CardContent className={cn(hasWidgets && 'justify-between')}>
           <div className="flex items-center gap-4 w-full">
             <store.Render path={`health.${alias}.status`}>
-              {status => <HealthBubble status={status ?? 'unknown'} />}
+              {status => <HealthBubble status={status} />}
             </store.Render>
-            <item.icon.Render>
-              {icon => <AppIcon className="h-6 w-6" alias={alias} url={icon} />}
-            </item.icon.Render>
+            <iconState.Render>
+              {([icon, themeAware]) => (
+                <AppIcon
+                  themeAware={themeAware}
+                  className="size-6"
+                  alias={alias}
+                  url={icon || undefined}
+                />
+              )}
+            </iconState.Render>
             <div className="flex-1 flex flex-col items-start truncate">
-              <item.name.Render>
+              <state.name.Render>
                 {name => <h3 className="font-medium text-sm">{name || alias}</h3>}
-              </item.name.Render>
-              <item.description.Render>
+              </state.name.Render>
+              <state.description.Render>
                 {description =>
                   description && (
                     <p className="text-xs text-muted-foreground line-clamp-2">{description}</p>
                   )
                 }
-              </item.description.Render>
+              </state.description.Render>
             </div>
           </div>
 

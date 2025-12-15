@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils'
 import type { HealthStatusType } from '@/types/health'
 
-export default function HealthBubble({ status }: { status: HealthStatusType }) {
+export default function HealthBubble({ status }: { status: HealthStatusType | undefined }) {
   return <div className={cn(getClassName(status ?? 'unknown'), 'w-2 h-2 rounded-full')} />
 }
 

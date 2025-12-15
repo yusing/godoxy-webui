@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { RadioGroup, RadioGroupField } from '@/components/ui/radio-group'
 import { Separator } from '@/components/ui/separator'
+import { StoreSwitchField } from '@/juststore-shadcn/src/components/store/Switch'
 import { Settings } from 'lucide-react'
 import { store } from './store'
 
@@ -52,6 +53,15 @@ export default function SettingsPopover() {
                 className="text-xs"
               />
             </RadioGroup>
+          </div>
+          <Separator />
+          <div className="space-y-3">
+            <Label className="text-xs font-medium">UI Preferences</Label>
+            <StoreSwitchField
+              state={store.ui.iconThemeAware}
+              title="Icon Theme Aware"
+              labelPlacement="right"
+            />
           </div>
           <store.ui.showKeyboardHints.Render>
             {showKeyboardHints =>

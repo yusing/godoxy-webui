@@ -17,6 +17,7 @@ export type Store = {
   searchEngine: 'google' | 'duckduckgo'
   ui: {
     showKeyboardHints: boolean
+    iconThemeAware: boolean
   }
   navigation: {
     activeCategory: string
@@ -51,6 +52,7 @@ export const store = createStore<Store>('homepage', {
   searchEngine: 'duckduckgo',
   ui: {
     showKeyboardHints: true,
+    iconThemeAware: false,
   },
   navigation: {
     activeCategory: 'Favorites',
