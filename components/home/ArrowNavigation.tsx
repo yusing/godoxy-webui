@@ -38,6 +38,18 @@ function handleRight(visibleItemsLength: number) {
   setActiveItem(nextRowIndex)
 }
 
+function scrollItemIntoViewIfNeeded(element: Element | null) {
+  if (!(element instanceof HTMLElement)) return
+  const rect = element.getBoundingClientRect()
+  const viewWidth = window.innerWidth || document.documentElement.clientWidth
+  const viewHeight = window.innerHeight || document.documentElement.clientHeight
+  const outOfView =
+    rect.top < 0 || rect.left < 0 || rect.bottom > viewHeight || rect.right > viewWidth
+  if (outOfView) {
+    element.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
+  }
+}
+
 async function handleOpenApp() {
   const activeItem = document.querySelector('.app-item[data-active="true"]')
   if (!activeItem) return
@@ -170,6 +182,7 @@ export default function ArrowNavigation() {
     const newActiveItem = document.querySelector(`.app-item[data-index="${index}"]`)
     if (newActiveItem) {
       newActiveItem.setAttribute('data-active', 'true')
+      scrollItemIntoViewIfNeeded(newActiveItem)
     }
   })
 
