@@ -84,7 +84,7 @@ export default function AppGrid() {
                 >
                   <CategoryIcon
                     category={category.toLowerCase().replace(/\s+/g, '-')}
-                    className="h-3 w-3 sm:h-4 sm:w-4"
+                    className="size-3 sm:size-4"
                   />
                   <span className="hidden sm:inline-flex items-center gap-1">
                     {category}
@@ -95,18 +95,16 @@ export default function AppGrid() {
               {overflowTabs.length > 0 && (
                 <Combobox
                   value={overflowTabs.find(c => c === activeCategory)}
-                  options={overflowTabs.map(c => ({
-                    label: c,
-                    icon: (
-                      <CategoryIcon
-                        category={c.toLowerCase().replace(/\s+/g, '-')}
-                        className="h-3 w-3 sm:h-4 sm:w-4"
-                      />
-                    ),
-                  }))}
+                  items={overflowTabs}
+                  itemToIcon={c => (
+                    <CategoryIcon
+                      category={c.toLowerCase().replace(/\s+/g, '-')}
+                      className="size-3 sm:size-4"
+                    />
+                  )}
                   placeholder="More"
                   emptyMessage="No more categories"
-                  onValueChange={value => setActiveCategory(value)}
+                  onValueChange={value => setActiveCategory(value ?? undefined)}
                 />
               )}
             </TabsList>
