@@ -2,17 +2,17 @@ import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
 import { cn } from '@/lib/utils'
 import { Edit, Eye, EyeOff, Heart, Info, Play, RotateCcw, Square } from 'lucide-react'
-import Link from 'next/link'
 import { ContextMenuContent, ContextMenuItem } from '../ui/context-menu'
 import { DialogContent, DialogOverlay, DialogTrigger } from '../ui/dialog'
 import AppEditDialogContent from './AppEditDialogContent'
 import { store } from './store'
 
-import { store as routesStore } from '@/components/routes/store'
-import type { ObjectState } from '@/juststore/src'
 import type { HealthInfo, HomepageItem } from '@/lib/api'
+import type { ObjectState } from 'juststore'
+import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { setSelectedRoute } from '../routes/store'
 import { encodeRouteKey } from '../routes/utils'
 import { Separator } from '../ui/separator'
 
@@ -87,7 +87,7 @@ export default function AppItemContextMenuContent({ state }: { state: ObjectStat
             </>
           )}
         </state.show.Render>
-        <Link href={`/routes#${routeKey}`} onClick={() => routesStore.requestedRoute.set(routeKey)}>
+        <Link href={`/routes#${routeKey}`} onClick={() => setSelectedRoute(routeKey)}>
           <ContextMenuItem>
             <Info className="w-4 h-4" />
             Details

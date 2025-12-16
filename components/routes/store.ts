@@ -13,7 +13,6 @@ export type RouteDisplaySettings = {
 export type RouteKey = string & { __brand: 'RouteKey' }
 
 type RouteState = {
-  requestedRoute: RouteKey | undefined
   routeKeys: RouteKey[]
   uptime: Record<RouteKey, RouteUptimeAggregate>
   displaySettings: RouteDisplaySettings
@@ -22,7 +21,6 @@ type RouteState = {
 }
 
 export const store = createStore<RouteState>('routes', {
-  requestedRoute: undefined,
   routeKeys: [],
   uptime: {},
   displaySettings: {
@@ -35,9 +33,7 @@ export const store = createStore<RouteState>('routes', {
 })
 
 export function useSelectedRoute(): RouteKey {
-  const requestedRoute = store.requestedRoute.use()
-  const fragment = useFragment() as RouteKey | undefined
-  return fragment || requestedRoute || ('' as RouteKey)
+  return (useFragment() || '') as RouteKey
 }
 
 // setSelectedRoute changes the active route item in the sidebar
