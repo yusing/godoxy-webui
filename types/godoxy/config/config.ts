@@ -23,13 +23,17 @@ export type Config = {
   match_domains?: DomainName[]
   /** Homepage configuration */
   homepage?: HomepageConfig
+  /*
+   * Default values
+   * @additionalProperties false
+   */
+  defaults?: {
+    healthcheck?: HealthcheckConfig
+  }
   /**
    * Optional timeout before shutdown
    * @default 3
    * @minimum 1
    */
-  defaults?: {
-    healthcheck?: HealthcheckConfig
-  }
   timeout_shutdown?: number
 }
