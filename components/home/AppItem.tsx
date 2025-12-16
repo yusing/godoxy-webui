@@ -134,5 +134,5 @@ AppItemInner.displayName = 'AppItem'
 
 function ThemeAwareAppIcon({ alias, url }: { alias: string; url?: string }) {
   const themeAware = store.ui.iconThemeAware.use()
-  return <AppIcon themeAware={themeAware} alias={alias} url={url} />
+  return <AppIcon className="size-6" themeAware={themeAware} alias={alias} url={url} />
 }

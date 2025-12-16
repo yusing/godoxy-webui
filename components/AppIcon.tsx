@@ -56,7 +56,6 @@ function AppIcon({
   return (
     <Avatar className={cn('rounded-md', className)} style={{ width: size, height: size }}>
       <AvatarImage src={appIconUrl} />
-      {/* Fallback to use item alias first if both provided */}
       <AvatarFallback>
         {fallback ? fallback : alias ? alias.slice(0, 2).toUpperCase() : '?'}
       </AvatarFallback>
