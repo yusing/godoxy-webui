@@ -1,5 +1,5 @@
 import type { RuleOn } from '../config/rules'
-import type { CIDR, Duration, HTTPHeader, StatusCode } from '../types'
+import type { CIDR, Duration, HTTPHeader, StatusCode, Stringable } from '../types'
 
 export const ALL_MIDDLEWARES = [
   'ErrorPage',
@@ -172,9 +172,9 @@ export type ModifyRequest = {
   /** modify_request */
   use: LooseUse<'modify_request' | 'request'>
   /** Set HTTP headers */
-  set_headers?: Record<HTTPHeader, string>
+  set_headers?: Record<HTTPHeader, Stringable>
   /** Add HTTP headers */
-  add_headers?: Record<HTTPHeader, string>
+  add_headers?: Record<HTTPHeader, Stringable>
   /** Hide HTTP headers */
   hide_headers?: HTTPHeader[]
   /** Add prefix to request URL */
@@ -185,9 +185,9 @@ export type ModifyResponse = {
   /** modify_response */
   use: LooseUse<'modify_response' | 'response'>
   /** Set HTTP headers */
-  set_headers?: Record<HTTPHeader, string>
+  set_headers?: Record<HTTPHeader, Stringable>
   /** Add HTTP headers */
-  add_headers?: Record<HTTPHeader, string>
+  add_headers?: Record<HTTPHeader, Stringable>
   /** Hide HTTP headers */
   hide_headers?: HTTPHeader[]
 }

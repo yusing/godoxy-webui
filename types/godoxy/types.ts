@@ -17,6 +17,8 @@ export const HTTP_METHODS = [
   'TRACE',
 ] as const
 
+export type Stringable = string | number | boolean
+
 /**
  * HTTP Method
  * @type string
