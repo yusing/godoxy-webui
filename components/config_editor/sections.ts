@@ -7,6 +7,7 @@ import {
   Plus,
   Route,
   Server,
+  Settings,
   Shield,
   SlidersHorizontal,
   type LucideIcon,
@@ -68,6 +69,12 @@ const configSections: Section[] = [
     label: 'Domain Matching',
     icon: Link,
     Content: lazy(() => import('./general_config/DomainMatching')),
+  },
+  {
+    id: 'default-values',
+    label: 'Default Values',
+    icon: Settings,
+    Content: lazy(() => import('./general_config/DefaultValues')),
   },
   // {
   //   id: 'homepage',
