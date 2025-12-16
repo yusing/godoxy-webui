@@ -15,10 +15,10 @@ export default function ConfigPage() {
       <ConfigStateSyncronizer />
       <ConfigSidebar />
       <SidebarInset>
-        <div className="w-full h-full px-4 grid grid-cols-2 xl:grid-cols-[3fr_2fr] gap-4">
+        <div className="w-full h-full px-4 grid grid-cols-2 xl:grid-cols-[3fr_2fr] gap-1">
           <div className="overflow-y-hidden">
-            <ScrollArea className="h-full pb-4">
-              <ConfigContent className="min-w-fit max-w-[50vw]" />
+            <ScrollArea className="h-full pb-4 pr-3">
+              <ConfigContent className="min-w-fit" />
             </ScrollArea>
           </div>
           {/* 3/5 */}
