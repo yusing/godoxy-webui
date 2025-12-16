@@ -1,6 +1,7 @@
 'use client'
 import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'motion/react'
+import { Suspense } from 'react'
 import LoadingRing from '../LoadingRing'
 import { SidebarTrigger } from '../ui/sidebar'
 import { sectionsByFileType } from './sections'
@@ -33,11 +34,11 @@ export default function ConfigContent({ className }: { className?: string }) {
           transition={{ duration: 0.25 }}
         >
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center h-full">
-              <LoadingRing />
-            </div>
+            <LoadingContent />
           ) : Content ? (
-            <Content />
+            <Suspense fallback={<LoadingContent />}>
+              <Content />
+            </Suspense>
           ) : (
             <div className="flex flex-col items-center justify-center h-full">
               <span className="text-center text-muted-foreground">No content</span>
@@ -45,6 +46,14 @@ export default function ConfigContent({ className }: { className?: string }) {
           )}
         </motion.div>
       </AnimatePresence>
+    </div>
+  )
+}
+
+function LoadingContent() {
+  return (
+    <div className="flex flex-col items-center justify-center h-full">
+      <LoadingRing />
     </div>
   )
 }
