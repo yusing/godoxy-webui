@@ -7,7 +7,7 @@ export default function DomainMatchingConfigContent() {
       label="Match Domains"
       description="List of domains to match"
       placeholder="example.com"
-      state={configStore.configObject.match_domains}
+      state={configStore.configObject.match_domains.ensureArray()}
     />
   )
 }

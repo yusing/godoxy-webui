@@ -5,7 +5,7 @@ import { PureMapInput, type MapInputProps, type PureMapInputProps } from './MapI
 import { Button } from '@/components/ui/button'
 import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
 
-import type { FieldPath, FieldValues, ObjectState } from 'juststore'
+import type { FieldPath, FieldValues, ObjectState, ValueState } from 'juststore'
 import { Plus } from 'lucide-react'
 import { useMemo } from 'react'
 import { Badge } from '../ui/badge'
@@ -18,11 +18,11 @@ import { compareKeys } from './utils'
 export { StoreMapInput, StorePureMapInput, type StoreMapInputProps, type StorePureMapInputProps }
 
 type StoreMapInputProps<T extends FieldValues> = {
-  state: ObjectState<T | undefined>
+  state: ObjectState<T>
 } & Omit<MapInputProps<T>, 'value' | 'onChange'>
 
 type StorePureMapInputProps<T extends FieldValues> = {
-  state: ObjectState<T | undefined>
+  state: ObjectState<T>
 } & Omit<PureMapInputProps<T>, 'value' | 'onChange'>
 
 function StorePureMapInput<T extends FieldValues>({
@@ -33,10 +33,7 @@ function StorePureMapInput<T extends FieldValues>({
   return <PureMapInput value={value} onChange={setValue} {...props} />
 }
 
-function StoreMapInput<T extends Record<string, unknown>>({
-  schema,
-  ...props
-}: StoreMapInputProps<T>) {
+function StoreMapInput<T extends FieldValues>({ schema, ...props }: StoreMapInputProps<T>) {
   if (!schema) {
     return <StorePureMapInput {...props} />
   }
@@ -159,7 +156,7 @@ function RenderItem<T extends FieldValues>({
         card={false}
         key={`${index}_list`}
         label={k}
-        state={state[k].ensureArray<string>()}
+        state={state[k].ensureArray()}
         schema={vSchema}
         description={vSchema?.description}
       />
@@ -195,7 +192,7 @@ function RenderItem<T extends FieldValues>({
   return (
     <StoreFieldInput
       key={`${index}_field`}
-      state={state[k]}
+      state={state[k] as ValueState<T[typeof k]>}
       schema={schema}
       placeholder={placeholder}
       allowDelete={allowDelete}

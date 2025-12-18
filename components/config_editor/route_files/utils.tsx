@@ -1,11 +1,13 @@
 import type { Routes } from '@/types/godoxy'
 import type { Port, StreamPort } from '@/types/godoxy/types'
+import { Folder, Globe, Wifi } from 'lucide-react'
 import { Code } from './Code'
 
 const routeSchemes = [
   {
     label: 'Reverse Proxy (http)',
     value: 'http',
+    icon: Globe,
     description: 'Proxy to a web app',
     cardDescription: (route: Routes.ReverseProxyRoute) => {
       return (
@@ -21,6 +23,7 @@ const routeSchemes = [
   {
     label: 'Reverse Proxy (https)',
     value: 'https',
+    icon: Globe,
     description: 'Proxy to a secure web app over https',
     cardDescription: (route: Routes.ReverseProxyRoute) => {
       return (
@@ -36,6 +39,7 @@ const routeSchemes = [
   {
     label: 'File Server',
     value: 'fileserver',
+    icon: Folder,
     description: 'Serve static files',
     cardDescription: (route: Routes.FileServerRoute) => {
       return (
@@ -48,6 +52,7 @@ const routeSchemes = [
   {
     label: 'Stream (tcp)',
     value: 'tcp',
+    icon: Wifi,
     description: 'Port forward a tcp app',
     cardDescription: (route: Routes.StreamRoute) => {
       return (
@@ -64,6 +69,7 @@ const routeSchemes = [
   {
     label: 'Stream (udp)',
     value: 'udp',
+    icon: Wifi,
     description: 'Port forward a udp app',
     cardDescription: (route: Routes.StreamRoute) => {
       return (

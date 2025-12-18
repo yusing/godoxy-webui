@@ -7,7 +7,7 @@ export default function DefaultValues() {
     <div className="flex flex-col gap-6">
       <StoreMapInput
         label="Health Check"
-        state={configStore.configObject.defaults.healthcheck}
+        state={configStore.configObject.defaults.healthcheck.ensureObject()}
         schema={ConfigSchema.properties.defaults.properties.healthcheck}
       ></StoreMapInput>
     </div>

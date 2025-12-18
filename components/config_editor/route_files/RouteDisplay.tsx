@@ -7,7 +7,6 @@ import { StoreCheckboxField } from '@/juststore-shadcn/src/components/store/Chec
 import { cn } from '@/lib/utils'
 import type { Routes } from '@/types/godoxy'
 import type { CIDR } from '@/types/godoxy/types'
-import type { State } from 'juststore'
 import { ArrowRight, Copy, Edit2, Trash } from 'lucide-react'
 import isEqual from 'react-fast-compare'
 import { routesConfigStore as store } from '../store'
@@ -177,7 +176,7 @@ function LANOnlyToggle({ alias }: { alias: string }) {
 function HealthCheckToggle({ alias }: { alias: string }) {
   return (
     <StoreCheckboxField
-      state={store.configObject![alias]!.healthcheck.disable}
+      state={store.state(`configObject.${alias}.healthcheck.disable`).withDefault(false)}
       title="No Health Check"
       labelPlacement="right"
     />
@@ -194,12 +193,10 @@ function ShowOnDashboardToggle({ alias }: { alias: string }) {
   }
   return (
     <StoreCheckboxField
-      state={
-        (store.state(`configObject.${alias}.homepage.show`) as State<boolean>).derived({
-          from: value => value ?? true, // default to true if undefined
-          to: value => !!value,
-        }) as State<boolean>
-      }
+      state={store.state(`configObject.${alias}.homepage.show`).derived({
+        from: value => value ?? true, // default to true if undefined
+        to: value => !!value,
+      })}
       title="Show on Dashboard"
       labelPlacement="right"
     />

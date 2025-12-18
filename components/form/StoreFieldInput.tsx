@@ -24,11 +24,11 @@ import {
   isToggleType,
   type JSONSchema,
 } from '@/types/schema'
-import type { State } from 'juststore'
+import type { ValueState } from 'juststore'
 import { Label } from '../ui/label'
 
 type StoreFieldInputProps<T> = {
-  state: State<T>
+  state: ValueState<T>
   schema: JSONSchema | undefined
   placeholder: { key?: string; value?: string } | undefined
   onKeyChange: (newKey: string) => void

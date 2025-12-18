@@ -1,6 +1,6 @@
 import { NamedListInput } from '@/components/form/NamedListInput'
 import { StoreFormCheckboxField } from '@/components/store/Checkbox'
-import { StoreFormInputField, StoreInputField } from '@/components/store/Input'
+import { StoreFormInputField } from '@/components/store/Input'
 import { StoreFormSelectField } from '@/components/store/Select'
 import { Button, type buttonVariants } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
@@ -17,7 +17,7 @@ import { api } from '@/lib/api-client'
 import { MiddlewareComposeSchema, type Routes } from '@/types/godoxy'
 import type { EntrypointMiddlewares } from '@/types/godoxy/middlewares/middleware_compose'
 import type { MiddlewaresMap } from '@/types/godoxy/middlewares/middlewares'
-import { LOAD_BALANCE_MODES } from '@/types/godoxy/providers/loadbalance'
+import { LOAD_BALANCE_MODES, type LoadBalanceMode } from '@/types/godoxy/providers/loadbalance'
 import type { StreamPort } from '@/types/godoxy/types'
 import type { VariantProps } from 'class-variance-authority'
 import { useForm, type FormState, type FormStore } from 'juststore'
@@ -128,7 +128,10 @@ export default function RouteEditForm({
       </div>
 
       {/* Route Type */}
-      <StoreFormSelectField defaultValue="http" state={form.scheme} options={utils.routeSchemes} />
+      <StoreFormSelectField
+        state={(form.scheme as FormState<string>).withDefault('http')}
+        options={utils.routeSchemes}
+      />
 
       {/* Alias */}
       <StoreFormInputField
@@ -149,7 +152,7 @@ export default function RouteEditForm({
                 <>
                   {/** Listening Port */}
                   {isStream(scheme) && (
-                    <StoreInputField
+                    <StoreFormInputField
                       state={streamForm.port.derived({
                         from: v => utils.getListeningPort(v ?? 0),
                         to: v =>
@@ -163,7 +166,7 @@ export default function RouteEditForm({
                     />
                   )}
                   {/** Proxy Port */}
-                  <StoreInputField
+                  <StoreFormInputField
                     state={streamForm.port.derived({
                       from: v => utils.getProxyPort(v ?? 0),
                       to: v => {
@@ -203,7 +206,7 @@ export default function RouteEditForm({
 }
 
 function AdvancedOptions({ form }: { form: FormStore<Routes.Route> }) {
-  const rpForm = form as FormStore<Routes.ReverseProxyRoute>
+  const rpForm = form as unknown as FormStore<Routes.ReverseProxyRoute>
 
   return (
     <Collapsible defaultOpen>
@@ -275,7 +278,7 @@ function AdvancedOptions({ form }: { form: FormStore<Routes.Route> }) {
             <FieldDescription>Route requests to multiple upstreams</FieldDescription>
             <FieldGroup className="gap-4">
               <StoreFormSelectField
-                state={rpForm.load_balance.mode}
+                state={rpForm.load_balance.mode as FormState<LoadBalanceMode>}
                 title="Mode"
                 defaultValue="round_robin"
                 placeholder="Round Robin"

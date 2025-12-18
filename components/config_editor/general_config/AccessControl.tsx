@@ -8,8 +8,9 @@ import { ACLSchema } from '@/types/godoxy'
 import { useMemo } from 'react'
 import { configStore } from '../store'
 
+const acl = configStore.configObject.acl
+
 export default function AccessControlConfigContent() {
-  const acl = configStore.configObject.acl
   return (
     <div className="flex flex-col gap-4">
       <Card>
@@ -17,22 +18,21 @@ export default function AccessControlConfigContent() {
           <CardTitle>Behavior</CardTitle>
         </CardHeader>
         <CardContent flex>
-          <StoreRadioField state={acl.default} options={['allow', 'deny']} defaultValue="allow" />
+          <StoreRadioField state={acl.default.withDefault('allow')} options={['allow', 'deny']} />
           <StoreCheckboxField
-            state={acl.allow_local}
+            state={acl.allow_local.withDefault(true)}
             title="Allow local access"
-            defaultValue={true}
           />
         </CardContent>
       </Card>
       <StoreMapInput
         label="Log Config"
         schema={ACLSchema.definitions.ACLLogConfig}
-        state={acl.log}
+        state={acl.log.ensureObject()}
       />
       <ACLNotifyConfig />
-      <StoreListInput label="Allow List" state={acl.allow} />
-      <StoreListInput label="Deny List" state={acl.deny} />
+      <StoreListInput label="Allow List" state={acl.allow.ensureArray()} />
+      <StoreListInput label="Deny List" state={acl.deny.ensureArray()} />
     </div>
   )
 }

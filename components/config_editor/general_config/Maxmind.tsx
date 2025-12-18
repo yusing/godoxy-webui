@@ -8,7 +8,7 @@ export default function MaxmindConfigContent() {
       label="Maxmind"
       card={false}
       schema={MaxmindSchema.definitions.MaxmindConfig}
-      state={configStore.configObject.providers.maxmind}
+      state={configStore.configObject.providers.maxmind.ensureObject()}
     />
   )
 }

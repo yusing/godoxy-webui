@@ -6,9 +6,9 @@ export default function RouteProviderConfigContent() {
   const providers = configStore.configObject.providers
   return (
     <div className="flex flex-col gap-4">
-      <StoreListInput card label="Include Files" state={providers.include} />
-      <StoreListInput card label="Agents" state={providers.agents} />
-      <StoreMapInput card label="Docker" state={providers.docker} />
+      <StoreListInput card label="Include Files" state={providers.include.ensureArray()} />
+      <StoreListInput card label="Agents" state={providers.agents.ensureArray()} />
+      <StoreMapInput card label="Docker" state={providers.docker.ensureObject()} />
     </div>
   )
 }
