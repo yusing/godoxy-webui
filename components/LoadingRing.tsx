@@ -1,12 +1,15 @@
-import type { LucideProps } from 'lucide-react'
+import type React from 'react'
 
-export default function LoadingRing({ size = 24, ...props }: LucideProps) {
+export default function LoadingRing({
+  size = 24,
+  ...props
+}: React.ComponentProps<'svg'> & { size?: number }) {
   return (
     <svg
       height={size}
+      width={size}
       stroke="currentColor"
       viewBox="0 0 44 44"
-      width={size}
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >

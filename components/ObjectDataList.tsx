@@ -1,12 +1,12 @@
 import { cn } from '@/lib/utils'
 import { html } from '@codemirror/lang-html'
 import { json } from '@codemirror/lang-json'
+import { IconCopy } from '@tabler/icons-react'
 import ReactCodeMirror, {
   EditorView,
   type Extension,
   type ReactCodeMirrorProps,
 } from '@uiw/react-codemirror'
-import { CopyIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { memo, useCallback, type ReactNode } from 'react'
 import { toast } from 'sonner'
@@ -197,7 +197,7 @@ export const CodeMirror = memo(function ({
           variant="ghost"
           className="size-6"
         >
-          <CopyIcon className="size-3" />
+          <IconCopy className="size-3" />
         </Button>
       </div>
       <ReactCodeMirror

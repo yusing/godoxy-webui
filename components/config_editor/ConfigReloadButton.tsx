@@ -1,4 +1,4 @@
-import { RefreshCcw } from 'lucide-react'
+import { IconRefresh } from '@tabler/icons-react'
 import { Button } from '../ui/button'
 import { configStore } from './store'
 
@@ -11,7 +11,7 @@ export default function ConfigReloadButton(props: React.ComponentProps<typeof Bu
 
   return (
     <Button {...props} onClick={handleReload}>
-      <RefreshCcw />
+      <IconRefresh />
     </Button>
   )
 }

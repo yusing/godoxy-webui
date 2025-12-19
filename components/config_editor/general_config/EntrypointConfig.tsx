@@ -1,5 +1,6 @@
 import { MapInput } from '@/components/form/MapInput'
 import { NamedListInput } from '@/components/form/NamedListInput'
+import { Card, CardContent } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { ConfigSchema, MiddlewareComposeSchema } from '@/types/godoxy'
@@ -21,13 +22,17 @@ export default function EntrypointConfigContent() {
 function EntrypointProxyProtocolConfig() {
   const supportProxyProtocol = configStore.configObject.entrypoint.support_proxy_protocol.use()
   return (
-    <div className="flex gap-2 border rounded-md p-4">
-      <Label>Support proxy protocol</Label>
-      <Switch
-        checked={supportProxyProtocol}
-        onCheckedChange={configStore.configObject.entrypoint.support_proxy_protocol.set}
-      />
-    </div>
+    <Card>
+      <CardContent className="flex items-center gap-2">
+        <Label>Support proxy protocol</Label>
+        <Switch
+          checked={supportProxyProtocol}
+          onCheckedChange={checked =>
+            configStore.configObject.entrypoint.support_proxy_protocol.set(checked)
+          }
+        />
+      </CardContent>
+    </Card>
   )
 }
 

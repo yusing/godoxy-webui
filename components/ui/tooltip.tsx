@@ -1,24 +1,12 @@
-'use client'
-
-import * as TooltipPrimitive from '@radix-ui/react-tooltip'
-import * as React from 'react'
+import { Tooltip as TooltipPrimitive } from '@base-ui/react/tooltip'
 
 import { cn } from '@/lib/utils'
 
-function TooltipProvider({
-  delayDuration = 0,
-  ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Provider>) {
-  return (
-    <TooltipPrimitive.Provider
-      data-slot="tooltip-provider"
-      delayDuration={delayDuration}
-      {...props}
-    />
-  )
+function TooltipProvider({ delay = 0, ...props }: TooltipPrimitive.Provider.Props) {
+  return <TooltipPrimitive.Provider data-slot="tooltip-provider" delay={delay} {...props} />
 }
 
-function Tooltip({ ...props }: React.ComponentProps<typeof TooltipPrimitive.Root>) {
+function Tooltip({ ...props }: TooltipPrimitive.Root.Props) {
   return (
     <TooltipProvider>
       <TooltipPrimitive.Root data-slot="tooltip" {...props} />
@@ -26,70 +14,43 @@ function Tooltip({ ...props }: React.ComponentProps<typeof TooltipPrimitive.Root
   )
 }
 
-function TooltipTrigger({ ...props }: React.ComponentProps<typeof TooltipPrimitive.Trigger>) {
+function TooltipTrigger({ ...props }: TooltipPrimitive.Trigger.Props) {
   return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
 }
 
 function TooltipContent({
   className,
-  sideOffset = 0,
+  side = 'top',
+  sideOffset = 4,
+  align = 'center',
+  alignOffset = 0,
   children,
   ...props
-}: React.ComponentProps<typeof TooltipPrimitive.Content>) {
+}: TooltipPrimitive.Popup.Props &
+  Pick<TooltipPrimitive.Positioner.Props, 'align' | 'alignOffset' | 'side' | 'sideOffset'>) {
   return (
     <TooltipPrimitive.Portal>
-      <TooltipPrimitive.Content
-        data-slot="tooltip-content"
+      <TooltipPrimitive.Positioner
+        align={align}
+        alignOffset={alignOffset}
+        side={side}
         sideOffset={sideOffset}
-        className={cn(
-          'bg-accent/70 text-accent-foreground border-accent/70 backdrop-blur-xs animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-fit origin-(--radix-tooltip-content-transform-origin) rounded-md px-3 py-1.5 text-xs text-balance',
-          className
-        )}
-        {...props}
+        className="isolate z-50"
       >
-        {children}
-        <TooltipPrimitive.Arrow className="bg-accent/70 fill-accent/70 z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-[2px]" />
-      </TooltipPrimitive.Content>
+        <TooltipPrimitive.Popup
+          data-slot="tooltip-content"
+          className={cn(
+            'data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-[state=delayed-open]:animate-in data-[state=delayed-open]:fade-in-0 data-[state=delayed-open]:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 rounded-none px-3 py-1.5 text-xs bg-foreground text-background z-50 w-fit max-w-xs origin-(--transform-origin)',
+            className
+          )}
+          {...props}
+        >
+          {children}
+          <TooltipPrimitive.Arrow className="size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-none bg-foreground fill-foreground z-50 data-[side=bottom]:top-1 data-[side=left]:top-1/2! data-[side=left]:-right-1 data-[side=left]:-translate-y-1/2 data-[side=right]:top-1/2! data-[side=right]:-left-1 data-[side=right]:-translate-y-1/2 data-[side=top]:-bottom-2.5" />
+        </TooltipPrimitive.Popup>
+      </TooltipPrimitive.Positioner>
     </TooltipPrimitive.Portal>
   )
 }
 
-interface TooltipItemProps {
-  icon: React.ReactNode
-  label: string
-  value: string
-  valueClassName?: string
-  isLastItem?: boolean
-}
-
-function TooltipItem({ icon, label, value, valueClassName, isLastItem }: TooltipItemProps) {
-  return (
-    <div
-      className={cn('flex items-start gap-3 py-1.5', !isLastItem && 'border-b border-border/30')}
-    >
-      <div className="shrink-0 mt-0.5">{icon}</div>
-      <div className="flex flex-col gap-0.5 min-w-0 flex-1">
-        <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-          {label}
-        </div>
-        <div
-          className={cn(
-            'text-sm font-medium wrap-break-word leading-tight',
-            valueClassName || 'text-foreground'
-          )}
-        >
-          {value}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-export {
-  Tooltip,
-  TooltipContent,
-  TooltipItem,
-  TooltipProvider,
-  TooltipTrigger,
-  type TooltipItemProps,
-}
+export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger }

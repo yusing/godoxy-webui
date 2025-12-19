@@ -1,9 +1,9 @@
-import { LogOut } from 'lucide-react'
+import { IconLogout } from '@tabler/icons-react'
 
 export default function LogoutButton({ className }: { className?: string }) {
   return (
     <a href="/api/v1/auth/logout" className={className}>
-      <LogOut className="size-4" />
+      <IconLogout className="size-4" />
     </a>
   )
 }

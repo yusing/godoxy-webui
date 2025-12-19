@@ -17,8 +17,8 @@ import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
 import { cn } from '@/lib/utils'
 import type { Config } from '@/types/godoxy'
+import { IconCheck, IconPlus } from '@tabler/icons-react'
 import { createMixedState, useForm, useMemoryStore } from 'juststore'
-import { Check, Plus } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { parse as parseYAML, stringify as stringifyYAML } from 'yaml'
@@ -127,11 +127,9 @@ export function AddAgentDialogButton() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant={'outline'} size="sm">
-          <Plus />
-          Add agent
-        </Button>
+      <DialogTrigger render={<Button variant={'outline'} size="sm" />}>
+        <IconPlus />
+        Add agent
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -155,7 +153,7 @@ export function AddAgentDialogButton() {
                           {icon}
                           {label}
                         </div>
-                        {type === agentType && <Check className="size-4" />}
+                        {type === agentType && <IconCheck className="size-4" />}
                       </button>
                     ))}
                   </div>

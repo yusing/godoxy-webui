@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { ChevronRight, File, Folder, FolderOpen } from 'lucide-react'
+import { IconChevronRight, IconFile, IconFolder, IconFolderOpen } from '@tabler/icons-react'
 import { AnimatePresence, motion } from 'motion/react'
 import {
   type ComponentProps,
@@ -371,7 +371,7 @@ export const TreeExpander = ({
       transition={{ duration: 0.2, ease: 'easeInOut' }}
       {...props}
     >
-      <ChevronRight className="h-3 w-3 text-muted-foreground" />
+      <IconChevronRight className="h-3 w-3 text-muted-foreground" />
     </motion.div>
   )
 }
@@ -393,12 +393,12 @@ export const TreeIcon = ({ icon, hasChildren = false, className, ...props }: Tre
   const getDefaultIcon = () =>
     hasChildren ? (
       isExpanded ? (
-        <FolderOpen className="h-4 w-4" />
+        <IconFolderOpen className="h-4 w-4" />
       ) : (
-        <Folder className="h-4 w-4" />
+        <IconFolder className="h-4 w-4" />
       )
     ) : (
-      <File className="h-4 w-4" />
+      <IconFile className="h-4 w-4" />
     )
 
   return (

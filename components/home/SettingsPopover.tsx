@@ -14,12 +14,10 @@ export default function SettingsPopover() {
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button variant="ghost" size="sm" className="gap-2">
-          <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
-        </Button>
+      <PopoverTrigger render={<Button variant="ghost" size="sm" className="gap-2" />}>
+        <Settings className="size-3 sm:size-4" />
       </PopoverTrigger>
-      <PopoverContent align="end" className="w-fit">
+      <PopoverContent className="w-fit">
         <div className="space-y-4">
           <div className="space-y-2">
             <h4 className="font-semibold text-sm">App Settings</h4>

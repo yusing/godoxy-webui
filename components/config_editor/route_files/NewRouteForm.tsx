@@ -1,5 +1,5 @@
 import type { Routes } from '@/types/godoxy'
-import { Plus, RefreshCcw } from 'lucide-react'
+import { IconPlus, IconRefresh } from '@tabler/icons-react'
 import { useEffect, useMemo } from 'react'
 import { routesConfigStore } from '../store'
 import RouteEditForm from './RouteEditForm'
@@ -35,9 +35,9 @@ export default function NewRouteForm() {
         onSave={onSave}
         onCancel={form => form.reset()}
         headerText="New Route"
-        saveButtonIcon={Plus}
+        saveButtonIcon={IconPlus}
         saveButtonText="Create"
-        cancelButtonIcon={RefreshCcw}
+        cancelButtonIcon={IconRefresh}
         cancelButtonText="Reset"
         cancelButtonVariant="outline"
       />

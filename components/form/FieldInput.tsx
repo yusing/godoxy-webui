@@ -1,6 +1,6 @@
 'use client'
 
-import { RefreshCcw, Trash } from 'lucide-react'
+import { IconRefresh, IconTrash } from '@tabler/icons-react'
 import { memo, useMemo } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -69,7 +69,7 @@ export function FieldInput<T>({
             value={fieldKey}
             placeholder={placeholder?.key ?? 'Key'}
             onChange={({ target: { value } }) => onKeyChange(value, fieldValue)}
-            className="max-w-[220px]"
+            className="max-w-[220px] text-xs"
           />
         ) : title ? (
           <div className="min-w-[150px] select-none">
@@ -126,7 +126,7 @@ export function FieldInput<T>({
             variant="destructive"
             onClick={() => onChange(undefined)}
           >
-            {deleteType === 'delete' ? <Trash /> : <RefreshCcw />}
+            {deleteType === 'delete' ? <IconTrash /> : <IconRefresh />}
             {deleteType === 'delete' ? 'Delete' : 'Reset'}
           </Button>
         )}

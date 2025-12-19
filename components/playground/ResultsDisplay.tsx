@@ -15,8 +15,8 @@ import {
 import { cn } from '@/lib/utils'
 import { json } from '@codemirror/lang-json'
 import { yaml } from '@codemirror/lang-yaml'
+import { IconCheck, IconX } from '@tabler/icons-react'
 import { EditorView } from '@uiw/react-codemirror'
-import { Check, X } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useState } from 'react'
 import { stringify as stringifyYAML } from 'yaml'
@@ -86,9 +86,9 @@ export default function ResultsDisplay() {
                       <TableRow key={index}>
                         <TableCell>
                           {rule.validationError ? (
-                            <X className="h-4 w-4 text-error-foreground" />
+                            <IconX className="h-4 w-4 text-error-foreground" />
                           ) : (
-                            <Check className="h-4 w-4 text-success-foreground" />
+                            <IconCheck className="h-4 w-4 text-success-foreground" />
                           )}
                         </TableCell>
                         <TableCell className="font-medium">{rule.name}</TableCell>

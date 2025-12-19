@@ -8,8 +8,8 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { useWebSocketApi } from '@/hooks/websocket'
+import { IconRefresh } from '@tabler/icons-react'
 import Convert from 'ansi-to-html'
-import { RefreshCcwIcon } from 'lucide-react'
 import { useCallback, useState } from 'react'
 
 const convert = new Convert()
@@ -38,11 +38,9 @@ export default function AutocertRenewDialogButton() {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button size="sm" variant="outline" type="button">
-          <RefreshCcwIcon className="w-4 h-4" />
-          Renew
-        </Button>
+      <DialogTrigger render={<Button size="sm" variant="outline" type="button" />}>
+        <IconRefresh className="size-4" />
+        Renew
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
@@ -64,10 +62,8 @@ export default function AutocertRenewDialogButton() {
           )}
         </div>
         <div className="flex justify-end gap-2">
-          <DialogClose asChild>
-            <Button type="button" variant="outline" disabled={!finished}>
-              Close
-            </Button>
+          <DialogClose render={<Button type="button" variant="outline" disabled={!finished} />}>
+            Close
           </DialogClose>
         </div>
       </DialogContent>

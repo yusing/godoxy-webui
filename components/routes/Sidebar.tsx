@@ -17,8 +17,8 @@ import RoutePercentageText from './PercentageText'
 import RoutesSidebarSearchBox from './SearchBox'
 import RouteUptimeBar from './UptimeBar'
 
+import { IconFilter } from '@tabler/icons-react'
 import type { FieldPath } from 'juststore'
-import { FilterIcon } from 'lucide-react'
 import { AppIcon } from '../AppIcon'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { ScrollArea } from '../ui/scroll-area'
@@ -33,8 +33,8 @@ export default function RoutesSidebar({ className }: { className?: string }) {
       <div className="sidebar-header sticky top-0 px-3 py-3 flex items-center justify-between border-x">
         <Label className="text-sm">Routes</Label>
         <Popover>
-          <PopoverTrigger asChild aria-label="Filters">
-            <FilterIcon className="size-4" />
+          <PopoverTrigger aria-label="Filters">
+            <IconFilter className="size-4" />
           </PopoverTrigger>
           <PopoverContent className="flex flex-col gap-2">
             <Setting field="dockerOnly" label="Docker only" />

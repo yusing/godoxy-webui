@@ -18,7 +18,7 @@ import {
 import { cn } from '@/lib/utils'
 import { Autocert, AutocertSchema } from '@/types/godoxy'
 import type { DomainOrWildcard, Email } from '@/types/godoxy/types'
-import { Plus } from 'lucide-react'
+import { IconPlus } from '@tabler/icons-react'
 import { AnimatePresence, motion, type HTMLMotionProps } from 'motion/react'
 import { configStore } from '../store'
 import AutocertInfo from './AutocertInfo'
@@ -192,7 +192,7 @@ export default function AutocertConfigContent() {
                           })
                         }
                       >
-                        <Plus />
+                        <IconPlus />
                       </Button>
                     </div>
                     <ListInput
@@ -213,7 +213,7 @@ export default function AutocertConfigContent() {
                           })
                         }
                       >
-                        <Plus />
+                        <IconPlus />
                       </Button>
                     </div>
                     <ListInput

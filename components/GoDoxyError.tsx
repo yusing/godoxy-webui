@@ -12,8 +12,8 @@ import {
   TreeProvider,
   TreeView,
 } from '@/components/ui/kibo-ui/tree'
+import { IconAlertCircle } from '@tabler/icons-react'
 import Convert from 'ansi-to-html'
-import { AlertCircleIcon } from 'lucide-react'
 import { Alert, AlertDescription, AlertTitle } from './ui/alert'
 
 const convertANSI = new Convert()
@@ -203,7 +203,7 @@ type TreeSpec = {
 export function GoDoxyErrorAlert({ err, title }: { err: GoDoxyError; title: string }) {
   return (
     <Alert variant="error">
-      <AlertCircleIcon />
+      <IconAlertCircle />
       <AlertTitle>{title}</AlertTitle>
       <AlertDescription className="-ml-5 max-h-[150px] overflow-y-auto">
         {err && <GoDoxyErrorText err={err} />}

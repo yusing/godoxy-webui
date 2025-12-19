@@ -3,7 +3,7 @@ import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/di
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { api } from '@/lib/api-client'
-import { Search } from 'lucide-react'
+import { IconSearch } from '@tabler/icons-react'
 import { useCallback, useMemo, useState } from 'react'
 import { useAsync } from 'react-use'
 import ObjectDataList from '../ObjectDataList'
@@ -48,7 +48,7 @@ export default function AppDetailsDialogContent({ alias }: { alias: string }) {
       <DialogHeader>
         <DialogTitle className="text-lg font-semibold">Route Details</DialogTitle>
         <DialogDescription className="gap-2 relative">
-          <Search className="h-4 w-4 text-muted-foreground absolute left-2 top-1/2 -translate-y-1/2" />
+          <IconSearch className="size-4 text-muted-foreground absolute left-2 top-1/2 -translate-y-1/2" />
           <Input
             className="w-full pl-8"
             placeholder="Search in route data..."

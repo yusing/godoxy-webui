@@ -2,7 +2,7 @@
 
 import type { FileType } from '@/lib/api'
 import { cn } from '@/lib/utils'
-import { ChevronRight, File } from 'lucide-react'
+import { IconChevronRight, IconFile } from '@tabler/icons-react'
 import { useEffect } from 'react'
 import {
   Command,
@@ -102,7 +102,7 @@ function FileList() {
                 }
                 className={cn(isActive && 'bg-sidebar-accent text-sidebar-accent-foreground')}
               >
-                <File className="w-4 h-4 mr-2 shrink-0" />
+                <IconFile className="size-4 mr-2 shrink-0" />
                 <span className="truncate">{file.filename}</span>
               </CommandItem>
             )
@@ -148,7 +148,7 @@ function Sections() {
                     <Icon className="w-4 h-4 mt-0.5 shrink-0" />
                     <span>{section.label}</span>
                   </div>
-                  {isActive && <ChevronRight className="w-4 h-4 shrink-0" />}
+                  {isActive && <IconChevronRight className="size-4 shrink-0" />}
                 </SidebarMenuButton>
               </SidebarMenuItem>
             )

@@ -1,6 +1,6 @@
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
-import { CheckCircle2Icon, Loader2, Save } from 'lucide-react'
+import { IconCheck, IconDeviceFloppy, IconLoader2 } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { Button } from '../ui/button'
 import { configStore } from './store'
@@ -36,12 +36,12 @@ export default function ConfigSaveButton(props: React.ComponentProps<typeof Butt
   return (
     <Button {...props} onClick={handleSave} disabled={isSaving}>
       {isSaving ? (
-        <Loader2 className="animate-spin" />
+        <IconLoader2 className="animate-spin" />
       ) : isSaved ? (
-        <CheckCircle2Icon className="text-green-500 animate-in fade-in-0 duration-1000" />
+        <IconCheck className="text-green-500 animate-in fade-in-0 duration-1000" />
       ) : (
         <>
-          <Save />
+          <IconDeviceFloppy />
         </>
       )}
     </Button>

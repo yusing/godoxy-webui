@@ -1,7 +1,7 @@
 'use client'
 
 import type { RouteApiRawRule } from '@/lib/api'
-import { Play } from 'lucide-react'
+import { IconPlayerPlay } from '@tabler/icons-react'
 import { toast } from 'sonner'
 import { parse as parseYAML } from 'yaml'
 import { Button } from '../ui/button'
@@ -25,7 +25,7 @@ export default function RunButton() {
 
   return (
     <Button onClick={runPlayground} isLoading={isLoading} loadingText="Running...">
-      <Play className="size-4" /> <span>Run</span>
+      <IconPlayerPlay className="size-4" /> <span>Run</span>
     </Button>
   )
 }

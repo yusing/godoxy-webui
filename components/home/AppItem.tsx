@@ -68,7 +68,7 @@ const AppItemInner = forwardRef<
     <Card
       ref={ref}
       className={cn(
-        'app-item border-none cursor-pointer hover:shadow-md hover:scale-105 px-0 py-4 row-span-2',
+        'bg-transparent app-item border-none cursor-pointer hover:shadow-md hover:scale-105 px-0 py-4 row-span-2',
         'data-[active=true]:ring-2 data-[active=true]:ring-primary data-[active=true]:shadow-lg',
         hasWidgets && 'row-span-3'
       )}

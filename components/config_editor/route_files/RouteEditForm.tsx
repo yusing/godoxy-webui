@@ -19,9 +19,9 @@ import type { EntrypointMiddlewares } from '@/types/godoxy/middlewares/middlewar
 import type { MiddlewaresMap } from '@/types/godoxy/middlewares/middlewares'
 import { LOAD_BALANCE_MODES, type LoadBalanceMode } from '@/types/godoxy/providers/loadbalance'
 import type { StreamPort } from '@/types/godoxy/types'
+import { IconChevronDown, IconDeviceFloppy, IconX } from '@tabler/icons-react'
 import type { VariantProps } from 'class-variance-authority'
 import { useForm, type FormState, type FormStore } from 'juststore'
-import { ChevronDown, Save, X, type LucideIcon } from 'lucide-react'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useAsync } from 'react-use'
 import { middlewareUseToSnakeCase } from '../middleware_compose/utils'
@@ -34,9 +34,13 @@ type RouteEditFormProps = {
   onUpdate?: (route: Routes.Route) => void
   onSave: (route: Routes.Route) => void
   headerText?: string
-  saveButtonIcon?: LucideIcon
+  saveButtonIcon?: React.ForwardRefExoticComponent<
+    React.SVGProps<SVGSVGElement> & React.RefAttributes<SVGSVGElement>
+  >
   saveButtonText?: string
-  cancelButtonIcon?: LucideIcon
+  cancelButtonIcon?: React.ForwardRefExoticComponent<
+    React.SVGProps<SVGSVGElement> & React.RefAttributes<SVGSVGElement>
+  >
   cancelButtonText?: string
   cancelButtonVariant?: VariantProps<typeof buttonVariants>['variant']
   cancelButtonClassName?: string
@@ -59,9 +63,9 @@ export default function RouteEditForm({
   onUpdate,
   onSave,
   headerText = 'Edit Route',
-  saveButtonIcon = Save,
+  saveButtonIcon = IconDeviceFloppy,
   saveButtonText = 'Done',
-  cancelButtonIcon = X,
+  cancelButtonIcon = IconX,
   cancelButtonText = 'Cancel',
   cancelButtonVariant = 'ghost',
   cancelButtonClassName,
@@ -210,15 +214,17 @@ function AdvancedOptions({ form }: { form: FormStore<Routes.Route> }) {
 
   return (
     <Collapsible defaultOpen>
-      <CollapsibleTrigger asChild>
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full justify-start text-muted-foreground"
-        >
-          <ChevronDown className="size-4" />
-          <span>Advanced Options</span>
-        </Button>
+      <CollapsibleTrigger
+        render={
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full justify-start text-muted-foreground"
+          />
+        }
+      >
+        <IconChevronDown className="size-4" />
+        <span>Advanced Options</span>
       </CollapsibleTrigger>
       <CollapsibleContent className="mt-4 flex flex-col gap-4">
         <form.scheme.Show on={scheme => isHTTP(scheme)}>
@@ -394,7 +400,7 @@ function AgentSelect({ state }: { state: FormState<string | undefined> }) {
             onClick={() => setValue(undefined)}
             disabled={!value}
           >
-            <X className="size-4" />
+            <IconX className="size-4" />
           </Button>
         )}
       </state.Render>

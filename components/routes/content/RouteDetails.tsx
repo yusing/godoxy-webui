@@ -10,7 +10,7 @@ import { api } from '@/lib/api-client'
 import { formatDuration } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { yaml } from '@codemirror/lang-yaml'
-import { ArrowRight } from 'lucide-react'
+import { IconArrowRight } from '@tabler/icons-react'
 import { useAsync } from 'react-use'
 import { stringify as stringifyYAML } from 'yaml'
 import { decodeRouteKey } from '../utils'
@@ -340,7 +340,7 @@ export default function RouteDetails() {
                       key={source}
                       label={source}
                       value={destination}
-                      seperator={<ArrowRight className="w-4 h-4" />}
+                      seperator={<IconArrowRight className="size-4" />}
                     />
                   ))}
                 </DataList>

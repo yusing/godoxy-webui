@@ -5,8 +5,8 @@ import { PureMapInput, type MapInputProps, type PureMapInputProps } from './MapI
 import { Button } from '@/components/ui/button'
 import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
 
+import { IconPlus } from '@tabler/icons-react'
 import type { FieldPath, FieldValues, ObjectState, ValueState } from 'juststore'
-import { Plus } from 'lucide-react'
 import { useMemo } from 'react'
 import { Badge } from '../ui/badge'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card'
@@ -79,7 +79,7 @@ function StoreMapInput_<T extends FieldValues>({
             onClick={() => state['']?.set('' as T[string])}
             className="size-4"
           >
-            <Plus />
+            <IconPlus />
           </Button>
         </div>
         {description && <Label className="text-muted-foreground text-xs">{description}</Label>}

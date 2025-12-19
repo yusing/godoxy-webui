@@ -12,7 +12,7 @@ import {
 import { useFragment } from '@/hooks/fragment'
 import type { MetricsPeriod } from '@/lib/api'
 import { formatBytes, formatTemperature } from '@/lib/format'
-import { Globe } from 'lucide-react'
+import { IconGlobe } from '@tabler/icons-react'
 import { Suspense, useCallback, useMemo } from 'react'
 import { store } from '../store'
 import MetricChart from './Charts'
@@ -66,7 +66,7 @@ function SystemInfoGraphsPage() {
             </agentStore.version.Render>
           </h2>
           <div className="flex items-center gap-2 text-muted-foreground">
-            <Globe className="h-4 w-4" />
+            <IconGlobe className="size-4" />
             <agentStore.addr.Render>
               {addr => <span className="text-sm font-medium">{addr}</span>}
             </agentStore.addr.Render>
@@ -161,7 +161,7 @@ function PeriodSelect({
   return (
     <div className="flex items-center gap-2">
       <Label>Period</Label>
-      <Select value={value} onValueChange={onChange}>
+      <Select value={value} onValueChange={value => onChange(value as MetricsPeriod)}>
         <SelectTrigger size="sm">
           <SelectValue />
         </SelectTrigger>

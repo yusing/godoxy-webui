@@ -2,8 +2,8 @@ import LoadingRing from '@/components/LoadingRing'
 import { Button } from '@/components/ui/button'
 import { useWebSocketApi } from '@/hooks/websocket'
 import { cn } from '@/lib/utils'
+import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 import Convert from 'ansi-to-html'
-import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react'
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useList } from 'react-use'
 import { store } from '../store'
@@ -118,7 +118,7 @@ function LogChevron({ direction }: { direction: React.RefObject<'up' | 'down'> }
   useEffect(() => {
     setCurrentDirection(direction.current)
   }, [direction])
-  return currentDirection === 'up' ? <ChevronUpIcon /> : <ChevronDownIcon />
+  return currentDirection === 'up' ? <IconChevronUp /> : <IconChevronDown />
 }
 
 function LogProvider({

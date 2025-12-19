@@ -7,7 +7,7 @@ import { StoreCheckboxField } from '@/juststore-shadcn/src/components/store/Chec
 import { cn } from '@/lib/utils'
 import type { Routes } from '@/types/godoxy'
 import type { CIDR } from '@/types/godoxy/types'
-import { ArrowRight, Copy, Edit2, Trash } from 'lucide-react'
+import { IconArrowRight, IconCopy, IconEdit, IconTrash } from '@tabler/icons-react'
 import isEqual from 'react-fast-compare'
 import { routesConfigStore as store } from '../store'
 import RouteIcon from './RouteIcon'
@@ -64,13 +64,13 @@ export default function RouteDisplay({
         </div>
         <div className="flex items-center gap-3">
           <Button title="Edit" variant="outline" size="sm" onClick={onEdit}>
-            <Edit2 className="h-4 w-4" />
+            <IconEdit className="size-4" />
           </Button>
           <Button title="Duplicate" variant="outline" size="sm" onClick={onDuplicate}>
-            <Copy className="h-4 w-4" />
+            <IconCopy className="size-4" />
           </Button>
           <Button title="Delete" size="sm" variant="destructive" onClick={onDelete}>
-            <Trash className="h-4 w-4" />
+            <IconTrash className="size-4" />
           </Button>
         </div>
       </div>
@@ -80,7 +80,7 @@ export default function RouteDisplay({
         {listeningAddress && (
           <>
             <span className="font-mono">{listeningAddress}</span>
-            <ArrowRight className="h-4 w-4" />
+            <IconArrowRight className="size-4" />
           </>
         )}
         <span className="font-mono">{proxyAddress}</span>

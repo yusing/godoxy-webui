@@ -28,7 +28,7 @@ export default function PresetExamples() {
 
   return (
     <div className="flex items-center gap-2">
-      <Select value={selectedExample} onValueChange={loadExample}>
+      <Select value={selectedExample} onValueChange={value => value && loadExample(value)}>
         <SelectTrigger className="w-[250px]">
           <SelectValue placeholder="Load an example..." />
         </SelectTrigger>

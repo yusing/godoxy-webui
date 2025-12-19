@@ -1,19 +1,18 @@
-import * as React from 'react'
-
 import { cn } from '@/lib/utils'
-import { cva } from 'class-variance-authority'
 
-type CardProps = React.ComponentProps<'div'> & {
-  shrink?: boolean
-}
-
-function Card({ className, shrink = false, ...props }: CardProps) {
+function Card({
+  className,
+  size = 'default',
+  shrink = false,
+  ...props
+}: React.ComponentProps<'div'> & { size?: 'default' | 'sm'; shrink?: boolean }) {
   return (
     <div
       data-slot="card"
+      data-size={size}
       className={cn(
-        'flex flex-col gap-4 rounded-xl border shadow-sm',
         shrink ? 'py-2 sm:py-4' : 'py-4',
+        'text-card-foreground bg-card gap-4 overflow-hidden rounded-xl text-sm has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl group/card flex flex-col',
         className
       )}
       {...props}
@@ -26,7 +25,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<'div'>) {
     <div
       data-slot="card-header"
       className={cn(
-        '@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-4 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-4',
+        'gap-1 rounded-t-xl px-4 group-data-[size=sm]/card:px-3 [.border-b]:pb-4 group-data-[size=sm]/card:[.border-b]:pb-3 group/card-header @container/card-header grid auto-rows-min items-start has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto]',
         className
       )}
       {...props}
@@ -38,7 +37,10 @@ function CardTitle({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-title"
-      className={cn('leading-none font-semibold', className)}
+      className={cn(
+        'text-base leading-snug font-medium group-data-[size=sm]/card:text-sm',
+        className
+      )}
       {...props}
     />
   )
@@ -64,14 +66,6 @@ function CardAction({ className, ...props }: React.ComponentProps<'div'>) {
   )
 }
 
-const cardContentVariants = cva('px-4', {
-  variants: {
-    flex: {
-      true: 'flex flex-col gap-4',
-    },
-  },
-})
-
 function CardContent({
   className,
   flex = false,
@@ -80,7 +74,11 @@ function CardContent({
   return (
     <div
       data-slot="card-content"
-      className={cn(cardContentVariants({ flex }), className)}
+      className={cn(
+        'px-4 group-data-[size=sm]/card:px-3',
+        flex && 'flex flex-col gap-4',
+        className
+      )}
       {...props}
     />
   )
@@ -90,7 +88,10 @@ function CardFooter({ className, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
       data-slot="card-footer"
-      className={cn('flex items-center px-4 [.border-t]:pt-4', className)}
+      className={cn(
+        'bg-muted/50 rounded-b-xl border-t p-4 group-data-[size=sm]/card:p-3 flex items-center',
+        className
+      )}
       {...props}
     />
   )

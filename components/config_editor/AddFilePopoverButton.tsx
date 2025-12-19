@@ -1,8 +1,8 @@
 import { StoreFormInputField } from '@/components/store/Input'
 import { StoreFormRadioField } from '@/components/store/Radio'
 import type { FileType } from '@/lib/api'
+import { IconPlus } from '@tabler/icons-react'
 import { useForm, type FormStore } from 'juststore'
-import { Plus } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '../ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
@@ -56,10 +56,8 @@ export default function AddFilePopoverButton(props: React.ComponentProps<typeof 
 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>
-        <Button {...props}>
-          <Plus />
-        </Button>
+      <PopoverTrigger render={<Button {...props} />}>
+        <IconPlus />
       </PopoverTrigger>
       <PopoverContent>
         <form

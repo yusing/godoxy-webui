@@ -1,6 +1,6 @@
 'use client'
 
-import { Plus, Trash } from 'lucide-react'
+import { IconPlus, IconTrash } from '@tabler/icons-react'
 import React, { useCallback } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -48,7 +48,7 @@ export function StoreListInput<T extends string>({
             onClick={handleAddItem}
             className="size-4"
           >
-            <Plus />
+            <IconPlus />
           </Button>
         </div>
         {description && <Label className="text-muted-foreground text-xs">{description}</Label>}
@@ -135,7 +135,7 @@ function RenderItem<T extends string>({
         }
         title="Delete"
       >
-        <Trash />
+        <IconTrash />
         Delete
       </Button>
     </div>

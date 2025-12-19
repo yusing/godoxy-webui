@@ -127,14 +127,16 @@ function SearchIcon({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button
-          type="button"
-          className={cn('cursor-pointer', className)}
-          aria-label="Select search engine"
-        >
-          <CurrentIcon className="size-4" />
-        </button>
+      <DropdownMenuTrigger
+        render={
+          <button
+            type="button"
+            className={cn('cursor-pointer', className)}
+            aria-label="Select search engine"
+          />
+        }
+      >
+        <CurrentIcon className="size-4" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" sideOffset={6}>
         <DropdownMenuItem onClick={() => store.searchEngine.set('google')}>

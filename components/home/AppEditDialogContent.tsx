@@ -79,11 +79,7 @@ export default function AppEditDialogContent({ state }: { state: ObjectState<Hom
           <IconSearchField state={form.icon} />
         </Field>
         <DialogFooter>
-          <DialogClose asChild>
-            <Button type="button" variant="outline">
-              Cancel
-            </Button>
-          </DialogClose>
+          <DialogClose render={<Button type="button" variant="outline" />}>Cancel</DialogClose>
           <Button type="submit">Save</Button>
         </DialogFooter>
       </form>

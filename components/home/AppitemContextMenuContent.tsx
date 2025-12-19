@@ -1,7 +1,16 @@
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
 import { cn } from '@/lib/utils'
-import { Edit, Eye, EyeOff, Heart, Info, Play, RotateCcw, Square } from 'lucide-react'
+import {
+  IconEdit,
+  IconEye,
+  IconEyeOff,
+  IconHeart,
+  IconInfoCircle,
+  IconPlayerPlay,
+  IconRotate,
+  IconSquare,
+} from '@tabler/icons-react'
 import { ContextMenuContent, ContextMenuItem } from '../ui/context-menu'
 import { DialogContent, DialogOverlay, DialogTrigger } from '../ui/dialog'
 import AppEditDialogContent from './AppEditDialogContent'
@@ -50,23 +59,26 @@ export default function AppItemContextMenuContent({ state }: { state: ObjectStat
   return (
     <>
       <ContextMenuContent>
-        <DialogTrigger asChild onClick={() => store.openedDialog.set('edit')}>
-          <ContextMenuItem>
-            <Edit className="w-4 h-4" />
-            Edit
-          </ContextMenuItem>
-        </DialogTrigger>
+        <DialogTrigger
+          onClick={() => store.openedDialog.set('edit')}
+          render={
+            <ContextMenuItem>
+              <IconEdit className="size-4" />
+              Edit
+            </ContextMenuItem>
+          }
+        />
         <state.show.Render>
           {visible => (
             <>
               {visible ? (
                 <ContextMenuItem onClick={toggleVisibility}>
-                  <EyeOff className="w-4 h-4" />
+                  <IconEyeOff className="size-4" />
                   Hide
                 </ContextMenuItem>
               ) : (
                 <ContextMenuItem onClick={toggleVisibility}>
-                  <Eye className="w-4 h-4" />
+                  <IconEye className="size-4" />
                   Unhide
                 </ContextMenuItem>
               )}
@@ -78,7 +90,7 @@ export default function AppItemContextMenuContent({ state }: { state: ObjectStat
                       onClick={toggleFavorite}
                       className={cn(favorite && 'text-primary')}
                     >
-                      <Heart className="w-4 h-4" />
+                      <IconHeart className="size-4" />
                       {favorite ? 'Remove favorite' : 'Favorite'}
                     </ContextMenuItem>
                   )}
@@ -89,7 +101,7 @@ export default function AppItemContextMenuContent({ state }: { state: ObjectStat
         </state.show.Render>
         <Link href={`/routes#${routeKey}`} onClick={() => setSelectedRoute(routeKey)}>
           <ContextMenuItem>
-            <Info className="w-4 h-4" />
+            <IconInfoCircle className="size-4" />
             Details
           </ContextMenuItem>
         </Link>
@@ -106,21 +118,21 @@ export default function AppItemContextMenuContent({ state }: { state: ObjectStat
 const containerItems = [
   {
     label: 'Start',
-    icon: Play,
+    Icon: IconPlayerPlay,
     api: api.docker.start,
     className: 'text-success',
     enableIf: (status: HealthInfo['status']) => status !== 'healthy',
   },
   {
     label: 'Stop',
-    icon: Square,
+    Icon: IconSquare,
     api: api.docker.stop,
     className: 'text-error',
     enableIf: (status: HealthInfo['status']) => status !== 'napping',
   },
   {
     label: 'Restart',
-    icon: RotateCcw,
+    Icon: IconRotate,
     api: api.docker.restart,
     className: 'text-warning',
     enableIf: (status: HealthInfo['status']) => status !== 'napping',
@@ -154,7 +166,7 @@ function DockerOnlyMenuItems({ state }: { state: ObjectState<HomepageItem> }) {
               .finally(() => setIsLoading(false))
           }}
         >
-          <item.icon className={cn('w-4 h-4', item.className)} />
+          <item.Icon className={cn('w-4 h-4', item.className)} />
           {item.label}
         </ContextMenuItem>
       ))}

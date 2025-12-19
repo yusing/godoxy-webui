@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { type MiddlewareCompose, MiddlewareComposeSchema } from '@/types/godoxy'
 import type { MiddlewareFileRef } from '@/types/godoxy/middlewares/middlewares'
-import { Plus, X } from 'lucide-react'
+import { IconPlus, IconX } from '@tabler/icons-react'
 import React, { useMemo } from 'react'
 import { middlewareUseToSnakeCase } from './utils'
 
@@ -61,7 +61,7 @@ export function MiddlewareComposeEditor({
     >
       <TabsList className="flex w-full flex-wrap gap-1">
         {keys.map((k, index) => (
-          <TabsTrigger key={`${index}_tab`} value={String(index)} asChild>
+          <TabsTrigger key={`${index}_tab`} value={String(index)}>
             <div className="relative flex items-center justify-between gap-2 pr-6">
               <span className="truncate">{k}</span>
               <Button
@@ -94,7 +94,7 @@ export function MiddlewareComposeEditor({
                   }
                 }}
               >
-                <X className="size-4 text-muted-foreground" />
+                <IconX className="size-4 text-muted-foreground" />
               </Button>
             </div>
           </TabsTrigger>
@@ -115,7 +115,7 @@ export function MiddlewareComposeEditor({
             setSelectedTab(newIndex)
           }}
         >
-          <Plus className="h-4 w-4" />
+          <IconPlus className="size-4" />
         </Button>
       </TabsList>
       {Object.entries(data).map(([k, v], index) => (

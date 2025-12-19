@@ -7,8 +7,8 @@ import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/sch
 
 import { FieldInput } from '@/components/form/FieldInput'
 import { ListInput } from '@/components/form/ListInput'
+import { IconPlus } from '@tabler/icons-react'
 import { randomUUID } from 'crypto'
-import { Plus } from 'lucide-react'
 import { Badge } from '../ui/badge'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card'
 import { Label } from '../ui/label'
@@ -115,7 +115,7 @@ function PureMapInput<T extends Record<string, unknown>>({
             onClick={() => onChange({ ...value, ['' as keyof T]: '' } as T)}
             className="size-4"
           >
-            <Plus />
+            <IconPlus />
           </Button>
         </div>
         {description && <Label className="text-muted-foreground text-xs">{description}</Label>}
@@ -319,7 +319,7 @@ function MapInput_<T extends Record<string, unknown>>({
             onClick={() => onChange({ ...value, ['' as keyof T]: '' } as T)}
             className="size-4"
           >
-            <Plus />
+            <IconPlus />
           </Button>
         </div>
         {description && <Label className="text-muted-foreground text-xs">{description}</Label>}
