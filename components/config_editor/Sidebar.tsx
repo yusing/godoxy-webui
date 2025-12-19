@@ -81,15 +81,15 @@ export default function ConfigSidebar() {
 }
 
 function FileList() {
-  const files = configStore.files.use()
+  const files = configStore.files.useCompute(files => Object.entries(files))
   const activeFile = configStore.activeFile.use()
 
   return (
     <>
-      {Object.entries(files).map(([type, list]) => (
+      {files.map(([type, list]) => (
         <CommandGroup key={type} heading={fileTypeLabels[type as FileType].label}>
           {list.map(file => {
-            const isActive = activeFile?.filename === file.filename && activeFile?.type === type
+            const selected = activeFile?.filename === file.filename && activeFile?.type === type
             return (
               <CommandItem
                 key={`${type}:${file.filename}`}
@@ -100,9 +100,10 @@ function FileList() {
                     filename: file.filename,
                   })
                 }
-                className={cn(isActive && 'bg-sidebar-accent text-sidebar-accent-foreground')}
+                className={cn(selected && 'text-info-foreground')}
+                data-checked={selected ? 'true' : 'false'}
               >
-                <IconFile className="size-4 mr-2 shrink-0" />
+                <IconFile className="size-4 shrink-0" />
                 <span className="truncate">{file.filename}</span>
               </CommandItem>
             )

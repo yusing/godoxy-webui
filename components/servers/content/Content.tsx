@@ -12,7 +12,7 @@ import {
 import { useFragment } from '@/hooks/fragment'
 import type { MetricsPeriod } from '@/lib/api'
 import { formatBytes, formatTemperature } from '@/lib/format'
-import { IconGlobe } from '@tabler/icons-react'
+import { IconServer } from '@tabler/icons-react'
 import { Suspense, useCallback, useMemo } from 'react'
 import { store } from '../store'
 import MetricChart from './Charts'
@@ -66,9 +66,9 @@ function SystemInfoGraphsPage() {
             </agentStore.version.Render>
           </h2>
           <div className="flex items-center gap-2 text-muted-foreground">
-            <IconGlobe className="size-4" />
+            <IconServer className="size-4" />
             <agentStore.addr.Render>
-              {addr => <span className="text-sm font-medium">{addr}</span>}
+              {addr => <span className="text-sm font-medium">{addr || 'localhost'}</span>}
             </agentStore.addr.Render>
           </div>
         </div>

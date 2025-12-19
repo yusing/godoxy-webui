@@ -75,7 +75,7 @@ export default function AppGrid() {
                 <TabsTrigger
                   key={category}
                   value={category}
-                  className="flex items-center gap-2 px-3 py-2 text-xs sm:text-sm whitespace-nowrap"
+                  className="flex items-center gap-2 text-xs sm:text-sm whitespace-nowrap"
                   onKeyDown={e => {
                     // prevent arrow navigation on tabs, we handle it with ArrowNavigation
                     e.stopPropagation()

@@ -65,12 +65,20 @@ export function FieldInput<T>({
     >
       <div className="flex w-full items-center gap-2">
         {!schema ? (
-          <Input
-            value={fieldKey}
-            placeholder={placeholder?.key ?? 'Key'}
-            onChange={({ target: { value } }) => onKeyChange(value, fieldValue)}
-            className="max-w-[220px] text-xs"
-          />
+          <div className="max-w-[220px] w-full @container">
+            <Input
+              value={fieldKey}
+              placeholder={placeholder?.key ?? 'Key'}
+              onChange={({ target: { value } }) => onKeyChange(value, fieldValue)}
+              className="text-xs"
+              style={
+                {
+                  '--len': fieldKey.length || (placeholder?.key ?? 'Key').length,
+                  fontSize: 'min(0.75rem, calc((100cqw - 24px) / (var(--len) * 0.5)))',
+                } as React.CSSProperties
+              }
+            />
+          </div>
         ) : title ? (
           <div className="min-w-[150px] select-none">
             <div className="flex items-center gap-2">

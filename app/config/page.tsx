@@ -4,7 +4,7 @@ import ConfigStateSyncronizer from '@/components/config_editor/ConfigStateSyncro
 import ConfigValidationError from '@/components/config_editor/ConfigValidationError'
 import ConfigYAMLEditor from '@/components/config_editor/ConfigYAMLEditor'
 import ConfigSidebar from '@/components/config_editor/Sidebar'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { SidebarInset } from '@/components/ui/sidebar'
 
@@ -22,16 +22,16 @@ export default function ConfigPage() {
             </ScrollArea>
           </div>
           {/* 3/5 */}
-          <Card className="flex flex-col h-full overflow-hidden rounded-none border-0 border-l">
+          <Card className="bg-transparent flex flex-col h-full overflow-hidden rounded-none border-0 border-l">
             <CardHeader className="shrink-0">
               <CardTitle>YAML Editor</CardTitle>
             </CardHeader>
             <CardContent className="flex-1 min-h-0 overflow-hidden">
-              <ConfigYAMLEditor className="ring-1 ring-inset ring-border rounded-md" />
+              <ConfigYAMLEditor className="ring-1 ring-inset ring-border" />
             </CardContent>
-            <CardFooter className="shrink-0">
-              <ConfigValidationError />
-            </CardFooter>
+            <div data-slot="card-footer" className="border-t">
+              <ConfigValidationError className="border-none rounded-none!" />
+            </div>
           </Card>
           {/* 2/5 */}
         </div>

@@ -17,7 +17,7 @@ export default function SystemStats() {
           key={stat.key}
           shrink
           className={cn(
-            'shadow-sm hover:shadow-md transition-shadow border-0 sm:border rounded-none sm:rounded-lg',
+            'shadow-sm hover:shadow-md transition-shadow border-none sm:border sm:rounded-lg',
             index === 0 && 'rounded-l-lg',
             index === statsProps.length - 1 && 'rounded-r-lg'
           )}

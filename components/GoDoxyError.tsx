@@ -200,9 +200,17 @@ type TreeSpec = {
   children: TreeSpec[]
 }
 
-export function GoDoxyErrorAlert({ err, title }: { err: GoDoxyError; title: string }) {
+export function GoDoxyErrorAlert({
+  err,
+  title,
+  className,
+}: {
+  err: GoDoxyError
+  title: string
+  className?: string
+}) {
   return (
-    <Alert variant="error">
+    <Alert variant="error" className={className}>
       <IconAlertCircle />
       <AlertTitle>{title}</AlertTitle>
       <AlertDescription className="-ml-5 max-h-[150px] overflow-y-auto">

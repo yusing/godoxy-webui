@@ -28,7 +28,9 @@ export default function ServersSidebar() {
       <div className="sticky top-0 z-10 px-4 py-3 flex items-center justify-between backdrop-blur supports-backdrop-filter:bg-background/60">
         <Label className="text-sm">Servers</Label>
         <div className="flex items-center gap-2">
-          <Label className="text-xs md:text-sm text-muted-foreground">Temperature Unit</Label>
+          <Label className="text-xs md:text-sm text-muted-foreground text-nowrap">
+            Temperature Unit
+          </Label>
           <CpuTemperatureRadio className="text-xs md:text-sm text-muted-foreground" />
           <AddAgentDialogButton />
         </div>

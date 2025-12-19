@@ -57,6 +57,7 @@ function ACLNotifyConfig() {
       label="Notify Config"
       schema={schema}
       value={notify ?? {}}
+      readonly={providerNames.length == 0}
       placeholder={{
         key: 'to',
         value: providerNames.length == 0 ? 'No notification providers configured' : undefined,
