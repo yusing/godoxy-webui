@@ -61,7 +61,7 @@ export default function AddFilePopoverButton(props: React.ComponentProps<typeof 
       </PopoverTrigger>
       <PopoverContent>
         <form
-          className="space-y-4"
+          className="flex flex-col gap-2"
           onSubmit={form.handleSubmit(value => {
             handleAddFile(value)
             setIsOpen(false)
@@ -88,6 +88,7 @@ export default function AddFilePopoverButton(props: React.ComponentProps<typeof 
               },
             ]}
           />
+          <button type="submit" className="hidden" />
         </form>
       </PopoverContent>
     </Popover>
