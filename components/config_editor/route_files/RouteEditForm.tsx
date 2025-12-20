@@ -195,12 +195,28 @@ export default function RouteEditForm({
 
       {/* Root */}
       <form.scheme.Show on={scheme => scheme === 'fileserver'}>
-        <StoreFormInputField
-          state={fsForm.root}
-          title="Root"
-          placeholder="/path/to/files"
-          required
-        />
+        <>
+          <StoreFormInputField
+            state={fsForm.root}
+            title="Root"
+            placeholder="/path/to/files"
+            required
+          />
+          <StoreFormCheckboxField
+            state={fsForm.spa}
+            title="SPA"
+            description={
+              <span>
+                Serve Single Page Applications (SPA) mode.
+                <br />
+                <span>
+                  Similar to <code>nginx</code> <code>try_files</code> directive.
+                </span>
+              </span>
+            }
+          />
+          <StoreFormInputField state={fsForm.index} title="Index" placeholder="/index.html" />
+        </>
       </form.scheme.Show>
 
       {/* Advanced Options */}
