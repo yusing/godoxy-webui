@@ -55,48 +55,48 @@ export function MiddlewareComposeEditor({
 
   return (
     <Tabs
-      value={String(selectedTab)}
-      onValueChange={value => setSelectedTab(Number(value))}
+      value={selectedTab !== undefined ? String(selectedTab) : undefined}
+      onValueChange={value => setSelectedTab(value ? Number(value) : undefined)}
       className="w-full"
     >
-      <TabsList className="flex w-full flex-wrap gap-1">
+      <TabsList className="flex w-full flex-wrap gap-1 h-auto min-h-9 p-1">
         {keys.map((k, index) => (
-          <TabsTrigger key={`${index}_tab`} value={String(index)}>
-            <div className="relative flex items-center justify-between gap-2 pr-6">
-              <span className="truncate">{k}</span>
+          <TabsTrigger
+            key={`${index}_tab`}
+            value={String(index)}
+            render={
               <Button
-                variant="ghost"
+                variant="outline"
                 size="sm"
-                className="absolute right-1 top-1/2 -translate-y-1/2 size-6 p-0 hover:bg-destructive hover:text-destructive-foreground"
                 type="button"
-                onPointerDownCapture={e => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                }}
-                onMouseDown={e => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                }}
-                onClick={e => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  const newData = { ...data }
-                  const kIndex = index
-                  const currentIndex = selectedTab ?? 0
-                  const nextIndex = Math.max(
-                    0,
-                    kIndex < currentIndex ? currentIndex - 1 : currentIndex
+                className="data-active:bg-primary! data-active:text-primary-foreground!"
+              />
+            }
+          >
+            <span className="truncate max-w-[120px]">{k}</span>
+            <span
+              role="button"
+              aria-label={`Delete ${k}`}
+              className="absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-destructive hover:text-destructive-foreground opacity-60 hover:opacity-100 transition-all cursor-pointer z-10 pointer-events-auto"
+              onClick={e => {
+                e.preventDefault()
+                e.stopPropagation()
+                const newData = { ...data }
+                delete newData[k]
+                onChange(newData)
+
+                if (index === selectedTab) {
+                  setSelectedTab(
+                    Object.keys(newData).length > 0 ? Math.max(0, index - 1) : undefined
                   )
-                  delete newData[k]
-                  onChange(newData)
-                  if (currentIndex !== nextIndex) {
-                    setSelectedTab(nextIndex)
-                  }
-                }}
-              >
-                <IconX className="size-4 text-muted-foreground" />
-              </Button>
-            </div>
+                } else if (selectedTab !== undefined && index < selectedTab) {
+                  setSelectedTab(selectedTab - 1)
+                }
+              }}
+              onPointerDown={e => e.stopPropagation()}
+            >
+              <IconX className="size-3.5" />
+            </span>
           </TabsTrigger>
         ))}
         <Button
