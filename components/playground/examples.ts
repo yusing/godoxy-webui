@@ -157,30 +157,6 @@ export const examples: PlaygroundExample[] = [
     },
   },
   {
-    name: 'SPA Under Subpath',
-    description: 'Serves /app with index.html fallback',
-    rules: `- name: static assets under /app
-  on: path glob(/app/static/**)
-  do: serve /var/www/app/static
-- name: spa fallback under /app
-  on: |
-    method GET
-    path glob(/app/**)
-  do: |
-    rewrite /app /app/index.html
-    serve /var/www/app`,
-    mockRequest: {
-      method: 'GET',
-      path: '/app/users',
-      host: 'localhost',
-      headers: {},
-      query: {},
-      cookies: [],
-      body: '',
-      remoteIP: '127.0.0.1',
-    },
-  },
-  {
     name: 'Request Mutations',
     description: 'Mutates headers, query and cookies before proxy',
     rules: `- name: request mutations
