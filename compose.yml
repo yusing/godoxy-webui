@@ -9,7 +9,19 @@ services:
       context: .
       dockerfile: ${DOCKERFILE:-dev.Dockerfile}
     volumes:
-      - .:/app
+      - ./app:/app/app:ro
+      - ./components:/app/components:ro
+      - ./hooks:/app/hooks:ro
+      - ./lib:/app/lib:ro
+      - ./public:/app/public:ro
+      - ./types:/app/types:ro
+      - ./next.config.ts:/app/next.config.ts:ro
+      - ./tsconfig.json:/app/tsconfig.json:ro
+      - ./eslint.config.ts:/app/eslint.config.ts:ro
+      - ./site-config.ts:/app/site-config.ts:ro
+      - ./postcss.config.mjs:/app/postcss.config.mjs:ro
+      - ./juststore:/app/juststore:ro
+      - ./juststore-shadcn:/app/juststore-shadcn:ro
     tmpfs:
       - /var/cache/nginx
     labels:
