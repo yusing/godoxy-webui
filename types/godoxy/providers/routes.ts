@@ -123,6 +123,14 @@ export type FileServerRoute = {
   scheme: 'fileserver'
   /* File server root path */
   root: string
+  /** SPA mode
+   * @default false
+   */
+  spa?: boolean
+  /** File server index file
+   * @default /index.html
+   */
+  index?: string
   /** Path patterns (only patterns that match will be proxied).
    *
    * See https://pkg.go.dev/net/http#hdr-Patterns-ServeMux
