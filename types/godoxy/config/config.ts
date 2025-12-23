@@ -23,7 +23,7 @@ export type Config = {
   match_domains?: DomainName[]
   /** Homepage configuration */
   homepage?: HomepageConfig
-  /*
+  /**
    * Default values
    * @additionalProperties false
    */
