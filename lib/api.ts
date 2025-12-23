@@ -67,7 +67,7 @@ export interface Container {
   aliases: string[]
   container_id: string
   container_name: string
-  docker_host: string
+  docker_cfg: DockerProviderConfig
   errors: string
   idlewatcher_config: IdlewatcherConfig
   image: ContainerImage
@@ -190,7 +190,18 @@ export interface DiskUsageStat {
 export interface DockerConfig {
   container_id: string
   container_name: string
-  docker_host: string
+  docker_cfg: DockerProviderConfig
+}
+
+export interface DockerProviderConfig {
+  tls: DockerTLSConfig
+  url: string
+}
+
+export interface DockerTLSConfig {
+  ca_file: string
+  cert_file?: string
+  key_file?: string
 }
 
 export interface DockerapiRestartRequest {
@@ -272,7 +283,7 @@ export interface HealthCheckConfig {
   disable: boolean
   interval: number
   path: string
-  /** <0: immediate, >=0: threshold */
+  /** <0: immediate, 0: default, >0: threshold */
   retries: number
   timeout: number
   use_get: boolean
@@ -430,6 +441,7 @@ export interface IdlewatcherConfig {
    * Negative: idle watcher as a dependency.	IdleTimeout time.Duration `json:"idle_timeout" json_ext:"duration"`
    */
   idle_timeout: TimeDuration
+  no_loading_page: boolean
   proxmox: ProxmoxConfig
   /** Optional path that must be hit to start container */
   start_endpoint: string
@@ -651,6 +663,8 @@ export interface Route {
   homepage: HomepageItemConfig
   host: string
   idlewatcher?: IdlewatcherConfig | null
+  /** Index file to serve for single-page app mode */
+  index: string
   load_balance?: LoadBalancerConfig | null
   /** private fields */
   lurl?: string | null
@@ -666,6 +680,8 @@ export interface Route {
   rule_file?: string | null
   rules: RulesRule[]
   scheme: 'http' | 'https' | 'tcp' | 'udp' | 'fileserver'
+  /** Single-page app mode: serves index for non-existent paths */
+  spa: boolean
   /** Path to client certificate */
   ssl_certificate: string
   /** Path to client certificate key */
@@ -707,6 +723,8 @@ export interface RouteRoute {
   homepage: HomepageItemConfig
   host: string
   idlewatcher?: IdlewatcherConfig | null
+  /** Index file to serve for single-page app mode */
+  index: string
   load_balance?: LoadBalancerConfig | null
   /** private fields */
   lurl?: string | null
@@ -722,6 +740,8 @@ export interface RouteRoute {
   rule_file?: string | null
   rules: RulesRule[]
   scheme: 'http' | 'https' | 'tcp' | 'udp' | 'fileserver'
+  /** Single-page app mode: serves index for non-existent paths */
+  spa: boolean
   /** Path to client certificate */
   ssl_certificate: string
   /** Path to client certificate key */
