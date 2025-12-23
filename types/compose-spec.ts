@@ -14,20 +14,20 @@ export type Include =
       /**
        * Path to the Compose application or sub-project files to include.
        */
-      path?: string | ListOfStrings;
+      path?: string | ListOfStrings
       /**
        * Path to the environment files to use to define default values when interpolating variables in the Compose files being parsed.
        */
-      env_file?: string | ListOfStrings;
+      env_file?: string | ListOfStrings
       /**
        * Path to resolve relative paths set in the Compose file
        */
-      project_directory?: string;
-    };
+      project_directory?: string
+    }
 /**
  * A list of string values.
  */
-export type ListOfStrings = string[];
+export type ListOfStrings = string[]
 /**
  * Development configuration for the service, used for development workflows.
  */
@@ -39,30 +39,30 @@ export type Development = {
     /**
      * Patterns to exclude from watching.
      */
-    ignore?: string | ListOfStrings;
+    ignore?: string | ListOfStrings
     /**
      * Patterns to include in watching.
      */
-    include?: string | ListOfStrings;
+    include?: string | ListOfStrings
     /**
      * Path to watch for changes.
      */
-    path: string;
+    path: string
     /**
      * Action to take when a change is detected: rebuild the container, sync files, restart the container, sync and restart, or sync and execute a command.
      */
-    action: "rebuild" | "sync" | "restart" | "sync+restart" | "sync+exec";
+    action: 'rebuild' | 'sync' | 'restart' | 'sync+restart' | 'sync+exec'
     /**
      * Target path in the container for sync operations.
      */
-    target?: string;
-    exec?: ServiceHook;
+    target?: string
+    exec?: ServiceHook
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^x-".
      */
-    [k: string]: unknown;
-  }[];
+    [k: string]: unknown
+  }[]
   /**
    * This interface was referenced by `undefined`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
@@ -70,8 +70,8 @@ export type Development = {
    * This interface was referenced by `undefined`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
    */
-  [k: string]: unknown;
-} & Development1;
+  [k: string]: unknown
+} & Development1
 export type Development1 = {
   /**
    * Configure watch mode for the service, which monitors file changes and performs actions in response.
@@ -80,30 +80,30 @@ export type Development1 = {
     /**
      * Patterns to exclude from watching.
      */
-    ignore?: string | ListOfStrings;
+    ignore?: string | ListOfStrings
     /**
      * Patterns to include in watching.
      */
-    include?: string | ListOfStrings;
+    include?: string | ListOfStrings
     /**
      * Path to watch for changes.
      */
-    path: string;
+    path: string
     /**
      * Action to take when a change is detected: rebuild the container, sync files, restart the container, sync and restart, or sync and execute a command.
      */
-    action: "rebuild" | "sync" | "restart" | "sync+restart" | "sync+exec";
+    action: 'rebuild' | 'sync' | 'restart' | 'sync+restart' | 'sync+exec'
     /**
      * Target path in the container for sync operations.
      */
-    target?: string;
-    exec?: ServiceHook;
+    target?: string
+    exec?: ServiceHook
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^x-".
      */
-    [k: string]: unknown;
-  }[];
+    [k: string]: unknown
+  }[]
   /**
    * This interface was referenced by `undefined`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
@@ -111,8 +111,8 @@ export type Development1 = {
    * This interface was referenced by `undefined`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
    */
-  [k: string]: unknown;
-} | null;
+  [k: string]: unknown
+} | null
 /**
  * Deployment configuration for the service.
  */
@@ -120,15 +120,15 @@ export type Deployment = {
   /**
    * Deployment mode for the service: 'replicated' (default) or 'global'.
    */
-  mode?: string;
+  mode?: string
   /**
    * Endpoint mode for the service: 'vip' (default) or 'dnsrr'.
    */
-  endpoint_mode?: string;
+  endpoint_mode?: string
   /**
    * Number of replicas of the service container to run.
    */
-  replicas?: number | string;
+  replicas?: number | string
   /**
    * Labels to apply to the service.
    */
@@ -140,9 +140,9 @@ export type Deployment = {
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` ".+".
          */
-        [k: string]: string | number | boolean | null;
+        [k: string]: string | number | boolean | null
       }
-    | string[];
+    | string[]
   /**
    * Configuration for rolling back a service update.
    */
@@ -150,33 +150,33 @@ export type Deployment = {
     /**
      * The number of containers to rollback at a time. If set to 0, all containers rollback simultaneously.
      */
-    parallelism?: number | string;
+    parallelism?: number | string
     /**
      * The time to wait between each container group's rollback (e.g., '1s', '1m30s').
      */
-    delay?: string;
+    delay?: string
     /**
      * Action to take if a rollback fails: 'continue', 'pause'.
      */
-    failure_action?: string;
+    failure_action?: string
     /**
      * Duration to monitor each task for failures after it is created (e.g., '1s', '1m30s').
      */
-    monitor?: string;
+    monitor?: string
     /**
      * Failure rate to tolerate during a rollback.
      */
-    max_failure_ratio?: number | string;
+    max_failure_ratio?: number | string
     /**
      * Order of operations during rollbacks: 'stop-first' (default) or 'start-first'.
      */
-    order?: "start-first" | "stop-first";
+    order?: 'start-first' | 'stop-first'
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^x-".
      */
-    [k: string]: unknown;
-  };
+    [k: string]: unknown
+  }
   /**
    * Configuration for updating a service.
    */
@@ -184,33 +184,33 @@ export type Deployment = {
     /**
      * The number of containers to update at a time.
      */
-    parallelism?: number | string;
+    parallelism?: number | string
     /**
      * The time to wait between updating a group of containers (e.g., '1s', '1m30s').
      */
-    delay?: string;
+    delay?: string
     /**
      * Action to take if an update fails: 'continue', 'pause', 'rollback'.
      */
-    failure_action?: string;
+    failure_action?: string
     /**
      * Duration to monitor each updated task for failures after it is created (e.g., '1s', '1m30s').
      */
-    monitor?: string;
+    monitor?: string
     /**
      * Failure rate to tolerate during an update (0 to 1).
      */
-    max_failure_ratio?: number | string;
+    max_failure_ratio?: number | string
     /**
      * Order of operations during updates: 'stop-first' (default) or 'start-first'.
      */
-    order?: "start-first" | "stop-first";
+    order?: 'start-first' | 'stop-first'
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^x-".
      */
-    [k: string]: unknown;
-  };
+    [k: string]: unknown
+  }
   /**
    * Resource constraints and reservations for the service.
    */
@@ -222,21 +222,21 @@ export type Deployment = {
       /**
        * Limit for how much of the available CPU resources, as number of cores, a container can use.
        */
-      cpus?: number | string;
+      cpus?: number | string
       /**
        * Limit on the amount of memory a container can allocate (e.g., '1g', '1024m').
        */
-      memory?: string;
+      memory?: string
       /**
        * Maximum number of PIDs available to the container.
        */
-      pids?: number | string;
+      pids?: number | string
       /**
        * This interface was referenced by `undefined`'s JSON-Schema definition
        * via the `patternProperty` "^x-".
        */
-      [k: string]: unknown;
-    };
+      [k: string]: unknown
+    }
     /**
      * Resource reservations for the service containers.
      */
@@ -244,25 +244,25 @@ export type Deployment = {
       /**
        * Reservation for how much of the available CPU resources, as number of cores, a container can use.
        */
-      cpus?: number | string;
+      cpus?: number | string
       /**
        * Reservation on the amount of memory a container can allocate (e.g., '1g', '1024m').
        */
-      memory?: string;
-      generic_resources?: GenericResources;
-      devices?: Devices;
+      memory?: string
+      generic_resources?: GenericResources
+      devices?: Devices
       /**
        * This interface was referenced by `undefined`'s JSON-Schema definition
        * via the `patternProperty` "^x-".
        */
-      [k: string]: unknown;
-    };
+      [k: string]: unknown
+    }
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^x-".
      */
-    [k: string]: unknown;
-  };
+    [k: string]: unknown
+  }
   /**
    * Restart policy for the service containers.
    */
@@ -270,25 +270,25 @@ export type Deployment = {
     /**
      * Condition for restarting the container: 'none', 'on-failure', 'any'.
      */
-    condition?: string;
+    condition?: string
     /**
      * Delay between restart attempts (e.g., '1s', '1m30s').
      */
-    delay?: string;
+    delay?: string
     /**
      * Maximum number of restart attempts before giving up.
      */
-    max_attempts?: number | string;
+    max_attempts?: number | string
     /**
      * Time window used to evaluate the restart policy (e.g., '1s', '1m30s').
      */
-    window?: string;
+    window?: string
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^x-".
      */
-    [k: string]: unknown;
-  };
+    [k: string]: unknown
+  }
   /**
    * Constraints and preferences for the platform to select a physical node to run service containers
    */
@@ -296,7 +296,7 @@ export type Deployment = {
     /**
      * Placement constraints for the service (e.g., 'node.role==manager').
      */
-    constraints?: string[];
+    constraints?: string[]
     /**
      * Placement preferences for the service.
      */
@@ -304,23 +304,23 @@ export type Deployment = {
       /**
        * Spread tasks evenly across values of the specified node label.
        */
-      spread?: string;
+      spread?: string
       /**
        * This interface was referenced by `undefined`'s JSON-Schema definition
        * via the `patternProperty` "^x-".
        */
-      [k: string]: unknown;
-    }[];
+      [k: string]: unknown
+    }[]
     /**
      * Maximum number of replicas of the service.
      */
-    max_replicas_per_node?: number | string;
+    max_replicas_per_node?: number | string
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^x-".
      */
-    [k: string]: unknown;
-  };
+    [k: string]: unknown
+  }
   /**
    * This interface was referenced by `undefined`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
@@ -328,8 +328,8 @@ export type Deployment = {
    * This interface was referenced by `undefined`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
    */
-  [k: string]: unknown;
-} & Deployment1;
+  [k: string]: unknown
+} & Deployment1
 /**
  * User-defined resources to reserve.
  */
@@ -341,45 +341,45 @@ export type GenericResources = {
     /**
      * Type of resource (e.g., 'GPU', 'FPGA', 'SSD').
      */
-    kind?: string;
+    kind?: string
     /**
      * Number of resources of this kind to reserve.
      */
-    value?: number | string;
+    value?: number | string
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^x-".
      */
-    [k: string]: unknown;
-  };
+    [k: string]: unknown
+  }
   /**
    * This interface was referenced by `undefined`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
    */
-  [k: string]: unknown;
-}[];
+  [k: string]: unknown
+}[]
 /**
  * List of capabilities the device needs to have (e.g., 'gpu', 'compute', 'utility').
  */
-export type ListOfStrings1 = string[];
+export type ListOfStrings1 = string[]
 /**
  * List of specific device IDs to reserve.
  */
-export type ListOfStrings2 = string[];
+export type ListOfStrings2 = string[]
 /**
  * Device reservations for the container.
  */
 export type Devices = {
-  capabilities: ListOfStrings1;
+  capabilities: ListOfStrings1
   /**
    * Number of devices of this type to reserve.
    */
-  count?: string | number;
-  device_ids?: ListOfStrings2;
+  count?: string | number
+  device_ids?: ListOfStrings2
   /**
    * Device driver to use (e.g., 'nvidia').
    */
-  driver?: string;
+  driver?: string
   /**
    * Driver-specific options for the device.
    */
@@ -391,28 +391,28 @@ export type Devices = {
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` ".+".
          */
-        [k: string]: string | number | boolean | null;
+        [k: string]: string | number | boolean | null
       }
-    | string[];
+    | string[]
   /**
    * This interface was referenced by `undefined`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
    */
-  [k: string]: unknown;
-}[];
+  [k: string]: unknown
+}[]
 export type Deployment1 = {
   /**
    * Deployment mode for the service: 'replicated' (default) or 'global'.
    */
-  mode?: string;
+  mode?: string
   /**
    * Endpoint mode for the service: 'vip' (default) or 'dnsrr'.
    */
-  endpoint_mode?: string;
+  endpoint_mode?: string
   /**
    * Number of replicas of the service container to run.
    */
-  replicas?: number | string;
+  replicas?: number | string
   /**
    * Labels to apply to the service.
    */
@@ -424,9 +424,9 @@ export type Deployment1 = {
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` ".+".
          */
-        [k: string]: string | number | boolean | null;
+        [k: string]: string | number | boolean | null
       }
-    | string[];
+    | string[]
   /**
    * Configuration for rolling back a service update.
    */
@@ -434,33 +434,33 @@ export type Deployment1 = {
     /**
      * The number of containers to rollback at a time. If set to 0, all containers rollback simultaneously.
      */
-    parallelism?: number | string;
+    parallelism?: number | string
     /**
      * The time to wait between each container group's rollback (e.g., '1s', '1m30s').
      */
-    delay?: string;
+    delay?: string
     /**
      * Action to take if a rollback fails: 'continue', 'pause'.
      */
-    failure_action?: string;
+    failure_action?: string
     /**
      * Duration to monitor each task for failures after it is created (e.g., '1s', '1m30s').
      */
-    monitor?: string;
+    monitor?: string
     /**
      * Failure rate to tolerate during a rollback.
      */
-    max_failure_ratio?: number | string;
+    max_failure_ratio?: number | string
     /**
      * Order of operations during rollbacks: 'stop-first' (default) or 'start-first'.
      */
-    order?: "start-first" | "stop-first";
+    order?: 'start-first' | 'stop-first'
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^x-".
      */
-    [k: string]: unknown;
-  };
+    [k: string]: unknown
+  }
   /**
    * Configuration for updating a service.
    */
@@ -468,33 +468,33 @@ export type Deployment1 = {
     /**
      * The number of containers to update at a time.
      */
-    parallelism?: number | string;
+    parallelism?: number | string
     /**
      * The time to wait between updating a group of containers (e.g., '1s', '1m30s').
      */
-    delay?: string;
+    delay?: string
     /**
      * Action to take if an update fails: 'continue', 'pause', 'rollback'.
      */
-    failure_action?: string;
+    failure_action?: string
     /**
      * Duration to monitor each updated task for failures after it is created (e.g., '1s', '1m30s').
      */
-    monitor?: string;
+    monitor?: string
     /**
      * Failure rate to tolerate during an update (0 to 1).
      */
-    max_failure_ratio?: number | string;
+    max_failure_ratio?: number | string
     /**
      * Order of operations during updates: 'stop-first' (default) or 'start-first'.
      */
-    order?: "start-first" | "stop-first";
+    order?: 'start-first' | 'stop-first'
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^x-".
      */
-    [k: string]: unknown;
-  };
+    [k: string]: unknown
+  }
   /**
    * Resource constraints and reservations for the service.
    */
@@ -506,21 +506,21 @@ export type Deployment1 = {
       /**
        * Limit for how much of the available CPU resources, as number of cores, a container can use.
        */
-      cpus?: number | string;
+      cpus?: number | string
       /**
        * Limit on the amount of memory a container can allocate (e.g., '1g', '1024m').
        */
-      memory?: string;
+      memory?: string
       /**
        * Maximum number of PIDs available to the container.
        */
-      pids?: number | string;
+      pids?: number | string
       /**
        * This interface was referenced by `undefined`'s JSON-Schema definition
        * via the `patternProperty` "^x-".
        */
-      [k: string]: unknown;
-    };
+      [k: string]: unknown
+    }
     /**
      * Resource reservations for the service containers.
      */
@@ -528,25 +528,25 @@ export type Deployment1 = {
       /**
        * Reservation for how much of the available CPU resources, as number of cores, a container can use.
        */
-      cpus?: number | string;
+      cpus?: number | string
       /**
        * Reservation on the amount of memory a container can allocate (e.g., '1g', '1024m').
        */
-      memory?: string;
-      generic_resources?: GenericResources;
-      devices?: Devices;
+      memory?: string
+      generic_resources?: GenericResources
+      devices?: Devices
       /**
        * This interface was referenced by `undefined`'s JSON-Schema definition
        * via the `patternProperty` "^x-".
        */
-      [k: string]: unknown;
-    };
+      [k: string]: unknown
+    }
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^x-".
      */
-    [k: string]: unknown;
-  };
+    [k: string]: unknown
+  }
   /**
    * Restart policy for the service containers.
    */
@@ -554,25 +554,25 @@ export type Deployment1 = {
     /**
      * Condition for restarting the container: 'none', 'on-failure', 'any'.
      */
-    condition?: string;
+    condition?: string
     /**
      * Delay between restart attempts (e.g., '1s', '1m30s').
      */
-    delay?: string;
+    delay?: string
     /**
      * Maximum number of restart attempts before giving up.
      */
-    max_attempts?: number | string;
+    max_attempts?: number | string
     /**
      * Time window used to evaluate the restart policy (e.g., '1s', '1m30s').
      */
-    window?: string;
+    window?: string
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^x-".
      */
-    [k: string]: unknown;
-  };
+    [k: string]: unknown
+  }
   /**
    * Constraints and preferences for the platform to select a physical node to run service containers
    */
@@ -580,7 +580,7 @@ export type Deployment1 = {
     /**
      * Placement constraints for the service (e.g., 'node.role==manager').
      */
-    constraints?: string[];
+    constraints?: string[]
     /**
      * Placement preferences for the service.
      */
@@ -588,23 +588,23 @@ export type Deployment1 = {
       /**
        * Spread tasks evenly across values of the specified node label.
        */
-      spread?: string;
+      spread?: string
       /**
        * This interface was referenced by `undefined`'s JSON-Schema definition
        * via the `patternProperty` "^x-".
        */
-      [k: string]: unknown;
-    }[];
+      [k: string]: unknown
+    }[]
     /**
      * Maximum number of replicas of the service.
      */
-    max_replicas_per_node?: number | string;
+    max_replicas_per_node?: number | string
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^x-".
      */
-    [k: string]: unknown;
-  };
+    [k: string]: unknown
+  }
   /**
    * This interface was referenced by `undefined`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
@@ -612,8 +612,8 @@ export type Deployment1 = {
    * This interface was referenced by `undefined`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
    */
-  [k: string]: unknown;
-} | null;
+  [k: string]: unknown
+} | null
 /**
  * Either a dictionary mapping keys to values, or a list of strings.
  */
@@ -625,9 +625,9 @@ export type ListOrDict =
        * This interface was referenced by `undefined`'s JSON-Schema definition
        * via the `patternProperty` ".+".
        */
-      [k: string]: string | number | boolean | null;
+      [k: string]: string | number | boolean | null
     }
-  | string[];
+  | string[]
 /**
  * Secrets to expose to the build. These are accessible at build-time.
  */
@@ -637,30 +637,30 @@ export type ServiceConfigOrSecret = (
       /**
        * Name of the config or secret as defined in the top-level configs or secrets section.
        */
-      source?: string;
+      source?: string
       /**
        * Path in the container where the config or secret will be mounted. Defaults to /<source> for configs and /run/secrets/<source> for secrets.
        */
-      target?: string;
+      target?: string
       /**
        * UID of the file in the container. Default is 0 (root).
        */
-      uid?: string;
+      uid?: string
       /**
        * GID of the file in the container. Default is 0 (root).
        */
-      gid?: string;
+      gid?: string
       /**
        * File permission mode inside the container, in octal. Default is 0444 for configs and 0400 for secrets.
        */
-      mode?: number | string;
+      mode?: number | string
       /**
        * This interface was referenced by `undefined`'s JSON-Schema definition
        * via the `patternProperty` "^x-".
        */
-      [k: string]: unknown;
+      [k: string]: unknown
     }
-)[];
+)[]
 /**
  * Grant access to Configs on a per-service basis.
  */
@@ -670,58 +670,58 @@ export type ServiceConfigOrSecret1 = (
       /**
        * Name of the config or secret as defined in the top-level configs or secrets section.
        */
-      source?: string;
+      source?: string
       /**
        * Path in the container where the config or secret will be mounted. Defaults to /<source> for configs and /run/secrets/<source> for secrets.
        */
-      target?: string;
+      target?: string
       /**
        * UID of the file in the container. Default is 0 (root).
        */
-      uid?: string;
+      uid?: string
       /**
        * GID of the file in the container. Default is 0 (root).
        */
-      gid?: string;
+      gid?: string
       /**
        * File permission mode inside the container, in octal. Default is 0444 for configs and 0400 for secrets.
        */
-      mode?: number | string;
+      mode?: number | string
       /**
        * This interface was referenced by `undefined`'s JSON-Schema definition
        * via the `patternProperty` "^x-".
        */
-      [k: string]: unknown;
+      [k: string]: unknown
     }
-)[];
+)[]
 /**
  * A list of unique string values.
  */
-export type ListOfStrings3 = string[];
+export type ListOfStrings3 = string[]
 /**
  * A list of unique string values.
  */
-export type ListOfStrings4 = string[];
+export type ListOfStrings4 = string[]
 /**
  * A list of unique string values.
  */
-export type ListOfStrings5 = string[];
+export type ListOfStrings5 = string[]
 /**
  * A list of unique string values.
  */
-export type ListOfStrings6 = string[];
+export type ListOfStrings6 = string[]
 /**
  * A list of unique string values.
  */
-export type ListOfStrings7 = string[];
+export type ListOfStrings7 = string[]
 /**
  * A list of unique string values.
  */
-export type ListOfStrings8 = string[];
+export type ListOfStrings8 = string[]
 /**
  * A list of unique string values.
  */
-export type ListOfStrings9 = string[];
+export type ListOfStrings9 = string[]
 /**
  * Grant access to Secrets on a per-service basis.
  */
@@ -731,30 +731,30 @@ export type ServiceConfigOrSecret2 = (
       /**
        * Name of the config or secret as defined in the top-level configs or secrets section.
        */
-      source?: string;
+      source?: string
       /**
        * Path in the container where the config or secret will be mounted. Defaults to /<source> for configs and /run/secrets/<source> for secrets.
        */
-      target?: string;
+      target?: string
       /**
        * UID of the file in the container. Default is 0 (root).
        */
-      uid?: string;
+      uid?: string
       /**
        * GID of the file in the container. Default is 0 (root).
        */
-      gid?: string;
+      gid?: string
       /**
        * File permission mode inside the container, in octal. Default is 0444 for configs and 0400 for secrets.
        */
-      mode?: number | string;
+      mode?: number | string
       /**
        * This interface was referenced by `undefined`'s JSON-Schema definition
        * via the `patternProperty` "^x-".
        */
-      [k: string]: unknown;
+      [k: string]: unknown
     }
-)[];
+)[]
 /**
  * Network configuration for the Compose application.
  *
@@ -765,11 +765,11 @@ export type Network = {
   /**
    * Custom name for this network.
    */
-  name?: string;
+  name?: string
   /**
    * Specify which driver should be used for this network. Default is 'bridge'.
    */
-  driver?: string;
+  driver?: string
   /**
    * Specify driver-specific options defined as key/value pairs.
    */
@@ -778,8 +778,8 @@ export type Network = {
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^.+$".
      */
-    [k: string]: string | number;
-  };
+    [k: string]: string | number
+  }
   /**
    * Custom IP Address Management configuration for this network.
    */
@@ -787,7 +787,7 @@ export type Network = {
     /**
      * Custom IPAM driver, instead of the default.
      */
-    driver?: string;
+    driver?: string
     /**
      * List of IPAM configuration blocks.
      */
@@ -795,15 +795,15 @@ export type Network = {
       /**
        * Subnet in CIDR format that represents a network segment.
        */
-      subnet?: string;
+      subnet?: string
       /**
        * Range of IPs from which to allocate container IPs.
        */
-      ip_range?: string;
+      ip_range?: string
       /**
        * IPv4 or IPv6 gateway for the subnet.
        */
-      gateway?: string;
+      gateway?: string
       /**
        * Auxiliary IPv4 or IPv6 addresses used by Network driver.
        */
@@ -812,14 +812,14 @@ export type Network = {
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` "^.+$".
          */
-        [k: string]: string;
-      };
+        [k: string]: string
+      }
       /**
        * This interface was referenced by `undefined`'s JSON-Schema definition
        * via the `patternProperty` "^x-".
        */
-      [k: string]: unknown;
-    }[];
+      [k: string]: unknown
+    }[]
     /**
      * Driver-specific options for the IPAM driver.
      */
@@ -828,14 +828,14 @@ export type Network = {
        * This interface was referenced by `undefined`'s JSON-Schema definition
        * via the `patternProperty` "^.+$".
        */
-      [k: string]: string;
-    };
+      [k: string]: string
+    }
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^x-".
      */
-    [k: string]: unknown;
-  };
+    [k: string]: unknown
+  }
   /**
    * Specifies that this network already exists and was created outside of Compose.
    */
@@ -847,29 +847,29 @@ export type Network = {
          * @deprecated
          * Specifies the name of the external network. Deprecated: use the 'name' property instead.
          */
-        name?: string;
+        name?: string
         /**
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` "^x-".
          */
-        [k: string]: unknown;
-      };
+        [k: string]: unknown
+      }
   /**
    * Create an externally isolated network.
    */
-  internal?: boolean | string;
+  internal?: boolean | string
   /**
    * Enable IPv4 networking.
    */
-  enable_ipv4?: boolean | string;
+  enable_ipv4?: boolean | string
   /**
    * Enable IPv6 networking.
    */
-  enable_ipv6?: boolean | string;
+  enable_ipv6?: boolean | string
   /**
    * If true, standalone containers can attach to this network.
    */
-  attachable?: boolean | string;
+  attachable?: boolean | string
   /**
    * Either a dictionary mapping keys to values, or a list of strings.
    */
@@ -881,9 +881,9 @@ export type Network = {
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` ".+".
          */
-        [k: string]: string | number | boolean | null;
+        [k: string]: string | number | boolean | null
       }
-    | string[];
+    | string[]
   /**
    * This interface was referenced by `undefined`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
@@ -891,17 +891,17 @@ export type Network = {
    * This interface was referenced by `undefined`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
    */
-  [k: string]: unknown;
-} & Network1;
+  [k: string]: unknown
+} & Network1
 export type Network1 = {
   /**
    * Custom name for this network.
    */
-  name?: string;
+  name?: string
   /**
    * Specify which driver should be used for this network. Default is 'bridge'.
    */
-  driver?: string;
+  driver?: string
   /**
    * Specify driver-specific options defined as key/value pairs.
    */
@@ -910,8 +910,8 @@ export type Network1 = {
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^.+$".
      */
-    [k: string]: string | number;
-  };
+    [k: string]: string | number
+  }
   /**
    * Custom IP Address Management configuration for this network.
    */
@@ -919,7 +919,7 @@ export type Network1 = {
     /**
      * Custom IPAM driver, instead of the default.
      */
-    driver?: string;
+    driver?: string
     /**
      * List of IPAM configuration blocks.
      */
@@ -927,15 +927,15 @@ export type Network1 = {
       /**
        * Subnet in CIDR format that represents a network segment.
        */
-      subnet?: string;
+      subnet?: string
       /**
        * Range of IPs from which to allocate container IPs.
        */
-      ip_range?: string;
+      ip_range?: string
       /**
        * IPv4 or IPv6 gateway for the subnet.
        */
-      gateway?: string;
+      gateway?: string
       /**
        * Auxiliary IPv4 or IPv6 addresses used by Network driver.
        */
@@ -944,14 +944,14 @@ export type Network1 = {
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` "^.+$".
          */
-        [k: string]: string;
-      };
+        [k: string]: string
+      }
       /**
        * This interface was referenced by `undefined`'s JSON-Schema definition
        * via the `patternProperty` "^x-".
        */
-      [k: string]: unknown;
-    }[];
+      [k: string]: unknown
+    }[]
     /**
      * Driver-specific options for the IPAM driver.
      */
@@ -960,14 +960,14 @@ export type Network1 = {
        * This interface was referenced by `undefined`'s JSON-Schema definition
        * via the `patternProperty` "^.+$".
        */
-      [k: string]: string;
-    };
+      [k: string]: string
+    }
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^x-".
      */
-    [k: string]: unknown;
-  };
+    [k: string]: unknown
+  }
   /**
    * Specifies that this network already exists and was created outside of Compose.
    */
@@ -979,29 +979,29 @@ export type Network1 = {
          * @deprecated
          * Specifies the name of the external network. Deprecated: use the 'name' property instead.
          */
-        name?: string;
+        name?: string
         /**
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` "^x-".
          */
-        [k: string]: unknown;
-      };
+        [k: string]: unknown
+      }
   /**
    * Create an externally isolated network.
    */
-  internal?: boolean | string;
+  internal?: boolean | string
   /**
    * Enable IPv4 networking.
    */
-  enable_ipv4?: boolean | string;
+  enable_ipv4?: boolean | string
   /**
    * Enable IPv6 networking.
    */
-  enable_ipv6?: boolean | string;
+  enable_ipv6?: boolean | string
   /**
    * If true, standalone containers can attach to this network.
    */
-  attachable?: boolean | string;
+  attachable?: boolean | string
   /**
    * Either a dictionary mapping keys to values, or a list of strings.
    */
@@ -1013,9 +1013,9 @@ export type Network1 = {
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` ".+".
          */
-        [k: string]: string | number | boolean | null;
+        [k: string]: string | number | boolean | null
       }
-    | string[];
+    | string[]
   /**
    * This interface was referenced by `undefined`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
@@ -1023,8 +1023,8 @@ export type Network1 = {
    * This interface was referenced by `undefined`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
    */
-  [k: string]: unknown;
-} | null;
+  [k: string]: unknown
+} | null
 /**
  * Volume configuration for the Compose application.
  *
@@ -1035,11 +1035,11 @@ export type Volume = {
   /**
    * Custom name for this volume.
    */
-  name?: string;
+  name?: string
   /**
    * Specify which volume driver should be used for this volume.
    */
-  driver?: string;
+  driver?: string
   /**
    * Specify driver-specific options.
    */
@@ -1048,8 +1048,8 @@ export type Volume = {
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^.+$".
      */
-    [k: string]: string | number;
-  };
+    [k: string]: string | number
+  }
   /**
    * Specifies that this volume already exists and was created outside of Compose.
    */
@@ -1061,13 +1061,13 @@ export type Volume = {
          * @deprecated
          * Specifies the name of the external volume. Deprecated: use the 'name' property instead.
          */
-        name?: string;
+        name?: string
         /**
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` "^x-".
          */
-        [k: string]: unknown;
-      };
+        [k: string]: unknown
+      }
   /**
    * Either a dictionary mapping keys to values, or a list of strings.
    */
@@ -1079,9 +1079,9 @@ export type Volume = {
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` ".+".
          */
-        [k: string]: string | number | boolean | null;
+        [k: string]: string | number | boolean | null
       }
-    | string[];
+    | string[]
   /**
    * This interface was referenced by `undefined`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
@@ -1089,17 +1089,17 @@ export type Volume = {
    * This interface was referenced by `undefined`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
    */
-  [k: string]: unknown;
-} & Volume1;
+  [k: string]: unknown
+} & Volume1
 export type Volume1 = {
   /**
    * Custom name for this volume.
    */
-  name?: string;
+  name?: string
   /**
    * Specify which volume driver should be used for this volume.
    */
-  driver?: string;
+  driver?: string
   /**
    * Specify driver-specific options.
    */
@@ -1108,8 +1108,8 @@ export type Volume1 = {
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^.+$".
      */
-    [k: string]: string | number;
-  };
+    [k: string]: string | number
+  }
   /**
    * Specifies that this volume already exists and was created outside of Compose.
    */
@@ -1121,13 +1121,13 @@ export type Volume1 = {
          * @deprecated
          * Specifies the name of the external volume. Deprecated: use the 'name' property instead.
          */
-        name?: string;
+        name?: string
         /**
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` "^x-".
          */
-        [k: string]: unknown;
-      };
+        [k: string]: unknown
+      }
   /**
    * Either a dictionary mapping keys to values, or a list of strings.
    */
@@ -1139,9 +1139,9 @@ export type Volume1 = {
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` ".+".
          */
-        [k: string]: string | number | boolean | null;
+        [k: string]: string | number | boolean | null
       }
-    | string[];
+    | string[]
   /**
    * This interface was referenced by `undefined`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
@@ -1149,8 +1149,8 @@ export type Volume1 = {
    * This interface was referenced by `undefined`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
    */
-  [k: string]: unknown;
-} | null;
+  [k: string]: unknown
+} | null
 
 /**
  * The Compose file is a YAML file defining a multi-containers based application.
@@ -1160,56 +1160,56 @@ export interface ComposeSpecification {
    * @deprecated
    * declared for backward compatibility, ignored. Please remove it.
    */
-  version?: string;
+  version?: string
   /**
    * define the Compose project name, until user defines one explicitly.
    */
-  name?: string;
+  name?: string
   /**
    * compose sub-projects to be included.
    */
-  include?: Include[];
+  include?: Include[]
   /**
    * The services that will be used by your application.
    */
   services?: {
-    [k: string]: Service;
-  };
+    [k: string]: Service
+  }
   /**
    * Language models that will be used by your application.
    */
   models?: {
-    [k: string]: Model;
-  };
+    [k: string]: Model
+  }
   /**
    * Networks that are shared among multiple services.
    */
   networks?: {
-    [k: string]: Network;
-  };
+    [k: string]: Network
+  }
   /**
    * Named volumes that are shared among multiple services.
    */
   volumes?: {
-    [k: string]: Volume;
-  };
+    [k: string]: Volume
+  }
   /**
    * Secrets that are shared among multiple services.
    */
   secrets?: {
-    [k: string]: Secret;
-  };
+    [k: string]: Secret
+  }
   /**
    * Configurations that are shared among multiple services.
    */
   configs?: {
-    [k: string]: Config;
-  };
+    [k: string]: Config
+  }
   /**
    * This interface was referenced by `ComposeSpecification`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
    */
-  [k: string]: unknown;
+  [k: string]: unknown
 }
 /**
  * Configuration for a service.
@@ -1218,10 +1218,10 @@ export interface ComposeSpecification {
  * via the `patternProperty` "^[a-zA-Z0-9._-]+$".
  */
 export interface Service {
-  develop?: Development;
-  deploy?: Deployment;
-  annotations?: ListOrDict;
-  attach?: boolean | string;
+  develop?: Development
+  deploy?: Deployment
+  annotations?: ListOrDict
+  attach?: boolean | string
   /**
    * Configuration options for building the service's image.
    */
@@ -1231,19 +1231,19 @@ export interface Service {
         /**
          * Path to the build context. Can be a relative path or a URL.
          */
-        context?: string;
+        context?: string
         /**
          * Name of the Dockerfile to use for building the image.
          */
-        dockerfile?: string;
+        dockerfile?: string
         /**
          * Inline Dockerfile content to use instead of a Dockerfile from the build context.
          */
-        dockerfile_inline?: string;
+        dockerfile_inline?: string
         /**
          * List of extra privileged entitlements to grant to the build process.
          */
-        entitlements?: string[];
+        entitlements?: string[]
         /**
          * Either a dictionary mapping keys to values, or a list of strings.
          */
@@ -1255,9 +1255,9 @@ export interface Service {
                * This interface was referenced by `undefined`'s JSON-Schema definition
                * via the `patternProperty` ".+".
                */
-              [k: string]: string | number | boolean | null;
+              [k: string]: string | number | boolean | null
             }
-          | string[];
+          | string[]
         /**
          * Either a dictionary mapping keys to values, or a list of strings.
          */
@@ -1269,9 +1269,9 @@ export interface Service {
                * This interface was referenced by `undefined`'s JSON-Schema definition
                * via the `patternProperty` ".+".
                */
-              [k: string]: string | number | boolean | null;
+              [k: string]: string | number | boolean | null
             }
-          | string[];
+          | string[]
         /**
          * Either a dictionary mapping keys to values, or a list of strings.
          */
@@ -1283,21 +1283,21 @@ export interface Service {
                * This interface was referenced by `undefined`'s JSON-Schema definition
                * via the `patternProperty` ".+".
                */
-              [k: string]: string | number | boolean | null;
+              [k: string]: string | number | boolean | null
             }
-          | string[];
+          | string[]
         /**
          * List of sources the image builder should use for cache resolution
          */
-        cache_from?: string[];
+        cache_from?: string[]
         /**
          * Cache destinations for the build cache.
          */
-        cache_to?: string[];
+        cache_to?: string[]
         /**
          * Do not use cache when building the image.
          */
-        no_cache?: boolean | string;
+        no_cache?: boolean | string
         /**
          * Either a dictionary mapping keys to values, or a list of strings.
          */
@@ -1309,33 +1309,33 @@ export interface Service {
                * This interface was referenced by `undefined`'s JSON-Schema definition
                * via the `patternProperty` ".+".
                */
-              [k: string]: string | number | boolean | null;
+              [k: string]: string | number | boolean | null
             }
-          | string[];
+          | string[]
         /**
          * Network mode to use for the build. Options include 'default', 'none', 'host', or a network name.
          */
-        network?: string;
+        network?: string
         /**
          * Add a provenance attestation
          */
-        provenance?: string | boolean;
+        provenance?: string | boolean
         /**
          * Add a SBOM attestation
          */
-        sbom?: string | boolean;
+        sbom?: string | boolean
         /**
          * Always attempt to pull a newer version of the image.
          */
-        pull?: boolean | string;
+        pull?: boolean | string
         /**
          * Build stage to target in a multi-stage Dockerfile.
          */
-        target?: string;
+        target?: string
         /**
          * Size of /dev/shm for the build container. A string value can use suffix like '2g' for 2 gigabytes.
          */
-        shm_size?: number | string;
+        shm_size?: number | string
         /**
          * Add hostname mappings for the build container.
          */
@@ -1345,33 +1345,33 @@ export interface Service {
                * This interface was referenced by `undefined`'s JSON-Schema definition
                * via the `patternProperty` ".+".
                */
-              [k: string]: string | string[];
+              [k: string]: string | string[]
             }
-          | string[];
+          | string[]
         /**
          * Container isolation technology to use for the build process.
          */
-        isolation?: string;
+        isolation?: string
         /**
          * Give extended privileges to the build container.
          */
-        privileged?: boolean | string;
-        secrets?: ServiceConfigOrSecret;
+        privileged?: boolean | string
+        secrets?: ServiceConfigOrSecret
         /**
          * Additional tags to apply to the built image.
          */
-        tags?: string[];
-        ulimits?: Ulimits;
+        tags?: string[]
+        ulimits?: Ulimits
         /**
          * Platforms to build for, e.g., 'linux/amd64', 'linux/arm64', or 'windows/amd64'.
          */
-        platforms?: string[];
+        platforms?: string[]
         /**
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` "^x-".
          */
-        [k: string]: unknown;
-      };
+        [k: string]: unknown
+      }
   /**
    * Block IO configuration for the service.
    */
@@ -1379,89 +1379,89 @@ export interface Service {
     /**
      * Limit read rate (bytes per second) from a device.
      */
-    device_read_bps?: BlkioLimit[];
+    device_read_bps?: BlkioLimit[]
     /**
      * Limit read rate (IO per second) from a device.
      */
-    device_read_iops?: BlkioLimit[];
+    device_read_iops?: BlkioLimit[]
     /**
      * Limit write rate (bytes per second) to a device.
      */
-    device_write_bps?: BlkioLimit[];
+    device_write_bps?: BlkioLimit[]
     /**
      * Limit write rate (IO per second) to a device.
      */
-    device_write_iops?: BlkioLimit[];
+    device_write_iops?: BlkioLimit[]
     /**
      * Block IO weight (relative weight) for the service, between 10 and 1000.
      */
-    weight?: number | string;
+    weight?: number | string
     /**
      * Block IO weight (relative weight) for specific devices.
      */
-    weight_device?: BlkioWeight[];
-  };
+    weight_device?: BlkioWeight[]
+  }
   /**
    * Add Linux capabilities. For example, 'CAP_SYS_ADMIN', 'SYS_ADMIN', or 'NET_ADMIN'.
    */
-  cap_add?: string[];
+  cap_add?: string[]
   /**
    * Drop Linux capabilities. For example, 'CAP_SYS_ADMIN', 'SYS_ADMIN', or 'NET_ADMIN'.
    */
-  cap_drop?: string[];
+  cap_drop?: string[]
   /**
    * Specify the cgroup namespace to join. Use 'host' to use the host's cgroup namespace, or 'private' to use a private cgroup namespace.
    */
-  cgroup?: "host" | "private";
+  cgroup?: 'host' | 'private'
   /**
    * Specify an optional parent cgroup for the container.
    */
-  cgroup_parent?: string;
+  cgroup_parent?: string
   /**
    * Override the default command declared by the container image, for example 'CMD' in Dockerfile.
    */
-  command?: null | string | string[];
-  configs?: ServiceConfigOrSecret1;
+  command?: null | string | string[]
+  configs?: ServiceConfigOrSecret1
   /**
    * Specify a custom container name, rather than a generated default name.
    */
-  container_name?: string;
+  container_name?: string
   /**
    * Number of usable CPUs.
    */
-  cpu_count?: string | number;
+  cpu_count?: string | number
   /**
    * Percentage of CPU resources to use.
    */
-  cpu_percent?: string | number;
+  cpu_percent?: string | number
   /**
    * CPU shares (relative weight) for the container.
    */
-  cpu_shares?: number | string;
+  cpu_shares?: number | string
   /**
    * Limit the CPU CFS (Completely Fair Scheduler) quota.
    */
-  cpu_quota?: number | string;
+  cpu_quota?: number | string
   /**
    * Limit the CPU CFS (Completely Fair Scheduler) period.
    */
-  cpu_period?: number | string;
+  cpu_period?: number | string
   /**
    * Limit the CPU real-time period in microseconds or a duration.
    */
-  cpu_rt_period?: number | string;
+  cpu_rt_period?: number | string
   /**
    * Limit the CPU real-time runtime in microseconds or a duration.
    */
-  cpu_rt_runtime?: number | string;
+  cpu_rt_runtime?: number | string
   /**
    * Number of CPUs to use. A floating-point value is supported to request partial CPUs.
    */
-  cpus?: number | string;
+  cpus?: number | string
   /**
    * CPUs in which to allow execution (0-3, 0,1).
    */
-  cpuset?: string;
+  cpuset?: string
   /**
    * Configure the credential spec for managed service account.
    */
@@ -1469,21 +1469,21 @@ export interface Service {
     /**
      * The name of the credential spec Config to use.
      */
-    config?: string;
+    config?: string
     /**
      * Path to a credential spec file.
      */
-    file?: string;
+    file?: string
     /**
      * Path to a credential spec in the Windows registry.
      */
-    registry?: string;
+    registry?: string
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^x-".
      */
-    [k: string]: unknown;
-  };
+    [k: string]: unknown
+  }
   /**
    * Express dependency between services. Service dependencies cause services to be started in dependency order. The dependent service will wait for the dependency to be ready before starting.
    */
@@ -1498,23 +1498,23 @@ export interface Service {
           /**
            * Whether to restart dependent services when this service is restarted.
            */
-          restart?: boolean | string;
+          restart?: boolean | string
           /**
            * Whether the dependency is required for the dependent service to start.
            */
-          required?: boolean;
+          required?: boolean
           /**
            * Condition to wait for. 'service_started' waits until the service has started, 'service_healthy' waits until the service is healthy (as defined by its healthcheck), 'service_completed_successfully' waits until the service has completed successfully.
            */
-          condition: "service_started" | "service_healthy" | "service_completed_successfully";
+          condition: 'service_started' | 'service_healthy' | 'service_completed_successfully'
           /**
            * This interface was referenced by `undefined`'s JSON-Schema definition
            * via the `patternProperty` "^x-".
            */
-          [k: string]: unknown;
-        };
-      };
-  device_cgroup_rules?: ListOfStrings4;
+          [k: string]: unknown
+        }
+      }
+  device_cgroup_rules?: ListOfStrings4
   /**
    * List of device mappings for the container.
    */
@@ -1524,42 +1524,42 @@ export interface Service {
         /**
          * Path on the host to the device.
          */
-        source: string;
+        source: string
         /**
          * Path in the container where the device will be mapped.
          */
-        target?: string;
+        target?: string
         /**
          * Cgroup permissions for the device (rwm).
          */
-        permissions?: string;
+        permissions?: string
         /**
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` "^x-".
          */
-        [k: string]: unknown;
+        [k: string]: unknown
       }
-  )[];
+  )[]
   /**
    * Custom DNS servers to set for the service container.
    */
-  dns?: string | ListOfStrings;
+  dns?: string | ListOfStrings
   /**
    * Custom DNS options to be passed to the container's DNS resolver.
    */
-  dns_opt?: string[];
+  dns_opt?: string[]
   /**
    * Custom DNS search domains to set on the service container.
    */
-  dns_search?: string | ListOfStrings;
+  dns_search?: string | ListOfStrings
   /**
    * Custom domain name to use for the service container.
    */
-  domainname?: string;
+  domainname?: string
   /**
    * Override the default entrypoint declared by the container image, for example 'ENTRYPOINT' in Dockerfile.
    */
-  entrypoint?: null | string | string[];
+  entrypoint?: null | string | string[]
   /**
    * Add environment variables from a file or multiple files. Can be a single file path or a list of file paths.
    */
@@ -1571,21 +1571,21 @@ export interface Service {
             /**
              * Path to the environment file.
              */
-            path: string;
+            path: string
             /**
              * Format attribute lets you to use an alternative file formats for env_file. When not set, env_file is parsed according to Compose rules.
              */
-            format?: string;
+            format?: string
             /**
              * Whether the file is required. If true and the file doesn't exist, an error will be raised.
              */
-            required?: boolean | string;
+            required?: boolean | string
           }
-      )[];
+      )[]
   /**
    * Add metadata to containers using files containing Docker labels.
    */
-  label_file?: string | string[];
+  label_file?: string | string[]
   /**
    * Either a dictionary mapping keys to values, or a list of strings.
    */
@@ -1597,13 +1597,13 @@ export interface Service {
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` ".+".
          */
-        [k: string]: string | number | boolean | null;
+        [k: string]: string | number | boolean | null
       }
-    | string[];
+    | string[]
   /**
    * Expose ports without publishing them to the host machine - they'll only be accessible to linked services.
    */
-  expose?: (string | number)[];
+  expose?: (string | number)[]
   /**
    * Extend another service, in the current file or another file.
    */
@@ -1613,12 +1613,12 @@ export interface Service {
         /**
          * The name of the service to extend.
          */
-        service: string;
+        service: string
         /**
          * The file path where the service to extend is defined.
          */
-        file?: string;
-      };
+        file?: string
+      }
   /**
    * Specify a service which will not be manage by Compose directly, and delegate its management to an external provider.
    */
@@ -1626,7 +1626,7 @@ export interface Service {
     /**
      * External component used by Compose to manage setup and teardown lifecycle of the service.
      */
-    type: string;
+    type: string
     /**
      * Provider-specific options.
      */
@@ -1635,18 +1635,18 @@ export interface Service {
        * This interface was referenced by `undefined`'s JSON-Schema definition
        * via the `patternProperty` "^.+$".
        */
-      [k: string]: (string | number | boolean) | (string | number | boolean)[];
-    };
+      [k: string]: (string | number | boolean) | (string | number | boolean)[]
+    }
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^x-".
      */
-    [k: string]: unknown;
-  };
+    [k: string]: unknown
+  }
   /**
    * Link to services started outside this Compose application. Specify services as <service_name>:<alias>.
    */
-  external_links?: string[];
+  external_links?: string[]
   /**
    * Add hostname mappings to the container network interface configuration.
    */
@@ -1656,25 +1656,25 @@ export interface Service {
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` ".+".
          */
-        [k: string]: string | string[];
+        [k: string]: string | string[]
       }
-    | string[];
+    | string[]
   /**
    * Define GPU devices to use. Can be set to 'all' to use all GPUs, or a list of specific GPU devices.
    */
   gpus?:
-    | "all"
+    | 'all'
     | {
-        capabilities?: ListOfStrings5;
+        capabilities?: ListOfStrings5
         /**
          * Number of GPUs to use.
          */
-        count?: string | number;
-        device_ids?: ListOfStrings6;
+        count?: string | number
+        device_ids?: ListOfStrings6
         /**
          * GPU driver to use (e.g., 'nvidia').
          */
-        driver?: string;
+        driver?: string
         /**
          * Either a dictionary mapping keys to values, or a list of strings.
          */
@@ -1686,36 +1686,36 @@ export interface Service {
                * This interface was referenced by `undefined`'s JSON-Schema definition
                * via the `patternProperty` ".+".
                */
-              [k: string]: string | number | boolean | null;
+              [k: string]: string | number | boolean | null
             }
-          | string[];
-        [k: string]: unknown;
-      }[];
+          | string[]
+        [k: string]: unknown
+      }[]
   /**
    * Add additional groups which user inside the container should be member of.
    */
-  group_add?: (string | number)[];
-  healthcheck?: Healthcheck;
+  group_add?: (string | number)[]
+  healthcheck?: Healthcheck
   /**
    * Define a custom hostname for the service container.
    */
-  hostname?: string;
+  hostname?: string
   /**
    * Specify the image to start the container from. Can be a repository/tag, a digest, or a local image ID.
    */
-  image?: string;
+  image?: string
   /**
    * Run as an init process inside the container that forwards signals and reaps processes.
    */
-  init?: boolean | string;
+  init?: boolean | string
   /**
    * IPC sharing mode for the service container. Use 'host' to share the host's IPC namespace, 'service:[service_name]' to share with another service, or 'shareable' to allow other services to share this service's IPC namespace.
    */
-  ipc?: string;
+  ipc?: string
   /**
    * Container isolation technology to use. Supported values are platform-specific.
    */
-  isolation?: string;
+  isolation?: string
   /**
    * Either a dictionary mapping keys to values, or a list of strings.
    */
@@ -1727,13 +1727,13 @@ export interface Service {
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` ".+".
          */
-        [k: string]: string | number | boolean | null;
+        [k: string]: string | number | boolean | null
       }
-    | string[];
+    | string[]
   /**
    * Link to containers in another service. Either specify both the service name and a link alias (SERVICE:ALIAS), or just the service name.
    */
-  links?: string[];
+  links?: string[]
   /**
    * Logging configuration for the service.
    */
@@ -1741,7 +1741,7 @@ export interface Service {
     /**
      * Logging driver to use, such as 'json-file', 'syslog', 'journald', etc.
      */
-    driver?: string;
+    driver?: string
     /**
      * Options for the logging driver.
      */
@@ -1750,38 +1750,38 @@ export interface Service {
        * This interface was referenced by `undefined`'s JSON-Schema definition
        * via the `patternProperty` "^.+$".
        */
-      [k: string]: string | number | null;
-    };
+      [k: string]: string | number | null
+    }
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^x-".
      */
-    [k: string]: unknown;
-  };
+    [k: string]: unknown
+  }
   /**
    * Container MAC address to set.
    */
-  mac_address?: string;
+  mac_address?: string
   /**
    * Memory limit for the container. A string value can use suffix like '2g' for 2 gigabytes.
    */
-  mem_limit?: number | string;
+  mem_limit?: number | string
   /**
    * Memory reservation for the container.
    */
-  mem_reservation?: string | number;
+  mem_reservation?: string | number
   /**
    * Container memory swappiness as percentage (0 to 100).
    */
-  mem_swappiness?: number | string;
+  mem_swappiness?: number | string
   /**
    * Amount of memory the container is allowed to swap to disk. Set to -1 to enable unlimited swap.
    */
-  memswap_limit?: number | string;
+  memswap_limit?: number | string
   /**
    * Network mode. Values can be 'bridge', 'host', 'none', 'service:[service name]', or 'container:[container name]'.
    */
-  network_mode?: string;
+  network_mode?: string
   /**
    * AI Models to use, referencing entries under the top-level models key.
    */
@@ -1796,18 +1796,18 @@ export interface Service {
           /**
            * Environment variable set to AI model endpoint.
            */
-          endpoint_var?: string;
+          endpoint_var?: string
           /**
            * Environment variable set to AI model name.
            */
-          model_var?: string;
+          model_var?: string
           /**
            * This interface was referenced by `undefined`'s JSON-Schema definition
            * via the `patternProperty` "^x-".
            */
-          [k: string]: unknown;
-        };
-      };
+          [k: string]: unknown
+        }
+      }
   /**
    * Networks to join, referencing entries under the top-level networks key. Can be a list of network names or a mapping of network name to network configuration.
    */
@@ -1819,24 +1819,24 @@ export interface Service {
          * via the `patternProperty` "^[a-zA-Z0-9._-]+$".
          */
         [k: string]: {
-          aliases?: ListOfStrings7;
+          aliases?: ListOfStrings7
           /**
            * Interface network name used to connect to network
            */
-          interface_name?: string;
+          interface_name?: string
           /**
            * Specify a static IPv4 address for this service on this network.
            */
-          ipv4_address?: string;
+          ipv4_address?: string
           /**
            * Specify a static IPv6 address for this service on this network.
            */
-          ipv6_address?: string;
-          link_local_ips?: ListOfStrings8;
+          ipv6_address?: string
+          link_local_ips?: ListOfStrings8
           /**
            * Specify a MAC address for this service on this network.
            */
-          mac_address?: string;
+          mac_address?: string
           /**
            * Driver options for this network.
            */
@@ -1845,43 +1845,43 @@ export interface Service {
              * This interface was referenced by `undefined`'s JSON-Schema definition
              * via the `patternProperty` "^.+$".
              */
-            [k: string]: string | number;
-          };
+            [k: string]: string | number
+          }
           /**
            * Specify the priority for the network connection.
            */
-          priority?: number;
+          priority?: number
           /**
            * Specify the gateway priority for the network connection.
            */
-          gw_priority?: number;
+          gw_priority?: number
           /**
            * This interface was referenced by `undefined`'s JSON-Schema definition
            * via the `patternProperty` "^x-".
            */
-          [k: string]: unknown;
-        } | null;
-      };
+          [k: string]: unknown
+        } | null
+      }
   /**
    * Disable OOM Killer for the container.
    */
-  oom_kill_disable?: boolean | string;
+  oom_kill_disable?: boolean | string
   /**
    * Tune host's OOM preferences for the container (accepts -1000 to 1000).
    */
-  oom_score_adj?: string | number;
+  oom_score_adj?: string | number
   /**
    * PID mode for container.
    */
-  pid?: string | null;
+  pid?: string | null
   /**
    * Tune a container's PIDs limit. Set to -1 for unlimited PIDs.
    */
-  pids_limit?: number | string;
+  pids_limit?: number | string
   /**
    * Target platform to run on, e.g., 'linux/amd64', 'linux/arm64', or 'windows/amd64'.
    */
-  platform?: string;
+  platform?: string
   /**
    * Expose container ports. Short format ([HOST:]CONTAINER[/PROTOCOL]).
    */
@@ -1892,84 +1892,84 @@ export interface Service {
         /**
          * A human-readable name for this port mapping.
          */
-        name?: string;
+        name?: string
         /**
          * The port binding mode, either 'host' for publishing a host port or 'ingress' for load balancing.
          */
-        mode?: string;
+        mode?: string
         /**
          * The host IP to bind to.
          */
-        host_ip?: string;
+        host_ip?: string
         /**
          * The port inside the container.
          */
-        target?: number | string;
+        target?: number | string
         /**
          * The publicly exposed port.
          */
-        published?: string | number;
+        published?: string | number
         /**
          * The port protocol (tcp or udp).
          */
-        protocol?: string;
+        protocol?: string
         /**
          * Application protocol to use with the port (e.g., http, https, mysql).
          */
-        app_protocol?: string;
+        app_protocol?: string
         /**
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` "^x-".
          */
-        [k: string]: unknown;
+        [k: string]: unknown
       }
-  )[];
+  )[]
   /**
    * Commands to run after the container starts. If any command fails, the container stops.
    */
-  post_start?: ServiceHook1[];
+  post_start?: ServiceHook1[]
   /**
    * Commands to run before the container stops. If any command fails, the container stop is aborted.
    */
-  pre_stop?: ServiceHook1[];
+  pre_stop?: ServiceHook1[]
   /**
    * Give extended privileges to the service container.
    */
-  privileged?: boolean | string;
-  profiles?: ListOfStrings9;
+  privileged?: boolean | string
+  profiles?: ListOfStrings9
   /**
    * Policy for pulling images. Options include: 'always', 'never', 'if_not_present', 'missing', 'build', or time-based refresh policies.
    */
-  pull_policy?: string;
+  pull_policy?: string
   /**
    * Time after which to refresh the image. Used with pull_policy=refresh.
    */
-  pull_refresh_after?: string;
+  pull_refresh_after?: string
   /**
    * Mount the container's filesystem as read only.
    */
-  read_only?: boolean | string;
+  read_only?: boolean | string
   /**
    * Restart policy for the service container. Options include: 'no', 'always', 'on-failure', and 'unless-stopped'.
    */
-  restart?: string;
+  restart?: string
   /**
    * Runtime to use for this container, e.g., 'runc'.
    */
-  runtime?: string;
+  runtime?: string
   /**
    * Number of containers to deploy for this service.
    */
-  scale?: number | string;
+  scale?: number | string
   /**
    * Override the default labeling scheme for each container.
    */
-  security_opt?: string[];
+  security_opt?: string[]
   /**
    * Size of /dev/shm. A string value can use suffix like '2g' for 2 gigabytes.
    */
-  shm_size?: number | string;
-  secrets?: ServiceConfigOrSecret2;
+  shm_size?: number | string
+  secrets?: ServiceConfigOrSecret2
   /**
    * Either a dictionary mapping keys to values, or a list of strings.
    */
@@ -1981,52 +1981,52 @@ export interface Service {
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` ".+".
          */
-        [k: string]: string | number | boolean | null;
+        [k: string]: string | number | boolean | null
       }
-    | string[];
+    | string[]
   /**
    * Keep STDIN open even if not attached.
    */
-  stdin_open?: boolean | string;
+  stdin_open?: boolean | string
   /**
    * Time to wait for the container to stop gracefully before sending SIGKILL (e.g., '1s', '1m30s').
    */
-  stop_grace_period?: string;
+  stop_grace_period?: string
   /**
    * Signal to stop the container (e.g., 'SIGTERM', 'SIGINT').
    */
-  stop_signal?: string;
+  stop_signal?: string
   /**
    * Storage driver options for the container.
    */
   storage_opt?: {
-    [k: string]: unknown;
-  };
+    [k: string]: unknown
+  }
   /**
    * Mount a temporary filesystem (tmpfs) into the container. Can be a single value or a list.
    */
-  tmpfs?: string | ListOfStrings;
+  tmpfs?: string | ListOfStrings
   /**
    * Allocate a pseudo-TTY to service container.
    */
-  tty?: boolean | string;
-  ulimits?: Ulimits1;
+  tty?: boolean | string
+  ulimits?: Ulimits1
   /**
    * Bind mount Docker API socket and required auth.
    */
-  use_api_socket?: boolean;
+  use_api_socket?: boolean
   /**
    * Username or UID to run the container process as.
    */
-  user?: string;
+  user?: string
   /**
    * UTS namespace to use. 'host' shares the host's UTS namespace.
    */
-  uts?: string;
+  uts?: string
   /**
    * User namespace to use. 'host' shares the host's user namespace.
    */
-  userns_mode?: string;
+  userns_mode?: string
   /**
    * Mount host paths or named volumes accessible to the container. Short syntax (VOLUME:CONTAINER_PATH[:MODE])
    */
@@ -2036,23 +2036,23 @@ export interface Service {
         /**
          * The mount type: bind for mounting host directories, volume for named volumes, tmpfs for temporary filesystems, cluster for cluster volumes, npipe for named pipes, or image for mounting from an image.
          */
-        type: "bind" | "volume" | "tmpfs" | "cluster" | "npipe" | "image";
+        type: 'bind' | 'volume' | 'tmpfs' | 'cluster' | 'npipe' | 'image'
         /**
          * The source of the mount, a path on the host for a bind mount, a docker image reference for an image mount, or the name of a volume defined in the top-level volumes key. Not applicable for a tmpfs mount.
          */
-        source?: string;
+        source?: string
         /**
          * The path in the container where the volume is mounted.
          */
-        target?: string;
+        target?: string
         /**
          * Flag to set the volume as read-only.
          */
-        read_only?: boolean | string;
+        read_only?: boolean | string
         /**
          * The consistency requirements for the mount. Available values are platform specific.
          */
-        consistency?: string;
+        consistency?: string
         /**
          * Configuration specific to bind mounts.
          */
@@ -2060,25 +2060,25 @@ export interface Service {
           /**
            * The propagation mode for the bind mount: 'shared', 'slave', 'private', 'rshared', 'rslave', or 'rprivate'.
            */
-          propagation?: string;
+          propagation?: string
           /**
            * Create the host path if it doesn't exist.
            */
-          create_host_path?: boolean | string;
+          create_host_path?: boolean | string
           /**
            * Recursively mount the source directory.
            */
-          recursive?: "enabled" | "disabled" | "writable" | "readonly";
+          recursive?: 'enabled' | 'disabled' | 'writable' | 'readonly'
           /**
            * SELinux relabeling options: 'z' for shared content, 'Z' for private unshared content.
            */
-          selinux?: "z" | "Z";
+          selinux?: 'z' | 'Z'
           /**
            * This interface was referenced by `undefined`'s JSON-Schema definition
            * via the `patternProperty` "^x-".
            */
-          [k: string]: unknown;
-        };
+          [k: string]: unknown
+        }
         /**
          * Configuration specific to volume mounts.
          */
@@ -2094,23 +2094,23 @@ export interface Service {
                  * This interface was referenced by `undefined`'s JSON-Schema definition
                  * via the `patternProperty` ".+".
                  */
-                [k: string]: string | number | boolean | null;
+                [k: string]: string | number | boolean | null
               }
-            | string[];
+            | string[]
           /**
            * Flag to disable copying of data from a container when a volume is created.
            */
-          nocopy?: boolean | string;
+          nocopy?: boolean | string
           /**
            * Path within the volume to mount instead of the volume root.
            */
-          subpath?: string;
+          subpath?: string
           /**
            * This interface was referenced by `undefined`'s JSON-Schema definition
            * via the `patternProperty` "^x-".
            */
-          [k: string]: unknown;
-        };
+          [k: string]: unknown
+        }
         /**
          * Configuration specific to tmpfs mounts.
          */
@@ -2118,17 +2118,17 @@ export interface Service {
           /**
            * Size of the tmpfs mount in bytes.
            */
-          size?: number | string;
+          size?: number | string
           /**
            * File mode of the tmpfs in octal.
            */
-          mode?: number | string;
+          mode?: number | string
           /**
            * This interface was referenced by `undefined`'s JSON-Schema definition
            * via the `patternProperty` "^x-".
            */
-          [k: string]: unknown;
-        };
+          [k: string]: unknown
+        }
         /**
          * Configuration specific to image mounts.
          */
@@ -2136,33 +2136,33 @@ export interface Service {
           /**
            * Path within the image to mount instead of the image root.
            */
-          subpath?: string;
+          subpath?: string
           /**
            * This interface was referenced by `undefined`'s JSON-Schema definition
            * via the `patternProperty` "^x-".
            */
-          [k: string]: unknown;
-        };
+          [k: string]: unknown
+        }
         /**
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` "^x-".
          */
-        [k: string]: unknown;
+        [k: string]: unknown
       }
-  )[];
+  )[]
   /**
    * Mount volumes from another service or container. Optionally specify read-only access (ro) or read-write (rw).
    */
-  volumes_from?: string[];
+  volumes_from?: string[]
   /**
    * The working directory in which the entrypoint or command will be run
    */
-  working_dir?: string;
+  working_dir?: string
   /**
    * This interface was referenced by `Service`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
    */
-  [k: string]: unknown;
+  [k: string]: unknown
 }
 /**
  * Command to execute when a change is detected and action is sync+exec.
@@ -2171,19 +2171,19 @@ export interface ServiceHook {
   /**
    * Command to execute as part of the hook.
    */
-  command: null | string | string[];
+  command: null | string | string[]
   /**
    * User to run the command as.
    */
-  user?: string;
+  user?: string
   /**
    * Whether to run the command with extended privileges.
    */
-  privileged?: boolean | string;
+  privileged?: boolean | string
   /**
    * Working directory for the command.
    */
-  working_dir?: string;
+  working_dir?: string
   /**
    * Environment variables for the command.
    */
@@ -2195,9 +2195,9 @@ export interface ServiceHook {
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` ".+".
          */
-        [k: string]: string | number | boolean | null;
+        [k: string]: string | number | boolean | null
       }
-    | string[];
+    | string[]
   /**
    * This interface was referenced by `ServiceHook`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
@@ -2205,7 +2205,7 @@ export interface ServiceHook {
    * This interface was referenced by `ServiceHook1`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
    */
-  [k: string]: unknown;
+  [k: string]: unknown
 }
 /**
  * Override the default ulimits for the build container.
@@ -2224,17 +2224,17 @@ export interface Ulimits {
         /**
          * Hard limit for the ulimit type. This is the maximum allowed value.
          */
-        hard: number | string;
+        hard: number | string
         /**
          * Soft limit for the ulimit type. This is the value that's actually enforced.
          */
-        soft: number | string;
+        soft: number | string
         /**
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` "^x-".
          */
-        [k: string]: unknown;
-      };
+        [k: string]: unknown
+      }
 }
 /**
  * Block IO limit for a specific device.
@@ -2243,11 +2243,11 @@ export interface BlkioLimit {
   /**
    * Path to the device (e.g., '/dev/sda').
    */
-  path?: string;
+  path?: string
   /**
    * Rate limit in bytes per second or IO operations per second.
    */
-  rate?: number | string;
+  rate?: number | string
 }
 /**
  * Block IO weight for a specific device.
@@ -2256,11 +2256,11 @@ export interface BlkioWeight {
   /**
    * Path to the device (e.g., '/dev/sda').
    */
-  path?: string;
+  path?: string
   /**
    * Relative weight for the device, between 10 and 1000.
    */
-  weight?: number | string;
+  weight?: number | string
 }
 /**
  * Configure a health check for the container to monitor its health status.
@@ -2269,36 +2269,36 @@ export interface Healthcheck {
   /**
    * Disable any container-specified healthcheck. Set to true to disable.
    */
-  disable?: boolean | string;
+  disable?: boolean | string
   /**
    * Time between running the check (e.g., '1s', '1m30s'). Default: 30s.
    */
-  interval?: string;
+  interval?: string
   /**
    * Number of consecutive failures needed to consider the container as unhealthy. Default: 3.
    */
-  retries?: number | string;
+  retries?: number | string
   /**
    * The test to perform to check container health. Can be a string or a list. The first item is either NONE, CMD, or CMD-SHELL. If it's CMD, the rest of the command is exec'd. If it's CMD-SHELL, the rest is run in the shell.
    */
-  test?: string | string[];
+  test?: string | string[]
   /**
    * Maximum time to allow one check to run (e.g., '1s', '1m30s'). Default: 30s.
    */
-  timeout?: string;
+  timeout?: string
   /**
    * Start period for the container to initialize before starting health-retries countdown (e.g., '1s', '1m30s'). Default: 0s.
    */
-  start_period?: string;
+  start_period?: string
   /**
    * Time between running the check during the start period (e.g., '1s', '1m30s'). Default: interval value.
    */
-  start_interval?: string;
+  start_interval?: string
   /**
    * This interface was referenced by `Healthcheck`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
    */
-  [k: string]: unknown;
+  [k: string]: unknown
 }
 /**
  * Configuration for service lifecycle hooks, which are commands executed at specific points in a container's lifecycle.
@@ -2307,19 +2307,19 @@ export interface ServiceHook1 {
   /**
    * Command to execute as part of the hook.
    */
-  command: null | string | string[];
+  command: null | string | string[]
   /**
    * User to run the command as.
    */
-  user?: string;
+  user?: string
   /**
    * Whether to run the command with extended privileges.
    */
-  privileged?: boolean | string;
+  privileged?: boolean | string
   /**
    * Working directory for the command.
    */
-  working_dir?: string;
+  working_dir?: string
   /**
    * Environment variables for the command.
    */
@@ -2331,9 +2331,9 @@ export interface ServiceHook1 {
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` ".+".
          */
-        [k: string]: string | number | boolean | null;
+        [k: string]: string | number | boolean | null
       }
-    | string[];
+    | string[]
   /**
    * This interface was referenced by `ServiceHook`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
@@ -2341,7 +2341,7 @@ export interface ServiceHook1 {
    * This interface was referenced by `ServiceHook1`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
    */
-  [k: string]: unknown;
+  [k: string]: unknown
 }
 /**
  * Override the default ulimits for a container.
@@ -2360,17 +2360,17 @@ export interface Ulimits1 {
         /**
          * Hard limit for the ulimit type. This is the maximum allowed value.
          */
-        hard: number | string;
+        hard: number | string
         /**
          * Soft limit for the ulimit type. This is the value that's actually enforced.
          */
-        soft: number | string;
+        soft: number | string
         /**
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` "^x-".
          */
-        [k: string]: unknown;
-      };
+        [k: string]: unknown
+      }
 }
 /**
  * Language Model for the Compose application.
@@ -2382,21 +2382,21 @@ export interface Model {
   /**
    * Custom name for this model.
    */
-  name?: string;
+  name?: string
   /**
    * Language Model to run.
    */
-  model: string;
-  context_size?: number;
+  model: string
+  context_size?: number
   /**
    * Raw runtime flags to pass to the inference engine.
    */
-  runtime_flags?: string[];
+  runtime_flags?: string[]
   /**
    * This interface was referenced by `Model`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
    */
-  [k: string]: unknown;
+  [k: string]: unknown
 }
 /**
  * Secret configuration for the Compose application.
@@ -2408,15 +2408,15 @@ export interface Secret {
   /**
    * Custom name for this secret.
    */
-  name?: string;
+  name?: string
   /**
    * Name of an environment variable from which to get the secret value.
    */
-  environment?: string;
+  environment?: string
   /**
    * Path to a file containing the secret value.
    */
-  file?: string;
+  file?: string
   /**
    * Specifies that this secret already exists and was created outside of Compose.
    */
@@ -2427,9 +2427,9 @@ export interface Secret {
         /**
          * Specifies the name of the external secret.
          */
-        name?: string;
-        [k: string]: unknown;
-      };
+        name?: string
+        [k: string]: unknown
+      }
   /**
    * Either a dictionary mapping keys to values, or a list of strings.
    */
@@ -2441,13 +2441,13 @@ export interface Secret {
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` ".+".
          */
-        [k: string]: string | number | boolean | null;
+        [k: string]: string | number | boolean | null
       }
-    | string[];
+    | string[]
   /**
    * Specify which secret driver should be used for this secret.
    */
-  driver?: string;
+  driver?: string
   /**
    * Specify driver-specific options.
    */
@@ -2456,17 +2456,17 @@ export interface Secret {
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^.+$".
      */
-    [k: string]: string | number;
-  };
+    [k: string]: string | number
+  }
   /**
    * Driver to use for templating the secret's value.
    */
-  template_driver?: string;
+  template_driver?: string
   /**
    * This interface was referenced by `Secret`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
    */
-  [k: string]: unknown;
+  [k: string]: unknown
 }
 /**
  * Config configuration for the Compose application.
@@ -2478,19 +2478,19 @@ export interface Config {
   /**
    * Custom name for this config.
    */
-  name?: string;
+  name?: string
   /**
    * Inline content of the config.
    */
-  content?: string;
+  content?: string
   /**
    * Name of an environment variable from which to get the config value.
    */
-  environment?: string;
+  environment?: string
   /**
    * Path to a file containing the config value.
    */
-  file?: string;
+  file?: string
   /**
    * Specifies that this config already exists and was created outside of Compose.
    */
@@ -2502,9 +2502,9 @@ export interface Config {
          * @deprecated
          * Specifies the name of the external config. Deprecated: use the 'name' property instead.
          */
-        name?: string;
-        [k: string]: unknown;
-      };
+        name?: string
+        [k: string]: unknown
+      }
   /**
    * Either a dictionary mapping keys to values, or a list of strings.
    */
@@ -2516,16 +2516,16 @@ export interface Config {
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` ".+".
          */
-        [k: string]: string | number | boolean | null;
+        [k: string]: string | number | boolean | null
       }
-    | string[];
+    | string[]
   /**
    * Driver to use for templating the config's value.
    */
-  template_driver?: string;
+  template_driver?: string
   /**
    * This interface was referenced by `Config`'s JSON-Schema definition
    * via the `patternProperty` "^x-".
    */
-  [k: string]: unknown;
+  [k: string]: unknown
 }

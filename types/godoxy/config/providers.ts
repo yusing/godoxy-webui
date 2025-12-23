@@ -1,5 +1,6 @@
 import type { ProxmoxConfig } from '../providers/proxmox'
-import type { URI, URL } from '../types'
+import type { URI } from '../types'
+import type { DockerProviderMap } from './docker'
 import type { MaxmindConfig } from './maxmind'
 import type { NotificationConfig } from './notification'
 
@@ -14,7 +15,7 @@ export type Providers = {
    *
    * @minProperties 1
    */
-  docker?: { [name: string]: URL | '$DOCKER_HOST' }
+  docker?: DockerProviderMap
   /** List of GoDoxy agents
    *
    * @minItems 1
