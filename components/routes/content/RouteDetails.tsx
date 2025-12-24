@@ -277,7 +277,7 @@ export default function RouteDetails() {
               />
               <Item
                 title="Docker Host"
-                value={routeDetails.container.docker_host}
+                value={routeDetails.container.docker_cfg.url}
                 className="font-mono"
               />
               <Item title="Image" value={routeDetails.container.image.name} className="font-mono" />

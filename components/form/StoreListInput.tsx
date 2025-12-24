@@ -108,7 +108,7 @@ function RenderItem<T extends string>({
   return (
     <div key={index} className="flex items-center gap-2">
       {schema?.items?.enum ? (
-        <Select value={item} onValueChange={e => setItem(e as T)}>
+        <Select value={item as string} onValueChange={e => setItem(e as T)}>
           <SelectTrigger className="w-full">
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
