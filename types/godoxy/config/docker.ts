@@ -2,22 +2,26 @@ import type { Hostname, Port, URL } from '../types'
 
 export { type DockerConfig, type DockerProviderMap }
 
+/** Name-value mapping of docker hosts to retrieve routes from
+ *
+ * @additionalProperties true
+ */
 type DockerProviderMap = Record<string, DockerConfig | URL | '$DOCKER_HOST'>
 
 type DockerConfig = {
-  /** The scheme to use for the connection. */
+  /** Scheme to use */
   scheme: 'http' | 'https' | 'tcp'
-  /** The host to connect to. */
+  /** Host to connect to   */
   host: Hostname
-  /** The port to connect to. */
+  /** Port to connect to */
   port: Port
-  /** The TLS configuration. */
+  /** TLS configuration */
   tls?: {
-    /** The path to the CA certificate. */
+    /** Path to the CA certificate */
     ca_file: string
-    /** The path to the client certificate. */
+    /** Path to the client certificate */
     cert_file?: string
-    /** The path to the client certificate key. */
+    /** Path to the client certificate key */
     key_file?: string
   }
 }
