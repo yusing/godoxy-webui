@@ -1,6 +1,6 @@
 'use client'
 
-import { RefreshCcw, Trash } from 'lucide-react'
+import { IconRefresh, IconTrash } from '@tabler/icons-react'
 import { useMemo } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -16,7 +16,6 @@ import {
 import { cn } from '@/lib/utils'
 import {
   getAllowedValues,
-  getDefaultValue,
   getInputType,
   getRequired,
   getTitle,
@@ -26,27 +25,31 @@ import {
 } from '@/types/schema'
 import type { ValueState } from 'juststore'
 import { Label } from '../ui/label'
+import { stringify } from './utils'
 
-type StoreFieldInputProps<T> = {
+type StoreFieldInputProps<T extends string | number | boolean | undefined> = {
   state: ValueState<T>
   schema: JSONSchema | undefined
   placeholder: { key?: string; value?: string } | undefined
-  onKeyChange: (newKey: string) => void
+  onKeyChange?: (newKey: string) => void
   allowDelete: boolean
   deleteType?: 'delete' | 'reset'
-  onReset?: () => void
+  readonly?: boolean
 }
 
-export function StoreFieldInput<T>({
+export function StoreFieldInput<T extends string | number | boolean | undefined>({
   state,
   schema,
   placeholder,
   onKeyChange,
   allowDelete = true,
   deleteType = 'delete',
-  onReset,
+  readonly = false,
 }: Readonly<StoreFieldInputProps<T>>) {
+  'use memo'
+
   const fieldKey = state.field
+
   const allowedValues = useMemo(
     () => getAllowedValues(schema, fieldKey)?.filter(e => e !== ''),
     [schema, fieldKey]
@@ -63,23 +66,34 @@ export function StoreFieldInput<T>({
       )}
     >
       <div className="flex w-full items-center gap-2">
-        {!schema ? (
-          <Input
-            value={fieldKey}
-            placeholder={placeholder?.key ?? 'Key'}
-            onChange={({ target: { value } }) => onKeyChange(value)}
-            className="max-w-[220px]"
-          />
+        {onKeyChange ? (
+          <div className="max-w-[220px] w-full @container">
+            <Input
+              readOnly={readonly}
+              value={fieldKey}
+              placeholder={placeholder?.key ?? 'Key'}
+              onChange={onKeyChange ? ({ target: { value } }) => onKeyChange(value) : undefined}
+              className="text-xs"
+              style={
+                {
+                  '--len': fieldKey.length || (placeholder?.key ?? 'Key').length,
+                  fontSize: 'min(0.75rem, calc((100cqw - 24px) / (var(--len) * 0.5)))',
+                } as React.CSSProperties
+              }
+            />
+          </div>
         ) : title ? (
-          <div className="min-w-[150px] select-none">
+          <div className="min-w-[150px] select-none max-w-min">
             <div className="flex items-center gap-2">
-              <Label>{title}</Label>
-              {required && <span className="text-destructive text-xs">*</span>}
+              <Label className="block">
+                {title}
+                {required && <span className="text-destructive text-xs ml-1">*</span>}
+              </Label>
             </div>
             <code className="text-xs text-muted-foreground">{fieldKey}</code>
           </div>
         ) : (
-          <div className="min-w-[150px]">
+          <div className="min-w-[150px] max-w-min">
             <div className="flex items-center gap-2">
               <Label>{fieldKey}</Label>
               {required && <span className="text-destructive text-xs">*</span>}
@@ -87,61 +101,63 @@ export function StoreFieldInput<T>({
           </div>
         )}
 
-        <state.Render>
-          {(fieldValue, update) => {
-            // if undefined, display the default value
-            fieldValue ??= getDefaultValue(vSchema) as T
-            if (allowedValues && allowedValues.length > 0)
-              return (
-                <Select
-                  value={typeof fieldValue === 'string' ? fieldValue : String(fieldValue)}
-                  onValueChange={value => update(value as T)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder={placeholder?.value ?? 'Value'} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {allowedValues.map(item => (
-                      <SelectItem value={item} key={item}>
-                        {item}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )
-            if (isInputType(vSchema))
-              return (
-                <Input
-                  value={typeof fieldValue === 'string' ? fieldValue : String(fieldValue)}
-                  type={getInputType(vSchema?.type)}
-                  placeholder={placeholder?.value ?? 'Value'}
-                  onChange={({ target: { value } }) => update(value as T)}
+        {allowedValues && allowedValues.length > 1 ? (
+          <state.Render>
+            {(value, update) => (
+              <Select
+                readOnly={readonly}
+                value={stringify(value)}
+                onValueChange={v => update(v as T)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={placeholder?.value ?? 'Value'} />
+                </SelectTrigger>
+                <SelectContent>
+                  {allowedValues.map(item => (
+                    <SelectItem value={item} key={item}>
+                      {item}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </state.Render>
+        ) : isInputType(vSchema) ? (
+          <state.Render>
+            {(value, update) => (
+              <Input
+                readOnly={readonly}
+                value={stringify(value)}
+                type={getInputType(vSchema?.type)}
+                placeholder={placeholder?.value ?? 'Value'}
+                onChange={({ target: { value } }) => update(value as T)}
+              />
+            )}
+          </state.Render>
+        ) : isToggleType(vSchema) ? (
+          <div className="w-full flex items-center">
+            <state.Render>
+              {(value, update) => (
+                <Checkbox
+                  disabled={readonly}
+                  checked={Boolean(value)}
+                  onCheckedChange={checked => update(Boolean(checked) as T)}
                 />
-              )
-            if (isToggleType(vSchema))
-              return (
-                <div className="w-full flex items-center">
-                  <Checkbox
-                    checked={Boolean(fieldValue)}
-                    onCheckedChange={checked => update(Boolean(checked) as T)}
-                  />
-                </div>
-              )
-            return null
-          }}
-        </state.Render>
+              )}
+            </state.Render>
+          </div>
+        ) : null}
 
-        {allowDelete && !required && (
+        {allowDelete && !required && !readonly && (
           <Button
             type={deleteType === 'delete' ? 'button' : 'reset'}
             variant="destructive"
-            onClick={() => {
-              state.reset()
-              onReset?.()
-            }}
+            onClick={state.reset}
           >
-            {deleteType === 'delete' ? <Trash /> : <RefreshCcw />}
-            {deleteType === 'delete' ? 'Delete' : 'Reset'}
+            {deleteType === 'delete' ? <IconTrash /> : <IconRefresh />}
+            <span className="sr-only shrink-0 min-w-0">
+              {deleteType === 'delete' ? 'Delete' : 'Reset'}
+            </span>
           </Button>
         )}
       </div>

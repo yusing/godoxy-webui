@@ -1,45 +1,245 @@
 'use client'
+'use memo'
 
-import { PureMapInput, type MapInputProps, type PureMapInputProps } from './MapInput'
+import { ComplexEntryHeader, type MapInputProps, type RecordInputProps } from './MapInput'
 
-import { Button } from '@/components/ui/button'
 import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
 
-import { IconPlus } from '@tabler/icons-react'
 import type { FieldPath, FieldValues, ObjectState, ValueState } from 'juststore'
-import { useMemo } from 'react'
+import { Activity, useMemo, useRef, type ReactNode } from 'react'
 import { Badge } from '../ui/badge'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card'
-import { Label } from '../ui/label'
+import { Separator } from '../ui/separator'
+import { FormContainer } from './FormContainer'
 import { StoreFieldInput } from './StoreFieldInput'
 import { StoreListInput } from './StoreListInput'
-import { compareKeys } from './utils'
+import { getEntryValueSchema, getKindAndEffectiveSchema, getMergedValuesAndKeys } from './map-utils'
+import { canAddKey, getAdditionalPropertiesSchema, getDescription, getLabel } from './utils'
 
-export { StoreMapInput, StorePureMapInput, type StoreMapInputProps, type StorePureMapInputProps }
+export { StoreMapInput, StoreRecordInput, type StoreMapInputProps, type StoreRecordInputProps }
 
 type StoreMapInputProps<T extends FieldValues> = {
   state: ObjectState<T>
 } & Omit<MapInputProps<T>, 'value' | 'onChange'>
 
-type StorePureMapInputProps<T extends FieldValues> = {
-  state: ObjectState<T>
-} & Omit<PureMapInputProps<T>, 'value' | 'onChange'>
-
-function StorePureMapInput<T extends FieldValues>({
-  state,
-  ...props
-}: Readonly<StorePureMapInputProps<T>>) {
-  const [value, setValue] = state.useState()
-  return <PureMapInput value={value} onChange={setValue} {...props} />
-}
-
 function StoreMapInput<T extends FieldValues>({ schema, ...props }: StoreMapInputProps<T>) {
   if (!schema) {
-    return <StorePureMapInput {...props} />
+    return <StoreRecordInput {...props} />
   }
-  return <StoreMapInput_ {...props} schema={schema} />
+  if (
+    (!schema.properties || Object.keys(schema.properties).length === 0) &&
+    schema.additionalProperties
+  ) {
+    return <StoreRecordInput {...props} valueSchema={getAdditionalPropertiesSchema(schema)} />
+  }
+  return <StoreObjectInput {...props} schema={schema} />
 }
-function StoreMapInput_<T extends FieldValues>({
+
+type StoreRecordInputProps<T extends FieldValues> = {
+  state: ObjectState<T>
+  valueSchema?: JSONSchema
+} & Omit<RecordInputProps<T>, 'value' | 'onChange' | 'valueSchema'>
+
+function StoreRecordInput<T extends FieldValues>({
+  state,
+  valueSchema,
+  label,
+  description,
+  placeholder,
+  card = false,
+}: Readonly<StoreRecordInputProps<T>>) {
+  'use memo'
+
+  const pureKeysRef = useRef<string[]>([])
+  const { keys, firstComplexIndex } = useRecordMeta(state, valueSchema, pureKeysRef)
+
+  return (
+    <FormContainer
+      label={label}
+      description={description}
+      card={card}
+      level={0}
+      canAdd
+      onAdd={() => state['']?.set(getDefaultValue(valueSchema) as T[string] | undefined)}
+    >
+      {keys.map((k, index) => (
+        <StoreRecordInputItem
+          key={index}
+          k={k}
+          state={state}
+          valueSchema={valueSchema}
+          placeholder={placeholder}
+          pureKeysRef={pureKeysRef}
+          separator={
+            index === firstComplexIndex &&
+            firstComplexIndex > 0 && <Separator key="__separator__" className="my-3" />
+          }
+        />
+      ))}
+    </FormContainer>
+  )
+}
+
+function useRecordMeta<T extends FieldValues>(
+  state: ObjectState<T>,
+  valueSchema: JSONSchema | undefined,
+  pureKeysRef: React.RefObject<string[]>
+) {
+  return state.useCompute(v => {
+    const value = v ?? {}
+    const currentKeys = Object.keys(value)
+    const currentSet = new Set(currentKeys)
+
+    const ordered = pureKeysRef.current.filter(k => currentSet.has(k))
+    for (const k of ordered) currentSet.delete(k)
+    for (const k of currentSet) ordered.push(k)
+    pureKeysRef.current = ordered
+
+    let firstComplexIndex = -1
+    for (let i = 0; i < ordered.length; i++) {
+      const k = ordered[i]!
+      const v = value[k]
+      const { kind } = getKindAndEffectiveSchema(valueSchema, v)
+      if (kind !== 'scalar') {
+        firstComplexIndex = i
+        break
+      }
+    }
+
+    pureKeysRef.current = ordered
+    return { keys: ordered, firstComplexIndex }
+  })
+}
+
+function StoreRecordInputItem<T extends FieldValues>({
+  k,
+  state,
+  valueSchema,
+  placeholder,
+  pureKeysRef,
+  separator,
+}: {
+  k: string
+  state: ObjectState<T>
+  valueSchema?: JSONSchema
+  placeholder: { key?: string; value?: string } | undefined
+  pureKeysRef: React.RefObject<string[]>
+  separator: ReactNode | false
+}) {
+  const child = state[k]!
+
+  const { leafSchema, kind } = child.useCompute(v => getKindAndEffectiveSchema(valueSchema, v))
+  const effSchema = leafSchema
+
+  // Memoize the schema object to prevent StoreFieldInput re-renders
+  const fieldSchema = useMemo(
+    () => (effSchema ? { properties: { [k]: effSchema } } : undefined),
+    [effSchema, k]
+  )
+
+  if (kind === 'array') {
+    return (
+      <div className="flex flex-col gap-2">
+        {separator}
+        <ComplexEntryHeader
+          displayKey={k}
+          placeholderKey={placeholder?.key}
+          isKeyTaken={candidate => candidate in (state.value ?? {}) && candidate !== k}
+          onKeyChange={newK => {
+            const idx = pureKeysRef.current.indexOf(k)
+            if (idx !== -1) pureKeysRef.current[idx] = newK
+            state.rename(k, newK)
+          }}
+          onDelete={child.reset}
+        />
+        <StoreListInput
+          card={false}
+          label={undefined}
+          placeholder={placeholder?.value}
+          state={child.ensureArray()}
+          schema={effSchema}
+        />
+      </div>
+    )
+  }
+
+  if (kind === 'object') {
+    const apSchema = effSchema ? getAdditionalPropertiesSchema(effSchema) : undefined
+    if (apSchema) {
+      return (
+        <div className={k === '' ? 'mt-2 rounded-md border border-dashed border-border p-2' : ''}>
+          {separator}
+          {k === '' && <div className="mb-2 text-xs text-muted-foreground">New item</div>}
+          <ComplexEntryHeader
+            displayKey={k}
+            placeholderKey={placeholder?.key}
+            isKeyTaken={candidate => candidate in (state.value ?? {}) && candidate !== k}
+            onKeyChange={newK => {
+              const idx = pureKeysRef.current.indexOf(k)
+              if (idx !== -1) pureKeysRef.current[idx] = newK
+              state.rename(k, newK)
+            }}
+            onDelete={child.reset}
+          />
+          <StoreRecordInput
+            card={false}
+            label={undefined}
+            description={undefined}
+            placeholder={placeholder}
+            state={child.ensureObject()}
+            valueSchema={apSchema}
+          />
+        </div>
+      )
+    }
+
+    return (
+      <div className={k === '' ? 'mt-2 rounded-md border border-dashed border-border p-2' : ''}>
+        {separator}
+        {k === '' && <div className="mb-2 text-xs text-muted-foreground">New item</div>}
+        <ComplexEntryHeader
+          displayKey={k}
+          placeholderKey={placeholder?.key}
+          isKeyTaken={candidate => candidate in (state.value ?? {}) && candidate !== k}
+          onKeyChange={newK => {
+            const idx = pureKeysRef.current.indexOf(k)
+            if (idx !== -1) pureKeysRef.current[idx] = newK
+            state.rename(k, newK)
+          }}
+          onDelete={child.reset}
+        />
+        <StoreMapInput
+          card={false}
+          label={undefined}
+          description={getDescription(effSchema, k)}
+          placeholder={placeholder}
+          state={child.ensureObject()}
+          schema={effSchema}
+        />
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      {separator}
+      <StoreFieldInput
+        state={child as ValueState<T[string]>}
+        schema={fieldSchema}
+        placeholder={placeholder}
+        allowDelete
+        onKeyChange={newK => {
+          const current = state.value ?? {}
+          if (newK !== k && newK in current) return
+          const idx = pureKeysRef.current.indexOf(k)
+          if (idx !== -1) pureKeysRef.current[idx] = newK
+          state.rename(k, newK)
+        }}
+      />
+    </div>
+  )
+}
+
+function StoreObjectInput<T extends FieldValues>({
   label,
   description,
   placeholder,
@@ -49,168 +249,163 @@ function StoreMapInput_<T extends FieldValues>({
   schema,
   allowDelete = true,
   card = true,
+  level = 0,
   footer,
 }: Readonly<StoreMapInputProps<T> & { schema: JSONSchema }>) {
-  'use memo'
-  const defaultValues = useMemo(() => getDefaultValues(schema, {}), [schema])
+  const keys = state.useCompute(v => {
+    const workingValue = v ?? {}
+    const { keys } = getMergedValuesAndKeys({
+      schema,
+      workingValue,
+      keyField: keyField ? String(keyField) : undefined,
+      nameField: nameField ? String(nameField) : undefined,
+    })
+    return keys
+  })
 
-  const entries = useMemo(
-    () =>
-      Object.entries(defaultValues).sort(([key1], [key2]) =>
-        compareKeys(key1, key2, {
-          keyField: String(keyField),
-          nameField: String(nameField),
-          schema,
-          defaultValues,
-        })
-      ),
-    [defaultValues, keyField, nameField, schema]
+  return (
+    <FormContainer
+      label={label}
+      description={description}
+      card={card}
+      level={level}
+      footer={footer}
+      canAdd={canAddKey(schema)}
+      onAdd={() =>
+        state['']?.set(
+          getDefaultValue(getAdditionalPropertiesSchema(schema)) as T[string] | undefined
+        )
+      }
+      badge={
+        <state.Show on={value => !value || Object.keys(value).length === 0}>
+          <Badge variant="secondary">Not set</Badge>
+        </state.Show>
+      }
+    >
+      {keys.map((k, index) => (
+        <StoreMapInputItem
+          key={index}
+          level={level}
+          k={k as FieldPath<T>}
+          state={state}
+          schema={schema}
+          placeholder={placeholder}
+          allowDelete={allowDelete}
+        />
+      ))}
+    </FormContainer>
+  )
+}
+
+function StoreMapInputItem<T extends FieldValues>({
+  k,
+  state,
+  schema,
+  placeholder,
+  allowDelete,
+  level,
+}: {
+  k: FieldPath<T>
+  schema: JSONSchema
+  allowDelete: boolean
+  level: number
+} & Pick<StoreMapInputProps<T>, 'state' | 'placeholder'>) {
+  'use memo'
+
+  const canRenameKey = !schema.properties || !(k in (schema.properties ?? {}))
+
+  // Determine the effective schema based on the actual value type
+  const { effectiveSchema, kind } = state[k].useCompute(currentValue =>
+    getKindAndEffectiveSchema(getEntryValueSchema(schema, k), currentValue)
   )
 
-  if (!card) {
+  const nestedLabel = getLabel(effectiveSchema, k)
+  const nestedDescription = getDescription(effectiveSchema, k)
+
+  const header = (
+    <Activity mode={canRenameKey ? 'visible' : 'hidden'}>
+      <ComplexEntryHeader
+        displayKey={k}
+        placeholderKey={placeholder?.key}
+        isKeyTaken={candidate => candidate in (state.value ?? {}) && candidate !== String(k)}
+        onKeyChange={newK => state.rename(k, newK)}
+        onDelete={state[k].reset}
+      />
+    </Activity>
+  )
+
+  // Handle array type
+  if (kind === 'array') {
+    const headerShown = canRenameKey
+    const childLabel = headerShown ? undefined : nestedLabel
     return (
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Label>{label}</Label>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => state['']?.set('' as T[string])}
-            className="size-4"
-          >
-            <IconPlus />
-          </Button>
+      <div className="flex flex-col gap-2">
+        {header}
+        <StoreListInput
+          card={false}
+          level={level + 1}
+          label={childLabel}
+          state={state[k].ensureArray()}
+          schema={effectiveSchema}
+          description={nestedDescription}
+        />
+      </div>
+    )
+  }
+
+  // Handle object type
+  if (kind === 'object') {
+    const headerShown = canRenameKey
+    const childLabel = headerShown ? undefined : nestedLabel
+    const apSchema = effectiveSchema && getAdditionalPropertiesSchema(effectiveSchema)
+    if (apSchema) {
+      return (
+        <div className="flex flex-col gap-2">
+          {header}
+          <StoreRecordInput
+            card={false}
+            level={level + 1}
+            label={childLabel}
+            description={nestedDescription}
+            state={state[k].ensureObject()}
+            valueSchema={apSchema}
+          />
         </div>
-        {description && <Label className="text-muted-foreground text-xs">{description}</Label>}
-        <div className="flex flex-col gap-3">
-          {entries.map(([k], index) => (
-            <RenderItem
-              key={k}
-              k={k as FieldPath<T>}
-              index={index}
-              state={state}
-              schema={schema}
-              placeholder={placeholder}
-              allowDelete={allowDelete}
-            />
-          ))}
-        </div>
+      )
+    }
+    return (
+      <div className="flex flex-col gap-2">
+        {header}
+        <StoreMapInput
+          card={false}
+          level={level + 1}
+          label={childLabel}
+          description={nestedDescription}
+          state={state[k].ensureObject()}
+          schema={
+            effectiveSchema
+              ? {
+                  ...effectiveSchema,
+                  properties: getPropertySchema(effectiveSchema, {
+                    keyField: k,
+                    key: state[k].value,
+                  }),
+                }
+              : undefined
+          }
+        />
       </div>
     )
   }
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row gap-4 items-center">
-        <CardTitle>{label}</CardTitle>
-        <state.Show on={value => !value || Object.keys(value).length === 0}>
-          <Badge variant={'secondary'}>Not set</Badge>
-        </state.Show>
-      </CardHeader>
-      {description && <CardDescription>{description}</CardDescription>}
-      <CardContent className="flex flex-col gap-3">
-        {entries.map(([k], index) => (
-          <RenderItem
-            key={k}
-            k={k as FieldPath<T>}
-            index={index}
-            state={state}
-            schema={schema}
-            placeholder={placeholder}
-            allowDelete={allowDelete}
-          />
-        ))}
-      </CardContent>
-      {footer && <CardFooter>{footer}</CardFooter>}
-    </Card>
-  )
-}
-
-function RenderItem<T extends FieldValues>({
-  k,
-  index,
-  state,
-  schema,
-  placeholder,
-  allowDelete,
-}: {
-  k: FieldPath<T>
-  index: number
-  schema: JSONSchema
-  allowDelete: boolean
-} & Pick<StoreMapInputProps<T>, 'state' | 'placeholder'>) {
-  'use memo'
-
-  const vSchema = schema.properties?.[k]
-  const valueType = state[k].useCompute(value => {
-    if (typeof value === 'object') {
-      if (Array.isArray(value)) return 'array'
-      return 'object'
-    }
-    return 'string'
-  })
-  if (vSchema?.type === 'array' || valueType === 'array') {
-    return (
-      <StoreListInput
-        card={false}
-        key={`${index}_list`}
-        label={k}
-        state={state[k].ensureArray()}
-        schema={vSchema}
-        description={vSchema?.description}
-      />
-    )
-  }
-  if (vSchema?.type === 'object' || valueType === 'object') {
-    if (schema.additionalProperties || vSchema?.additionalProperties) {
-      return (
-        <StorePureMapInput
-          card={false}
-          key={`${index}_map`}
-          description={vSchema?.title || vSchema?.description}
-          label={k}
-          state={state[k].ensureObject()}
-          placeholder={placeholder}
-        />
-      )
-    }
-    return (
-      <StoreMapInput
-        card={false}
-        key={`${index}_map`}
-        label={k}
-        description={vSchema?.title || vSchema?.description}
-        state={state[k].ensureObject()}
-        schema={{
-          ...vSchema,
-          properties: getPropertySchema(schema, { keyField: k, key: String(state[k].value) }),
-        }}
-      />
-    )
-  }
-  return (
     <StoreFieldInput
-      key={`${index}_field`}
       state={state[k] as ValueState<T[typeof k]>}
-      schema={schema}
+      schema={effectiveSchema}
       placeholder={placeholder}
       allowDelete={allowDelete}
       deleteType="reset"
-      onKeyChange={e => state.rename(k, e)}
+      onKeyChange={canRenameKey ? e => state.rename(k, e) : undefined}
     />
   )
-}
-
-function getDefaultValues<T extends FieldValues>(schema: JSONSchema, workingValue: T) {
-  if (!schema.properties) return {}
-  return Object.keys(schema.properties)
-    .filter(k => workingValue[k] === undefined)
-    .reduce(
-      (acc, k) => {
-        acc[k] = getDefaultValue(schema?.properties?.[k])
-        return acc
-      },
-      {} as Record<string, unknown>
-    )
 }

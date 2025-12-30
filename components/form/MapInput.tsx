@@ -1,23 +1,25 @@
 'use client'
 
-import { useCallback, useMemo, useRef, type ReactNode } from 'react'
+import { IconCheck, IconEdit, IconTrash } from '@tabler/icons-react'
+import { useMemo, useRef, useState, type ReactNode } from 'react'
 
-import { Button } from '@/components/ui/button'
 import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
 
 import { FieldInput } from '@/components/form/FieldInput'
 import { ListInput } from '@/components/form/ListInput'
-import { IconPlus } from '@tabler/icons-react'
-import { randomUUID } from 'crypto'
+import { Button } from '@/components/ui/button'
+import { InputGroup, InputGroupButton, InputGroupInput } from '@/components/ui/input-group'
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
 import { Badge } from '../ui/badge'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../ui/card'
-import { Label } from '../ui/label'
-import { compareKeys } from './utils'
+import { FormContainer } from './FormContainer'
+import { getEntryValueSchema, getKindAndEffectiveSchema, getMergedValuesAndKeys } from './map-utils'
+import { canAddKey, getAdditionalPropertiesSchema, getDescription, getLabel } from './utils'
 
-export { MapInput, PureMapInput, type MapInputProps, type PureMapInputProps }
+export { ComplexEntryHeader, MapInput, RecordInput, type MapInputProps, type RecordInputProps }
 
 type MapInputProps<T extends Record<string, unknown>> = {
-  label?: ReactNode
+  label?: string
   description?: ReactNode
   placeholder?: { key?: string; value?: string }
   value: T | undefined
@@ -27,22 +29,42 @@ type MapInputProps<T extends Record<string, unknown>> = {
   card?: boolean
   footer?: ReactNode
   allowDelete?: boolean
+  level?: number
+  readonly?: boolean
   onChange: (v: T) => void
 }
 
-type PureMapInputProps<T extends Record<string, unknown>> = Omit<
+function MapInput<T extends Record<string, unknown>>({ schema, ...props }: MapInputProps<T>) {
+  if (!schema) {
+    return <RecordInput {...props} />
+  }
+  if (
+    (!schema.properties || Object.keys(schema.properties).length === 0) &&
+    schema.additionalProperties
+  ) {
+    return <RecordInput {...props} valueSchema={getAdditionalPropertiesSchema(schema)} />
+  }
+  return <ObjectInput {...props} schema={schema} />
+}
+
+type RecordInputProps<T extends Record<string, unknown>> = Omit<
   MapInputProps<T>,
   'allowDelete' | 'schema' | 'footer'
->
+> & {
+  valueSchema?: JSONSchema
+}
 
-function PureMapInput<T extends Record<string, unknown>>({
+function RecordInput<T extends Record<string, unknown>>({
   label,
   description,
   placeholder,
   value,
+  valueSchema,
   onChange,
   card = false,
-}: Readonly<PureMapInputProps<T>>) {
+}: Readonly<RecordInputProps<T>>) {
+  'use memo'
+
   // Maintain stable order: keep existing order, append newly added keys at the end
   const pureKeysRef = useRef<string[]>([])
   const keys = useMemo(() => {
@@ -57,95 +79,261 @@ function PureMapInput<T extends Record<string, unknown>>({
     return ordered
   }, [value])
 
-  const content = (
-    <>
-      {keys.map((k, index) => {
-        const displayKey = k.replace(/__temp__\d+$/, '')
-        const actualKey = k
-
-        return (
-          <FieldInput
-            key={index}
-            fieldKey={displayKey}
-            fieldValue={value?.[k]}
-            allowDelete
-            schema={undefined}
-            placeholder={placeholder}
-            onKeyChange={(newK, newV) => {
-              // If renaming to an existing key (collision), use temporary key
-              if (newK !== displayKey && value && newK in value) {
-                const tempKey = `${newK}__temp__${randomUUID()}`
-                const newValue = { ...value, [tempKey]: newV }
-                delete newValue[actualKey]
-                onChange(newValue as T)
-                return
-              }
-
-              // Normal rename
-              const newValue = { ...value, [newK]: newV }
-              if (actualKey !== newK) {
-                delete newValue[actualKey]
-              }
-              onChange(newValue as T)
-            }}
-            onChange={e => {
-              if (e === undefined || e === null) {
-                const newValue = { ...value }
-                delete newValue[actualKey]
-                onChange(newValue as T)
-                return
-              }
-              onChange({ ...value, [actualKey]: e } as T)
-            }}
-          />
-        )
-      })}
-    </>
-  )
-
-  if (!card) {
-    return (
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Label>{label}</Label>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => onChange({ ...value, ['' as keyof T]: '' } as T)}
-            className="size-4"
-          >
-            <IconPlus />
-          </Button>
-        </div>
-        {description && <Label className="text-muted-foreground text-xs">{description}</Label>}
-        <div className="flex flex-col gap-3">{content}</div>
-      </div>
-    )
+  function deleteKey(actualKey: string) {
+    const newValue = { ...(value ?? {}) } as Record<string, unknown>
+    delete newValue[actualKey]
+    onChange(newValue as T)
   }
 
+  function renameKey(actualKey: string, newK: string, newV: unknown) {
+    // Normal rename - update the pureKeysRef to replace old key with new key in place
+    const idx = pureKeysRef.current.indexOf(actualKey)
+    if (idx !== -1) {
+      pureKeysRef.current[idx] = newK
+    }
+    const newValue = { ...value, [newK]: newV }
+    if (actualKey !== newK) {
+      delete newValue[actualKey]
+    }
+    onChange(newValue as T)
+  }
+
+  const firstComplexIndex = useMemo(() => {
+    for (let i = 0; i < keys.length; i++) {
+      const k = keys[i]!
+      const v = value?.[k]
+      const { kind } = getKindAndEffectiveSchema(valueSchema, v)
+      if (kind !== 'scalar') return i
+    }
+    return -1
+  }, [keys, value, valueSchema])
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{label}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
-      </CardHeader>
-      <CardContent className="flex flex-col gap-3">{content}</CardContent>
-      <CardFooter>
-        <Button
-          type="button"
-          size="sm"
-          className="w-full"
-          onClick={() => onChange({ ...value, ['' as keyof T]: '' } as T)}
-        >
-          New Item
-        </Button>
-      </CardFooter>
-    </Card>
+    <FormContainer
+      label={label}
+      description={description}
+      card={card}
+      level={0}
+      canAdd
+      onAdd={() => onChange({ ...value, ['' as keyof T]: getDefaultValue(valueSchema) ?? '' } as T)}
+    >
+      {keys.map((k, index) => {
+        const displayKey = k
+        const actualKey = k
+        const v = value?.[k]
+
+        const { leafSchema, kind } = getKindAndEffectiveSchema(valueSchema, v)
+        const effSchema = leafSchema
+
+        const separator =
+          index === firstComplexIndex && firstComplexIndex > 0 ? (
+            <Separator key="__separator__" className="my-3" />
+          ) : null
+
+        if (kind === 'array') {
+          return (
+            <div key={`${index}_list_wrap`} className="flex flex-col gap-2">
+              {separator}
+              <ComplexEntryHeader
+                displayKey={displayKey}
+                placeholderKey={placeholder?.key}
+                isKeyTaken={candidate => candidate in (value ?? {}) && candidate !== actualKey}
+                onKeyChange={newK => renameKey(actualKey, newK, v)}
+                onDelete={() => deleteKey(actualKey)}
+              />
+              <ListInput
+                card={false}
+                label={undefined}
+                value={Array.isArray(v) ? v : []}
+                schema={effSchema}
+                onChange={e => onChange({ ...value, [actualKey]: e } as T)}
+              />
+            </div>
+          )
+        }
+
+        if (kind === 'object') {
+          const nextValue = (typeof v === 'object' && v !== null ? v : {}) as Record<
+            string,
+            unknown
+          >
+          const apSchema = effSchema ? getAdditionalPropertiesSchema(effSchema) : undefined
+          if (apSchema) {
+            return (
+              <div
+                key={`${index}_record_wrap`}
+                className={
+                  displayKey === '' ? 'mt-2 rounded-md border border-dashed border-border p-2' : ''
+                }
+              >
+                {separator}
+                {displayKey === '' && (
+                  <div className="mb-2 text-xs text-muted-foreground">New item</div>
+                )}
+                <ComplexEntryHeader
+                  displayKey={displayKey}
+                  placeholderKey={placeholder?.key}
+                  isKeyTaken={candidate => candidate in (value ?? {}) && candidate !== actualKey}
+                  onKeyChange={newK => renameKey(actualKey, newK, v)}
+                  onDelete={() => deleteKey(actualKey)}
+                />
+                <RecordInput
+                  card={false}
+                  label={undefined}
+                  value={nextValue}
+                  valueSchema={apSchema}
+                  placeholder={placeholder}
+                  onChange={e => onChange({ ...value, [actualKey]: e } as T)}
+                />
+              </div>
+            )
+          }
+          return (
+            <div
+              key={`${index}_map_wrap`}
+              className={
+                displayKey === '' ? 'mt-2 rounded-md border border-dashed border-border p-2' : ''
+              }
+            >
+              {separator}
+              {displayKey === '' && (
+                <div className="mb-2 text-xs text-muted-foreground">New item</div>
+              )}
+              <ComplexEntryHeader
+                displayKey={displayKey}
+                placeholderKey={placeholder?.key}
+                isKeyTaken={candidate => candidate in (value ?? {}) && candidate !== actualKey}
+                onKeyChange={newK => renameKey(actualKey, newK, v)}
+                onDelete={() => deleteKey(actualKey)}
+              />
+              <MapInput
+                card={false}
+                label={undefined}
+                description={getDescription(effSchema, displayKey)}
+                value={nextValue}
+                schema={effSchema}
+                placeholder={placeholder}
+                onChange={e => onChange({ ...value, [actualKey]: e } as T)}
+              />
+            </div>
+          )
+        }
+
+        return (
+          <div key={`${index}_field_wrap`} className="flex flex-col gap-2">
+            {separator}
+            <FieldInput
+              fieldKey={displayKey}
+              fieldValue={v}
+              allowDelete
+              schema={effSchema ? { properties: { [displayKey]: effSchema } } : undefined}
+              placeholder={placeholder}
+              onKeyChange={(newK, newV) => {
+                if (newK !== displayKey && value && newK in value) return
+                renameKey(actualKey, newK, newV)
+              }}
+              onChange={e => {
+                if (e === undefined || e === null) {
+                  const newValue = { ...value }
+                  delete newValue[actualKey]
+                  onChange(newValue as T)
+                  return
+                }
+                onChange({ ...value, [actualKey]: e } as T)
+              }}
+            />
+          </div>
+        )
+      })}
+    </FormContainer>
   )
 }
 
-function MapInput_<T extends Record<string, unknown>>({
+function ComplexEntryHeader({
+  displayKey,
+  placeholderKey,
+  isKeyTaken,
+  onKeyChange,
+  onDelete,
+}: {
+  displayKey: string
+  placeholderKey?: string
+  isKeyTaken?: (key: string) => boolean
+  onKeyChange: (key: string) => void
+  onDelete: () => void
+}) {
+  'use memo'
+
+  const isEmpty = displayKey === ''
+  const [editing, setEditing] = useState(isEmpty)
+  const [draft, setDraft] = useState(displayKey)
+
+  const taken = Boolean(isKeyTaken && draft !== displayKey && isKeyTaken(draft))
+
+  function commit() {
+    if (draft === '' || taken) return
+    onKeyChange(draft)
+    setEditing(false)
+  }
+
+  return (
+    <div className="flex items-center gap-2">
+      <div className="w-full @container">
+        {editing ? (
+          <InputGroup>
+            <InputGroupInput
+              value={draft}
+              autoFocus
+              aria-invalid={taken}
+              placeholder={placeholderKey ?? 'Key'}
+              onChange={({ target: { value } }) => setDraft(value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter') commit()
+                if (e.key === 'Escape') {
+                  setDraft(displayKey)
+                  setEditing(false)
+                }
+              }}
+              className="text-xs"
+            />
+            <InputGroupButton
+              size="icon-xs"
+              onClick={commit}
+              disabled={draft === '' || taken}
+              aria-label="Confirm"
+            >
+              <IconCheck className="size-4" />
+            </InputGroupButton>
+          </InputGroup>
+        ) : (
+          <div className="flex items-center gap-1 w-fit">
+            <div className="min-w-0 flex-1">
+              <Label className="text-sm truncate">{displayKey}</Label>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="shrink-0"
+              onClick={() => {
+                setDraft(displayKey)
+                setEditing(true)
+              }}
+            >
+              <IconEdit className="size-4" />
+            </Button>
+          </div>
+        )}
+      </div>
+      <Button type="button" variant="destructive" onClick={onDelete}>
+        <IconTrash />
+        Delete
+      </Button>
+    </div>
+  )
+}
+
+function ObjectInput<T extends Record<string, unknown>>({
   label,
   description,
   placeholder,
@@ -157,6 +345,7 @@ function MapInput_<T extends Record<string, unknown>>({
   card = true,
   footer,
   onChange,
+  level = 0,
 }: Readonly<MapInputProps<T> & { schema: JSONSchema }>) {
   'use memo'
 
@@ -178,119 +367,190 @@ function MapInput_<T extends Record<string, unknown>>({
     return result
   }, [value, keyField, schema])
 
-  const isEmpty = useMemo(() => {
-    if (!value) return true
-    if (Object.keys(workingValue).length === 0) return true
-    return false
-  }, [value, workingValue])
-
-  const defaultValues = useMemo(() => {
-    if (!schema.properties) return {}
-    return Object.keys(schema.properties)
-      .filter(k => workingValue[k] === undefined)
-      .reduce(
-        (acc, k) => {
-          if (k in workingValue && workingValue[k] !== undefined) return acc
-          acc[k] = getDefaultValue(schema?.properties?.[k])
-          return acc
-        },
-        {} as Record<string, unknown>
-      )
-  }, [schema, workingValue])
-
-  const merged = useMemo(
-    () => ({ ...workingValue, ...defaultValues }),
-    [workingValue, defaultValues]
-  )
-
-  const entries = useMemo(
+  const { keys, mergedValues } = useMemo(
     () =>
-      Object.entries(merged).sort(([key1], [key2]) =>
-        compareKeys(key1, key2, {
-          keyField: String(keyField),
-          nameField: String(nameField),
-          schema,
-          defaultValues: merged,
-        })
-      ),
-    [merged, keyField, nameField, schema]
+      getMergedValuesAndKeys({
+        schema,
+        workingValue,
+        keyField: keyField ? String(keyField) : undefined,
+        nameField: nameField ? String(nameField) : undefined,
+      }),
+    [schema, workingValue, keyField, nameField]
   )
 
-  const renderItem = useCallback(
-    ([k, v]: [string, unknown], index: number) => {
-      const vSchema = schema.properties?.[k]
-      if (vSchema?.type === 'array' || Array.isArray(v)) {
-        return (
-          <ListInput
-            card={false}
-            key={`${index}_list`}
-            label={k}
-            value={Array.isArray(v) ? v : []}
-            schema={vSchema}
-            description={vSchema?.description}
-            onChange={e => {
-              onChange({ ...workingValue, [k]: e } as T)
-            }}
-          />
+  return (
+    <FormContainer
+      label={label}
+      description={description}
+      card={card}
+      level={level}
+      footer={footer}
+      canAdd={canAddKey(schema)}
+      onAdd={() =>
+        onChange({
+          ...value,
+          ['' as keyof T]: getDefaultValue(getAdditionalPropertiesSchema(schema)) ?? '',
+        } as T)
+      }
+      badge={
+        (!value || Object.keys(workingValue).length === 0) && (
+          <Badge variant="secondary">Not set</Badge>
         )
       }
-      if (vSchema?.type === 'object' || typeof v === 'object') {
-        if (schema.additionalProperties || vSchema?.additionalProperties) {
-          return (
-            <PureMapInput
-              card={false}
-              key={`${index}_map`}
-              description={vSchema?.title || vSchema?.description}
-              label={k}
-              value={(typeof v === 'object' ? v : {}) as Record<string, unknown>}
-              onChange={e => {
-                onChange({ ...workingValue, [k]: e } as T)
-              }}
-              placeholder={placeholder}
-            />
-          )
-        }
-        return (
-          <MapInput
-            card={false}
-            key={`${index}_map`}
-            label={k}
-            description={vSchema?.title || vSchema?.description}
-            value={(typeof v === 'object' ? v : {}) as Record<string, unknown>}
-            schema={{
-              ...vSchema,
-              properties: getPropertySchema(schema, { keyField: k, key: String(v) }),
+    >
+      {keys.map((k, index) => (
+        <MapInputItem
+          key={k}
+          entry={[k, mergedValues[k]]}
+          index={index}
+          schema={schema}
+          workingValue={workingValue}
+          level={level}
+          placeholder={placeholder}
+          allowDelete={allowDelete}
+          onChange={onChange}
+        />
+      ))}
+    </FormContainer>
+  )
+}
+
+type MapInputItemProps<T extends Record<string, unknown>> = {
+  entry: [string, unknown]
+  index: number
+  schema: JSONSchema
+  workingValue: Record<string, unknown>
+  level: number
+  placeholder?: { key?: string; value?: string }
+  allowDelete: boolean
+  onChange: (v: T) => void
+}
+
+function MapInputItem<T extends Record<string, unknown>>({
+  entry: [k, v],
+  index,
+  schema,
+  workingValue,
+  level,
+  placeholder,
+  allowDelete,
+  onChange,
+}: MapInputItemProps<T>) {
+  'use memo'
+
+  const canRenameKey = !(schema.properties && k in (schema.properties ?? {}))
+
+  const vSchema = getEntryValueSchema(schema, k)
+
+  const nestedLabel = getLabel(vSchema, k)
+  const nestedDescription = getDescription(vSchema, k)
+
+  const { kind } = getKindAndEffectiveSchema(vSchema, v)
+  if (kind === 'array') {
+    const headerShown = canRenameKey
+    const childLabel = headerShown ? undefined : nestedLabel
+    return (
+      <div key={`${index}_list_wrap`} className="flex flex-col gap-2">
+        {headerShown && (
+          <ComplexEntryHeader
+            displayKey={k}
+            isKeyTaken={candidate => candidate in workingValue && candidate !== k}
+            onKeyChange={newK => {
+              const newValue: Record<string, unknown> = { ...workingValue, [newK]: v }
+              if (k !== newK) delete newValue[k]
+              onChange(newValue as T)
             }}
-            onChange={e => {
-              if (e === undefined || e === null) {
+            onDelete={() => {
+              const newValue = { ...workingValue }
+              delete newValue[k]
+              onChange(newValue as T)
+            }}
+          />
+        )}
+        <ListInput
+          card={false}
+          key={`${index}_list`}
+          label={childLabel}
+          value={Array.isArray(v) ? v : []}
+          schema={vSchema}
+          description={nestedDescription}
+          onChange={e => {
+            onChange({ ...workingValue, [k]: e } as T)
+          }}
+        />
+      </div>
+    )
+  }
+  if (kind === 'object') {
+    const headerShown = canRenameKey
+    const childLabel = headerShown ? undefined : nestedLabel
+    if (
+      ((!vSchema?.properties || Object.keys(vSchema.properties).length === 0) &&
+        vSchema?.additionalProperties) ||
+      schema.additionalProperties
+    ) {
+      return (
+        <div key={`${index}_record_wrap`} className="flex flex-col gap-2">
+          {headerShown && (
+            <ComplexEntryHeader
+              displayKey={k}
+              isKeyTaken={candidate => candidate in workingValue && candidate !== k}
+              onKeyChange={newK => {
+                const newValue: Record<string, unknown> = { ...workingValue, [newK]: v }
+                if (k !== newK) delete newValue[k]
+                onChange(newValue as T)
+              }}
+              onDelete={() => {
                 const newValue = { ...workingValue }
                 delete newValue[k]
                 onChange(newValue as T)
-                return
-              }
+              }}
+            />
+          )}
+          <RecordInput
+            card={false}
+            level={level + 1}
+            key={`${index}_map`}
+            description={nestedDescription}
+            label={childLabel}
+            value={(typeof v === 'object' ? v : {}) as Record<string, unknown>}
+            valueSchema={vSchema ? getAdditionalPropertiesSchema(vSchema) : undefined}
+            onChange={e => {
               onChange({ ...workingValue, [k]: e } as T)
             }}
+            placeholder={placeholder}
           />
-        )
-      }
-      return (
-        <FieldInput
-          key={`${index}_field`}
-          fieldKey={k}
-          fieldValue={v ?? {}}
-          schema={schema}
-          placeholder={placeholder}
-          allowDelete={allowDelete}
-          deleteType="reset"
-          onKeyChange={e => {
-            const newValue: Record<string, unknown> = {
-              ...workingValue,
-              [e]: v ?? getDefaultValue(schema?.properties?.[e]),
-            }
-            if (k !== e) {
+        </div>
+      )
+    }
+    return (
+      <div key={`${index}_map_wrap`} className="flex flex-col gap-2">
+        {headerShown && (
+          <ComplexEntryHeader
+            displayKey={k}
+            isKeyTaken={candidate => candidate in workingValue && candidate !== k}
+            onKeyChange={newK => {
+              const newValue: Record<string, unknown> = { ...workingValue, [newK]: v }
+              if (k !== newK) delete newValue[k]
+              onChange(newValue as T)
+            }}
+            onDelete={() => {
+              const newValue = { ...workingValue }
               delete newValue[k]
-            }
-            onChange(newValue as T)
+              onChange(newValue as T)
+            }}
+          />
+        )}
+        <MapInput
+          card={false}
+          level={level + 1}
+          key={`${index}_map`}
+          label={childLabel}
+          description={nestedDescription}
+          value={(typeof v === 'object' ? v : {}) as Record<string, unknown>}
+          schema={{
+            ...vSchema,
+            properties: getPropertySchema(vSchema ?? schema, { keyField: k, key: String(v) }),
           }}
           onChange={e => {
             if (e === undefined || e === null) {
@@ -302,48 +562,41 @@ function MapInput_<T extends Record<string, unknown>>({
             onChange({ ...workingValue, [k]: e } as T)
           }}
         />
-      )
-    },
-    [placeholder, workingValue, allowDelete, schema, onChange]
-  )
-
-  if (!card) {
-    return (
-      <div className="space-y-3">
-        <div className="flex items-center gap-2">
-          <Label>{label}</Label>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={() => onChange({ ...value, ['' as keyof T]: '' } as T)}
-            className="size-4"
-          >
-            <IconPlus />
-          </Button>
-        </div>
-        {description && <Label className="text-muted-foreground text-xs">{description}</Label>}
-        <div className="flex flex-col gap-3">{entries.map(renderItem)}</div>
       </div>
     )
   }
-
   return (
-    <Card>
-      <CardHeader className="flex flex-row gap-4 items-center">
-        <CardTitle>{label}</CardTitle>
-        {isEmpty && <Badge variant={'secondary'}>Not set</Badge>}
-      </CardHeader>
-      {description && <CardDescription>{description}</CardDescription>}
-      <CardContent className="flex flex-col gap-3">{entries.map(renderItem)}</CardContent>
-      {footer && <CardFooter>{footer}</CardFooter>}
-    </Card>
+    <FieldInput
+      key={`${index}_field`}
+      fieldKey={k}
+      fieldValue={v}
+      schema={schema.properties?.[k] ? schema : { properties: { [k]: vSchema } }}
+      placeholder={placeholder}
+      allowDelete={allowDelete}
+      deleteType="reset"
+      onKeyChange={
+        !(schema.properties && k in (schema.properties ?? {}))
+          ? e => {
+              const newValue: Record<string, unknown> = {
+                ...workingValue,
+                [e]: v ?? getDefaultValue(vSchema ?? schema?.properties?.[e]),
+              }
+              if (k !== e) {
+                delete newValue[k]
+              }
+              onChange(newValue as T)
+            }
+          : undefined
+      }
+      onChange={e => {
+        if (e === undefined || e === null) {
+          const newValue = { ...workingValue }
+          delete newValue[k]
+          onChange(newValue as T)
+          return
+        }
+        onChange({ ...workingValue, [k]: e } as T)
+      }}
+    />
   )
-}
-
-function MapInput<T extends Record<string, unknown>>({ schema, ...props }: MapInputProps<T>) {
-  if (!schema) {
-    return <PureMapInput {...props} />
-  }
-  return <MapInput_ {...props} schema={schema} />
 }

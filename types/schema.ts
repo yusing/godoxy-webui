@@ -1,10 +1,23 @@
-import type { ConfigSchema, MiddlewareComposeSchema, RoutesSchema } from '@/types/godoxy'
-
-export type Schema = typeof ConfigSchema | typeof RoutesSchema | typeof MiddlewareComposeSchema
+export {
+  getAllowedValues,
+  getDefaultValue,
+  getDefaultValues,
+  getInputType,
+  getPropertySchema,
+  getRequired,
+  getTitle,
+  getUnionSchemas,
+  isInputType,
+  isToggleType,
+  isUnionType,
+  type JSONSchema,
+  type PropertySchema,
+  type PropertyType,
+}
 
 type PropertyType = 'string' | 'number' | 'boolean' | 'object' | 'array' | (string & {})
 
-export type JSONSchema = {
+type JSONSchema = {
   title?: string
   description?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -60,18 +73,14 @@ export type JSONSchema = {
   $comment?: string
 }
 
-export type PropertySchema = { [key: string]: JSONSchema | undefined }
+type PropertySchema = { [key: string]: JSONSchema | undefined }
 
 function distinctSchema(schema: PropertySchema): PropertySchema {
   // select one for multiple fields with same description or title
   const distinctSchema: Record<string, JSONSchema & { key?: string }> = {}
   Object.entries(schema).forEach(([key, value]) => {
     if (!value) return
-    const distinctKey = value.title ?? value.description
-    if (!distinctKey) {
-      console.error('No distinct key found for ' + key)
-      return
-    }
+    const distinctKey = value.title ?? value.description ?? key
     if (!distinctSchema[distinctKey]) {
       distinctSchema[distinctKey] = {
         ...value,
@@ -88,7 +97,7 @@ function distinctSchema(schema: PropertySchema): PropertySchema {
 }
 
 // TODO: resolve $ref
-export function getPropertySchema(
+function getPropertySchema(
   definitions: JSONSchema,
   options?: {
     keyField?: string
@@ -149,10 +158,7 @@ function getAllowedValuesFromProperty(schema: JSONSchema): string[] {
   return distinct(items)
 }
 
-export function getAllowedValues(
-  schema: JSONSchema | undefined,
-  keyField: string
-): string[] | undefined {
+function getAllowedValues(schema: JSONSchema | undefined, keyField: string): string[] | undefined {
   if (!schema) return undefined
   if (schema.items?.enum) {
     return schema.items.enum
@@ -184,7 +190,7 @@ export function getAllowedValues(
   return undefined
 }
 
-export function getTitle(schema: JSONSchema | undefined, field: string): string | undefined {
+function getTitle(schema: JSONSchema | undefined, field: string): string | undefined {
   const vSchema = schema?.properties?.[field]
   if (!vSchema) return undefined
   if (vSchema.title) return vSchema.title
@@ -192,7 +198,7 @@ export function getTitle(schema: JSONSchema | undefined, field: string): string 
   return undefined
 }
 
-export function getRequired(schema: JSONSchema | undefined): string[] {
+function getRequired(schema: JSONSchema | undefined): string[] {
   if (!schema) return []
   if (schema.required) return schema.required
   if (schema.anyOf) {
@@ -208,7 +214,7 @@ export function getRequired(schema: JSONSchema | undefined): string[] {
   return []
 }
 
-export function isInputType(schema?: JSONSchema): boolean {
+function isInputType(schema?: JSONSchema): boolean {
   if (!schema || !schema.type) return true
   if (Array.isArray(schema.type)) {
     return schema.type.some(t => isInputType({ type: t }))
@@ -216,7 +222,7 @@ export function isInputType(schema?: JSONSchema): boolean {
   return schema.type === 'string' || schema.type === 'number'
 }
 
-export function isToggleType(schema?: JSONSchema): boolean {
+function isToggleType(schema?: JSONSchema): boolean {
   if (!schema || !schema.type) return false
   if (Array.isArray(schema.type)) {
     return schema.type.some(t => isToggleType({ type: t }))
@@ -224,9 +230,19 @@ export function isToggleType(schema?: JSONSchema): boolean {
   return schema.type === 'boolean'
 }
 
-export function getInputType(
-  type?: PropertyType | PropertyType[]
-): 'string' | 'number' | undefined {
+/* Checks if a schema represents a union type (anyOf or oneOf) */
+function isUnionType(schema: JSONSchema): boolean {
+  return Boolean(schema.anyOf || schema.oneOf)
+}
+
+/* Gets all schemas from a union type (anyOf or oneOf) */
+function getUnionSchemas(schema: JSONSchema): JSONSchema[] {
+  if (schema.anyOf) return schema.anyOf
+  if (schema.oneOf) return schema.oneOf
+  return []
+}
+
+function getInputType(type?: PropertyType | PropertyType[]): 'string' | 'number' | undefined {
   if (!type) return 'string'
   if (Array.isArray(type)) {
     if (type.includes('number')) return 'number'
@@ -240,13 +256,56 @@ export function getInputType(
   }
 }
 
-export function getDefaultValue(
+function getDefaultValues(schema: JSONSchema) {
+  if (!schema.properties && !schema.additionalProperties) return {}
+  return Object.keys(schema.properties ?? {}).reduce(
+    (acc, k) => {
+      acc[k] = getDefaultValue(schema?.properties?.[k])
+      return acc
+    },
+    {} as Record<string, unknown>
+  )
+}
+
+function getDefaultValue(
   schema?: JSONSchema
-): string | number | boolean | object | [] | undefined {
+): string | number | boolean | object | [] | null | undefined {
   if (!schema) return undefined
-  if (schema.default) return schema.default
-  // if (schema.const) return schema.const;
-  // if (schema.enum) return schema.enum[0];
+  if (schema.default !== undefined) return schema.default
+  if (schema.const !== undefined) return schema.const
+  if (schema.enum && schema.enum.length > 0) return schema.enum[0]
+
+  function isSchemaType(inner: JSONSchema, type: string): boolean {
+    if (inner.type === type) return true
+    if (Array.isArray(inner.type)) return inner.type.includes(type)
+    return false
+  }
+
+  function isObjectishSchema(inner: JSONSchema): boolean {
+    return Boolean(
+      isSchemaType(inner, 'object') ||
+      inner.properties ||
+      inner.additionalProperties ||
+      inner.patternProperties
+    )
+  }
+
+  function isArrayishSchema(inner: JSONSchema): boolean {
+    return Boolean(isSchemaType(inner, 'array') || inner.items || inner.prefixItems)
+  }
+
+  if (isUnionType(schema)) {
+    const unionSchemas = getUnionSchemas(schema)
+    const picked =
+      unionSchemas.find(isObjectishSchema) ?? unionSchemas.find(isArrayishSchema) ?? unionSchemas[0]
+    return getDefaultValue(picked)
+  }
+
+  if (!schema.type) {
+    if (isObjectishSchema(schema)) return {}
+    if (isArrayishSchema(schema)) return []
+  }
+
   if (schema.type) {
     if (Array.isArray(schema.type)) {
       if (schema.type.length > 0) {

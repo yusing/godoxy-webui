@@ -2,11 +2,12 @@
 
 import { useCallback, useMemo, type ReactNode } from 'react'
 
-import { Button } from '@/components/ui/button'
 import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
 
 import { MapInput } from '@/components/form/MapInput'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '../ui/card'
+import { Button } from '@/components/ui/button'
+import { FormContainer } from './FormContainer'
+import { stringify } from './utils'
 
 type NamedListInputProps<IndexType extends string, T extends Record<IndexType, unknown>> = {
   label: ReactNode
@@ -17,6 +18,64 @@ type NamedListInputProps<IndexType extends string, T extends Record<IndexType, u
   value: T[]
   onChange: (v: T[]) => void
   card?: boolean
+  level?: number
+}
+
+function NamedListInputItem<IndexType extends string, T extends Record<IndexType, unknown>>({
+  item,
+  index,
+  nameField,
+  keyField,
+  placeholder,
+  schema,
+  onDelete,
+  onChange,
+  level,
+}: {
+  item: T
+  index: number
+  nameField: keyof T
+  keyField: keyof T
+  placeholder?: { key?: IndexType; value?: string }
+  schema?: JSONSchema
+  onDelete: (index: number) => void
+  onChange: (index: number, newValue: T) => void
+  level: number
+}) {
+  const name = item[nameField] as string
+  return (
+    <div className="flex w-full flex-col gap-3">
+      <MapInput<T>
+        label={name}
+        placeholder={placeholder}
+        level={level + 1}
+        keyField={keyField}
+        nameField={nameField}
+        schema={
+          schema && {
+            ...schema,
+            properties: getPropertySchema(schema, {
+              keyField: stringify(keyField),
+              key: stringify(item[keyField]),
+            }),
+          }
+        }
+        value={item}
+        footer={
+          <Button
+            size="sm"
+            className="w-full"
+            variant="destructive"
+            type="button"
+            onClick={() => onDelete(index)}
+          >
+            {`Delete ${name?.length ? name : `Item ${index + 1}`}`}
+          </Button>
+        }
+        onChange={e => onChange(index, e)}
+      />
+    </div>
+  )
 }
 
 export function NamedListInput<IndexType extends string, T extends Record<IndexType, unknown>>({
@@ -28,6 +87,7 @@ export function NamedListInput<IndexType extends string, T extends Record<IndexT
   nameField = 'name' as IndexType,
   schema,
   card = true,
+  level = 0,
 }: Readonly<NamedListInputProps<IndexType, T>>) {
   'use memo'
   const listValue: T[] = useMemo(() => (Array.isArray(value) ? value : []), [value])
@@ -65,68 +125,22 @@ export function NamedListInput<IndexType extends string, T extends Record<IndexT
     ])
   }, [listValue, onChange, keyField, nameField, defaultValue])
 
-  const renderItem = useCallback(
-    (item: T, index: number) => {
-      const name = item[nameField] as string
-      const key = item[keyField] as string
-      return (
-        <div className="flex w-full flex-col gap-3" key={`${index}_map`}>
-          <MapInput
-            label={name}
-            placeholder={placeholder}
-            keyField={keyField}
-            nameField={nameField}
-            schema={
-              schema && {
-                ...schema,
-                properties: getPropertySchema(schema, {
-                  keyField: keyField as string,
-                  key: key,
-                }),
-              }
-            }
-            value={item}
-            footer={
-              <Button
-                size="sm"
-                className="w-full"
-                variant="destructive"
-                type="button"
-                onClick={() => handleDeleteItem(index)}
-              >
-                {`Delete ${name?.length ? name : `Item ${index + 1}`}`}
-              </Button>
-            }
-            onChange={e => handleItemChange(index, e)}
-          />
-        </div>
-      )
-    },
-    [keyField, nameField, placeholder, schema, handleDeleteItem, handleItemChange]
-  )
-
-  if (!card) {
-    return (
-      <div className="flex flex-col gap-3">
-        {listValue.map(renderItem)}
-        <Button type="button" size="sm" onClick={handleAddItem} className="w-full">
-          New item
-        </Button>
-      </div>
-    )
-  }
-
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>{label}</CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-3">{listValue.map(renderItem)}</CardContent>
-      <CardFooter>
-        <Button type="button" size="sm" onClick={handleAddItem} className="w-full">
-          New item
-        </Button>
-      </CardFooter>
-    </Card>
+    <FormContainer label={label} card={card} level={level} onAdd={handleAddItem} canAdd>
+      {listValue.map((item, index) => (
+        <NamedListInputItem
+          key={`${index}_map`}
+          item={item}
+          index={index}
+          nameField={nameField}
+          keyField={keyField}
+          placeholder={placeholder}
+          schema={schema}
+          onDelete={handleDeleteItem}
+          onChange={handleItemChange}
+          level={level}
+        />
+      ))}
+    </FormContainer>
   )
 }

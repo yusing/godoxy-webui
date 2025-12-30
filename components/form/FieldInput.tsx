@@ -1,7 +1,7 @@
 'use client'
 
 import { IconRefresh, IconTrash } from '@tabler/icons-react'
-import { memo, useMemo } from 'react'
+import { useMemo } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -24,19 +24,23 @@ import {
   type JSONSchema,
 } from '@/types/schema'
 import { Label } from '../ui/label'
+import { stringify } from './utils'
+
+export { FieldInput, type FieldInputProps }
 
 type FieldInputProps<T> = {
   fieldKey: string
   fieldValue: T
   schema: JSONSchema | undefined
   placeholder: { key?: string; value?: string } | undefined
-  onKeyChange: (key: string, value: unknown) => void
+  onKeyChange?: (key: string, value: unknown) => void
   onChange: (v: unknown) => void
   allowDelete: boolean
   deleteType?: 'delete' | 'reset'
+  readonly?: boolean
 }
 
-export function FieldInput<T>({
+function FieldInput<T>({
   fieldKey,
   fieldValue,
   schema,
@@ -45,6 +49,7 @@ export function FieldInput<T>({
   onChange,
   allowDelete = true,
   deleteType = 'delete',
+  readonly = false,
 }: Readonly<FieldInputProps<T>>) {
   'use memo'
 
@@ -64,9 +69,10 @@ export function FieldInput<T>({
       )}
     >
       <div className="flex w-full items-center gap-2">
-        {!schema ? (
+        {onKeyChange ? (
           <div className="max-w-[220px] w-full @container">
             <Input
+              readOnly={readonly}
               value={fieldKey}
               placeholder={placeholder?.key ?? 'Key'}
               onChange={({ target: { value } }) => onKeyChange(value, fieldValue)}
@@ -80,15 +86,17 @@ export function FieldInput<T>({
             />
           </div>
         ) : title ? (
-          <div className="min-w-[150px] select-none">
+          <div className="min-w-[150px] select-none max-w-min">
             <div className="flex items-center gap-2">
-              <Label>{title}</Label>
-              {required && <span className="text-destructive text-xs">*</span>}
+              <Label className="block">
+                {title}
+                {required && <span className="text-destructive text-xs ml-1">*</span>}
+              </Label>
             </div>
             <code className="text-xs text-muted-foreground">{fieldKey}</code>
           </div>
         ) : (
-          <div className="min-w-[150px]">
+          <div className="min-w-[150px] max-w-min">
             <div className="flex items-center gap-2">
               <Label>{fieldKey}</Label>
               {required && <span className="text-destructive text-xs">*</span>}
@@ -96,25 +104,23 @@ export function FieldInput<T>({
           </div>
         )}
 
-        {allowedValues && allowedValues.length > 0 ? (
-          <Select
-            value={typeof fieldValue === 'string' ? fieldValue : String(fieldValue)}
-            onValueChange={onChange}
-          >
+        {allowedValues && allowedValues.length > 1 ? (
+          <Select readOnly={readonly} value={stringify(fieldValue)} onValueChange={onChange}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder={placeholder?.value ?? 'Value'} />
             </SelectTrigger>
             <SelectContent>
               {allowedValues.map(item => (
-                <SelectItemMemo value={item} key={item}>
+                <SelectItem value={item} key={item}>
                   {item}
-                </SelectItemMemo>
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
         ) : isInputType(vSchema) ? (
           <Input
-            value={typeof fieldValue === 'string' ? fieldValue : String(fieldValue)}
+            readOnly={readonly}
+            value={stringify(fieldValue)}
             type={getInputType(vSchema?.type)}
             placeholder={placeholder?.value ?? 'Value'}
             onChange={({ target: { value } }) => onChange(value)}
@@ -122,25 +128,26 @@ export function FieldInput<T>({
         ) : isToggleType(vSchema) ? (
           <div className="w-full flex items-center">
             <Checkbox
+              disabled={readonly}
               checked={Boolean(fieldValue)}
               onCheckedChange={checked => onChange(Boolean(checked))}
             />
           </div>
         ) : null}
 
-        {allowDelete && !required && (
+        {allowDelete && !required && !readonly && (
           <Button
             type={deleteType === 'delete' ? 'button' : 'reset'}
             variant="destructive"
             onClick={() => onChange(undefined)}
           >
             {deleteType === 'delete' ? <IconTrash /> : <IconRefresh />}
-            {deleteType === 'delete' ? 'Delete' : 'Reset'}
+            <span className="sr-only shrink-0 min-w-0">
+              {deleteType === 'delete' ? 'Delete' : 'Reset'}
+            </span>
           </Button>
         )}
       </div>
     </div>
   )
 }
-
-const SelectItemMemo = memo(SelectItem) as typeof SelectItem
