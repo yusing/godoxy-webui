@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, type ReactNode } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
 
@@ -10,7 +10,7 @@ import { FormContainer } from './FormContainer'
 import { stringify } from './utils'
 
 type NamedListInputProps<IndexType extends string, T extends Record<IndexType, unknown>> = {
-  label: ReactNode
+  label?: string
   placeholder?: { key?: IndexType; value?: string }
   schema?: JSONSchema
   keyField?: keyof T
