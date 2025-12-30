@@ -45,7 +45,7 @@ export function FormContainer({
   const defaultOpen = required && hasChildren
 
   const title = card ? (
-    <div className="flex flex-row gap-4 items-center">
+    <div className="flex gap-4 items-center">
       <CardTitle>{label}</CardTitle>
       {badge}
     </div>
@@ -64,20 +64,20 @@ export function FormContainer({
         title
       )}
       {!hasChildren && canAdd && onAdd && (
-        <Button type="button" variant="ghost" size="icon" onClick={onAdd} className="size-4">
+        <Button type="button" variant="ghost" size="icon" onClick={onAdd}>
           <IconPlus />
         </Button>
       )}
     </div>
   )
 
-  const desc =
-    description &&
-    (card ? (
+  const desc = description ? (
+    card ? (
       <CardDescription>{description}</CardDescription>
     ) : (
       <Label className="text-muted-foreground text-xs">{description}</Label>
-    ))
+    )
+  ) : null
 
   const content =
     hasChildren &&
