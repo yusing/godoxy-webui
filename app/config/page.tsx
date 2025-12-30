@@ -5,7 +5,6 @@ import ConfigValidationError from '@/components/config_editor/ConfigValidationEr
 import ConfigYAMLEditor from '@/components/config_editor/ConfigYAMLEditor'
 import ConfigSidebar from '@/components/config_editor/Sidebar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { SidebarInset } from '@/components/ui/sidebar'
 
 export default function ConfigPage() {
@@ -16,11 +15,7 @@ export default function ConfigPage() {
       <ConfigSidebar />
       <SidebarInset>
         <div className="w-full h-full px-4 grid grid-cols-2 xl:grid-cols-[3fr_2fr] gap-1">
-          <div className="overflow-y-hidden">
-            <ScrollArea className="h-full pb-4 pr-3">
-              <ConfigContent className="min-w-fit" />
-            </ScrollArea>
-          </div>
+          <ConfigContent className="min-w-fit h-full pb-4 pr-2 overflow-y-auto" />
           {/* 3/5 */}
           <Card className="bg-transparent flex flex-col h-full overflow-hidden rounded-none border-0 border-l">
             <CardHeader className="shrink-0">

@@ -9,7 +9,7 @@ export default function DefaultValues() {
         label="Health Check"
         state={configStore.configObject.defaults.healthcheck.ensureObject()}
         schema={ConfigSchema.properties.defaults.properties.healthcheck}
-      ></StoreMapInput>
+      />
     </div>
   )
 }

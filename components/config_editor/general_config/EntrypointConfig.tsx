@@ -1,5 +1,5 @@
-import { MapInput } from '@/components/form/MapInput'
 import { NamedListInput } from '@/components/form/NamedListInput'
+import { StoreMapInput } from '@/components/form/StoreMapInput'
 import { Card, CardContent } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -36,21 +36,12 @@ function EntrypointProxyProtocolConfig() {
   )
 }
 
-// FIXME: these schema causes UI to freeze
-const accessLogSchema = ConfigSchema.definitions.RequestLogConfig
-// @ts-expect-error TODO: fix this
-delete accessLogSchema.properties.filters
-// @ts-expect-error TODO: fix this
-delete accessLogSchema.properties.fields
-
 function EntrypointAccessLogConfig() {
-  const accessLog = configStore.configObject.entrypoint.access_log.use()
   return (
-    <MapInput
+    <StoreMapInput
       label="Access log"
-      schema={accessLogSchema}
-      value={accessLog}
-      onChange={configStore.configObject.entrypoint.access_log.set}
+      schema={ConfigSchema.definitions.RequestLogConfig}
+      state={configStore.configObject.entrypoint.access_log.ensureObject()}
     />
   )
 }

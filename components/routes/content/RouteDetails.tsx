@@ -4,6 +4,7 @@ import { CodeMirror } from '@/components/ObjectDataList'
 import { useSelectedRoute } from '@/components/routes/store'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import Code from '@/components/ui/code'
 import { DataList, DataListRow } from '@/components/ui/data-list'
 import { Label } from '@/components/ui/label'
 import { api } from '@/lib/api-client'
@@ -236,9 +237,13 @@ export default function RouteDetails() {
             <div className="space-y-3">
               {routeDetails.rules.map((rule, index) => (
                 <div key={index} className="border rounded-lg p-3">
-                  <div className="font-medium text-sm">{rule.name}</div>
-                  <div className="text-sm text-muted-foreground mt-1">Action: {rule.do}</div>
-                  <div className="text-sm text-muted-foreground mt-1">Condition: {rule.on}</div>
+                  <div className="font-medium text-sm mb-2">{rule.name}</div>
+                  <div className="grid grid-cols-[110px_1fr] gap-x-2 gap-y-1 items-center">
+                    <div className="text-xs text-muted-foreground">Action</div>
+                    <Code className="w-full">{rule.do}</Code>
+                    <div className="text-xs text-muted-foreground">Condition</div>
+                    <Code className="w-full">{rule.on}</Code>
+                  </div>
                 </div>
               ))}
             </div>

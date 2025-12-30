@@ -1,5 +1,6 @@
 import { StoreListInput } from '@/components/form/StoreListInput'
 import { StoreMapInput } from '@/components/form/StoreMapInput'
+import { ConfigSchema } from '@/types/godoxy'
 import { configStore } from '../store'
 
 export default function RouteProviderConfigContent() {
@@ -8,7 +9,12 @@ export default function RouteProviderConfigContent() {
     <div className="flex flex-col gap-4">
       <StoreListInput card label="Include Files" state={providers.include.ensureArray()} />
       <StoreListInput card label="Agents" state={providers.agents.ensureArray()} />
-      <StoreMapInput card label="Docker" state={providers.docker.ensureObject()} />
+      <StoreMapInput
+        card
+        label="Docker"
+        state={providers.docker.ensureObject()}
+        schema={ConfigSchema.definitions.Providers.properties.docker}
+      />
     </div>
   )
 }
