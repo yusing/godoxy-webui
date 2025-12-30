@@ -9,6 +9,7 @@ const config: NextConfig = {
   experimental: {
     turbopackFileSystemCacheForDev: true,
   },
+  transpilePackages: ['juststore', 'juststore-shadcn'],
   rewrites: async () => [
     {
       source: '/wiki/:path*',
