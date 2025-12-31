@@ -84,7 +84,7 @@ export function FormContainer({
   const content =
     hasChildren &&
     (card ? (
-      <CardContent className="flex flex-col gap-3">{children}</CardContent>
+      <CardContent className="grid grid-cols-1 2xl:grid-cols-2 gap-3">{children}</CardContent>
     ) : (
       <div
         className={cn(
