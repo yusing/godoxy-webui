@@ -16,7 +16,7 @@ export function MiddlewareEditor({
   data,
   onChange,
 }: {
-  label?: React.ReactNode
+  label?: string
   data: MiddlewareCompose.EntrypointMiddlewares
   onChange: (v: MiddlewareCompose.EntrypointMiddlewares) => void
 }) {
