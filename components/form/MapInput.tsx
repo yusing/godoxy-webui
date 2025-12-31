@@ -1,5 +1,4 @@
 'use client'
-'use memo'
 
 import { IconCheck, IconEdit, IconTrash } from '@tabler/icons-react'
 import { useMemo, useRef, useState, type ReactNode } from 'react'
@@ -36,6 +35,7 @@ type MapInputProps<T extends Record<string, unknown>> = {
 }
 
 function MapInput<T extends Record<string, unknown>>({ schema, ...props }: MapInputProps<T>) {
+  'use memo'
   if (!schema) {
     return <RecordInput {...props} />
   }
@@ -64,6 +64,7 @@ function RecordInput<T extends Record<string, unknown>>({
   onChange,
   card = false,
 }: Readonly<RecordInputProps<T>>) {
+  'use memo'
   // Maintain stable order: keep existing order, append newly added keys at the end
   const pureKeysRef = useRef<string[]>([])
   const keys = useMemo(() => {
@@ -253,6 +254,7 @@ function ComplexEntryHeader({
   onKeyChange: (key: string) => void
   onDelete: () => void
 }) {
+  'use memo'
   const isEmpty = displayKey === ''
   const [editing, setEditing] = useState(isEmpty)
   const [draft, setDraft] = useState(displayKey)
@@ -336,6 +338,7 @@ function ObjectInput<T extends Record<string, unknown>>({
   onChange,
   level = 0,
 }: Readonly<MapInputProps<T> & { schema: JSONSchema }>) {
+  'use memo'
   const workingValue: Record<string, unknown> = useMemo(() => {
     const result: Record<string, unknown> = value ? { ...value } : {}
 
@@ -423,6 +426,7 @@ function MapInputItem<T extends Record<string, unknown>>({
   allowDelete,
   onChange,
 }: MapInputItemProps<T>) {
+  'use memo'
   const canRenameKey = !(schema.properties && k in (schema.properties ?? {}))
 
   const vSchema = getEntryValueSchema(schema, k)

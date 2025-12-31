@@ -1,5 +1,4 @@
 'use client'
-'use memo'
 
 import { ComplexEntryHeader, type MapInputProps, type RecordInputProps } from './MapInput'
 
@@ -22,6 +21,7 @@ type StoreMapInputProps<T extends FieldValues> = {
 } & Omit<MapInputProps<T>, 'value' | 'onChange'>
 
 function StoreMapInput<T extends FieldValues>({ schema, ...props }: StoreMapInputProps<T>) {
+  'use memo'
   if (!schema) {
     return <StoreRecordInput {...props} />
   }
@@ -48,6 +48,7 @@ function StoreRecordInput<T extends FieldValues>({
   card = false,
   level = 0,
 }: Readonly<StoreRecordInputProps<T>>) {
+  'use memo'
   const numKeys = state.keys.useCompute(v => v.length)
 
   return (
@@ -57,7 +58,7 @@ function StoreRecordInput<T extends FieldValues>({
       card={card}
       level={0}
       canAdd
-      onAdd={() => state['']?.set(getDefaultValue(valueSchema) as T[string] | undefined)}
+      onAdd={() => state['']?.set((getDefaultValue(valueSchema) || '') as T[string])}
     >
       {Array.from({ length: numKeys }).map((_, index) => (
         <StoreRecordInputItem
@@ -86,6 +87,7 @@ function StoreRecordInputItem<T extends FieldValues>({
   valueSchema?: JSONSchema
   placeholder: { key?: string; value?: string } | undefined
 }) {
+  'use memo'
   const fieldKey = state.keys.useCompute(v => v[index]!)
   const child = state[fieldKey]
 
@@ -100,6 +102,7 @@ function StoreRecordInputItem<T extends FieldValues>({
   )
 
   function RecordComplexEntryFrame({ children }: React.PropsWithChildren) {
+    'use memo'
     const isNew = fieldKey === ''
     return (
       <div
@@ -206,6 +209,7 @@ function StoreObjectInput<T extends FieldValues>({
   level = 0,
   footer,
 }: Readonly<StoreMapInputProps<T> & { schema: JSONSchema }>) {
+  'use memo'
   const keys = state.keys.useCompute(workingKeys =>
     getMergedKeys({
       schema,
@@ -262,6 +266,7 @@ function StoreMapInputItem<T extends FieldValues>({
   allowDelete: boolean
   level: number
 } & Pick<StoreMapInputProps<T>, 'state' | 'placeholder'>) {
+  'use memo'
   const canRenameKey = !schema.properties || !(fieldKey in (schema.properties ?? {}))
 
   const child = state[fieldKey]
@@ -276,6 +281,7 @@ function StoreMapInputItem<T extends FieldValues>({
   const nestedDescription = getDescription(effectiveSchema, fieldKey)
 
   function ComplexEntryFrame({ children }: Readonly<{ children: React.ReactNode }>) {
+    'use memo'
     return (
       <div className="flex flex-col gap-2">
         <Activity mode={canRenameKey ? 'visible' : 'hidden'}>

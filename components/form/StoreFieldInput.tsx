@@ -1,5 +1,4 @@
 'use client'
-'use memo'
 
 import { IconRefresh, IconTrash } from '@tabler/icons-react'
 import { useMemo } from 'react'
@@ -51,6 +50,7 @@ export function StoreFieldInput<T extends FieldValues>({
   readonly = false,
   onKeyChange,
 }: Readonly<StoreFieldInputProps<T>>) {
+  'use memo'
   const child = state[fieldKey]
 
   const allowedValues = useMemo(

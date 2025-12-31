@@ -42,6 +42,7 @@ function NamedListInputItem<IndexType extends string, T extends Record<IndexType
   onChange: (index: number, newValue: T) => void
   level: number
 }) {
+  'use memo'
   const name = item[nameField] as string
   return (
     <div className="flex w-full flex-col gap-3">

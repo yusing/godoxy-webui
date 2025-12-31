@@ -28,6 +28,7 @@ export function StoreListInput<T extends string>({
   level = 0,
   schema,
 }: StoreListInputProps<T>) {
+  'use memo'
   const handleAddItem = useCallback(() => {
     state.push('' as T)
   }, [state])
@@ -70,6 +71,7 @@ function StoreListInputItem<T extends string>({
   schema?: JSONSchema
   placeholder?: string
 }) {
+  'use memo'
   const [item, setItem] = state.at(index).useState()
   return (
     <ListInputItem
