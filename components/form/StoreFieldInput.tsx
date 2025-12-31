@@ -68,7 +68,7 @@ export function StoreFieldInput<T extends FieldValues>({
     child.set(vSchema.const as T[typeof fieldKey])
   }, [child, vSchema?.const])
 
-  if (vSchema?.const !== undefined) return null
+  if (vSchema?.const !== undefined && !allowKeyChange && (required || !allowDelete)) return null
 
   return (
     <div
@@ -88,22 +88,15 @@ export function StoreFieldInput<T extends FieldValues>({
               className="text-xs"
             />
           </div>
-        ) : title ? (
+        ) : (
           <div className="min-w-[150px] select-none max-w-min">
             <div className="flex items-center gap-2">
-              <Label className="block">
-                {title}
+              <Label className="block capitalize">
+                {title ?? fieldKey}
                 {required && <span className="text-destructive text-xs ml-1">*</span>}
               </Label>
             </div>
             <code className="text-xs text-muted-foreground">{fieldKey}</code>
-          </div>
-        ) : (
-          <div className="min-w-[150px] max-w-min">
-            <div className="flex items-center gap-2">
-              <Label>{fieldKey}</Label>
-              {required && <span className="text-destructive text-xs">*</span>}
-            </div>
           </div>
         )}
 

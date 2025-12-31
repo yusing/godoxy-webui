@@ -24,6 +24,7 @@ export {
 
 type StoreMapInputProps<T extends FieldValues> = {
   state: ObjectState<T>
+  hideUnknown?: boolean
 } & Omit<MapInputProps<T>, 'value' | 'onChange'>
 
 function StoreMapInput<T extends FieldValues>({ schema, ...props }: StoreMapInputProps<T>) {
@@ -189,14 +190,14 @@ function StoreRecordInputItem<T extends FieldValues>({
   }
 
   return (
-      <StoreFieldInput<T>
-        state={state}
-        fieldKey={fieldKey}
-        schema={fieldSchema}
-        placeholder={placeholder}
-        allowKeyChange
-        allowDelete
-      />
+    <StoreFieldInput<T>
+      state={state}
+      fieldKey={fieldKey}
+      schema={fieldSchema}
+      placeholder={placeholder}
+      allowKeyChange
+      allowDelete
+    />
   )
 }
 
@@ -212,16 +213,24 @@ function StoreObjectInput<T extends FieldValues>({
   card = true,
   level = 0,
   footer,
+  hideUnknown = false,
 }: Readonly<StoreMapInputProps<T> & { schema: JSONSchema }>) {
   'use memo'
-  const keys = state.keys.useCompute(workingKeys =>
-    getMergedKeys({
+
+  const workingKeys = state.keys.use()
+  const keys = useMemo(() => {
+    let filteredKeys: readonly string[] = workingKeys
+    if (hideUnknown && !canAddKey(schema) && schema.properties) {
+      const allowed = new Set(Object.keys(schema.properties))
+      filteredKeys = workingKeys.filter(k => allowed.has(k))
+    }
+    return getMergedKeys({
       schema,
-      workingKeys,
+      workingKeys: filteredKeys,
       keyField: keyField ? String(keyField) : undefined,
       nameField: nameField ? String(nameField) : undefined,
     })
-  )
+  }, [workingKeys, keyField, nameField, schema, hideUnknown])
 
   return (
     <FormContainer
