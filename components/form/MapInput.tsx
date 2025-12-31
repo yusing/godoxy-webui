@@ -129,7 +129,7 @@ function RecordInput<T extends Record<string, unknown>>({
 
         if (kind === 'array') {
           return (
-            <div key={`${index}_list_wrap`} className="record-entry--complex flex flex-col gap-2">
+            <div key={`${index}_list_wrap`} className="record-entry--complex flex flex-col gap-2 col-span-full">
               {complexSeparator}
               <ComplexEntryHeader
                 displayKey={displayKey}
@@ -159,7 +159,7 @@ function RecordInput<T extends Record<string, unknown>>({
             return (
               <div
                 key={`${index}_record_wrap`}
-                className={`record-entry--complex ${displayKey === '' ? 'mt-2 rounded-md border border-dashed border-border p-2' : ''}`}
+                className={`record-entry--complex col-span-full ${displayKey === '' ? 'mt-2 rounded-md border border-dashed border-border p-2' : ''}`}
               >
                 {complexSeparator}
                 {displayKey === '' && (
@@ -186,7 +186,7 @@ function RecordInput<T extends Record<string, unknown>>({
           return (
             <div
               key={`${index}_map_wrap`}
-              className={`record-entry--complex ${displayKey === '' ? 'mt-2 rounded-md border border-dashed border-border p-2' : ''}`}
+              className={`record-entry--complex col-span-full ${displayKey === '' ? 'mt-2 rounded-md border border-dashed border-border p-2' : ''}`}
             >
               {complexSeparator}
               {displayKey === '' && (
@@ -439,7 +439,7 @@ function MapInputItem<T extends Record<string, unknown>>({
     const headerShown = canRenameKey
     const childLabel = headerShown ? undefined : nestedLabel
     return (
-      <div key={`${index}_list_wrap`} className="flex flex-col gap-2">
+      <div key={`${index}_list_wrap`} className="flex flex-col gap-2 col-span-full">
         {headerShown && (
           <ComplexEntryHeader
             displayKey={k}
@@ -479,7 +479,7 @@ function MapInputItem<T extends Record<string, unknown>>({
       schema.additionalProperties
     ) {
       return (
-        <div key={`${index}_record_wrap`} className="flex flex-col gap-2">
+        <div key={`${index}_record_wrap`} className="flex flex-col gap-2 col-span-full">
           {headerShown && (
             <ComplexEntryHeader
               displayKey={k}
@@ -513,7 +513,7 @@ function MapInputItem<T extends Record<string, unknown>>({
       )
     }
     return (
-      <div key={`${index}_map_wrap`} className="flex flex-col gap-2">
+      <div key={`${index}_map_wrap`} className="flex flex-col gap-2 col-span-full">
         {headerShown && (
           <ComplexEntryHeader
             displayKey={k}

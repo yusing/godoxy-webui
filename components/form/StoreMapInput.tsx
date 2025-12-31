@@ -287,7 +287,7 @@ function StoreMapInputItem<T extends FieldValues>({
   function ComplexEntryFrame({ children }: Readonly<{ children: React.ReactNode }>) {
     'use memo'
     return (
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 col-span-full">
         <Activity mode={canRenameKey ? 'visible' : 'hidden'}>
           <ComplexEntryHeader
             displayKey={fieldKey}

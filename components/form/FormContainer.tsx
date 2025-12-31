@@ -86,7 +86,7 @@ export function FormContainer({
     ) : (
       <div
         className={cn(
-          'flex flex-col gap-3 has-[&>input]:mt-2 has-[&>select]:mt-2 has-[&>label]:mt-2',
+          'grid grid-cols-1 2xl:grid-cols-2 gap-3 has-[&>input]:mt-4 has-[&>select]:mt-4 has-[&>label]:mt-4',
           level > 0 && hasChildren && 'p-2 border-l-3 border-border'
         )}
       >
