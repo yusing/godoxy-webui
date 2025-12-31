@@ -42,7 +42,6 @@ export interface LocalOptions {
   cert_path?: string
   /**  ACME key path */
   key_path?: string
-  options?: object | null
 }
 
 export interface CustomOptions extends AutocertConfigBase {
