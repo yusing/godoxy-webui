@@ -46,6 +46,7 @@ function StoreRecordInput<T extends FieldValues>({
   description,
   placeholder,
   card = false,
+  level = 0,
 }: Readonly<StoreRecordInputProps<T>>) {
   const numKeys = state.keys.useCompute(v => v.length)
 
@@ -61,6 +62,7 @@ function StoreRecordInput<T extends FieldValues>({
       {Array.from({ length: numKeys }).map((_, index) => (
         <StoreRecordInputItem
           key={index}
+          level={level}
           state={state}
           index={index}
           valueSchema={valueSchema}
@@ -72,11 +74,13 @@ function StoreRecordInput<T extends FieldValues>({
 }
 
 function StoreRecordInputItem<T extends FieldValues>({
+  level,
   index,
   state,
   valueSchema,
   placeholder,
 }: {
+  level: number
   index: number
   state: ObjectState<T>
   valueSchema?: JSONSchema
@@ -131,6 +135,7 @@ function StoreRecordInputItem<T extends FieldValues>({
           onDelete={child.reset}
         />
         <StoreListInput
+          level={level + 1}
           card={false}
           label={undefined}
           placeholder={placeholder?.value}
@@ -147,6 +152,7 @@ function StoreRecordInputItem<T extends FieldValues>({
       return (
         <RecordComplexEntryFrame>
           <StoreRecordInput
+            level={level + 1}
             card={false}
             label={undefined}
             description={undefined}
@@ -161,6 +167,7 @@ function StoreRecordInputItem<T extends FieldValues>({
     return (
       <RecordComplexEntryFrame>
         <StoreMapInput
+          level={level + 1}
           card={false}
           label={undefined}
           description={getDescription(entrySchema, fieldKey)}
