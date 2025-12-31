@@ -31,7 +31,7 @@ type StoreFieldInputProps<T extends FieldValues> = {
   state: ObjectState<T>
   fieldKey: FieldPath<T>
   schema: JSONSchema | undefined
-  placeholder: { key?: string; value?: string } | undefined
+  placeholder?: { key?: string; value?: string }
   allowKeyChange: boolean
   allowDelete: boolean
   deleteType?: 'delete' | 'reset'

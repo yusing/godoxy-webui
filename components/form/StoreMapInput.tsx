@@ -14,7 +14,13 @@ import { StoreListInput } from './StoreListInput'
 import { getEntryValueSchema, getKindAndEffectiveSchema, getMergedKeys } from './map-utils'
 import { canAddKey, getAdditionalPropertiesSchema, getDescription, getLabel } from './utils'
 
-export { StoreMapInput, StoreRecordInput, type StoreMapInputProps, type StoreRecordInputProps }
+export {
+  StoreMapInput,
+  StoreObjectInput,
+  StoreRecordInput,
+  type StoreMapInputProps,
+  type StoreRecordInputProps,
+}
 
 type StoreMapInputProps<T extends FieldValues> = {
   state: ObjectState<T>
@@ -183,7 +189,6 @@ function StoreRecordInputItem<T extends FieldValues>({
   }
 
   return (
-    <div className="flex flex-col gap-2">
       <StoreFieldInput<T>
         state={state}
         fieldKey={fieldKey}
@@ -192,7 +197,6 @@ function StoreRecordInputItem<T extends FieldValues>({
         allowKeyChange
         allowDelete
       />
-    </div>
   )
 }
 
