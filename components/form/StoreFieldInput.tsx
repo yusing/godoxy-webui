@@ -1,7 +1,7 @@
 'use client'
 
 import { IconRefresh, IconTrash } from '@tabler/icons-react'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -61,6 +61,14 @@ export function StoreFieldInput<T extends FieldValues>({
 
   const vSchema = schema?.properties?.[fieldKey]
   const title = useMemo(() => getTitle(schema, fieldKey), [schema, fieldKey])
+
+  useEffect(() => {
+    if (vSchema?.const === undefined) return
+    if (child.value === vSchema.const) return
+    child.set(vSchema.const as T[typeof fieldKey])
+  }, [child, vSchema?.const])
+
+  if (vSchema?.const !== undefined) return null
 
   return (
     <div
