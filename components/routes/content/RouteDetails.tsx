@@ -53,7 +53,7 @@ export default function RouteDetails() {
 
   return (
     <div className="space-y-6 w-full">
-      {routeDetails.container && (
+      {routeDetails.container?.running && (
         <Card>
           <CardHeader>
             <CardTitle>Container Logs</CardTitle>
