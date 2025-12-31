@@ -16,6 +16,7 @@ type StoreListInputProps<T extends string> = {
   card?: boolean
   level?: number
   schema?: JSONSchema
+  readonly?: boolean
 }
 
 export function StoreListInput<T extends string>({
@@ -27,6 +28,7 @@ export function StoreListInput<T extends string>({
   card = true,
   level = 0,
   schema,
+  readonly = false,
 }: StoreListInputProps<T>) {
   'use memo'
   const handleAddItem = useCallback(() => {
@@ -42,6 +44,7 @@ export function StoreListInput<T extends string>({
       state={state}
       schema={schema}
       placeholder={placeholder}
+      readonly={readonly}
     />
   ))
 
@@ -53,7 +56,8 @@ export function StoreListInput<T extends string>({
       level={level}
       required={required}
       onAdd={handleAddItem}
-      canAdd
+      canAdd={!readonly}
+      readonly={readonly}
     >
       {items}
     </FormContainer>
@@ -65,11 +69,13 @@ function StoreListInputItem<T extends string>({
   state,
   schema,
   placeholder,
+  readonly = false,
 }: {
   index: number
   state: ArrayState<T>
   schema?: JSONSchema
   placeholder?: string
+  readonly?: boolean
 }) {
   'use memo'
   const [item, setItem] = state.at(index).useState()
@@ -80,6 +86,7 @@ function StoreListInputItem<T extends string>({
       onItemDelete={() => state.splice(index, 1)}
       schema={schema}
       placeholder={placeholder}
+      readonly={readonly}
     />
   )
 }

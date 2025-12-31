@@ -19,6 +19,7 @@ type ListInputProps<T extends string> = {
   level?: number
   schema?: JSONSchema
   onChange: (v: T[]) => void
+  readonly?: boolean
 }
 
 export function ListInput<T extends string>({
@@ -31,6 +32,7 @@ export function ListInput<T extends string>({
   level = 0,
   schema,
   onChange,
+  readonly = false,
 }: ListInputProps<T>) {
   const handleItemChange = useCallback(
     (index: number, newValue: T) => {
@@ -62,7 +64,8 @@ export function ListInput<T extends string>({
       level={level}
       onAdd={handleAddItem}
       required={required}
-      canAdd
+      canAdd={!readonly}
+      readonly={readonly}
     >
       {value.map((item, index) => (
         <ListInputItem
@@ -72,6 +75,7 @@ export function ListInput<T extends string>({
           onItemDelete={() => handleItemDelete(index)}
           schema={schema}
           placeholder={placeholder}
+          readonly={readonly}
         />
       ))}
     </FormContainer>
@@ -84,17 +88,23 @@ export function ListInputItem<T extends string>({
   onItemDelete,
   schema,
   placeholder,
+  readonly = false,
 }: {
   item: T
   onItemChange: (item: T) => void
   onItemDelete: () => void
   schema?: JSONSchema
   placeholder?: string
+  readonly?: boolean
 }) {
   return (
     <div className="flex items-center gap-2">
       {schema?.items?.enum ? (
-        <Select value={item as string} onValueChange={e => onItemChange(e as T)}>
+        <Select
+          readOnly={readonly}
+          value={item as string}
+          onValueChange={e => onItemChange(e as T)}
+        >
           <SelectTrigger className="w-full">
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
@@ -108,15 +118,18 @@ export function ListInputItem<T extends string>({
         </Select>
       ) : (
         <Input
+          readOnly={readonly}
           value={item}
           placeholder={placeholder}
           onChange={e => onItemChange(e.target.value as T)}
         />
       )}
-      <Button type="button" variant="destructive" onClick={onItemDelete} title="Delete">
-        <IconTrash />
-        Delete
-      </Button>
+      {!readonly && (
+        <Button type="button" variant="destructive" onClick={onItemDelete} title="Delete">
+          <IconTrash />
+          Delete
+        </Button>
+      )}
     </div>
   )
 }

@@ -63,6 +63,7 @@ function RecordInput<T extends Record<string, unknown>>({
   valueSchema,
   onChange,
   card = false,
+  readonly = false,
 }: Readonly<RecordInputProps<T>>) {
   'use memo'
   // Maintain stable order: keep existing order, append newly added keys at the end
@@ -113,7 +114,8 @@ function RecordInput<T extends Record<string, unknown>>({
       description={description}
       card={card}
       level={0}
-      canAdd
+      canAdd={!readonly}
+      readonly={readonly}
       onAdd={() => onChange({ ...value, ['' as keyof T]: getDefaultValue(valueSchema) ?? '' } as T)}
     >
       {keys.map((k, index) => {
@@ -129,7 +131,10 @@ function RecordInput<T extends Record<string, unknown>>({
 
         if (kind === 'array') {
           return (
-            <div key={`${index}_list_wrap`} className="record-entry--complex flex flex-col gap-2 col-span-full">
+            <div
+              key={`${index}_list_wrap`}
+              className="record-entry--complex flex flex-col gap-2 col-span-full"
+            >
               {complexSeparator}
               <ComplexEntryHeader
                 displayKey={displayKey}
@@ -137,9 +142,11 @@ function RecordInput<T extends Record<string, unknown>>({
                 isKeyTaken={candidate => candidate in (value ?? {}) && candidate !== actualKey}
                 onKeyChange={newK => renameKey(actualKey, newK, v)}
                 onDelete={() => deleteKey(actualKey)}
+                readonly={readonly}
               />
               <ListInput
                 card={false}
+                readonly={readonly}
                 label={undefined}
                 value={Array.isArray(v) ? v : []}
                 schema={effSchema}
@@ -171,9 +178,11 @@ function RecordInput<T extends Record<string, unknown>>({
                   isKeyTaken={candidate => candidate in (value ?? {}) && candidate !== actualKey}
                   onKeyChange={newK => renameKey(actualKey, newK, v)}
                   onDelete={() => deleteKey(actualKey)}
+                  readonly={readonly}
                 />
                 <RecordInput
                   card={false}
+                  readonly={readonly}
                   label={undefined}
                   value={nextValue}
                   valueSchema={apSchema}
@@ -198,9 +207,11 @@ function RecordInput<T extends Record<string, unknown>>({
                 isKeyTaken={candidate => candidate in (value ?? {}) && candidate !== actualKey}
                 onKeyChange={newK => renameKey(actualKey, newK, v)}
                 onDelete={() => deleteKey(actualKey)}
+                readonly={readonly}
               />
               <MapInput
                 card={false}
+                readonly={readonly}
                 label={undefined}
                 description={getDescription(effSchema, displayKey)}
                 value={nextValue}
@@ -217,7 +228,8 @@ function RecordInput<T extends Record<string, unknown>>({
             <FieldInput
               fieldKey={displayKey}
               fieldValue={v}
-              allowDelete
+              readonly={readonly}
+              allowDelete={!readonly}
               schema={effSchema ? { properties: { [displayKey]: effSchema } } : undefined}
               placeholder={placeholder}
               onKeyChange={(newK, newV) => {
@@ -247,12 +259,14 @@ function ComplexEntryHeader({
   isKeyTaken,
   onKeyChange,
   onDelete,
+  readonly = false,
 }: {
   displayKey: string
   placeholderKey?: string
   isKeyTaken?: (key: string) => boolean
   onKeyChange: (key: string) => void
   onDelete: () => void
+  readonly?: boolean
 }) {
   'use memo'
   const isEmpty = displayKey === ''
@@ -270,7 +284,7 @@ function ComplexEntryHeader({
   return (
     <div className="flex items-center gap-2">
       <div className="w-full @container">
-        {editing ? (
+        {editing && !readonly ? (
           <InputGroup>
             <InputGroupInput
               value={draft}
@@ -301,25 +315,29 @@ function ComplexEntryHeader({
             <div className="min-w-0 flex-1">
               <Label className="text-sm truncate">{displayKey}</Label>
             </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="shrink-0"
-              onClick={() => {
-                setDraft(displayKey)
-                setEditing(true)
-              }}
-            >
-              <IconEdit className="size-4" />
-            </Button>
+            {!readonly && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="shrink-0"
+                onClick={() => {
+                  setDraft(displayKey)
+                  setEditing(true)
+                }}
+              >
+                <IconEdit className="size-4" />
+              </Button>
+            )}
           </div>
         )}
       </div>
-      <Button type="button" variant="destructive" onClick={onDelete}>
-        <IconTrash />
-        Delete
-      </Button>
+      {!readonly && (
+        <Button type="button" variant="destructive" onClick={onDelete}>
+          <IconTrash />
+          Delete
+        </Button>
+      )}
     </div>
   )
 }
@@ -336,6 +354,7 @@ function ObjectInput<T extends Record<string, unknown>>({
   card = true,
   footer,
   onChange,
+  readonly = false,
   level = 0,
 }: Readonly<MapInputProps<T> & { schema: JSONSchema }>) {
   'use memo'
@@ -375,7 +394,8 @@ function ObjectInput<T extends Record<string, unknown>>({
       card={card}
       level={level}
       footer={footer}
-      canAdd={canAddKey(schema)}
+      canAdd={!readonly && canAddKey(schema)}
+      readonly={readonly}
       onAdd={() =>
         onChange({
           ...value,
@@ -399,6 +419,7 @@ function ObjectInput<T extends Record<string, unknown>>({
           placeholder={placeholder}
           allowDelete={allowDelete}
           onChange={onChange}
+          readonly={readonly}
         />
       ))}
     </FormContainer>
@@ -414,6 +435,7 @@ type MapInputItemProps<T extends Record<string, unknown>> = {
   placeholder?: { key?: string; value?: string }
   allowDelete: boolean
   onChange: (v: T) => void
+  readonly: boolean
 }
 
 function MapInputItem<T extends Record<string, unknown>>({
@@ -425,6 +447,7 @@ function MapInputItem<T extends Record<string, unknown>>({
   placeholder,
   allowDelete,
   onChange,
+  readonly = false,
 }: MapInputItemProps<T>) {
   'use memo'
   const canRenameKey = !(schema.properties && k in (schema.properties ?? {}))
@@ -454,10 +477,12 @@ function MapInputItem<T extends Record<string, unknown>>({
               delete newValue[k]
               onChange(newValue as T)
             }}
+            readonly={readonly}
           />
         )}
         <ListInput
           card={false}
+          readonly={readonly}
           key={`${index}_list`}
           label={childLabel}
           value={Array.isArray(v) ? v : []}
@@ -494,10 +519,12 @@ function MapInputItem<T extends Record<string, unknown>>({
                 delete newValue[k]
                 onChange(newValue as T)
               }}
+              readonly={readonly}
             />
           )}
           <RecordInput
             card={false}
+            readonly={readonly}
             level={level + 1}
             key={`${index}_map`}
             description={nestedDescription}
@@ -528,10 +555,12 @@ function MapInputItem<T extends Record<string, unknown>>({
               delete newValue[k]
               onChange(newValue as T)
             }}
+            readonly={readonly}
           />
         )}
         <MapInput
           card={false}
+          readonly={readonly}
           level={level + 1}
           key={`${index}_map`}
           label={childLabel}
@@ -559,6 +588,7 @@ function MapInputItem<T extends Record<string, unknown>>({
       key={`${index}_field`}
       fieldKey={k}
       fieldValue={v}
+      readonly={readonly}
       schema={schema.properties?.[k] ? schema : { properties: { [k]: vSchema } }}
       placeholder={placeholder}
       allowDelete={allowDelete}

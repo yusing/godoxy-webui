@@ -19,6 +19,7 @@ type NamedListInputProps<IndexType extends string, T extends Record<IndexType, u
   onChange: (v: T[]) => void
   card?: boolean
   level?: number
+  readonly?: boolean
 }
 
 function NamedListInputItem<IndexType extends string, T extends Record<IndexType, unknown>>({
@@ -31,6 +32,7 @@ function NamedListInputItem<IndexType extends string, T extends Record<IndexType
   onDelete,
   onChange,
   level,
+  readonly = false,
 }: {
   item: T
   index: number
@@ -41,6 +43,7 @@ function NamedListInputItem<IndexType extends string, T extends Record<IndexType
   onDelete: (index: number) => void
   onChange: (index: number, newValue: T) => void
   level: number
+  readonly?: boolean
 }) {
   'use memo'
   const name = item[nameField] as string
@@ -48,6 +51,7 @@ function NamedListInputItem<IndexType extends string, T extends Record<IndexType
     <div className="flex w-full flex-col gap-3">
       <MapInput<T>
         label={name}
+        readonly={readonly}
         placeholder={placeholder}
         level={level + 1}
         keyField={keyField}
@@ -63,15 +67,17 @@ function NamedListInputItem<IndexType extends string, T extends Record<IndexType
         }
         value={item}
         footer={
-          <Button
-            size="sm"
-            className="w-full"
-            variant="destructive"
-            type="button"
-            onClick={() => onDelete(index)}
-          >
-            {`Delete ${name?.length ? name : `Item ${index + 1}`}`}
-          </Button>
+          !readonly && (
+            <Button
+              size="sm"
+              className="w-full"
+              variant="destructive"
+              type="button"
+              onClick={() => onDelete(index)}
+            >
+              {`Delete ${name?.length ? name : `Item ${index + 1}`}`}
+            </Button>
+          )
         }
         onChange={e => onChange(index, e)}
       />
@@ -89,6 +95,7 @@ export function NamedListInput<IndexType extends string, T extends Record<IndexT
   schema,
   card = true,
   level = 0,
+  readonly = false,
 }: Readonly<NamedListInputProps<IndexType, T>>) {
   'use memo'
   const listValue: T[] = useMemo(() => (Array.isArray(value) ? value : []), [value])
@@ -127,7 +134,14 @@ export function NamedListInput<IndexType extends string, T extends Record<IndexT
   }, [listValue, onChange, keyField, nameField, defaultValue])
 
   return (
-    <FormContainer label={label} card={card} level={level} onAdd={handleAddItem} canAdd>
+    <FormContainer
+      label={label}
+      card={card}
+      level={level}
+      onAdd={handleAddItem}
+      canAdd={!readonly}
+      readonly={readonly}
+    >
       {listValue.map((item, index) => (
         <NamedListInputItem
           key={`${index}_map`}
@@ -140,6 +154,7 @@ export function NamedListInput<IndexType extends string, T extends Record<IndexT
           onDelete={handleDeleteItem}
           onChange={handleItemChange}
           level={level}
+          readonly={readonly}
         />
       ))}
     </FormContainer>

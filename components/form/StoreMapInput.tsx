@@ -54,6 +54,7 @@ function StoreRecordInput<T extends FieldValues>({
   placeholder,
   card = false,
   level = 0,
+  readonly = false,
 }: Readonly<StoreRecordInputProps<T>>) {
   'use memo'
   const numKeys = state.keys.useCompute(v => v.length)
@@ -64,7 +65,8 @@ function StoreRecordInput<T extends FieldValues>({
       description={description}
       card={card}
       level={0}
-      canAdd
+      canAdd={!readonly}
+      readonly={readonly}
       onAdd={() => state['']?.set((getDefaultValue(valueSchema) || '') as T[string])}
     >
       {Array.from({ length: numKeys }).map((_, index) => (
@@ -75,6 +77,7 @@ function StoreRecordInput<T extends FieldValues>({
           index={index}
           valueSchema={valueSchema}
           placeholder={placeholder}
+          readonly={readonly}
         />
       ))}
     </FormContainer>
@@ -87,12 +90,14 @@ function StoreRecordInputItem<T extends FieldValues>({
   state,
   valueSchema,
   placeholder,
+  readonly = false,
 }: {
   level: number
   index: number
   state: ObjectState<T>
   valueSchema?: JSONSchema
   placeholder: { key?: string; value?: string } | undefined
+  readonly?: boolean
 }) {
   'use memo'
   const fieldKey = state.keys.useCompute(v => v[index]!)
@@ -125,6 +130,7 @@ function StoreRecordInputItem<T extends FieldValues>({
             state.rename(fieldKey, newK)
           }}
           onDelete={child.reset}
+          readonly={readonly}
         />
         {children}
       </div>
@@ -143,6 +149,7 @@ function StoreRecordInputItem<T extends FieldValues>({
             state.rename(fieldKey, newK)
           }}
           onDelete={child.reset}
+          readonly={readonly}
         />
         <StoreListInput
           level={level + 1}
@@ -151,6 +158,7 @@ function StoreRecordInputItem<T extends FieldValues>({
           placeholder={placeholder?.value}
           state={child.ensureArray()}
           schema={entrySchema}
+          readonly={readonly}
         />
       </div>
     )
@@ -169,6 +177,7 @@ function StoreRecordInputItem<T extends FieldValues>({
             placeholder={placeholder}
             state={child.ensureObject()}
             valueSchema={apSchema}
+            readonly={readonly}
           />
         </RecordComplexEntryFrame>
       )
@@ -184,6 +193,7 @@ function StoreRecordInputItem<T extends FieldValues>({
           placeholder={placeholder}
           state={child.ensureObject()}
           schema={entrySchema}
+          readonly={readonly}
         />
       </RecordComplexEntryFrame>
     )
@@ -195,8 +205,9 @@ function StoreRecordInputItem<T extends FieldValues>({
       fieldKey={fieldKey}
       schema={fieldSchema}
       placeholder={placeholder}
-      allowKeyChange
-      allowDelete
+      allowKeyChange={!readonly}
+      allowDelete={!readonly}
+      readonly={readonly}
     />
   )
 }
@@ -214,6 +225,7 @@ function StoreObjectInput<T extends FieldValues>({
   level = 0,
   footer,
   hideUnknown = false,
+  readonly = false,
 }: Readonly<StoreMapInputProps<T> & { schema: JSONSchema }>) {
   'use memo'
 
@@ -239,7 +251,8 @@ function StoreObjectInput<T extends FieldValues>({
       card={card}
       level={level}
       footer={footer}
-      canAdd={canAddKey(schema)}
+      canAdd={!readonly && canAddKey(schema)}
+      readonly={readonly}
       onAdd={() =>
         state['']?.set(
           getDefaultValue(getAdditionalPropertiesSchema(schema)) as T[string] | undefined
@@ -260,6 +273,7 @@ function StoreObjectInput<T extends FieldValues>({
           schema={schema}
           placeholder={placeholder}
           allowDelete={allowDelete}
+          readonly={readonly}
         />
       ))}
     </FormContainer>
@@ -273,11 +287,13 @@ function StoreMapInputItem<T extends FieldValues>({
   placeholder,
   allowDelete,
   level,
+  readonly = false,
 }: {
   k: FieldPath<T>
   schema: JSONSchema
   allowDelete: boolean
   level: number
+  readonly?: boolean
 } & Pick<StoreMapInputProps<T>, 'state' | 'placeholder'>) {
   'use memo'
   const canRenameKey = !schema.properties || !(fieldKey in (schema.properties ?? {}))
@@ -306,6 +322,7 @@ function StoreMapInputItem<T extends FieldValues>({
             }
             onKeyChange={newK => state.rename(fieldKey, newK)}
             onDelete={child.reset}
+            readonly={readonly}
           />
         </Activity>
         {children}
@@ -326,6 +343,7 @@ function StoreMapInputItem<T extends FieldValues>({
           state={child.ensureArray()}
           schema={effectiveSchema}
           description={nestedDescription}
+          readonly={readonly}
         />
       </ComplexEntryFrame>
     )
@@ -346,6 +364,7 @@ function StoreMapInputItem<T extends FieldValues>({
             description={nestedDescription}
             state={child.ensureObject()}
             valueSchema={apSchema}
+            readonly={readonly}
           />
         </ComplexEntryFrame>
       )
@@ -369,6 +388,7 @@ function StoreMapInputItem<T extends FieldValues>({
                 }
               : undefined
           }
+          readonly={readonly}
         />
       </ComplexEntryFrame>
     )
@@ -387,9 +407,10 @@ function StoreMapInputItem<T extends FieldValues>({
           : schema
       }
       placeholder={placeholder}
-      allowKeyChange={canRenameKey}
-      allowDelete={allowDelete}
+      allowKeyChange={!readonly && canRenameKey}
+      allowDelete={!readonly && allowDelete}
       deleteType="reset"
+      readonly={readonly}
     />
   )
 }

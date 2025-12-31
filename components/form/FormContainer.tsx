@@ -23,6 +23,7 @@ type FormContainerProps = {
   required?: boolean
   onAdd?: () => void
   canAdd?: boolean
+  readonly?: boolean
   children: ReactNode
 }
 
@@ -36,6 +37,7 @@ export function FormContainer({
   required,
   onAdd,
   canAdd,
+  readonly = false,
   children,
 }: FormContainerProps) {
   'use memo'
@@ -123,7 +125,7 @@ export function FormContainer({
     collapsible ? <CollapsibleContent>{children}</CollapsibleContent> : <>{children}</>
 
   const result = card ? (
-    <Card aria-required={required || undefined}>
+    <Card aria-required={required || undefined} className={cn(readonly && 'opacity-60 grayscale')}>
       <CardHeader>
         {header}
         {desc}
@@ -136,7 +138,7 @@ export function FormContainer({
       )}
     </Card>
   ) : (
-    <div aria-required={required || undefined}>
+    <div aria-required={required || undefined} className={cn(readonly && 'opacity-60 grayscale')}>
       {header}
       {maybeCollapsible(
         <>
