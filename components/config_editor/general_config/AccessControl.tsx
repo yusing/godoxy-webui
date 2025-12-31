@@ -1,4 +1,3 @@
-import { MapInput } from '@/components/form/MapInput'
 import { StoreListInput } from '@/components/form/StoreListInput'
 import { StoreMapInput } from '@/components/form/StoreMapInput'
 import { StoreCheckboxField } from '@/components/store/Checkbox'
@@ -9,6 +8,7 @@ import { useMemo } from 'react'
 import { configStore } from '../store'
 
 const acl = configStore.configObject.acl
+const aclNotify = configStore.state('configObject.acl.notify').ensureObject()
 
 export default function AccessControlConfigContent() {
   return (
@@ -38,7 +38,6 @@ export default function AccessControlConfigContent() {
 }
 
 function ACLNotifyConfig() {
-  const notify = configStore.use('configObject.acl.notify')
   const providerNames = configStore.configObject.providers.notification.useCompute(
     p => p?.map(p => p.name) ?? []
   )
@@ -54,16 +53,15 @@ function ACLNotifyConfig() {
   }, [providerNames])
 
   return (
-    <MapInput
+    <StoreMapInput
       label="Notify Config"
       schema={schema}
-      value={notify ?? {}}
+      state={aclNotify}
       readonly={providerNames.length == 0}
       placeholder={{
         key: 'to',
         value: providerNames.length == 0 ? 'No notification providers configured' : undefined,
       }}
-      onChange={value => configStore.set('configObject.acl.notify', value)}
     />
   )
 }
