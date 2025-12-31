@@ -77,12 +77,6 @@ function FieldInput<T>({
               placeholder={placeholder?.key ?? 'Key'}
               onChange={({ target: { value } }) => onKeyChange(value, fieldValue)}
               className="text-xs"
-              style={
-                {
-                  '--len': fieldKey.length || (placeholder?.key ?? 'Key').length,
-                  fontSize: 'min(0.75rem, calc((100cqw - 24px) / (var(--len) * 0.5)))',
-                } as React.CSSProperties
-              }
             />
           </div>
         ) : title ? (
