@@ -1,4 +1,5 @@
 'use client'
+'use memo'
 
 import { IconRefresh, IconTrash } from '@tabler/icons-react'
 import { useMemo } from 'react'
@@ -23,32 +24,34 @@ import {
   isToggleType,
   type JSONSchema,
 } from '@/types/schema'
-import type { ValueState } from 'juststore'
+import type { FieldPath, FieldValues, ObjectState } from 'juststore'
 import { Label } from '../ui/label'
 import { stringify } from './utils'
 
-type StoreFieldInputProps<T extends string | number | boolean | undefined> = {
-  state: ValueState<T>
+type StoreFieldInputProps<T extends FieldValues> = {
+  state: ObjectState<T>
+  fieldKey: FieldPath<T>
   schema: JSONSchema | undefined
   placeholder: { key?: string; value?: string } | undefined
-  onKeyChange?: (newKey: string) => void
+  allowKeyChange: boolean
   allowDelete: boolean
   deleteType?: 'delete' | 'reset'
   readonly?: boolean
+  onKeyChange?: (newKey: string) => void
 }
 
-export function StoreFieldInput<T extends string | number | boolean | undefined>({
+export function StoreFieldInput<T extends FieldValues>({
   state,
+  fieldKey,
   schema,
   placeholder,
-  onKeyChange,
+  allowKeyChange = true,
   allowDelete = true,
   deleteType = 'delete',
   readonly = false,
+  onKeyChange,
 }: Readonly<StoreFieldInputProps<T>>) {
-  'use memo'
-
-  const fieldKey = state.field
+  const child = state[fieldKey]
 
   const allowedValues = useMemo(
     () => getAllowedValues(schema, fieldKey)?.filter(e => e !== ''),
@@ -61,18 +64,19 @@ export function StoreFieldInput<T extends string | number | boolean | undefined>
 
   return (
     <div
-      className={cn(
-        schema?.properties && !(fieldKey in (schema.properties ?? {})) && 'text-destructive'
-      )}
+      className={cn(schema?.properties && !(fieldKey in schema.properties) && 'text-destructive')}
     >
       <div className="flex w-full items-center gap-2">
-        {onKeyChange ? (
+        {allowKeyChange ? (
           <div className="max-w-[220px] w-full @container">
             <Input
               readOnly={readonly}
               value={fieldKey}
               placeholder={placeholder?.key ?? 'Key'}
-              onChange={onKeyChange ? ({ target: { value } }) => onKeyChange(value) : undefined}
+              onChange={({ target: { value } }) => {
+                state.rename(fieldKey, value)
+                onKeyChange?.(value)
+              }}
               className="text-xs"
               style={
                 {
@@ -102,12 +106,12 @@ export function StoreFieldInput<T extends string | number | boolean | undefined>
         )}
 
         {allowedValues && allowedValues.length > 1 ? (
-          <state.Render>
+          <child.Render>
             {(value, update) => (
               <Select
                 readOnly={readonly}
-                value={stringify(value)}
-                onValueChange={v => update(v as T)}
+                value={stringify(value) ?? ''}
+                onValueChange={v => update(v as T[typeof fieldKey])}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder={placeholder?.value ?? 'Value'} />
@@ -121,30 +125,31 @@ export function StoreFieldInput<T extends string | number | boolean | undefined>
                 </SelectContent>
               </Select>
             )}
-          </state.Render>
+          </child.Render>
         ) : isInputType(vSchema) ? (
-          <state.Render>
+          <child.Render>
             {(value, update) => (
               <Input
                 readOnly={readonly}
-                value={stringify(value)}
+                value={stringify(value) ?? ''}
                 type={getInputType(vSchema?.type)}
                 placeholder={placeholder?.value ?? 'Value'}
-                onChange={({ target: { value } }) => update(value as T)}
+                onChange={({ target: { value } }) => update(value as T[typeof fieldKey])}
               />
             )}
-          </state.Render>
+          </child.Render>
         ) : isToggleType(vSchema) ? (
           <div className="w-full flex items-center">
-            <state.Render>
+            <child.Render>
               {(value, update) => (
                 <Checkbox
+                  readOnly={readonly}
                   disabled={readonly}
                   checked={Boolean(value)}
-                  onCheckedChange={checked => update(Boolean(checked) as T)}
+                  onCheckedChange={checked => update(Boolean(checked) as T[typeof fieldKey])}
                 />
               )}
-            </state.Render>
+            </child.Render>
           </div>
         ) : null}
 
@@ -152,7 +157,7 @@ export function StoreFieldInput<T extends string | number | boolean | undefined>
           <Button
             type={deleteType === 'delete' ? 'button' : 'reset'}
             variant="destructive"
-            onClick={state.reset}
+            onClick={child.reset}
           >
             {deleteType === 'delete' ? <IconTrash /> : <IconRefresh />}
             <span className="sr-only shrink-0 min-w-0">

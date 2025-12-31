@@ -1,4 +1,5 @@
 'use client'
+'use memo'
 
 import { IconCheck, IconEdit, IconTrash } from '@tabler/icons-react'
 import { useMemo, useRef, useState, type ReactNode } from 'react'
@@ -63,8 +64,6 @@ function RecordInput<T extends Record<string, unknown>>({
   onChange,
   card = false,
 }: Readonly<RecordInputProps<T>>) {
-  'use memo'
-
   // Maintain stable order: keep existing order, append newly added keys at the end
   const pureKeysRef = useRef<string[]>([])
   const keys = useMemo(() => {
@@ -74,10 +73,19 @@ function RecordInput<T extends Record<string, unknown>>({
     const ordered: string[] = pureKeysRef.current.filter(k => currentSet.has(k))
     for (const k of ordered) currentSet.delete(k)
     for (const k of currentSet) ordered.push(k)
+    const scalar: string[] = []
+    const complex: string[] = []
+    for (const k of ordered) {
+      const v = value?.[k]
+      const { kind } = getKindAndEffectiveSchema(valueSchema, v)
+      if (kind === 'scalar') scalar.push(k)
+      else complex.push(k)
+    }
+    const ranked = [...scalar, ...complex]
     // eslint-disable-next-line react-hooks/refs
-    pureKeysRef.current = ordered
-    return ordered
-  }, [value])
+    pureKeysRef.current = ranked
+    return ranked
+  }, [value, valueSchema])
 
   function deleteKey(actualKey: string) {
     const newValue = { ...(value ?? {}) } as Record<string, unknown>
@@ -98,16 +106,6 @@ function RecordInput<T extends Record<string, unknown>>({
     onChange(newValue as T)
   }
 
-  const firstComplexIndex = useMemo(() => {
-    for (let i = 0; i < keys.length; i++) {
-      const k = keys[i]!
-      const v = value?.[k]
-      const { kind } = getKindAndEffectiveSchema(valueSchema, v)
-      if (kind !== 'scalar') return i
-    }
-    return -1
-  }, [keys, value, valueSchema])
-
   return (
     <FormContainer
       label={label}
@@ -124,16 +122,14 @@ function RecordInput<T extends Record<string, unknown>>({
 
         const { leafSchema, kind } = getKindAndEffectiveSchema(valueSchema, v)
         const effSchema = leafSchema
-
-        const separator =
-          index === firstComplexIndex && firstComplexIndex > 0 ? (
-            <Separator key="__separator__" className="my-3" />
-          ) : null
+        const complexSeparator = (
+          <Separator className="my-3 [.record-entry--complex:first-child_&]:hidden [.record-entry--complex~.record-entry--complex_&]:hidden" />
+        )
 
         if (kind === 'array') {
           return (
-            <div key={`${index}_list_wrap`} className="flex flex-col gap-2">
-              {separator}
+            <div key={`${index}_list_wrap`} className="record-entry--complex flex flex-col gap-2">
+              {complexSeparator}
               <ComplexEntryHeader
                 displayKey={displayKey}
                 placeholderKey={placeholder?.key}
@@ -162,11 +158,9 @@ function RecordInput<T extends Record<string, unknown>>({
             return (
               <div
                 key={`${index}_record_wrap`}
-                className={
-                  displayKey === '' ? 'mt-2 rounded-md border border-dashed border-border p-2' : ''
-                }
+                className={`record-entry--complex ${displayKey === '' ? 'mt-2 rounded-md border border-dashed border-border p-2' : ''}`}
               >
-                {separator}
+                {complexSeparator}
                 {displayKey === '' && (
                   <div className="mb-2 text-xs text-muted-foreground">New item</div>
                 )}
@@ -191,11 +185,9 @@ function RecordInput<T extends Record<string, unknown>>({
           return (
             <div
               key={`${index}_map_wrap`}
-              className={
-                displayKey === '' ? 'mt-2 rounded-md border border-dashed border-border p-2' : ''
-              }
+              className={`record-entry--complex ${displayKey === '' ? 'mt-2 rounded-md border border-dashed border-border p-2' : ''}`}
             >
-              {separator}
+              {complexSeparator}
               {displayKey === '' && (
                 <div className="mb-2 text-xs text-muted-foreground">New item</div>
               )}
@@ -221,7 +213,6 @@ function RecordInput<T extends Record<string, unknown>>({
 
         return (
           <div key={`${index}_field_wrap`} className="flex flex-col gap-2">
-            {separator}
             <FieldInput
               fieldKey={displayKey}
               fieldValue={v}
@@ -262,8 +253,6 @@ function ComplexEntryHeader({
   onKeyChange: (key: string) => void
   onDelete: () => void
 }) {
-  'use memo'
-
   const isEmpty = displayKey === ''
   const [editing, setEditing] = useState(isEmpty)
   const [draft, setDraft] = useState(displayKey)
@@ -347,8 +336,6 @@ function ObjectInput<T extends Record<string, unknown>>({
   onChange,
   level = 0,
 }: Readonly<MapInputProps<T> & { schema: JSONSchema }>) {
-  'use memo'
-
   const workingValue: Record<string, unknown> = useMemo(() => {
     const result: Record<string, unknown> = value ? { ...value } : {}
 
@@ -436,8 +423,6 @@ function MapInputItem<T extends Record<string, unknown>>({
   allowDelete,
   onChange,
 }: MapInputItemProps<T>) {
-  'use memo'
-
   const canRenameKey = !(schema.properties && k in (schema.properties ?? {}))
 
   const vSchema = getEntryValueSchema(schema, k)
