@@ -17,5 +17,7 @@ export default defineConfig([
     'postcss.config.mjs',
     'eslint.config.mjs',
     'next-env.d.ts',
+    '.trunk/**',
+    'juststore/dist/**',
   ]),
 ])
