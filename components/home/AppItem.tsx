@@ -7,7 +7,6 @@ import Link from 'next/link'
 import { forwardRef, useMemo } from 'react'
 import { AppIcon } from '../AppIcon'
 import { ContextMenu, ContextMenuTrigger } from '../ui/context-menu'
-import { Dialog } from '../ui/dialog'
 import AppItemContextMenuContent from './AppitemContextMenuContent'
 import HealthBubble from './HealthBubble'
 import { store } from './store'
@@ -36,7 +35,7 @@ export default function AppItem({ categoryIndex, appIndex, visibleIndex }: AppIt
   }
 
   return (
-    <Dialog onOpenChange={open => !open && store.openedDialog.set(null)}>
+    <>
       <ContextMenu>
         <ContextMenuTrigger>
           <state.url.Render>
@@ -47,9 +46,13 @@ export default function AppItem({ categoryIndex, appIndex, visibleIndex }: AppIt
             )}
           </state.url.Render>
         </ContextMenuTrigger>
-        <AppItemContextMenuContent state={state} />
+        <AppItemContextMenuContent
+          state={state}
+          categoryIndex={categoryIndex}
+          itemIndex={appIndex}
+        />
       </ContextMenu>
-    </Dialog>
+    </>
   )
 }
 

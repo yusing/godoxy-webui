@@ -12,8 +12,6 @@ import {
   IconSquare,
 } from '@tabler/icons-react'
 import { ContextMenuContent, ContextMenuItem } from '../ui/context-menu'
-import { DialogContent, DialogOverlay, DialogTrigger } from '../ui/dialog'
-import AppEditDialogContent from './AppEditDialogContent'
 import { store } from './store'
 
 import type { HealthInfo, HomepageItem } from '@/lib/api'
@@ -25,7 +23,15 @@ import { setSelectedRoute } from '../routes/store'
 import { encodeRouteKey } from '../routes/utils'
 import { Separator } from '../ui/separator'
 
-export default function AppItemContextMenuContent({ state }: { state: ObjectState<HomepageItem> }) {
+export default function AppItemContextMenuContent({
+  state,
+  categoryIndex,
+  itemIndex,
+}: {
+  state: ObjectState<HomepageItem>
+  categoryIndex: number
+  itemIndex: number
+}) {
   const alias = state.alias.use()
   const routeKey = encodeRouteKey(alias)
 
@@ -59,15 +65,14 @@ export default function AppItemContextMenuContent({ state }: { state: ObjectStat
   return (
     <>
       <ContextMenuContent>
-        <DialogTrigger
-          onClick={() => store.openedDialog.set('edit')}
-          render={
-            <ContextMenuItem>
-              <IconEdit className="size-4" />
-              Edit
-            </ContextMenuItem>
+        <ContextMenuItem
+          onClick={() =>
+            store.editingApp.set({ categoryIndex: categoryIndex, itemIndex: itemIndex })
           }
-        />
+        >
+          <IconEdit className="size-4" />
+          Edit
+        </ContextMenuItem>
         <state.show.Render>
           {visible => (
             <>
@@ -107,10 +112,6 @@ export default function AppItemContextMenuContent({ state }: { state: ObjectStat
         </Link>
         <DockerOnlyMenuItems state={state} />
       </ContextMenuContent>
-      <DialogOverlay className="backdrop-blur-xs" />
-      <DialogContent className="min-w-[40vw] overflow-x-hidden">
-        <AppItemDialogContent state={state} />
-      </DialogContent>
     </>
   )
 }
@@ -172,16 +173,4 @@ function DockerOnlyMenuItems({ state }: { state: ObjectState<HomepageItem> }) {
       ))}
     </>
   )
-}
-
-function AppItemDialogContent({ state }: { state: ObjectState<HomepageItem> }) {
-  const openedDialog = store.use('openedDialog')
-
-  if (openedDialog === 'edit') {
-    return <AppEditDialogContent state={state} />
-  }
-  // if (openedDialog === 'details') {
-  //   return <AppDetailsDialogContent alias={alias} />
-  // }
-  return null
 }
