@@ -118,7 +118,7 @@ function StoreRecordInputItem<T extends FieldValues>({
     const isNew = fieldKey === ''
     return (
       <div
-        className={`record-entry--complex ${isNew ? 'mt-2 rounded-md border border-dashed border-border p-2' : ''}`}
+        className={`record-entry--complex col-span-full ${isNew ? 'mt-2 rounded-md border border-dashed border-border p-2' : ''}`}
       >
         <ComplexSeparator />
         {isNew && <div className="mb-2 text-xs text-muted-foreground">New item</div>}

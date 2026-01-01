@@ -1,6 +1,6 @@
 'use client'
 
-import { IconCheck, IconEdit, IconTrash } from '@tabler/icons-react'
+import { IconCheck, IconPencil, IconTrash } from '@tabler/icons-react'
 import { useMemo, useRef, useState, type ReactNode } from 'react'
 
 import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
@@ -326,7 +326,7 @@ function ComplexEntryHeader({
                   setEditing(true)
                 }}
               >
-                <IconEdit className="size-4" />
+                <IconPencil className="size-4" />
               </Button>
             )}
           </div>
@@ -358,7 +358,7 @@ function ObjectInput<T extends Record<string, unknown>>({
   level = 0,
 }: Readonly<MapInputProps<T> & { schema: JSONSchema }>) {
   'use memo'
-  const workingValue: Record<string, unknown> = useMemo(() => {
+  const workingValue = useMemo(() => {
     const result: Record<string, unknown> = value ? { ...value } : {}
 
     if (keyField && Object.keys(result).length === 0) {
