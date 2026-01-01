@@ -34,6 +34,7 @@
     "motion": "^12.23.26",
     "next": "^16.1.1",
     "next-themes": "^0.4.6",
+    "juststore": "./juststore",
     "postcss": "^8.5.6",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
@@ -87,6 +88,7 @@
     "@shikijs/rehype": "^3",
     "js-yaml": "^4.1.1",
     "next": ">=16.0.10",
-    "mdast-util-to-hast": ">=13.2.1"
+    "mdast-util-to-hast": ">=13.2.1",
+    "change-case": "^5.4.4"
   }
 }
