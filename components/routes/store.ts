@@ -7,6 +7,7 @@ import { createStore } from 'juststore'
 export type RouteDisplaySettings = {
   dockerOnly: boolean
   hideUnknown: boolean
+  hideExcluded: boolean
   hideUptimebar: boolean
 }
 
@@ -26,6 +27,7 @@ export const store = createStore<RouteState>('routes', {
   displaySettings: {
     dockerOnly: false,
     hideUnknown: false,
+    hideExcluded: false,
     hideUptimebar: false,
   },
   logsAutoScroll: true,

@@ -39,7 +39,8 @@ export default function RoutesSidebar({ className }: { className?: string }) {
           <PopoverContent className="flex flex-col gap-2">
             <Setting field="dockerOnly" label="Docker only" />
             <Setting field="hideUnknown" label="Hide unknown" />
-            <Setting field="hideUptimebar" label="Hide uptime" />
+            <Setting field="hideExcluded" label="Hide excluded (non-proxied)" />
+            <Setting field="hideUptimebar" label="Hide uptime bar" />
           </PopoverContent>
         </Popover>
       </div>
@@ -81,18 +82,15 @@ function RoutesSidebarItemList() {
 }
 
 function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: RouteKey }) {
-  const { hideUnknown, dockerOnly } = store.displaySettings.use() ?? {}
+  const { hideUnknown, hideExcluded, dockerOnly } = store.displaySettings.use() ?? {}
   const currentStatus = store.uptime[routeKey]?.current_status.use()
   const isDocker = store.uptime[routeKey]?.is_docker.use()
   const displayName = store.uptime[routeKey]?.display_name.use()
+  const excluded = store.uptime[routeKey]?.is_excluded.use()
 
-  if (hideUnknown && currentStatus === 'unknown') {
-    return null
-  }
-
-  if (dockerOnly && !isDocker) {
-    return null
-  }
+  if (hideUnknown && currentStatus === 'unknown') return null
+  if (hideExcluded && excluded) return null
+  if (dockerOnly && !isDocker) return null
 
   return (
     <div className="flex flex-col">
