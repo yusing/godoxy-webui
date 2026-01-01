@@ -35,7 +35,7 @@ export default function Searchbox() {
   // focus search input on Alt+S
   useEffect(() => {
     const onAltS = (e: KeyboardEvent) => {
-      if (store.openedDialog.value) return
+      if (store.editingApp.value) return
       if (isAlphabetKey(e.key) && !searchInputRef.current?.contains(document.activeElement)) {
         searchInputRef.current?.focus()
       }
