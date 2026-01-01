@@ -8,7 +8,7 @@ import {
   type RouteKey,
 } from '@/components/routes/store'
 import { useWebSocketApi } from '@/hooks/websocket'
-import type { RouteUptimeAggregate, UptimeAggregate } from '@/lib/api'
+import type { RouteStatusesByAlias, RouteUptimeAggregate, UptimeAggregate } from '@/lib/api'
 import { toastError } from '@/lib/toast'
 import { cn } from '@/lib/utils'
 import { Suspense, useEffect, useRef } from 'react'
@@ -133,27 +133,34 @@ function RoutesUptimeProvider({
 }: {
   sidebarRef: React.RefObject<HTMLDivElement | null>
 }) {
+  useWebSocketApi<RouteStatusesByAlias>({
+    endpoint: '/metrics/uptime',
+    onMessage: uptime => {
+      const keys = Object.keys(uptime.statuses ?? {}).map(k => encodeRouteKey(k))
+      store.set('routeKeys', keys.toSorted())
+
+      const maxLength = Math.max(...keys.map(k => k.length))
+      if (sidebarRef.current) sidebarRef.current.style.width = `${maxLength + 8}ch`
+    },
+    onError: toastError,
+  })
+
   useWebSocketApi<UptimeAggregate>({
     endpoint: '/metrics/uptime',
     query: {
-      period: '1d',
+      period: '1h',
     },
     onMessage: uptime => {
-      const keys = uptime.data.map(route => encodeRouteKey(route.alias))
-      store.set('routeKeys', keys.toSorted())
       store.set(
         'uptime',
-        keys.reduce(
-          (acc, key, index) => {
-            acc[key] = uptime.data[index]!
+        uptime.data.reduce(
+          (acc, route) => {
+            acc[route.alias] = route
             return acc
           },
           {} as Record<string, RouteUptimeAggregate>
         )
       )
-
-      const maxLength = Math.max(...uptime.data.map(route => route.alias.length))
-      if (sidebarRef.current) sidebarRef.current.style.width = `${maxLength + 8}ch`
     },
     onError: toastError,
   })
