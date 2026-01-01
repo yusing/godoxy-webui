@@ -112,14 +112,20 @@ export type LogField = {
   /** Default mode */
   default?: LogFieldMode
   /** Field configuration */
-  config: Record<string, LogFieldMode>
+  config?: Record<string, LogFieldMode>
 }
 
 export type RequestLogFields = {
-  /** Headers */
+  /** Headers
+   * @default {"default": "drop", "config": {}}
+   */
   headers?: LogField
-  /** Query */
+  /** Query
+   * @default {"default": "keep", "config": {}}
+   */
   query?: LogField
-  /** Cookies */
+  /** Cookies
+   * @default {"default": "drop", "config": {}}
+   */
   cookies?: LogField
 }

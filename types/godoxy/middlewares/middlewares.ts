@@ -117,12 +117,12 @@ export type MiddlewareComposeItem = (
 }
 
 export type CustomErrorPage = {
-  /** error_page */
+  /** Middleware */
   use: LooseUse<'error_page' | 'custom_error_page'>
 }
 
 export type RedirectHTTP = {
-  /** redirect_http */
+  /** Middleware */
   use: LooseUse<'redirect_http'>
   /** Bypass redirect */
   // bypass?: {
@@ -132,17 +132,17 @@ export type RedirectHTTP = {
 }
 
 export type SetXForwarded = {
-  /** set_x_forwarded */
+  /** Middleware */
   use: LooseUse<'set_x_forwarded'>
 }
 
 export type HideXForwarded = {
-  /** hide_x_forwarded */
+  /** Middleware */
   use: LooseUse<'hide_x_forwarded'>
 }
 
 export type CIDRWhitelist = {
-  /** cidr_whitelist */
+  /** Middleware */
   use: LooseUse<'cidr_whitelist'>
   /* Allowed CIDRs/IPs */
   allow: CIDR[]
@@ -164,12 +164,12 @@ export type CIDRWhitelist = {
 }
 
 export type CloudflareRealIP = {
-  /** cloudflare_real_ip */
+  /** Middleware */
   use: LooseUse<'cloudflare_real_ip'>
 }
 
 export type ModifyRequest = {
-  /** modify_request */
+  /** Middleware */
   use: LooseUse<'modify_request' | 'request'>
   /** Set HTTP headers */
   set_headers?: Record<HTTPHeader, Stringable>
@@ -182,7 +182,7 @@ export type ModifyRequest = {
 }
 
 export type ModifyResponse = {
-  /** modify_response */
+  /** Middleware */
   use: LooseUse<'modify_response' | 'response'>
   /** Set HTTP headers */
   set_headers?: Record<HTTPHeader, Stringable>
@@ -193,7 +193,7 @@ export type ModifyResponse = {
 }
 
 export type OIDC = {
-  /** oidc */
+  /** Middleware */
   use: LooseUse<'oidc'>
   /** Allowed users
    *
@@ -208,7 +208,7 @@ export type OIDC = {
 }
 
 export type ForwardAuth = {
-  /** forward_auth */
+  /** Middleware */
   use: LooseUse<'forward_auth'>
   /** Auth route name
    *
@@ -228,7 +228,7 @@ export type ForwardAuth = {
 }
 
 export type hCaptcha = {
-  /** h_captcha */
+  /** Middleware */
   use: LooseUse<'h_captcha'>
   /**
    * Site key
@@ -246,7 +246,7 @@ export type hCaptcha = {
 }
 
 export type RateLimit = {
-  /** rate_limit */
+  /** Middleware */
   use: LooseUse<'rate_limit'>
   /** Average number of requests allowed in a period
    *
@@ -266,7 +266,7 @@ export type RateLimit = {
 }
 
 export type RealIP = {
-  /** real_ip */
+  /** Middleware */
   use: LooseUse<'real_ip'>
   /** Header to get the client IP from
    *
@@ -282,7 +282,7 @@ export type RealIP = {
 }
 
 export type ModifyHTML = {
-  /** modify_html */
+  /** Middleware */
   use: LooseUse<'modify_html'>
   /** CSS Selector */
   target: string
@@ -296,7 +296,7 @@ export type ModifyHTML = {
 }
 
 export type Themed = {
-  /** themed */
+  /** Middleware */
   use: LooseUse<'themed'>
   /** Predefined themes */
   theme?: 'dark' | 'dark-grey' | 'solarized-dark'

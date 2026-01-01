@@ -44,8 +44,9 @@ export type RuleOn =
   | RuleOnCookie
   | RuleOnForm
   | RuleOnPostForm
-  | RuleOnHost
+  | RuleOnProto
   | RuleOnMethod
+  | RuleOnHost
   | RuleOnPath
   | RuleOnRemote
   | RuleOnRoute
@@ -102,6 +103,14 @@ type RuleOnForm = OptionalPattern<`form ${string}`>
  * @examples ["post_form key value"]
  */
 type RuleOnPostForm = OptionalPattern<`post_form ${string}`>
+/**
+ * proto {http|https|h3}
+ *
+ * Match the request protocol with the given protocol.
+ *
+ * @examples ["proto http", "proto https", "proto h3"]
+ */
+type RuleOnProto = `proto ${'http' | 'https' | 'h3'}`
 /**
  * method {http_method}
  *
@@ -177,24 +186,29 @@ type RuleOnResponseHeader = OptionalPattern<`resp_header ${HTTPHeader}`>
  * Rule do
  *
  * @examples [
+ *   "require_auth",
  *   "rewrite / /index.html",
  *   "serve /static",
  *   "proxy http://localhost:8080",
  *   "redirect https://example.com",
  *   "redirect /index.html",
+ *   "route route1",
  *   "error 404 \"Not Found\"",
  *   "require_basic_auth \"Restricted Area\"",
  *   "set headers Content-Type application/json",
  *   "add headers Content-Type application/json",
  *   "remove headers Content-Type",
- *   "pass"
+ *   "pass",
+ *   "bypass"
  * ]
  */
 export type RuleDo =
+  | RuleDoRequireAuth
   | RuleDoRewrite
   | RuleDoServe
   | RuleDoProxy
   | RuleDoRedirect
+  | RuleDoRoute
   | RuleDoError
   | RuleDoRequireBasicAuth
   | RuleDoSet
@@ -203,7 +217,16 @@ export type RuleDo =
   | RuleDoLog
   | RuleDoNotify
   | RuleDoPass
+  | RuleDoBypass
 
+/**
+ * require_auth
+ *
+ * Require HTTP authentication for incoming requests.
+ *
+ * @examples ["require_auth"]
+ */
+type RuleDoRequireAuth = `require_auth`
 /**
  * rewrite {path_from} {path_to}
  *
@@ -236,6 +259,14 @@ type RuleDoProxy = `proxy ${URL | URI}`
  * @examples ["redirect https://example.com", "redirect /index.html"]
  */
 type RuleDoRedirect = `redirect ${URL | URI}`
+/**
+ * route {route_name}
+ *
+ * Route the request to another route.
+ *
+ * @examples ["route route1"]
+ */
+type RuleDoRoute = `route ${string}`
 /**
  * error {status_code} {message}
  *
@@ -286,13 +317,14 @@ type RuleDoRemove = `remove ${RuleModifyTarget}`
  */
 type RuleDoLog = `log ${LogLevel} ${string} ${Template}`
 /**
- * notify {level} {service_name} {template}
+ * notify {level} {provider} {title} {body}
  *
- * Notify the given level, service name and template. Service must be in `providers.notification`
+ * Notify the given level, provider, title and body. Provider must be in `providers.notification`.
+ * The title and body support template variables.
  *
  * @examples ["notify info ntfy \"Received request to {{ .Request.URL }}\" \"{{ .Request.Method }} {{ .Response.StatusCode }}\""]
  */
-type RuleDoNotify = `notify ${LogLevel} ${string} ${Template}`
+type RuleDoNotify = `notify ${LogLevel} ${string} ${Template} ${Template}`
 /**
  * pass
  *
@@ -300,6 +332,13 @@ type RuleDoNotify = `notify ${LogLevel} ${string} ${Template}`
  *
  */
 type RuleDoPass = `pass`
+/**
+ * bypass
+ *
+ * Alias for pass. Skip and continue to the next handler (e.g. upstream server)
+ *
+ */
+type RuleDoBypass = `bypass`
 
 /**
  * Field
