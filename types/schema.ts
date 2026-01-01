@@ -244,16 +244,16 @@ function getUnionSchemas(schema: JSONSchema): JSONSchema[] {
 
 function getInputType(type?: PropertyType | PropertyType[]): 'string' | 'number' | undefined {
   if (!type) return 'string'
-  if (Array.isArray(type)) {
-    if (type.includes('number')) return 'number'
-    return 'string'
-  }
-  switch (type) {
-    case 'number':
-      return 'number'
-    default:
-      return 'string'
-  }
+
+  const types = Array.isArray(type) ? type : [type]
+
+  // Prefer string if allowed; a number input cannot display non-numeric strings.
+  if (types.includes('string')) return 'string'
+
+  // Treat integer as number-like for input purposes.
+  if (types.includes('number') || types.includes('integer')) return 'number'
+
+  return 'string'
 }
 
 function getDefaultValues(schema: JSONSchema) {
