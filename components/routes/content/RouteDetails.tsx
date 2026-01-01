@@ -20,7 +20,6 @@ import ContainerLogsHeader from './ContainerLogsHeader'
 
 export default function RouteDetails() {
   const activeRoute = useSelectedRoute()
-
   const { value: routeDetails, error } = useAsync(
     async () =>
       activeRoute
@@ -28,6 +27,9 @@ export default function RouteDetails() {
         : Promise.resolve(null),
     [activeRoute]
   )
+
+  const isStream = routeDetails?.scheme === 'tcp' || routeDetails?.scheme === 'udp'
+  const isExcluded = routeDetails?.excluded
 
   if (!activeRoute) {
     return <div className="p-4 text-muted-foreground">Select a route to view details.</div>
@@ -199,34 +201,36 @@ export default function RouteDetails() {
         </CardContent>
       </Card>
       {/* Homepage Configuration */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Homepage Configuration</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex gap-4">
-            <Item
-              title="Favorite"
-              value={routeDetails.homepage.favorite ? 'Yes' : 'No'}
-              kind="badge"
-              variant={routeDetails.homepage.favorite ? 'secondary' : 'outline'}
-            />
-            <Item
-              title="Show"
-              value={routeDetails.homepage.show ? 'Yes' : 'No'}
-              kind="badge"
-              variant={routeDetails.homepage.show ? 'secondary' : 'outline'}
-            />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Item title="Name" value={routeDetails.homepage.name} />
-            <Item title="Category" value={routeDetails.homepage.category} />
-            <Item title="Description" value={routeDetails.homepage.description} />
-            <Item title="Icon" value={routeDetails.homepage.icon} className="font-mono" />
-            <Item title="URL" value={routeDetails.homepage.url} className="font-mono break-all" />
-          </div>
-        </CardContent>
-      </Card>
+      {!isStream && !isExcluded && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Homepage Configuration</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex gap-4">
+              <Item
+                title="Favorite"
+                value={routeDetails.homepage.favorite ? 'Yes' : 'No'}
+                kind="badge"
+                variant={routeDetails.homepage.favorite ? 'secondary' : 'outline'}
+              />
+              <Item
+                title="Show"
+                value={routeDetails.homepage.show ? 'Yes' : 'No'}
+                kind="badge"
+                variant={routeDetails.homepage.show ? 'secondary' : 'outline'}
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Item title="Name" value={routeDetails.homepage.name} />
+              <Item title="Category" value={routeDetails.homepage.category} />
+              <Item title="Description" value={routeDetails.homepage.description} />
+              <Item title="Icon" value={routeDetails.homepage.icon} className="font-mono" />
+              <Item title="URL" value={routeDetails.homepage.url} className="font-mono break-all" />
+            </div>
+          </CardContent>
+        </Card>
+      )}
       {/* Rules */}
       {routeDetails.rules && routeDetails.rules.length > 0 && (
         <Card>
