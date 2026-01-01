@@ -19,7 +19,7 @@ import type { EntrypointMiddlewares } from '@/types/godoxy/middlewares/middlewar
 import type { MiddlewaresMap } from '@/types/godoxy/middlewares/middlewares'
 import { LOAD_BALANCE_MODES, type LoadBalanceMode } from '@/types/godoxy/providers/loadbalance'
 import type { StreamPort } from '@/types/godoxy/types'
-import { IconChevronDown, IconDeviceFloppy, IconX } from '@tabler/icons-react'
+import { IconCheck, IconChevronDown, IconX } from '@tabler/icons-react'
 import type { VariantProps } from 'class-variance-authority'
 import { useForm, type FormState, type FormStore } from 'juststore'
 import { useCallback, useEffect, useMemo } from 'react'
@@ -63,7 +63,7 @@ export default function RouteEditForm({
   onUpdate,
   onSave,
   headerText = 'Edit Route',
-  saveButtonIcon = IconDeviceFloppy,
+  saveButtonIcon = IconCheck,
   saveButtonText = 'Done',
   cancelButtonIcon = IconX,
   cancelButtonText = 'Cancel',
