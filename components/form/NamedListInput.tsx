@@ -48,7 +48,7 @@ function NamedListInputItem<IndexType extends string, T extends Record<IndexType
   'use memo'
   const name = item[nameField] as string
   return (
-    <div className="flex w-full flex-col gap-3">
+    <div className="flex w-full flex-col gap-3 col-span-full">
       <MapInput<T>
         label={name}
         readonly={readonly}
