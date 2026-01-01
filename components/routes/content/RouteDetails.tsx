@@ -19,12 +19,10 @@ import ContainerLogs from './ContainerLogs'
 import ContainerLogsHeader from './ContainerLogsHeader'
 
 export default function RouteDetails() {
-  const activeRoute = useSelectedRoute()
+  const activeRoute = decodeRouteKey(useSelectedRoute())
   const { value: routeDetails, error } = useAsync(
     async () =>
-      activeRoute
-        ? api.route.route(decodeRouteKey(activeRoute)).then(res => res.data)
-        : Promise.resolve(null),
+      activeRoute ? api.route.route(activeRoute).then(res => res.data) : Promise.resolve(null),
     [activeRoute]
   )
 
