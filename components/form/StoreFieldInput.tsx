@@ -16,6 +16,7 @@ import {
 import { cn } from '@/lib/utils'
 import {
   getAllowedValues,
+  getDefaultValue,
   getInputType,
   getRequired,
   getTitle,
@@ -23,7 +24,7 @@ import {
   isToggleType,
   type JSONSchema,
 } from '@/types/schema'
-import type { FieldPath, FieldValues, ObjectState } from 'juststore'
+import type { FieldPath, FieldValues, ObjectState, State } from 'juststore'
 import { Label } from '../ui/label'
 import { stringify } from './utils'
 
@@ -39,6 +40,12 @@ type StoreFieldInputProps<T extends FieldValues> = {
   onKeyChange?: (newKey: string) => void
 }
 
+function childWithDefault<T>(child: State<T>, vSchema: JSONSchema | undefined) {
+  const defaultValue = getDefaultValue(vSchema)
+  if (defaultValue === undefined) return child
+  return child.withDefault(defaultValue as NonNullable<T>)
+}
+
 export function StoreFieldInput<T extends FieldValues>({
   state,
   fieldKey,
@@ -51,7 +58,8 @@ export function StoreFieldInput<T extends FieldValues>({
   onKeyChange,
 }: Readonly<StoreFieldInputProps<T>>) {
   'use memo'
-  const child = state[fieldKey]
+  const vSchema = schema?.properties?.[fieldKey]
+  const child = childWithDefault(state[fieldKey], vSchema)
 
   const allowedValues = useMemo(
     () => getAllowedValues(schema, fieldKey)?.filter(e => e !== ''),
@@ -59,7 +67,6 @@ export function StoreFieldInput<T extends FieldValues>({
   )
   const required = useMemo(() => getRequired(schema).includes(fieldKey), [schema, fieldKey])
 
-  const vSchema = schema?.properties?.[fieldKey]
   const title = useMemo(() => getTitle(schema, fieldKey), [schema, fieldKey])
 
   useEffect(() => {
