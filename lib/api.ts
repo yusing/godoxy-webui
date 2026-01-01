@@ -679,7 +679,7 @@ export interface Route {
   root: string
   rule_file?: string | null
   rules: RulesRule[]
-  scheme: 'http' | 'https' | 'tcp' | 'udp' | 'fileserver'
+  scheme: 'http' | 'https' | 'h2c' | 'tcp' | 'udp' | 'fileserver'
   /** Single-page app mode: serves index for non-existent paths */
   spa: boolean
   /** Path to client certificate */
@@ -739,7 +739,7 @@ export interface RouteRoute {
   root: string
   rule_file?: string | null
   rules: RulesRule[]
-  scheme: 'http' | 'https' | 'tcp' | 'udp' | 'fileserver'
+  scheme: 'http' | 'https' | 'h2c' | 'tcp' | 'udp' | 'fileserver'
   /** Single-page app mode: serves index for non-existent paths */
   spa: boolean
   /** Path to client certificate */

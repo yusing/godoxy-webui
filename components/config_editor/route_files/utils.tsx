@@ -21,6 +21,22 @@ const routeSchemes = [
     },
   },
   {
+    label: 'Reverse Proxy (h2c)',
+    value: 'h2c',
+    icon: IconGlobe,
+    description: 'Proxy to a web app with HTTP/2 Clear-Text',
+    cardDescription: (route: Routes.ReverseProxyRoute) => {
+      return (
+        <span>
+          Proxy to{' '}
+          <code>
+            http://{route.host}:{route.port ?? '80'}
+          </code>
+        </span>
+      )
+    },
+  },
+  {
     label: 'Reverse Proxy (https)',
     value: 'https',
     icon: IconGlobe,

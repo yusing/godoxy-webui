@@ -140,7 +140,9 @@ export default function RouteDetails() {
                 value={`${routeDetails.response_header_timeout} ms`}
               />
             )}
-            {(routeDetails.scheme === 'http' || routeDetails.scheme === 'https') && (
+            {(routeDetails.scheme === 'http' ||
+              routeDetails.scheme === 'https' ||
+              routeDetails.scheme === 'h2c') && (
               <Item
                 title="Compression"
                 value={routeDetails.disable_compression ? 'Disabled' : 'Enabled'}

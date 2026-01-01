@@ -5,7 +5,7 @@ import type { Duration, Hostname, IPv4, IPv6, PathPattern, Port, StreamPort } fr
 import type { HealthcheckConfig } from './healthcheck'
 import type { HomepageConfig } from './homepage'
 import type { LoadBalanceConfig } from './loadbalance'
-export const PROXY_SCHEMES = ['http', 'https'] as const
+export const PROXY_SCHEMES = ['http', 'https', 'h2c'] as const
 export const STREAM_SCHEMES = ['tcp', 'udp'] as const
 
 export type ProxyScheme = (typeof PROXY_SCHEMES)[number]

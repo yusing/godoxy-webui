@@ -53,7 +53,7 @@ function isStream(scheme: string | undefined) {
 
 function isHTTP(scheme: string | undefined) {
   if (scheme === undefined) return true // defaults to http
-  return scheme === 'http' || scheme === 'https'
+  return scheme === 'http' || scheme === 'https' || scheme === 'h2c'
 }
 
 export default function RouteEditForm({
