@@ -782,6 +782,7 @@ export interface RouteUptimeAggregate {
   downtime: number
   idle: number
   is_docker: boolean
+  is_excluded: boolean
   statuses: RouteStatus[]
   uptime: number
 }
