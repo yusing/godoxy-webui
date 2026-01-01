@@ -16,7 +16,7 @@ function DataList({
       {...props}
       style={
         {
-          '--data-list-label-width': `${longestLabel}ch`,
+          '--data-list-label-width': `${longestLabel + 2}ch`,
         } as React.CSSProperties
       }
     />
