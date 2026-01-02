@@ -294,15 +294,6 @@ export interface HealthExtra {
   pool: Record<string, any>
 }
 
-export interface HealthInfo {
-  detail: string
-  /** latency in microseconds */
-  latency: number
-  status: 'healthy' | 'unhealthy' | 'napping' | 'starting' | 'error' | 'unknown'
-  /** uptime in milliseconds */
-  uptime: number
-}
-
 export interface HealthInfoWithoutDetail {
   /** latency in microseconds */
   latency: number
@@ -315,20 +306,28 @@ export interface HealthJSON {
   config: HealthCheckConfig
   detail: string
   extra?: HealthExtra | null
+  /** unix timestamp in seconds */
   lastSeen: number
-  lastSeenStr: string
+  /** latency in milliseconds */
   latency: number
-  latencyStr: string
   name: string
+  /** unix timestamp in seconds */
   started: number
-  startedStr: string
-  status: string
+  status: HealthStatusString
+  /** uptime in seconds */
   uptime: number
-  uptimeStr: string
   url: string
 }
 
-export type HealthMap = Record<string, HealthInfo>
+export type HealthMap = Record<string, HealthStatusString>
+
+export type HealthStatusString =
+  | 'unknown'
+  | 'healthy'
+  | 'napping'
+  | 'starting'
+  | 'unhealthy'
+  | 'error'
 
 export interface HomepageCategory {
   items: HomepageItem[]

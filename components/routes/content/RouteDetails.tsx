@@ -8,7 +8,7 @@ import Code from '@/components/ui/code'
 import { DataList, DataListRow } from '@/components/ui/data-list'
 import { Label } from '@/components/ui/label'
 import { api } from '@/lib/api-client'
-import { formatDuration } from '@/lib/format'
+import { formatDuration, formatRelTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { yaml } from '@codemirror/lang-yaml'
 import { IconArrowRight } from '@tabler/icons-react'
@@ -114,9 +114,15 @@ export default function RouteDetails() {
                 <Item title="Excluded reason" value={routeDetails.excluded_reason} />
               )}
               <Item title="Status" value={routeDetails.health.status} />
-              <Item title="Latency" value={routeDetails.health.latencyStr} />
-              <Item title="Uptime" value={routeDetails.health.uptimeStr} />
-              <Item title="Last Seen" value={routeDetails.health.lastSeenStr} />
+              <Item
+                title="Latency"
+                value={formatDuration(routeDetails.health.latency, { unit: 'ms' })}
+              />
+              <Item
+                title="Uptime"
+                value={formatDuration(routeDetails.health.uptime, { unit: 's' })}
+              />
+              <Item title="Last Seen" value={formatRelTime(routeDetails.health.lastSeen)} />
               {routeDetails.health.detail && (
                 <div className="md:col-span-2">
                   <Title>Details</Title>

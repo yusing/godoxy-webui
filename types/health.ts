@@ -1,16 +1,15 @@
-import type { HealthInfo } from '@/lib/api'
 import type { ComponentProps } from 'react'
 
-export const healthStatuses: HealthStatusType[] = [
+export const healthStatuses = [
   'healthy',
   'error',
   'unhealthy',
   'napping',
   'starting',
   'unknown',
-  'stopped',
 ] as const
-export type HealthStatusType = HealthInfo['status'] | 'stopped'
+
+export type HealthStatusType = (typeof healthStatuses)[number]
 
 export const healthStatusColorsBg: Record<HealthStatusType, ComponentProps<'span'>['className']> = {
   healthy: 'bg-green-500',
@@ -19,7 +18,6 @@ export const healthStatusColorsBg: Record<HealthStatusType, ComponentProps<'span
   starting: 'bg-blue-500',
   error: 'bg-red-500',
   unknown: 'bg-gray-500',
-  stopped: 'bg-gray-500',
 } as const
 
 export const healthStatusColorsFg: Record<HealthStatusType, string> = {
@@ -29,14 +27,4 @@ export const healthStatusColorsFg: Record<HealthStatusType, string> = {
   starting: 'text-blue-500',
   error: 'text-red-500',
   unknown: 'text-gray-500',
-  stopped: 'text-gray-500',
 } as const
-
-export type HealthMap = Record<string, HealthInfo>
-
-export const healthInfoUnknown: HealthInfo = {
-  status: 'unknown',
-  uptime: -1,
-  latency: -1,
-  detail: '',
-}

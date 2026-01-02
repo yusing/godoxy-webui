@@ -91,7 +91,7 @@ const AppItemInner = forwardRef<
     >
       <CardContent className={cn(hasWidgets && 'justify-between')}>
         <div className="flex items-center gap-4 w-full">
-          <store.Render path={`health.${alias}.status`}>
+          <store.Render path={`health.${alias}`}>
             {status => <HealthBubble status={status} />}
           </store.Render>
           <state.icon.Render>

@@ -14,7 +14,8 @@ import {
 import { ContextMenuContent, ContextMenuItem } from '../ui/context-menu'
 import { store } from './store'
 
-import type { HealthInfo, HomepageItem } from '@/lib/api'
+import type { HomepageItem } from '@/lib/api'
+import { type HealthStatusType } from '@/types/health'
 import type { ObjectState } from 'juststore'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -122,28 +123,28 @@ const containerItems = [
     Icon: IconPlayerPlay,
     api: api.docker.start,
     className: 'text-success',
-    enableIf: (status: HealthInfo['status']) => status !== 'healthy',
+    enableIf: (status: HealthStatusType) => status !== 'healthy',
   },
   {
     label: 'Stop',
     Icon: IconSquare,
     api: api.docker.stop,
     className: 'text-error',
-    enableIf: (status: HealthInfo['status']) => status !== 'napping',
+    enableIf: (status: HealthStatusType) => status !== 'napping',
   },
   {
     label: 'Restart',
     Icon: IconRotate,
     api: api.docker.restart,
     className: 'text-warning',
-    enableIf: (status: HealthInfo['status']) => status !== 'napping',
+    enableIf: (status: HealthStatusType) => status !== 'napping',
   },
 ] as const
 
 function DockerOnlyMenuItems({ state }: { state: ObjectState<HomepageItem> }) {
   const alias = state.alias.use()
   const containerID = state.container_id?.use()
-  const status = store.health[alias]?.status.use() ?? 'unknown'
+  const status = store.health[alias]?.use()
   const [isLoading, setIsLoading] = useState(false)
 
   if (!containerID) {
@@ -157,7 +158,7 @@ function DockerOnlyMenuItems({ state }: { state: ObjectState<HomepageItem> }) {
         <ContextMenuItem
           key={item.label}
           className={item.className}
-          disabled={isLoading || !item.enableIf(status)}
+          disabled={isLoading || !item.enableIf(status ?? 'unknown')}
           onClick={() => {
             setIsLoading(true)
             item
