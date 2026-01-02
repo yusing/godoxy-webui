@@ -10,7 +10,7 @@ type DockerProviderMap = Record<string, DockerConfig | URL | '$DOCKER_HOST'>
 
 type DockerConfig = {
   /** Scheme to use */
-  scheme: 'http' | 'https' | 'tcp'
+  scheme: 'http' | 'https' | 'tcp' | 'tls'
   /** Host to connect to   */
   host: Hostname
   /** Port to connect to */
