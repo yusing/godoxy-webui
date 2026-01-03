@@ -2,7 +2,6 @@
 Dockerfile
 *.Dockerfile
 *.compose.yml
-godoxy-rules.yml
 
 .dockerignore
 .git
@@ -12,7 +11,6 @@ godoxy-rules.yml
 .github
 .trunk
 
-Makefile
 README.md
 
 # from .gitignore
@@ -62,3 +60,8 @@ yarn-error.log*
 
 # idea files
 .idea
+
+# schema
+types/godoxy/*.deref.json
+
+app/docker-compose

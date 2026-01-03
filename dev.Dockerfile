@@ -9,11 +9,11 @@ USER 1000:1000
 
 WORKDIR /app
 
-COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile --dev
+COPY package.json ./
+RUN sed -i 's|"juststore": "./juststore",||' package.json && bun install --dev
 
 EXPOSE 3000
 
 LABEL "proxy.#1.rule_file"="embed://webui.yml"
 
-CMD ["bun", "--bun", "run", "dev"]
+CMD ["bun", "--bun", "next", "dev"]

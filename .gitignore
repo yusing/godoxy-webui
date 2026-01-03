@@ -44,3 +44,8 @@ yarn-error.log*
 
 # idea files
 .idea
+
+# schema
+types/godoxy/*.deref.json
+
+app/docker-compose

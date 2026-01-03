@@ -2,11 +2,11 @@ FROM oven/bun:1.3.5-alpine AS base
 
 HEALTHCHECK NONE
 
-FROM base AS wiki-deps
+FROM base AS utils-deps
 WORKDIR /src
 
 # git is for building wiki (vitepress deps)
-RUN apk add --no-cache git=2.49.1-r0
+RUN apk add --no-cache git=2.49.1-r0 make=4.4.1-r3
 
 # Install dependencies based on the preferred package manager
 COPY wiki/package.json wiki/bun.lock ./
@@ -23,16 +23,16 @@ RUN bun install --frozen-lockfile
 
 # copy node_modules from temp directory
 # then copy all (non-ignored) project files into the image
-FROM base AS prerelease
+FROM utils-deps AS prerelease
 WORKDIR /app
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-RUN bun --bun run build
+RUN make gen-schema && bun --bun run build
 
 # Rebuild the source code only when needed
-FROM wiki-deps AS wiki-builder
+FROM utils-deps AS wiki-builder
 WORKDIR /src
 COPY wiki .
 RUN sed -i 's|srcDir: "src",|srcDir: "src", base: "/wiki",|' .vitepress/config.mts
