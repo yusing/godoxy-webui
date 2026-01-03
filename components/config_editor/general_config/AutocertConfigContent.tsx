@@ -62,6 +62,8 @@ function AutocertConfigForm({
   const base = state as ObjectState<Autocert.AutocertConfigBase>
   // remove email, domains, cert_path, key_path, resolvers when provider is local
   state.provider.subscribe(v => {
+    if (v === undefined) return
+
     let next: Partial<Autocert.AutocertConfig> = {
       provider: v,
     }
@@ -86,16 +88,10 @@ function AutocertConfigForm({
         schema={AutocertSchema.definitions.AutocertConfig}
         allowKeyChange={false}
         allowDelete={false}
-        readonly={false}
       />
       <DnsProviderOptionsEditor state={state} />
-      {Boolean(onAddExtra) && (
-        <FormContainer
-          label="Extra certificates"
-          card={false}
-          canAdd={Boolean(onAddExtra)}
-          onAdd={onAddExtra}
-        >
+      {onAddExtra && (
+        <FormContainer label="Extra certificates" card={false} canAdd onAdd={onAddExtra}>
           <AutocertConfigContentExtra state={state.extra.ensureArray()} />
         </FormContainer>
       )}
@@ -104,7 +100,7 @@ function AutocertConfigForm({
 }
 
 function AutocertConfigContentExtra({ state }: { state: ArrayState<Autocert.AutocertExtra> }) {
-  const numItems = state.useCompute(value => value.length ?? 0)
+  const numItems = state.useCompute(value => value?.length ?? 0)
 
   return Array.from({ length: numItems }).map((_, index) => (
     <Card key={index} className="col-span-full border-2 border-border">
