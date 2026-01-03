@@ -12,7 +12,14 @@ export const AUTOCERT_PROVIDERS = [
 
 export type AutocertProvider = (typeof AUTOCERT_PROVIDERS)[number]
 
-export type AutocertConfig =
+export type AutocertConfig = AutocertExtra & {
+  /** Extra certificates */
+  extra?: AutocertExtraArray
+}
+
+export type AutocertExtraArray = AutocertExtra[]
+
+export type AutocertExtra =
   | LocalOptions
   | CustomOptions
   | CloudflareOptions
