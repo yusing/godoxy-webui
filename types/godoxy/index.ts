@@ -1,57 +1,85 @@
-import * as AccessLog from './config/access_log'
-import * as ACL from './config/acl'
-import * as Autocert from './config/autocert'
-import * as Config from './config/config'
-import * as Entrypoint from './config/entrypoint'
-import * as Maxmind from './config/maxmind'
-import * as Notification from './config/notification'
-import * as Providers from './config/providers'
+import type * as AccessLog from './config/access_log'
+import type * as ACL from './config/acl'
+import type * as Autocert from './config/autocert'
+import type * as Config from './config/config'
+import type * as Entrypoint from './config/entrypoint'
+import type * as Maxmind from './config/maxmind'
+import type * as Notification from './config/notification'
+import type * as Providers from './config/providers'
 
-import * as MiddlewareCompose from './middlewares/middleware_compose'
-import * as Middlewares from './middlewares/middlewares'
+import type * as MiddlewareCompose from './middlewares/middleware_compose'
+import type * as Middlewares from './middlewares/middlewares'
 
-import * as Healthcheck from './providers/healthcheck'
-import * as Homepage from './providers/homepage'
-import * as IdleWatcher from './providers/idlewatcher'
-import * as LoadBalance from './providers/loadbalance'
-import * as Proxmox from './providers/proxmox'
-import * as Routes from './providers/routes'
+import type * as Healthcheck from './providers/healthcheck'
+import type * as Homepage from './providers/homepage'
+import type * as IdleWatcher from './providers/idlewatcher'
+import type * as LoadBalance from './providers/loadbalance'
+import type * as Proxmox from './providers/proxmox'
+import type * as Routes from './providers/routes'
 
-import * as GoDoxy from './types'
+import type * as GoDoxy from './types'
 
-import ACLSchema from './acl.schema.json'
-import AutocertSchema from './autocert.schema.json'
-import ConfigSchema from './config.schema.json'
-import DockerRoutesSchema from './docker_routes.schema.json'
-import EntrypointMiddlewaresSchema from './entrypoint_middlewares.schema.json'
-import MaxmindSchema from './maxmind.schema.json'
-import MiddlewareComposeSchema from './middleware_compose.schema.json'
-import RoutesSchema from './routes.schema.json'
+import _ACLSchema from './acl.schema.json'
+import _AutocertSchema from './autocert.schema.json'
+import _ConfigSchema from './config.schema.json'
+import _DockerRoutesSchema from './docker_routes.schema.json'
+import _EntrypointMiddlewaresSchema from './entrypoint_middlewares.schema.json'
+import _MaxmindSchema from './maxmind.schema.json'
+import _MiddlewareComposeSchema from './middleware_compose.schema.json'
+import _RoutesSchema from './routes.schema.json'
+
+// import dereferenced schemas as type
+// but offload dereferencing to the client
+import type ACLSchemaDeref from './acl.schema.deref.json'
+import type AutocertSchemaDeref from './autocert.schema.deref.json'
+import type ConfigSchemaDeref from './config.schema.deref.json'
+import type DockerRoutesSchemaDeref from './docker_routes.schema.deref.json'
+import type EntrypointMiddlewaresSchemaDeref from './entrypoint_middlewares.schema.deref.json'
+import type MaxmindSchemaDeref from './maxmind.schema.deref.json'
+import type MiddlewareComposeSchemaDeref from './middleware_compose.schema.deref.json'
+import type RoutesSchemaDeref from './routes.schema.deref.json'
+
+import $ from '@apidevtools/json-schema-ref-parser'
+
+const ACLSchema = (await $.dereference(_ACLSchema)) as typeof ACLSchemaDeref
+const AutocertSchema = (await $.dereference(_AutocertSchema)) as typeof AutocertSchemaDeref
+const ConfigSchema = (await $.dereference(_ConfigSchema)) as typeof ConfigSchemaDeref
+const DockerRoutesSchema = (await $.dereference(
+  _DockerRoutesSchema
+)) as typeof DockerRoutesSchemaDeref
+const EntrypointMiddlewaresSchema = (await $.dereference(
+  _EntrypointMiddlewaresSchema
+)) as typeof EntrypointMiddlewaresSchemaDeref
+const MaxmindSchema = (await $.dereference(_MaxmindSchema)) as typeof MaxmindSchemaDeref
+const MiddlewareComposeSchema = (await $.dereference(
+  _MiddlewareComposeSchema
+)) as typeof MiddlewareComposeSchemaDeref
+const RoutesSchema = (await $.dereference(_RoutesSchema)) as typeof RoutesSchemaDeref
 
 export {
-  AccessLog,
-  ACL,
   ACLSchema,
-  Autocert,
   AutocertSchema,
-  Config,
   ConfigSchema,
   DockerRoutesSchema,
-  Entrypoint,
   EntrypointMiddlewaresSchema,
-  GoDoxy,
-  Healthcheck,
-  Homepage,
-  IdleWatcher,
-  LoadBalance,
-  Maxmind,
   MaxmindSchema,
-  MiddlewareCompose,
   MiddlewareComposeSchema,
-  Middlewares,
-  Notification,
-  Providers,
-  Proxmox,
-  Routes,
   RoutesSchema,
+  type AccessLog,
+  type ACL,
+  type Autocert,
+  type Config,
+  type Entrypoint,
+  type GoDoxy,
+  type Healthcheck,
+  type Homepage,
+  type IdleWatcher,
+  type LoadBalance,
+  type Maxmind,
+  type MiddlewareCompose,
+  type Middlewares,
+  type Notification,
+  type Providers,
+  type Proxmox,
+  type Routes,
 }

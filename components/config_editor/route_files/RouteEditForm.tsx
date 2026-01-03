@@ -14,9 +14,12 @@ import {
   FieldSet,
 } from '@/components/ui/field'
 import { api } from '@/lib/api-client'
-import { MiddlewareComposeSchema, type Routes } from '@/types/godoxy'
-import type { EntrypointMiddlewares } from '@/types/godoxy/middlewares/middleware_compose'
-import type { MiddlewaresMap } from '@/types/godoxy/middlewares/middlewares'
+import {
+  MiddlewareComposeSchema,
+  type MiddlewareCompose,
+  type Middlewares,
+  type Routes,
+} from '@/types/godoxy'
 import { LOAD_BALANCE_MODES, type LoadBalanceMode } from '@/types/godoxy/providers/loadbalance'
 import type { StreamPort } from '@/types/godoxy/types'
 import { IconCheck, IconChevronDown, IconX } from '@tabler/icons-react'
@@ -327,10 +330,14 @@ function AdvancedOptions({ form }: { form: FormStore<Routes.Route> }) {
   )
 }
 
-function RouteMiddlewareEditor({ state }: { state: FormState<MiddlewaresMap | undefined> }) {
+function RouteMiddlewareEditor({
+  state,
+}: {
+  state: FormState<Middlewares.MiddlewaresMap | undefined>
+}) {
   const [value, setValue] = state.useState()
 
-  const workingValue: EntrypointMiddlewares = useMemo(() => {
+  const workingValue: MiddlewareCompose.EntrypointMiddlewares = useMemo(() => {
     if (!value) return []
     return Object.entries(value).map(([key, value]) => ({
       use: middlewareUseToSnakeCase(key),
@@ -339,7 +346,7 @@ function RouteMiddlewareEditor({ state }: { state: FormState<MiddlewaresMap | un
   }, [value])
 
   const onChangeMiddleware = useCallback(
-    (data: EntrypointMiddlewares) => {
+    (data: MiddlewareCompose.EntrypointMiddlewares) => {
       setValue(
         data.reduce((acc, item) => {
           // @ts-expect-error intended
@@ -347,7 +354,7 @@ function RouteMiddlewareEditor({ state }: { state: FormState<MiddlewaresMap | un
           // remove the `use` field from the item (from the conversion above)
           delete (item as unknown as { use?: string }).use
           return acc
-        }, {} as MiddlewaresMap)
+        }, {} as Middlewares.MiddlewaresMap)
       )
     },
     [setValue]

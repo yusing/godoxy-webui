@@ -71,6 +71,7 @@ type JSONSchema = {
   $anchor?: string
   $defs?: { [key: string]: JSONSchema }
   $comment?: string
+  definitions?: { [key: string]: JSONSchema }
 }
 
 type PropertySchema = { [key: string]: JSONSchema | undefined }

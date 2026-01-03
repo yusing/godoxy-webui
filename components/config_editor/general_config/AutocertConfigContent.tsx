@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Autocert, AutocertSchema } from '@/types/godoxy'
+import { type Autocert, AutocertSchema } from '@/types/godoxy'
 import type { JSONSchema } from '@/types/schema'
 import type { ObjectState } from 'juststore'
 import { configStore } from '../store'
