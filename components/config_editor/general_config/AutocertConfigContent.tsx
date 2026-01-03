@@ -2,8 +2,10 @@
 
 import { Suspense } from 'react'
 
+import { FormContainer } from '@/components/form/FormContainer'
 import { StoreFieldInput } from '@/components/form/StoreFieldInput'
 import { StoreMapInput, StoreObjectInput } from '@/components/form/StoreMapInput'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Select,
@@ -14,35 +16,15 @@ import {
 } from '@/components/ui/select'
 import { type Autocert, AutocertSchema } from '@/types/godoxy'
 import type { JSONSchema } from '@/types/schema'
-import type { ObjectState } from 'juststore'
+import { IconTrash } from '@tabler/icons-react'
+import type { ArrayState, ObjectState } from 'juststore'
 import { configStore } from '../store'
 import AutocertInfo from './AutocertInfo'
 import AutocertRenewDialogButton from './AutocertRenewDialogButton'
 
-const autocertConfigBase = configStore.configObject
-  .autocert as ObjectState<Autocert.AutocertConfigBase>
-
 const autocertConfig = configStore.configObject.autocert.ensureObject()
 
 export default function AutocertConfigContent() {
-  // remove email, domains, cert_path, key_path, resolvers when provider is local
-  autocertConfig.provider.subscribe(v => {
-    let next: Partial<Autocert.AutocertConfig> = {
-      provider: v,
-    }
-    if (v !== 'local') {
-      next = {
-        ...next,
-        email: autocertConfigBase.email.value,
-        domains: autocertConfigBase.domains.value,
-        cert_path: autocertConfigBase.cert_path.value,
-        key_path: autocertConfigBase.key_path.value,
-        resolvers: autocertConfigBase.resolvers.value,
-      }
-    }
-    autocertConfig.set(next as Autocert.AutocertConfig)
-  })
-
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4">
@@ -59,20 +41,89 @@ export default function AutocertConfigContent() {
         </Card>
         <Card>
           <CardContent flex>
-            <StoreFieldInput
+            <AutocertConfigForm
               state={autocertConfig}
-              fieldKey="provider"
-              schema={AutocertSchema.definitions.AutocertConfig}
-              allowKeyChange={false}
-              allowDelete={false}
-              readonly={false}
+              onAddExtra={() => autocertConfig.extra.push({ provider: 'local' })}
             />
-            <DnsProviderOptionsEditor />
           </CardContent>
         </Card>
       </div>
     </div>
   )
+}
+
+function AutocertConfigForm({
+  state,
+  onAddExtra = undefined,
+}: {
+  state: ObjectState<Autocert.AutocertConfig>
+  onAddExtra?: (() => void) | undefined
+}) {
+  const base = state as ObjectState<Autocert.AutocertConfigBase>
+  // remove email, domains, cert_path, key_path, resolvers when provider is local
+  state.provider.subscribe(v => {
+    let next: Partial<Autocert.AutocertConfig> = {
+      provider: v,
+    }
+    if (v !== 'local') {
+      next = {
+        ...next,
+        email: base.email.value,
+        domains: base.domains.value,
+        cert_path: base.cert_path.value,
+        key_path: base.key_path.value,
+        resolvers: base.resolvers.value,
+      }
+    }
+    state.set(next as Autocert.AutocertConfig)
+  })
+
+  return (
+    <div className="flex flex-col gap-3">
+      <StoreFieldInput
+        state={state}
+        fieldKey="provider"
+        schema={AutocertSchema.definitions.AutocertConfig}
+        allowKeyChange={false}
+        allowDelete={false}
+        readonly={false}
+      />
+      <DnsProviderOptionsEditor state={state} />
+      {Boolean(onAddExtra) && (
+        <FormContainer
+          label="Extra certificates"
+          card={false}
+          canAdd={Boolean(onAddExtra)}
+          onAdd={onAddExtra}
+        >
+          <AutocertConfigContentExtra state={state.extra.ensureArray()} />
+        </FormContainer>
+      )}
+    </div>
+  )
+}
+
+function AutocertConfigContentExtra({ state }: { state: ArrayState<Autocert.AutocertExtra> }) {
+  const numItems = state.useCompute(value => value.length ?? 0)
+
+  return Array.from({ length: numItems }).map((_, index) => (
+    <Card key={index} className="col-span-full border-2 border-border">
+      <CardHeader className="flex items-center gap-4">
+        <CardTitle>Extra certificate {index + 1}</CardTitle>
+        <Button
+          type="button"
+          variant="destructive"
+          size="icon"
+          onClick={() => state.splice(index, 1)}
+        >
+          <IconTrash />
+        </Button>
+      </CardHeader>
+      <CardContent flex>
+        <AutocertConfigForm state={state.at(index) as ObjectState<Autocert.AutocertConfig>} />
+      </CardContent>
+    </Card>
+  ))
 }
 
 function useLabelAndSchema(provider: string): [string, JSONSchema | undefined] {
@@ -94,21 +145,19 @@ function useLabelAndSchema(provider: string): [string, JSONSchema | undefined] {
   return ['', undefined]
 }
 
-function DnsProviderOptionsEditor() {
-  const provider = autocertConfig.useCompute(cfg => cfg?.provider ?? 'local')
+function DnsProviderOptionsEditor({ state }: { state: ObjectState<Autocert.AutocertConfig> }) {
+  const provider = state.useCompute(cfg => cfg?.provider ?? 'local')
   const [label, schema] = useLabelAndSchema(provider)
 
   if (schema) {
-    return (
-      <StoreObjectInput label={label} card={false} schema={schema} state={autocertConfigBase} />
-    )
+    return <StoreObjectInput label={label} card={false} schema={schema} state={state} hideUnknown />
   }
 
   function OVHOptionsEditor() {
     // derive auth mode
-    const stateWithAppKey = autocertConfig as ObjectState<Autocert.OVHOptionsWithAppKey>
-    const stateWithOAuth2 = autocertConfig as ObjectState<Autocert.OVHOptionsWithOAuth2Config>
-    const authMode = autocertConfig.useCompute(opts =>
+    const stateWithAppKey = state as ObjectState<Autocert.OVHOptionsWithAppKey>
+    const stateWithOAuth2 = state as ObjectState<Autocert.OVHOptionsWithOAuth2Config>
+    const authMode = state.useCompute(opts =>
       'options' in opts && opts.options && 'application_key' in opts.options
         ? 'application_key'
         : 'oauth2'
@@ -162,6 +211,7 @@ function DnsProviderOptionsEditor() {
             card={false}
             schema={AutocertSchema.definitions.OVHOptionsWithAppKey}
             state={stateWithAppKey}
+            hideUnknown
           />
         ) : (
           <StoreMapInput
@@ -169,6 +219,7 @@ function DnsProviderOptionsEditor() {
             card={false}
             schema={AutocertSchema.definitions.OVHOptionsWithOAuth2Config}
             state={stateWithOAuth2}
+            hideUnknown
           />
         )}
       </div>
