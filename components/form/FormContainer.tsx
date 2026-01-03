@@ -58,7 +58,7 @@ export function FormContainer({
   const header = (
     <div className="flex items-center gap-2">
       {collapsible ? (
-        <CollapsibleTrigger className="flex w-full items-center gap-2 text-left">
+        <CollapsibleTrigger className="flex w-full items-center gap-2 text-left cursor-pointer *:cursor-pointer">
           {title}
           <IconChevronDown className="ml-auto size-4 transition-transform group-data-open:rotate-180" />
         </CollapsibleTrigger>
