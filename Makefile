@@ -66,7 +66,6 @@ gen-schema:
 			CLASS=MaxmindConfig \
 			OUT=maxmind.schema.json \
 			gen-schema-single
-	bun format:write
 
 gen-docker-compose-types:
 	[ -f types/compose-spec.json ] || curl -o types/compose-spec.json https://raw.githubusercontent.com/compose-spec/compose-spec/main/schema/compose-spec.json
