@@ -1,6 +1,6 @@
 services:
   frontend:
-    image: godoxy-webui:lite
+    image: godoxy-frontend:lite
     build:
       context: .
       dockerfile: lite.Dockerfile

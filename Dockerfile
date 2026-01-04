@@ -35,9 +35,9 @@ RUN make gen-schema && bun --bun run build
 FROM utils-deps AS wiki-builder
 WORKDIR /src
 COPY wiki .
-RUN sed -i 's|srcDir: "src",|srcDir: "src", base: "/wiki",|' .vitepress/config.mts
+RUN sed -i "s|srcDir: 'src',|srcDir: 'src', base: '/wiki',|" .vitepress/config.mts
 # redirect back to GoDoxy WebUI on the same tab when pressing "Home"
-RUN sed -i 's|link: "/"|link: "/../", rel: "noopener noreferrer", target: "_self"|' .vitepress/config.mts && \
+RUN sed -i "s|link: '/'|link: '/../', rel: 'noopener noreferrer', target: '_self'|" .vitepress/config.mts && \
     bun --bun run docs:build
 
 # Production image, copy all the files and run next
