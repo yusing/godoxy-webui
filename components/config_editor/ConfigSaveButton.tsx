@@ -21,6 +21,7 @@ export default function ConfigSaveButton(props: React.ComponentProps<typeof Butt
         .finally(() => {
           setIsSaving(false)
           setIsSaved(true)
+          configStore.unsavedChanges.reset()
         })
     }
   }

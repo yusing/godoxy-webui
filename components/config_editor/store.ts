@@ -15,6 +15,7 @@ type ConfigState<
   error: string | undefined
   configObject: T | undefined
   validateError: GoDoxyError | undefined
+  unsavedChanges: Record<Sections, boolean>
 }
 
 const defaultConfig: ConfigFile = {
@@ -31,6 +32,7 @@ export const configStore = createStore<ConfigState<Config.Config>>('config', {
   error: undefined,
   configObject: undefined,
   validateError: undefined,
+  unsavedChanges: {} as Record<string, boolean>,
 })
 
 export const routesConfigStore = configStore as unknown as Store<ConfigState<Routes.Routes>>

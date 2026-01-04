@@ -4,6 +4,7 @@ import { api, formatErrorString } from '@/lib/api-client'
 import type { ConfigFile } from '@/types/file'
 import type { Config } from '@/types/godoxy'
 import { AxiosError } from 'axios'
+import { useRef } from 'react'
 import isEqual from 'react-fast-compare'
 import { useMount } from 'react-use'
 import { parse as parseYAML, stringify as stringifyYAML } from 'yaml'
@@ -26,6 +27,7 @@ export default function ConfigStateSyncronizer() {
   })
 
   configStore.activeFile.subscribe(activeFile => {
+    configStore.unsavedChanges.reset()
     if (activeFile.isNewFile) {
       configStore.content.set('')
       configStore.isLoading.set(false)
@@ -61,16 +63,25 @@ export default function ConfigStateSyncronizer() {
     )
   })
 
+  const lastActiveFile = useRef(configStore.activeFile.filename.value)
+
   // when content changes, set the rootObject and validate
+  // eslint-disable-next-line react-hooks/refs
   configStore.content.subscribe(content => {
     if (!content) {
       configStore.configObject.reset()
       configStore.validateError.reset()
+      configStore.unsavedChanges.reset()
       return
     }
 
     try {
       const config = parseYAML(content) as Config.Config
+      if (lastActiveFile.current === configStore.activeFile.filename.value) {
+        configStore.unsavedChanges[configStore.activeSection.value]!.set(true)
+      } else {
+        lastActiveFile.current = configStore.activeFile.filename.value
+      }
       configStore.configObject.set(config)
       validate(content, configStore.activeFile.type.value).then(err =>
         configStore.validateError.set(err as GoDoxyError)

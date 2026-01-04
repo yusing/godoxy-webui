@@ -132,16 +132,17 @@ function Sections() {
       <SidebarGroupLabel>{label}</SidebarGroupLabel>
       <SidebarGroupContent className="flex-1">
         <SidebarMenu>
-          {sections.map(section => {
+          {sections.map(function (section) {
             const Icon = section.icon
             const isActive = activeSection === section.id
+            const unsavedChanges = configStore.unsavedChanges[section.id]!
 
             return (
               <SidebarMenuItem key={section.id}>
                 <SidebarMenuButton
                   className={cn(
                     'justify-between',
-                    isActive && 'bg-sidebar-accent text-sidebar-accent-foreground'
+                    isActive && 'bg-sidebar-accent/90 text-sidebar-accent-foreground'
                   )}
                   onClick={() => configStore.activeSection.set(section.id)}
                 >
@@ -149,7 +150,15 @@ function Sections() {
                     <Icon className="w-4 h-4 mt-0.5 shrink-0" />
                     <span>{section.label}</span>
                   </div>
-                  {isActive && <IconChevronRight className="size-4 shrink-0" />}
+                  <div className="flex items-center gap-4">
+                    <unsavedChanges.Render>
+                      {unsavedChanges =>
+                        unsavedChanges &&
+                        !isActive && <span className="size-1.5 rounded-full bg-primary z-10" />
+                      }
+                    </unsavedChanges.Render>
+                    {isActive && <IconChevronRight className="size-4 shrink-0" />}
+                  </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             )
