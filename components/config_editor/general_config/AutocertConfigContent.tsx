@@ -231,9 +231,8 @@ function DnsProviderOptionsEditor({ state }: { state: ObjectState<Autocert.Autoc
       label="Custom"
       card={false}
       schema={AutocertSchema.definitions.CustomOptions}
-      state={(
-        configStore.configObject.autocert as ObjectState<Autocert.OtherOptions>
-      ).ensureObject()}
+      state={state}
+      hideUnknown
     />
   )
 }
