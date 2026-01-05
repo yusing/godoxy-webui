@@ -61,6 +61,6 @@ EXPOSE 80
 
 ENV NODE_ENV=production
 
-LABEL "proxy.#1.rule_file"="embed://webui.yml"
+LABEL "proxy.*.rule_file"="embed://webui.yml"
 
 CMD ["nginx", "-g", "daemon off;"]

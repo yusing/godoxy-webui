@@ -60,6 +60,6 @@ EXPOSE 3000
 ENV PORT=3000
 ENV NODE_ENV=production
 
-LABEL "proxy.#1.rule_file"="embed://webui.yml"
+LABEL "proxy.*.rule_file"="embed://webui.yml"
 
 CMD ["server.js"]
