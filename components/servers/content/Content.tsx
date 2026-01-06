@@ -1,6 +1,7 @@
 'use client'
 
 import SystemInfoGraphsProvider from '@/components/servers/content/SystemInfoGraphsProvider'
+import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -9,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import VersionText from '@/components/VersionText'
 import { useFragment } from '@/hooks/fragment'
 import type { MetricsPeriod } from '@/lib/api'
 import { formatBytes, formatTemperature } from '@/lib/format'
@@ -62,8 +64,19 @@ function SystemInfoGraphsPage() {
           <h2 className="text-xl font-medium">
             {agent.replaceAll('%20', ' ')}
             <agentStore.version.Render>
-              {agentVersion => <span className="ml-2 text-sm font-normal">{agentVersion}</span>}
+              {agentVersion => (
+                <span className="ml-2 text-sm font-normal text-muted-foreground">
+                  {agentVersion ?? <VersionText />}
+                </span>
+              )}
             </agentStore.version.Render>
+            <agentStore.stream_port.Render>
+              {port => (
+                <Badge className="ml-2" variant={port ? 'default' : 'destructive'}>
+                  {port ? 'Stream supported' : 'Stream not supported'}
+                </Badge>
+              )}
+            </agentStore.stream_port.Render>
           </h2>
           <div className="flex items-center gap-2 text-muted-foreground">
             <IconServer className="size-4" />

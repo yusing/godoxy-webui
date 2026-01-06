@@ -62,6 +62,7 @@ export function AddAgentDialogButton() {
     name: '',
     host: '',
     port: 8890,
+    stream_port: 8891,
     nightly: false,
     container_runtime: 'docker',
     type: 'docker',
@@ -182,6 +183,12 @@ export function AddAgentDialogButton() {
           />
           <StoreFormInputField
             state={form.port}
+            type="number"
+            orientation="horizontal"
+            labelProps={{ className: minWidth }}
+          />
+          <StoreFormInputField
+            state={form.stream_port}
             type="number"
             orientation="horizontal"
             labelProps={{ className: minWidth }}

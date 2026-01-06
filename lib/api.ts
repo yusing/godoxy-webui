@@ -36,6 +36,7 @@ export interface Agent {
   addr: string
   name: string
   runtime: AgentContainerRuntime
+  stream_port: number
   version: string
 }
 
@@ -569,6 +570,11 @@ export interface NewAgentRequest {
    * @max 65535
    */
   port: number
+  /**
+   * @min 1
+   * @max 65535
+   */
+  stream_port?: number
   type: 'docker' | 'system'
 }
 
