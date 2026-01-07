@@ -1045,17 +1045,17 @@ export namespace Cert {
    * @name Info
    * @summary Get cert info
    * @request GET:/cert/info
-   * @response `200` `CertInfo` OK
-   * @response `403` `ErrorResponse` Forbidden
-   * @response `404` `ErrorResponse` Not Found
-   * @response `500` `ErrorResponse` Internal Server Error
+   * @response `200` `(CertInfo)[]` OK
+   * @response `403` `ErrorResponse` Unauthorized
+   * @response `404` `ErrorResponse` No certificates found or autocert is not enabled
+   * @response `500` `ErrorResponse` Internal server error
    */
   export namespace Info {
     export type RequestParams = {}
     export type RequestQuery = {}
     export type RequestBody = never
     export type RequestHeaders = {}
-    export type ResponseBody = CertInfo
+    export type ResponseBody = CertInfo[]
   }
 
   /**
@@ -2204,13 +2204,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name Info
      * @summary Get cert info
      * @request GET:/cert/info
-     * @response `200` `CertInfo` OK
-     * @response `403` `ErrorResponse` Forbidden
-     * @response `404` `ErrorResponse` Not Found
-     * @response `500` `ErrorResponse` Internal Server Error
+     * @response `200` `(CertInfo)[]` OK
+     * @response `403` `ErrorResponse` Unauthorized
+     * @response `404` `ErrorResponse` No certificates found or autocert is not enabled
+     * @response `500` `ErrorResponse` Internal server error
      */
     info: (params: RequestParams = {}) =>
-      this.request<CertInfo, ErrorResponse>({
+      this.request<CertInfo[], ErrorResponse>({
         path: `/cert/info`,
         method: 'GET',
         format: 'json',

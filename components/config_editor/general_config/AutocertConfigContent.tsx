@@ -1,12 +1,13 @@
 'use client'
 
-import { Suspense } from 'react'
+import { Suspense, useRef } from 'react'
 
 import { FormContainer } from '@/components/form/FormContainer'
 import { StoreFieldInput } from '@/components/form/StoreFieldInput'
 import { StoreMapInput, StoreObjectInput } from '@/components/form/StoreMapInput'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Carousel, CarouselNext, CarouselPrevious, useCarousel } from '@/components/ui/carousel'
 import {
   Select,
   SelectContent,
@@ -17,6 +18,7 @@ import {
 import { type Autocert, AutocertSchema } from '@/types/godoxy'
 import type { JSONSchema } from '@/types/schema'
 import { IconTrash } from '@tabler/icons-react'
+import AutoHeight from 'embla-carousel-auto-height'
 import type { ArrayState, ObjectState } from 'juststore'
 import { configStore } from '../store'
 import AutocertInfo from './AutocertInfo'
@@ -25,18 +27,20 @@ import AutocertRenewDialogButton from './AutocertRenewDialogButton'
 const autocertConfig = configStore.configObject.autocert.ensureObject()
 
 export default function AutocertConfigContent() {
+  const navRef = useRef<HTMLDivElement>(null)
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-4">
-        <Card>
+    <div className="flex flex-col gap-4">
+      <Carousel opts={{ loop: false }} plugins={[AutoHeight()]}>
+        <Card className="overflow-visible">
           <CardHeader className="flex items-center justify-between">
             <CardTitle>Current certificate</CardTitle>
+            <CarouselNavigation ref={navRef} />
             <Suspense>
               <AutocertRenewDialogButton />
             </Suspense>
           </CardHeader>
           <CardContent>
-            <AutocertInfo />
+            <AutocertInfo navRef={navRef} />
           </CardContent>
         </Card>
         <Card>
@@ -47,7 +51,22 @@ export default function AutocertConfigContent() {
             />
           </CardContent>
         </Card>
-      </div>
+      </Carousel>
+    </div>
+  )
+}
+
+function CarouselNavigation({ ref }: { ref: React.RefObject<HTMLDivElement | null> }) {
+  const { api } = useCarousel()
+  if (!api) return null
+
+  return (
+    <div ref={ref} className="flex gap-2 items-center">
+      <CarouselPrevious className="left-0 translate-y-0 top-0 relative" />
+      <span className="text-sm text-muted-foreground">
+        {api.selectedScrollSnap() + 1} of {api.slideNodes().length}
+      </span>
+      <CarouselNext className="right-0 translate-y-0 top-0 relative" />
     </div>
   )
 }
