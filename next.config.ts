@@ -1,19 +1,5 @@
 import type { NextConfig } from 'next'
 
-const rewrites = [
-  {
-    source: '/wiki/:path*',
-    destination: '/wiki/:path*.html',
-  },
-]
-
-if (process.env.DEMO_SITE === 'true') {
-  rewrites.push({
-    source: '/api/v1/:path*',
-    destination: `${process.env.API_SECURE ? 'https' : 'http'}://${process.env.API_HOST}/api/v1/:path*`,
-  })
-}
-
 const config: NextConfig = {
   output: 'standalone',
 
@@ -24,7 +10,12 @@ const config: NextConfig = {
     turbopackFileSystemCacheForDev: true,
   },
   transpilePackages: ['juststore', 'juststore-shadcn'],
-  rewrites: async () => rewrites,
+  rewrites: async () => [
+    {
+      source: '/wiki/:path*',
+      destination: '/wiki/:path*.html',
+    },
+  ],
   reactCompiler: {
     compilationMode: 'annotation',
   },
