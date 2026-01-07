@@ -49,10 +49,11 @@ function SystemInfoGraphsPage() {
     [temperatureUnit]
   )
 
-  const agentStore = store.agents[agent]
-  if (!agentStore) {
-    return null
-  }
+  const agentStore = store.agents[agent]!
+  const isStreamSupported = agentStore.useCompute(
+    agent => !selectedAgent || agent.stream_port !== undefined, // main server is always supported
+    [selectedAgent]
+  )
 
   return (
     <div className="flex flex-col gap-4">
@@ -70,13 +71,9 @@ function SystemInfoGraphsPage() {
                 </span>
               )}
             </agentStore.version.Render>
-            <agentStore.stream_port.Render>
-              {port => (
-                <Badge className="ml-2" variant={port ? 'default' : 'destructive'}>
-                  {port ? 'Stream supported' : 'Stream not supported'}
-                </Badge>
-              )}
-            </agentStore.stream_port.Render>
+            <Badge className="ml-2" variant={isStreamSupported ? 'default' : 'destructive'}>
+              {isStreamSupported ? 'Stream supported' : 'Stream not supported'}
+            </Badge>
           </h2>
           <div className="flex items-center gap-2 text-muted-foreground">
             <IconServer className="size-4" />
