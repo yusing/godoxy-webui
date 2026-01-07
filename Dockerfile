@@ -41,7 +41,7 @@ RUN sed -i "s|link: '/'|link: '/../', rel: 'noopener noreferrer', target: '_self
     bun --bun run docs:build
 
 # Production image, copy all the files and run next
-FROM base AS release
+FROM oven/bun:1.3.5-distroless AS release
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -58,8 +58,7 @@ COPY --from=wiki-builder --chown=1001:1001 /src/.vitepress/dist ./public/wiki
 EXPOSE 3000
 
 ENV PORT=3000
-ENV NODE_ENV=production
 
 LABEL "proxy.*.rule_file"="embed://webui.yml"
 
-CMD ["server.js"]
+CMD ["--bun", "run", "server.js"]

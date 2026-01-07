@@ -3,13 +3,13 @@
   "version": "0.18.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "bun --bun next dev",
+    "build": "bun --bun next build",
     "check": "eslint lint && tsc --noEmit",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
-    "preview": "next build && next start",
-    "start": "next start",
+    "preview": "bun --bun next build && bun --bun next start",
+    "start": "bun --bun next start",
     "typecheck": "tsc --noEmit",
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache"
