@@ -150,13 +150,21 @@ export default function RouteEditForm({
 
       {/* Host and Port */}
       <form.scheme.Show on={scheme => scheme !== 'fileserver'}>
-        <FieldSet className="flex-row">
+        <FieldSet className="grid grid-cols-2 gap-4">
           <StoreFormInputField state={streamForm.host} title="Host" placeholder="localhost" />
 
           <form.scheme.Render>
             {scheme => {
               return (
                 <>
+                  {isStream(scheme) && (
+                    <StoreFormInputField
+                      state={streamForm.bind.withDefault('0.0.0.0')}
+                      title="Bind Host"
+                      placeholder="0.0.0.0"
+                      type="ip"
+                    />
+                  )}
                   {/** Listening Port */}
                   {isStream(scheme) && (
                     <StoreFormInputField
@@ -246,7 +254,7 @@ function AdvancedOptions({ form }: { form: FormStore<Routes.Route> }) {
         <span>Advanced Options</span>
       </CollapsibleTrigger>
       <CollapsibleContent className="mt-4 flex flex-col gap-4">
-        <form.scheme.Show on={scheme => isHTTP(scheme)}>
+        <form.scheme.Show on={scheme => isHTTP(scheme) || isStream(scheme)}>
           <FieldSet>
             <FieldLegend variant="label">HTTP Config</FieldLegend>
             <FieldDescription>Configure HTTP-specific settings</FieldDescription>

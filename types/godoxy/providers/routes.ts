@@ -163,6 +163,8 @@ export type StreamRoute = {
   host?: Hostname | IPv4 | IPv6
   /* Stream port */
   port: StreamPort | number
+  /** Stream bind host */
+  bind?: IPv4 | IPv6
   /** Agent */
   agent?: string
   /** Healthcheck config */

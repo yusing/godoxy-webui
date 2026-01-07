@@ -656,6 +656,8 @@ export interface Route {
   access_log?: RequestLoggerConfig | null
   agent: string
   alias: string
+  /** for TCP and UDP routes, bind address to listen on */
+  bind?: string | null
   /** Docker only */
   container?: Container | null
   disable_compression: boolean
@@ -716,6 +718,8 @@ export interface RouteRoute {
   access_log?: RequestLoggerConfig | null
   agent: string
   alias: string
+  /** for TCP and UDP routes, bind address to listen on */
+  bind?: string | null
   /** Docker only */
   container?: Container | null
   disable_compression: boolean
