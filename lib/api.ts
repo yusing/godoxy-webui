@@ -36,11 +36,21 @@ export interface Agent {
   addr: string
   name: string
   runtime: AgentContainerRuntime
-  stream_port: number
+  supports_tcp_stream: boolean
+  supports_udp_stream: boolean
   version: string
 }
 
 export type AgentContainerRuntime = 'docker' | 'podman'
+
+export interface AgentpoolAgent {
+  addr: string
+  name: string
+  runtime: AgentContainerRuntime
+  supports_tcp_stream: boolean
+  supports_udp_stream: boolean
+  version: string
+}
 
 export interface AuthUserPassAuthCallbackRequest {
   password: string
@@ -64,7 +74,7 @@ export interface CertInfo {
 }
 
 export interface Container {
-  agent: Agent
+  agent: AgentpoolAgent
   aliases: string[]
   container_id: string
   container_name: string
@@ -570,11 +580,6 @@ export interface NewAgentRequest {
    * @max 65535
    */
   port: number
-  /**
-   * @min 1
-   * @max 65535
-   */
-  stream_port?: number
   type: 'docker' | 'system'
 }
 

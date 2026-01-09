@@ -14,7 +14,7 @@ import VersionText from '@/components/VersionText'
 import { useFragment } from '@/hooks/fragment'
 import type { MetricsPeriod } from '@/lib/api'
 import { formatBytes, formatTemperature } from '@/lib/format'
-import { IconServer } from '@tabler/icons-react'
+import { IconCheck, IconServer, IconX } from '@tabler/icons-react'
 import { Suspense, useCallback, useMemo } from 'react'
 import { store } from '../store'
 import MetricChart from './Charts'
@@ -50,8 +50,12 @@ function SystemInfoGraphsPage() {
   )
 
   const agentStore = store.agents[agent]!
-  const isStreamSupported = agentStore.useCompute(
-    agent => !selectedAgent || agent.stream_port !== undefined, // main server is always supported
+  const isTCPStreamSupported = agentStore.useCompute(
+    agent => !selectedAgent || agent.supports_tcp_stream, // main server is always supported
+    [selectedAgent]
+  )
+  const isUDPStreamSupported = agentStore.useCompute(
+    agent => !selectedAgent || agent.supports_udp_stream, // main server is always supported
     [selectedAgent]
   )
 
@@ -71,8 +75,21 @@ function SystemInfoGraphsPage() {
                 </span>
               )}
             </agentStore.version.Render>
-            <Badge className="ml-2" variant={isStreamSupported ? 'default' : 'destructive'}>
-              {isStreamSupported ? 'Stream supported' : 'Stream not supported'}
+            <Badge className="ml-2" variant={isTCPStreamSupported ? 'default' : 'destructive'}>
+              {isTCPStreamSupported ? (
+                <IconCheck className="size-4" />
+              ) : (
+                <IconX className="size-4" />
+              )}
+              {'TCP Stream'}
+            </Badge>
+            <Badge className="ml-2" variant={isUDPStreamSupported ? 'default' : 'destructive'}>
+              {isUDPStreamSupported ? (
+                <IconCheck className="size-4" />
+              ) : (
+                <IconX className="size-4" />
+              )}
+              {'UDP Stream'}
             </Badge>
           </h2>
           <div className="flex items-center gap-2 text-muted-foreground">
