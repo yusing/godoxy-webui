@@ -1,4 +1,4 @@
-import type { HomepageIconMetaSearch } from '@/lib/api'
+import type { IconMetaSearch } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { useMemoryStore, type FormState, type MemoryStore } from 'juststore'
 import { useEffect, useMemo } from 'react'
@@ -8,13 +8,13 @@ import LoadingRing from './LoadingRing'
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from './ui/command'
 
 // Utilities to construct icon URLs similar to the old Chakra version
-function iconURL(metadata: HomepageIconMetaSearch) {
+function iconURL(metadata: IconMetaSearch) {
   if (metadata.SVG) return `${metadata.Source}/${metadata.Ref}.svg`
   if (metadata.WebP) return `${metadata.Source}/${metadata.Ref}.webp`
   return `${metadata.Source}/${metadata.Ref}.png`
 }
 
-function iconURLVariant(metadata: HomepageIconMetaSearch, variant: 'light' | 'dark') {
+function iconURLVariant(metadata: IconMetaSearch, variant: 'light' | 'dark') {
   return `${metadata.Source}/${metadata.Ref}-${variant}.${metadata.SVG ? 'svg' : metadata.WebP ? 'webp' : 'png'}`
 }
 
@@ -29,7 +29,7 @@ type IconSearchFieldProps = {
 
 type IconSearchFieldState = {
   searchValue: string
-  currentIcon: HomepageIconMetaSearch | null
+  currentIcon: IconMetaSearch | null
   variant: 'dark' | 'light' | null
 }
 
@@ -155,7 +155,7 @@ function IconVariantIconButton({
   state,
   iconState,
 }: {
-  icon: HomepageIconMetaSearch
+  icon: IconMetaSearch
   variant: IconSearchFieldState['variant']
   state: MemoryStore<IconSearchFieldState>
   iconState: FormState<string>

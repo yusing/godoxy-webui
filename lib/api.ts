@@ -345,23 +345,6 @@ export interface HomepageCategory {
   name: string
 }
 
-export interface HomepageFetchResult {
-  icon: number[]
-  statusCode: number
-}
-
-export interface HomepageIconMetaSearch {
-  Dark: boolean
-  Light: boolean
-  PNG: boolean
-  Ref: string
-  SVG: boolean
-  Source: HomepageIconSource
-  WebP: boolean
-}
-
-export type HomepageIconSource = 'https://' | '@target' | '@walkxcode' | '@selfhst'
-
 export interface HomepageItem {
   alias: string
   /** sort order in all */
@@ -442,13 +425,30 @@ export interface HomepageOverrideItemsBatchParams {
   value: Record<string, HomepageItemConfig>
 }
 
+export interface IconFetchResult {
+  icon: number[]
+  statusCode: number
+}
+
+export interface IconMetaSearch {
+  Dark: boolean
+  Light: boolean
+  PNG: boolean
+  Ref: string
+  SVG: boolean
+  Source: IconsSource
+  WebP: boolean
+}
+
+export type IconsSource = 'https://' | '@target' | '@walkxcode' | '@selfhst'
+
 export interface IdlewatcherConfig {
   depends_on: string[]
   docker: DockerConfig
   /**
    * 0: no idle watcher.
    * Positive: idle watcher with idle timeout.
-   * Negative: idle watcher as a dependency.	IdleTimeout time.Duration `json:"idle_timeout" json_ext:"duration"`
+   * Negative: idle watcher as a dependency.
    */
   idle_timeout: TimeDuration
   no_loading_page: boolean
@@ -690,7 +690,7 @@ export interface Route {
   response_header_timeout: number
   root: string
   rule_file?: string | null
-  rules: RulesRule[]
+  rules?: RulesRule[] | null
   scheme: 'http' | 'https' | 'h2c' | 'tcp' | 'udp' | 'fileserver'
   /** Single-page app mode: serves index for non-existent paths */
   spa: boolean
@@ -752,7 +752,7 @@ export interface RouteRoute {
   response_header_timeout: number
   root: string
   rule_file?: string | null
-  rules: RulesRule[]
+  rules?: RulesRule[] | null
   scheme: 'http' | 'https' | 'h2c' | 'tcp' | 'udp' | 'fileserver'
   /** Single-page app mode: serves index for non-existent paths */
   spa: boolean
@@ -1248,7 +1248,7 @@ export namespace Favicon {
    * @name Favicon
    * @summary Get favicon
    * @request GET:/favicon
-   * @response `200` `(HomepageFetchResult)[]` OK
+   * @response `200` `(IconFetchResult)[]` OK
    * @response `400` `ErrorResponse` Bad Request: alias is empty or route is not HTTPRoute
    * @response `403` `ErrorResponse` Forbidden: unauthorized
    * @response `404` `ErrorResponse` Not Found: route or icon not found
@@ -1264,7 +1264,7 @@ export namespace Favicon {
     }
     export type RequestBody = never
     export type RequestHeaders = {}
-    export type ResponseBody = HomepageFetchResult[]
+    export type ResponseBody = IconFetchResult[]
   }
 }
 
@@ -1598,7 +1598,7 @@ export namespace Icons {
    * @name Icons
    * @summary List icons
    * @request GET:/icons
-   * @response `200` `(HomepageIconMetaSearch)[]` OK
+   * @response `200` `(IconMetaSearch)[]` OK
    * @response `400` `ErrorResponse` Bad Request
    * @response `403` `ErrorResponse` Forbidden
    */
@@ -1612,7 +1612,7 @@ export namespace Icons {
     }
     export type RequestBody = never
     export type RequestHeaders = {}
-    export type ResponseBody = HomepageIconMetaSearch[]
+    export type ResponseBody = IconMetaSearch[]
   }
 }
 
@@ -2418,7 +2418,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name Favicon
      * @summary Get favicon
      * @request GET:/favicon
-     * @response `200` `(HomepageFetchResult)[]` OK
+     * @response `200` `(IconFetchResult)[]` OK
      * @response `400` `ErrorResponse` Bad Request: alias is empty or route is not HTTPRoute
      * @response `403` `ErrorResponse` Forbidden: unauthorized
      * @response `404` `ErrorResponse` Not Found: route or icon not found
@@ -2433,7 +2433,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       },
       params: RequestParams = {}
     ) =>
-      this.request<HomepageFetchResult[], ErrorResponse>({
+      this.request<IconFetchResult[], ErrorResponse>({
         path: `/favicon`,
         method: 'GET',
         query: query,
@@ -2840,7 +2840,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name Icons
      * @summary List icons
      * @request GET:/icons
-     * @response `200` `(HomepageIconMetaSearch)[]` OK
+     * @response `200` `(IconMetaSearch)[]` OK
      * @response `400` `ErrorResponse` Bad Request
      * @response `403` `ErrorResponse` Forbidden
      */
@@ -2853,7 +2853,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       },
       params: RequestParams = {}
     ) =>
-      this.request<HomepageIconMetaSearch[], ErrorResponse>({
+      this.request<IconMetaSearch[], ErrorResponse>({
         path: `/icons`,
         method: 'GET',
         query: query,
