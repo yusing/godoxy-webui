@@ -104,7 +104,7 @@ function AutocertConfigForm({
       <StoreFieldInput
         state={state}
         fieldKey="provider"
-        schema={AutocertSchema.definitions.AutocertConfig}
+        schema={AutocertSchema.definitions.AutocertConfigWithoutExtra}
         allowKeyChange={false}
         allowDelete={false}
       />

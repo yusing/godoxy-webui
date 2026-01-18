@@ -23,7 +23,6 @@ import _ACLSchema from './acl.schema.json'
 import _AutocertSchema from './autocert.schema.json'
 import _ConfigSchema from './config.schema.json'
 import _DockerRoutesSchema from './docker_routes.schema.json'
-import _EntrypointMiddlewaresSchema from './entrypoint_middlewares.schema.json'
 import _MaxmindSchema from './maxmind.schema.json'
 import _MiddlewareComposeSchema from './middleware_compose.schema.json'
 import _RoutesSchema from './routes.schema.json'
@@ -34,7 +33,6 @@ import type ACLSchemaDeref from './acl.schema.deref.json'
 import type AutocertSchemaDeref from './autocert.schema.deref.json'
 import type ConfigSchemaDeref from './config.schema.deref.json'
 import type DockerRoutesSchemaDeref from './docker_routes.schema.deref.json'
-import type EntrypointMiddlewaresSchemaDeref from './entrypoint_middlewares.schema.deref.json'
 import type MaxmindSchemaDeref from './maxmind.schema.deref.json'
 import type MiddlewareComposeSchemaDeref from './middleware_compose.schema.deref.json'
 import type RoutesSchemaDeref from './routes.schema.deref.json'
@@ -47,9 +45,6 @@ const ConfigSchema = (await $.dereference(_ConfigSchema)) as typeof ConfigSchema
 const DockerRoutesSchema = (await $.dereference(
   _DockerRoutesSchema
 )) as typeof DockerRoutesSchemaDeref
-const EntrypointMiddlewaresSchema = (await $.dereference(
-  _EntrypointMiddlewaresSchema
-)) as typeof EntrypointMiddlewaresSchemaDeref
 const MaxmindSchema = (await $.dereference(_MaxmindSchema)) as typeof MaxmindSchemaDeref
 const MiddlewareComposeSchema = (await $.dereference(
   _MiddlewareComposeSchema
@@ -61,7 +56,6 @@ export {
   AutocertSchema,
   ConfigSchema,
   DockerRoutesSchema,
-  EntrypointMiddlewaresSchema,
   MaxmindSchema,
   MiddlewareComposeSchema,
   RoutesSchema,
@@ -81,5 +75,5 @@ export {
   type Notification,
   type Providers,
   type Proxmox,
-  type Routes,
+  type Routes
 }

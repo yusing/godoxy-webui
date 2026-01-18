@@ -27,9 +27,7 @@ test-run-lite:
 	docker compose -f test-run.lite.compose.yml up --build --pull=never
 
 gen-schema-single:
-	bun --bun ts-json-schema-generator --minify --no-type-check -e all --no-ref-encode -f ./tsconfig.json -o "${SCHEMA_DIR}/${OUT}" -p "${SCHEMA_DIR}/${IN}" -t ${CLASS}
-	# minify
-	# python3 -c "import json; f=open('${SCHEMA_DIR}/${OUT}', 'r'); j=json.load(f); f.close(); f=open('${SCHEMA_DIR}/${OUT}', 'w'); json.dump(j, f, separators=(',', ':'));"
+	bun --bun ts-json-schema-generator --minify --no-type-check -e export --no-ref-encode -f ./tsconfig.json -o "${SCHEMA_DIR}/${OUT}" -p "${SCHEMA_DIR}/${IN}" -t ${CLASS}
 	# deference
 	bun --bun ${SCHEMA_DIR}/deref.ts ${SCHEMA_DIR}/${OUT}
 
@@ -39,7 +37,7 @@ gen-schema:
 			OUT=config.schema.json \
 			gen-schema-single
 	make IN=config/autocert.ts \
-			CLASS=AutocertConfig \
+			CLASS=AutocertConfigWithoutExtra \
 			OUT=autocert.schema.json \
 			gen-schema-single
 	make IN=providers/routes.ts \
@@ -49,10 +47,6 @@ gen-schema:
 	make IN=middlewares/middleware_compose.ts \
 			CLASS=MiddlewareCompose \
 			OUT=middleware_compose.schema.json \
-			gen-schema-single
-	make IN=middlewares/middleware_compose.ts \
-			CLASS=EntrypointMiddlewares \
-			OUT=entrypoint_middlewares.schema.json \
 			gen-schema-single
 	make IN=docker.ts \
 			CLASS=DockerRoutes \

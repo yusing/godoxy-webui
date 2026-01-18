@@ -12,14 +12,18 @@ export const AUTOCERT_PROVIDERS = [
 
 export type AutocertProvider = (typeof AUTOCERT_PROVIDERS)[number]
 
-export type AutocertConfig = AutocertExtra & {
-  /** Extra certificates */
-  extra?: AutocertExtraArray
-}
-
-export type AutocertExtraArray = Partial<AutocertExtra>[]
-
 export type AutocertExtra =
+  | Partial<LocalOptions>
+  | Partial<CustomOptions>
+  | Partial<CloudflareOptions>
+  | Partial<CloudDNSOptions>
+  | Partial<DuckDNSOptions>
+  | Partial<OVHOptionsWithAppKey>
+  | Partial<OVHOptionsWithOAuth2Config>
+  | Partial<PorkbunOptions>
+  | Partial<OtherOptions>
+
+export type AutocertConfigWithoutExtra =
   | LocalOptions
   | CustomOptions
   | CloudflareOptions
@@ -29,6 +33,12 @@ export type AutocertExtra =
   | OVHOptionsWithOAuth2Config
   | PorkbunOptions
   | OtherOptions
+
+export type AutocertConfig =
+  AutocertConfigWithoutExtra & {
+    /** Extra certificates */
+    extra?: AutocertExtra[]
+  }
 
 export interface AutocertConfigBase {
   /** ACME email */
@@ -41,6 +51,8 @@ export interface AutocertConfigBase {
   key_path?: string
   /** DNS resolvers */
   resolvers?: string[]
+  /** CA Directory URL */
+  ca_dir_url?: string
 }
 
 export interface LocalOptions {
@@ -53,8 +65,6 @@ export interface LocalOptions {
 
 export interface CustomOptions extends AutocertConfigBase {
   provider: 'custom'
-  /** CA Directory URL */
-  ca_dir_url?: string
   /** CA Certs */
   ca_certs?: string[]
   /** EAB Key ID */
