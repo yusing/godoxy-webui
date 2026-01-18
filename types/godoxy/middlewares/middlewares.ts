@@ -15,6 +15,7 @@ export const ALL_MIDDLEWARES = [
   'RateLimit',
   'RealIP',
   'hCaptcha',
+  'Crowdsec',
   'ModifyHTML',
   'Themed',
 ] as const
@@ -87,6 +88,7 @@ export interface MiddlewaresMap
     KeyOptMapping<ModifyResponse>,
     KeyOptMapping<OIDC>,
     KeyOptMapping<ForwardAuth>,
+    KeyOptMapping<Crowdsec>,
     KeyOptMapping<RateLimit>,
     KeyOptMapping<RealIP>,
     KeyOptMapping<ModifyHTML>,
@@ -108,6 +110,7 @@ export type MiddlewareComposeItem = (
   | ModifyHTML
   | Themed
   | ForwardAuth
+  | Crowdsec
   | UseMiddlewareFileRef
 ) & {
   /**
@@ -243,6 +246,35 @@ export type hCaptcha = {
    * @default 24h
    */
   session_expiry?: Duration
+}
+
+export type Crowdsec = {
+  /** Middleware */
+  use: LooseUse<'crowdsec'>
+  /** Crowdsec AppSec route or IP address */
+  route: string
+  /** Crowdsec AppSec port
+   *
+   * @default 7422
+   */
+  port?: number
+  /** Crowdsec AppSec API key */
+  api_key: string
+  /** Crowdsec AppSec endpoint path
+   *
+   * @default "/"
+  */
+  endpoint?: string
+  /** Log blocked requests
+   *
+   * @default false
+   */
+  log_blocked?: boolean
+  /** Timeout for request to Crowdsec AppSec
+   *
+   * @default 5s
+   */
+  timeout?: Duration
 }
 
 export type RateLimit = {
