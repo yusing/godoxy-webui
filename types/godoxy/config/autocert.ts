@@ -17,7 +17,7 @@ export type AutocertConfig = AutocertExtra & {
   extra?: AutocertExtraArray
 }
 
-export type AutocertExtraArray = AutocertExtra[]
+export type AutocertExtraArray = Partial<AutocertExtra>[]
 
 export type AutocertExtra =
   | LocalOptions
