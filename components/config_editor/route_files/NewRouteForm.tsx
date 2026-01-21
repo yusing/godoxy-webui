@@ -4,6 +4,19 @@ import { useEffect, useMemo } from 'react'
 import { routesConfigStore } from '../store'
 import RouteEditForm from './RouteEditForm'
 
+function removeAlias(route: Routes.Route|undefined): Routes.Route {
+  if (!route) return {}
+  return {
+    ...route,
+    alias: undefined,
+  }
+}
+
+function removeAliasRecursively(routes: Routes.Routes|undefined): Routes.Routes {
+  if (!routes) return {}
+  return Object.fromEntries(Object.entries(routes).map(([key, value]) => [key, removeAlias(value)]))
+}
+
 export default function NewRouteForm() {
   const [config, setConfig] = routesConfigStore.configObject.useState()
 
@@ -22,8 +35,8 @@ export default function NewRouteForm() {
       return
     }
     setConfig({
-      ...config,
-      [route.alias]: route,
+      ...removeAliasRecursively(config),
+      [route.alias]: removeAlias(route),
     })
   }
 
