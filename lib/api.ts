@@ -646,8 +646,6 @@ export interface ProxyStats {
 }
 
 export interface RequestLoggerConfig {
-  /** Deprecated: buffer size is adjusted dynamically */
-  buffer_size: number
   fields: AccesslogFields
   filters: AccesslogFilters
   format: 'common' | 'combined' | 'json'
