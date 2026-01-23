@@ -100,6 +100,64 @@ export interface Container {
   state: ContainerContainerState
 }
 
+export interface ContainerBlkioStatEntry {
+  major: number
+  minor: number
+  op: string
+  value: number
+}
+
+export interface ContainerBlkioStats {
+  io_merged_recursive: ContainerBlkioStatEntry[]
+  io_queue_recursive: ContainerBlkioStatEntry[]
+  /** number of bytes transferred to and from the block device */
+  io_service_bytes_recursive: ContainerBlkioStatEntry[]
+  io_service_time_recursive: ContainerBlkioStatEntry[]
+  io_serviced_recursive: ContainerBlkioStatEntry[]
+  io_time_recursive: ContainerBlkioStatEntry[]
+  io_wait_time_recursive: ContainerBlkioStatEntry[]
+  sectors_recursive: ContainerBlkioStatEntry[]
+}
+
+export interface ContainerCPUStats {
+  /** CPU Usage. Linux and Windows. */
+  cpu_usage: ContainerCPUUsage
+  /** Online CPUs. Linux only. */
+  online_cpus: number
+  /** System Usage. Linux only. */
+  system_cpu_usage: number
+  /** Throttling Data. Linux only. */
+  throttling_data: ContainerThrottlingData
+}
+
+export interface ContainerCPUUsage {
+  /**
+   * Total CPU time consumed per core (Linux). Not used on Windows.
+   * Units: nanoseconds.
+   */
+  percpu_usage: number[]
+  /**
+   * Total CPU time consumed.
+   * Units: nanoseconds (Linux)
+   * Units: 100's of nanoseconds (Windows)
+   */
+  total_usage: number
+  /**
+   * Time spent by tasks of the cgroup in kernel mode (Linux).
+   * Time spent by all container processes in kernel mode (Windows).
+   * Units: nanoseconds (Linux).
+   * Units: 100's of nanoseconds (Windows). Not populated for Hyper-V Containers.
+   */
+  usage_in_kernelmode: number
+  /**
+   * Time spent by tasks of the cgroup in user mode (Linux).
+   * Time spent by all container processes in user mode (Windows).
+   * Units: nanoseconds (Linux).
+   * Units: 100's of nanoseconds (Windows). Not populated for Hyper-V Containers
+   */
+  usage_in_usermode: number
+}
+
 export type ContainerContainerState =
   | 'created'
   | 'running'
@@ -115,6 +173,66 @@ export interface ContainerImage {
   name: string
   tag: string
   version: string
+}
+
+export interface ContainerMemoryStats {
+  /** committed bytes */
+  commitbytes: number
+  /** peak committed bytes */
+  commitpeakbytes: number
+  /** number of times memory usage hits limits. */
+  failcnt: number
+  limit: number
+  /** maximum usage ever recorded. */
+  max_usage: number
+  /** private working set */
+  privateworkingset: number
+  /**
+   * TODO(vishh): Export these as stronger types.
+   * all the stats exported via memory.stat.
+   */
+  stats: Record<string, number>
+  /** current res_counter usage for memory */
+  usage: number
+}
+
+export interface ContainerNetworkStats {
+  /** Endpoint ID. Not used on Linux. */
+  endpoint_id: string
+  /** Instance ID. Not used on Linux. */
+  instance_id: string
+  /** Bytes received. Windows and Linux. */
+  rx_bytes: number
+  /** Incoming packets dropped. Windows and Linux. */
+  rx_dropped: number
+  /**
+   * Received errors. Not used on Windows. Note that we don't `omitempty` this
+   * field as it is expected in the >=v1.21 API stats structure.
+   */
+  rx_errors: number
+  /** Packets received. Windows and Linux. */
+  rx_packets: number
+  /** Bytes sent. Windows and Linux. */
+  tx_bytes: number
+  /** Outgoing packets dropped. Windows and Linux. */
+  tx_dropped: number
+  /**
+   * Sent errors. Not used on Windows. Note that we don't `omitempty` this
+   * field as it is expected in the >=v1.21 API stats structure.
+   */
+  tx_errors: number
+  /** Packets sent. Windows and Linux. */
+  tx_packets: number
+}
+
+export interface ContainerPidsStats {
+  /** Current is the number of pids in the cgroup */
+  current: number
+  /**
+   * Limit is the hard limit on the number of pids in the cgroup.
+   * A "Limit" of 0 means that there is no limit.
+   */
+  limit: number
 }
 
 export interface ContainerPortSummary {
@@ -159,7 +277,89 @@ export interface ContainerStats {
   total: number
 }
 
+export interface ContainerStatsResponse {
+  /**
+   * BlkioStats stores all IO service stats for data read and write.
+   *
+   * This type is Linux-specific and holds many fields that are specific
+   * to cgroups v1.
+   *
+   * On a cgroup v2 host, all fields other than "io_service_bytes_recursive"
+   * are omitted or "null".
+   *
+   * This type is only populated on Linux and omitted for Windows containers.
+   */
+  blkio_stats: ContainerBlkioStats
+  /** CPUStats contains CPU related info of the container. */
+  cpu_stats: ContainerCPUStats
+  /** ID is the ID of the container for which the stats were collected. */
+  id: string
+  /**
+   * MemoryStats aggregates all memory stats since container inception on Linux.
+   * Windows returns stats for commit and private working set only.
+   */
+  memory_stats: ContainerMemoryStats
+  /** Name is the name of the container for which the stats were collected. */
+  name: string
+  /**
+   * Networks contains Nntwork statistics for the container per interface.
+   *
+   * This field is omitted if the container has no networking enabled.
+   */
+  networks: Record<string, ContainerNetworkStats>
+  /**
+   * NumProcs is the number of processors on the system.
+   *
+   * This field is Windows-specific and always zero for Linux containers.
+   */
+  num_procs: number
+  /**
+   * OSType is the OS of the container ("linux" or "windows") to allow
+   * platform-specific handling of stats.
+   */
+  os_type: string
+  /**
+   * PidsStats contains Linux-specific stats of a container's process-IDs (PIDs).
+   *
+   * This field is Linux-specific and omitted for Windows containers.
+   */
+  pids_stats: ContainerPidsStats
+  /** PreCPUStats contains the CPUStats of the previous sample. */
+  precpu_stats: ContainerCPUStats
+  /**
+   * PreRead is the date and time at which this first sample was collected.
+   * This field is not propagated if the "one-shot" option is set. If the
+   * "one-shot" option is set, this field may be omitted, empty, or set
+   * to a default date (`0001-01-01T00:00:00Z`).
+   */
+  preread: string
+  /** Read is the date and time at which this sample was collected. */
+  read: string
+  /**
+   * StorageStats is the disk I/O stats for read/write on Windows.
+   *
+   * This type is Windows-specific and omitted for Linux containers.
+   */
+  storage_stats: ContainerStorageStats
+}
+
 export type ContainerStopMethod = 'pause' | 'stop' | 'kill'
+
+export interface ContainerStorageStats {
+  read_count_normalized: number
+  read_size_bytes: number
+  write_count_normalized: number
+  write_size_bytes: number
+}
+
+export interface ContainerThrottlingData {
+  /** Number of periods with throttling active */
+  periods: number
+  /** Number of periods when the container hits its throttling limit. */
+  throttled_periods: number
+  /** Aggregate time the container was throttled for in nanoseconds. */
+  throttled_time: number
+}
 
 export interface DiskIOCountersStat {
   iops: number
@@ -1216,6 +1416,29 @@ export namespace Docker {
     export type RequestBody = DockerapiStartRequest
     export type RequestHeaders = {}
     export type ResponseBody = SuccessResponse
+  }
+
+  /**
+   * @description Get container stats by container id
+   * @tags docker, websocket
+   * @name Stats
+   * @summary Get container stats
+   * @request GET:/docker/stats/{id}
+   * @response `200` `ContainerStatsResponse` OK
+   * @response `400` `ErrorResponse` Invalid request: id is required or route is not a docker container
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `404` `ErrorResponse` Container not found
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Stats {
+    export type RequestParams = {
+      /** Container ID or route alias */
+      id: string
+    }
+    export type RequestQuery = {}
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = ContainerStatsResponse
   }
 
   /**
@@ -2381,6 +2604,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: 'POST',
         body: request,
         type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get container stats by container id
+     *
+     * @tags docker, websocket
+     * @name Stats
+     * @summary Get container stats
+     * @request GET:/docker/stats/{id}
+     * @response `200` `ContainerStatsResponse` OK
+     * @response `400` `ErrorResponse` Invalid request: id is required or route is not a docker container
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `404` `ErrorResponse` Container not found
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    stats: (id: string, params: RequestParams = {}) =>
+      this.request<ContainerStatsResponse, ErrorResponse>({
+        path: `/docker/stats/${id}`,
+        method: 'GET',
         format: 'json',
         ...params,
       }),
