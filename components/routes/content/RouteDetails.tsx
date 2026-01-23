@@ -98,7 +98,7 @@ export default function RouteDetails() {
         </Card>
       </div>
       {/* Ports */}
-      <Card size="sm">
+      {/* <Card size="sm">
         <CardHeader>
           <CardTitle>Ports</CardTitle>
         </CardHeader>
@@ -108,7 +108,7 @@ export default function RouteDetails() {
             <Item title="Origin Port" value={routeDetails.port?.proxy} />
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
       {/* Status */}
       <Card size="sm">
         <CardHeader>
