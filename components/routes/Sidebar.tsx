@@ -118,9 +118,7 @@ function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: Route
             <RoutePercentageText routeKey={routeKey} />
           </Label>
         </div>
-        <div className="mt-2">
-          <RouteUptimeBar routeKey={routeKey} />
-        </div>
+        <RouteUptimeBar routeKey={routeKey} className="mt-2" />
       </a>
     </div>
   )
