@@ -307,12 +307,12 @@ export default function RouteDetails() {
             </div>
 
             <div className="flex gap-4">
-              <Item
+              {/* <Item
                 title="Running"
                 value={routeDetails.container.running ? 'Yes' : 'No'}
                 kind="badge"
                 variant={routeDetails.container.running ? 'secondary' : 'destructive'}
-              />
+              /> */}
               <Item
                 title="Container Excluded"
                 value={routeDetails.container.is_excluded ? 'Yes' : 'No'}

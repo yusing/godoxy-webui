@@ -13,9 +13,22 @@ export type RouteDisplaySettings = {
 
 export type RouteKey = string & { __brand: 'RouteKey' }
 
+export type DockerStatsSummary = {
+  cpuPercent: number
+  memoryUsage: number
+  memoryLimit: number
+  memoryPercent: number
+  networkRx: number
+  networkTx: number
+  blockRead: number
+  blockWrite: number
+  running: boolean
+}
+
 type RouteState = {
   routeKeys: RouteKey[]
   uptime: Record<RouteKey, RouteUptimeAggregate>
+  dockerStats: Record<RouteKey, DockerStatsSummary | null>
   displaySettings: RouteDisplaySettings
   logsAutoScroll: boolean
   mobileDialogOpen: boolean
@@ -24,6 +37,7 @@ type RouteState = {
 export const store = createStore<RouteState>('routes', {
   routeKeys: [],
   uptime: {},
+  dockerStats: {},
   displaySettings: {
     dockerOnly: false,
     hideUnknown: false,
