@@ -82,11 +82,14 @@ function RoutesSidebarItemList() {
 }
 
 function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: RouteKey }) {
-  const { hideUnknown, hideExcluded, dockerOnly } = store.displaySettings.use() ?? {}
-  const currentStatus = store.uptime[routeKey]?.current_status.use()
-  const isDocker = store.uptime[routeKey]?.is_docker.use()
-  const displayName = store.uptime[routeKey]?.display_name.use()
-  const excluded = store.uptime[routeKey]?.is_excluded.use()
+  const [hideUnknown, hideExcluded, dockerOnly] = store.displaySettings.useCompute(settings => [
+    settings.hideUnknown,
+    settings.hideExcluded,
+    settings.dockerOnly,
+  ])
+  const [currentStatus, isDocker, displayName, excluded] = store.uptime[routeKey]!.useCompute(
+    uptime => [uptime?.current_status, uptime?.is_docker, uptime?.display_name, uptime?.is_excluded]
+  )
   const hideUptimebarState = store.displaySettings.hideUptimebar
 
   if (hideUnknown && currentStatus === 'unknown') return null
