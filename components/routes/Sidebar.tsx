@@ -87,6 +87,7 @@ function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: Route
   const isDocker = store.uptime[routeKey]?.is_docker.use()
   const displayName = store.uptime[routeKey]?.display_name.use()
   const excluded = store.uptime[routeKey]?.is_excluded.use()
+  const hideUptimebarState = store.displaySettings.hideUptimebar
 
   if (hideUnknown && currentStatus === 'unknown') return null
   if (hideExcluded && excluded) return null
@@ -114,9 +115,13 @@ function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: Route
             <AppIcon alias={alias} size={18} />
             <Label className="route-display-name">{displayName || alias}</Label>
           </div>
-          <Label className="text-sm">
-            <RoutePercentageText routeKey={routeKey} />
-          </Label>
+          <hideUptimebarState.Render>
+            {hideUptimebar => (
+              <Label className={cn('text-sm', hideUptimebar && 'w-[10ch] text-right')}>
+                <RoutePercentageText routeKey={routeKey} />
+              </Label>
+            )}
+          </hideUptimebarState.Render>
         </div>
         <RouteUptimeBar routeKey={routeKey} className="mt-2" />
       </a>
