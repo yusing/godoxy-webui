@@ -42,7 +42,7 @@ export default function AutocertRenewDialogButton() {
         <IconRefresh className="size-4" />
         Renew
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="min-w-[70vw]">
         <DialogHeader>
           <DialogTitle>Renew Log</DialogTitle>
         </DialogHeader>
@@ -54,7 +54,7 @@ export default function AutocertRenewDialogButton() {
               {log.map((line, i) => (
                 <pre
                   key={i}
-                  className="whitespace-pre-wrap text-xs"
+                  className="whitespace-pre-wrap text-xs font-mono font-medium"
                   dangerouslySetInnerHTML={{ __html: convert.toHtml(line) }}
                 />
               ))}
