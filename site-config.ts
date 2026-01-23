@@ -1,6 +1,6 @@
 export const siteConfig = {
   metadata: {
-    title: 'GoDoxy',
+    title: process.env.NODE_ENV === 'development' ? 'GoDoxy (dev)' : 'GoDoxy',
     description: 'Beyond a reverse proxy',
   },
   links: {
