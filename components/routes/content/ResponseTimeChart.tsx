@@ -49,7 +49,7 @@ function RouteResponseTimeChart() {
   }
 
   return (
-    <ChartContainer className="max-h-40 w-full" config={chartConfig}>
+    <ChartContainer className="max-h-60 w-full" config={chartConfig}>
       <AreaChart accessibilityLayer data={statuses ?? []}>
         <CartesianGrid vertical={false} />
         <XAxis

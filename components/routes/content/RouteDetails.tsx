@@ -17,6 +17,7 @@ import { stringify as stringifyYAML } from 'yaml'
 import { decodeRouteKey } from '../utils'
 import ContainerLogs from './ContainerLogs'
 import ContainerLogsHeader from './ContainerLogsHeader'
+import RouteResponseTimeChart from './ResponseTimeChart'
 
 export default function RouteDetails() {
   const activeRoute = decodeRouteKey(useSelectedRoute())
@@ -52,9 +53,9 @@ export default function RouteDetails() {
   }
 
   return (
-    <div className="space-y-6 w-full">
+    <div className="space-y-2 w-full">
       {routeDetails.container?.running && (
-        <Card>
+        <Card size="sm">
           <CardHeader>
             <CardTitle>Container Logs</CardTitle>
             <CardDescription>
@@ -67,25 +68,37 @@ export default function RouteDetails() {
         </Card>
       )}
       {/* Basic Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Basic Information</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="space-y-2 md:space-y-0 md:grid md:grid-cols-3 md:divide-x w-full">
+        <Card size="sm" className="md:rounded-r-none">
+          <CardHeader>
+            <CardTitle>Basic Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <Item title="Alias" value={routeDetails.alias} />
             <Item title="Agent" value={routeDetails.agent} />
             <Item title="Host" value={routeDetails.host} className="font-mono" />
             <Item title="Scheme" value={routeDetails.scheme} kind="badge" />
-          </div>
-          <Item title="Origin URL" value={routeDetails.purl} className="font-mono break-all" />
-          {routeDetails.lurl && (
-            <Item title="Listening URL" value={routeDetails.lurl} className="font-mono break-all" />
-          )}
-        </CardContent>
-      </Card>
+            <Item title="Origin URL" value={routeDetails.purl} className="font-mono break-all" />
+            {routeDetails.lurl && (
+              <Item
+                title="Listening URL"
+                value={routeDetails.lurl}
+                className="font-mono break-all"
+              />
+            )}
+          </CardContent>
+        </Card>
+        <Card size="sm" className="md:col-span-2 md:rounded-l-none">
+          <CardHeader>
+            <CardTitle>Response Time</CardTitle>
+          </CardHeader>
+          <CardContent className="-ml-6">
+            <RouteResponseTimeChart />
+          </CardContent>
+        </Card>
+      </div>
       {/* Ports */}
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Ports</CardTitle>
         </CardHeader>
@@ -97,7 +110,7 @@ export default function RouteDetails() {
         </CardContent>
       </Card>
       {/* Status */}
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Status</CardTitle>
         </CardHeader>
@@ -134,7 +147,7 @@ export default function RouteDetails() {
         </CardContent>
       </Card>
       {/* Configuration */}
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Configuration</CardTitle>
         </CardHeader>
@@ -175,7 +188,7 @@ export default function RouteDetails() {
         </CardContent>
       </Card>
       {/* Health Check */}
-      <Card>
+      <Card size="sm">
         <CardHeader>
           <CardTitle>Health Check</CardTitle>
         </CardHeader>
@@ -208,7 +221,7 @@ export default function RouteDetails() {
       </Card>
       {/* Homepage Configuration */}
       {!isStream && !isExcluded && (
-        <Card>
+        <Card size="sm">
           <CardHeader>
             <CardTitle>Homepage Configuration</CardTitle>
           </CardHeader>
@@ -239,7 +252,7 @@ export default function RouteDetails() {
       )}
       {/* Rules */}
       {routeDetails.rules && routeDetails.rules.length > 0 && (
-        <Card>
+        <Card size="sm">
           <CardHeader>
             <CardTitle>Rules ({routeDetails.rules.length})</CardTitle>
           </CardHeader>
@@ -262,7 +275,7 @@ export default function RouteDetails() {
       )}
       {/* Path Patterns */}
       {routeDetails.path_patterns && routeDetails.path_patterns.length > 0 && (
-        <Card>
+        <Card size="sm">
           <CardHeader>
             <Title>Path Patterns</Title>
           </CardHeader>
@@ -279,7 +292,7 @@ export default function RouteDetails() {
       )}
       {/* Container Information */}
       {routeDetails.container && (
-        <Card>
+        <Card size="sm">
           <CardHeader>
             <CardTitle>Docker Container</CardTitle>
           </CardHeader>
@@ -375,7 +388,7 @@ export default function RouteDetails() {
       )}
       {/* Load Balancer */}
       {routeDetails.load_balance && (
-        <Card>
+        <Card size="sm">
           <CardHeader>
             <CardTitle>Load Balancer</CardTitle>
           </CardHeader>
@@ -390,7 +403,7 @@ export default function RouteDetails() {
       )}
       {/* Middlewares */}
       {routeDetails.middlewares && Object.keys(routeDetails.middlewares).length > 0 && (
-        <Card>
+        <Card size="sm">
           <CardHeader>
             <CardTitle>Middlewares</CardTitle>
           </CardHeader>
@@ -401,7 +414,7 @@ export default function RouteDetails() {
       )}
       {/* Additional Configuration */}
       {(routeDetails.access_log || routeDetails.idlewatcher) && (
-        <Card>
+        <Card size="sm">
           <CardHeader>
             <CardTitle>Additional Configuration</CardTitle>
           </CardHeader>
