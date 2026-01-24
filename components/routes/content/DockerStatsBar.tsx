@@ -13,6 +13,11 @@ function formatPercent(value?: number | null) {
 
 export default function DockerStatsBar({ routeKey }: { routeKey: RouteKey }) {
   const stats = store.dockerStats[routeKey]?.use()
+  const isDocker = store.routeDetails[routeKey]!.container.useCompute(container =>
+    Boolean(container)
+  )
+
+  if (!isDocker) return null
 
   const cells = [
     {

@@ -7,8 +7,7 @@ import DockerStatsBar from './DockerStatsBar'
 
 export default function RoutePageHeader() {
   const selected = useSelectedRoute()
-  const displayName = store.uptime[selected]?.display_name.use()
-  const isDockerState = store.uptime[selected]!.is_docker
+  const displayName = store.routeDetails[selected]?.homepage.name.use()
   const percentage = store.uptime[selected]?.uptime.useCompute(uptime =>
     uptime ? formatPercent(uptime) : undefined
   )
@@ -27,9 +26,7 @@ export default function RoutePageHeader() {
           </div>
         )}
       </div>
-      <isDockerState.Show on={isDocker => isDocker}>
-        <DockerStatsBar routeKey={selected} />
-      </isDockerState.Show>
+      <DockerStatsBar routeKey={selected} />
     </div>
   )
 }

@@ -2,9 +2,8 @@
 
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { ContainerStatsResponse } from '@/lib/api'
-import { useEffect, useMemo } from 'react'
-import { store, useSelectedRoute, type DockerStatsSummary } from './store'
-import { decodeRouteKey } from './utils'
+import { useEffect } from 'react'
+import { store, useSelectedRoute, type DockerStatsSummary } from '../store'
 
 function summarizeStats(stats: ContainerStatsResponse): DockerStatsSummary {
   const cpuTotal = stats.cpu_stats.cpu_usage.total_usage ?? 0
@@ -56,12 +55,13 @@ function summarizeStats(stats: ContainerStatsResponse): DockerStatsSummary {
 
 export default function DockerStatsProvider() {
   const routeKey = useSelectedRoute()
-  const isDocker = store.uptime[routeKey]?.is_docker.use() ?? false
-  const routeId = useMemo(() => (routeKey ? decodeRouteKey(routeKey) : ''), [routeKey])
-  const shouldConnect = Boolean(routeId) && isDocker
+  const containerId = store.routeDetails[routeKey]?.useCompute(
+    details => details?.container?.container_id
+  )
+  const shouldConnect = containerId !== undefined
 
   useWebSocketApi<ContainerStatsResponse>({
-    endpoint: `/docker/stats/${routeId}`,
+    endpoint: `/docker/stats/${containerId}`,
     shouldConnect,
     onMessage: data => {
       if (!routeKey) return

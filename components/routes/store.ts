@@ -1,7 +1,7 @@
 'use client'
 
 import { useFragment } from '@/hooks/fragment'
-import type { RouteUptimeAggregate } from '@/lib/api'
+import type { RouteRoute, RouteUptimeAggregate } from '@/lib/api'
 import { createStore } from 'juststore'
 
 export type RouteDisplaySettings = {
@@ -28,6 +28,7 @@ export type DockerStatsSummary = {
 type RouteState = {
   routeKeys: RouteKey[]
   uptime: Record<RouteKey, RouteUptimeAggregate>
+  routeDetails: Record<RouteKey, RouteRoute>
   dockerStats: Record<RouteKey, DockerStatsSummary | null>
   displaySettings: RouteDisplaySettings
   logsAutoScroll: boolean
@@ -37,6 +38,7 @@ type RouteState = {
 export const store = createStore<RouteState>('routes', {
   routeKeys: [],
   uptime: {},
+  routeDetails: {},
   dockerStats: {},
   displaySettings: {
     dockerOnly: false,

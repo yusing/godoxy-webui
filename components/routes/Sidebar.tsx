@@ -87,9 +87,14 @@ function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: Route
     settings.hideExcluded,
     settings.dockerOnly,
   ])
-  const [currentStatus, isDocker, displayName, excluded] = store.uptime[routeKey]!.useCompute(
-    uptime => [uptime?.current_status, uptime?.is_docker, uptime?.display_name, uptime?.is_excluded]
-  )
+  const currentStatus = store.uptime[routeKey]!.current_status.use()
+  const [isDocker, displayName, excluded] = store.routeDetails[routeKey]!.useCompute(details => {
+    if (!details) {
+      return [false, '', false]
+    }
+    return [Boolean(details.container), details.homepage.name, details.excluded]
+  })
+
   const hideUptimebarState = store.displaySettings.hideUptimebar
 
   if (hideUnknown && currentStatus === 'unknown') return null
@@ -159,10 +164,10 @@ function RoutesUptimeProvider({
         'uptime',
         uptime.data.reduce(
           (acc, route) => {
-            acc[route.alias] = route
+            acc[encodeRouteKey(route.alias)] = route
             return acc
           },
-          {} as Record<string, RouteUptimeAggregate>
+          {} as Record<RouteKey, RouteUptimeAggregate>
         )
       )
     },

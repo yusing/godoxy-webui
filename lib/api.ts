@@ -990,11 +990,8 @@ export interface RouteUptimeAggregate {
   alias: string
   avg_latency: number
   current_status: 'healthy' | 'unhealthy' | 'unknown' | 'napping' | 'starting'
-  display_name: string
   downtime: number
   idle: number
-  is_docker: boolean
-  is_excluded: boolean
   statuses: RouteStatus[]
   uptime: number
 }

@@ -1,19 +1,18 @@
 'use client'
 
 import { CodeMirror } from '@/components/ObjectDataList'
-import { useSelectedRoute } from '@/components/routes/store'
+import { store, useSelectedRoute } from '@/components/routes/store'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Code from '@/components/ui/code'
 import { DataList, DataListRow } from '@/components/ui/data-list'
 import { Label } from '@/components/ui/label'
 import type { IdlewatcherConfig } from '@/lib/api'
-import { api } from '@/lib/api-client'
 import { formatDuration, formatGoDuration, formatRelTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { yaml } from '@codemirror/lang-yaml'
 import { IconArrowRight } from '@tabler/icons-react'
-import { useAsync } from 'react-use'
+import { useEffect } from 'react'
 import { stringify as stringifyYAML } from 'yaml'
 import { decodeRouteKey } from '../utils'
 import ContainerLogs from './ContainerLogs'
@@ -21,23 +20,26 @@ import ContainerLogsHeader from './ContainerLogsHeader'
 import RouteResponseTimeChart from './ResponseTimeChart'
 
 export default function RouteDetails() {
-  const activeRoute = decodeRouteKey(useSelectedRoute())
-  const { value: routeDetails, error } = useAsync(
-    async () =>
-      activeRoute ? api.route.route(activeRoute).then(res => res.data) : Promise.resolve(null),
-    [activeRoute]
-  )
+  const routeKey = useSelectedRoute()
+  const activeRoute = decodeRouteKey(routeKey)
+  const routeDetails = store.routeDetails[routeKey]?.use()
 
   const isStream = routeDetails?.scheme === 'tcp' || routeDetails?.scheme === 'udp'
   const isExcluded = routeDetails?.excluded
   const showHomepageConfiguration = !isStream && !isExcluded
 
+  useEffect(() => {
+    if (routeKey) {
+      if (!routeDetails) {
+        store.routeDetails[routeKey]!.reset()
+      } else {
+        store.routeDetails[routeKey]!.set(routeDetails)
+      }
+    }
+  }, [routeKey, routeDetails])
+
   if (!activeRoute) {
     return <div className="p-4 text-muted-foreground">Select a route to view details.</div>
-  }
-
-  if (error) {
-    return <div className="p-4 text-muted-foreground">Error: {error.message}</div>
   }
 
   if (!routeDetails) {
