@@ -56,7 +56,7 @@ export default function RouteDetails() {
   return (
     <div className="space-y-2 w-full">
       {routeDetails.container && (
-        <Card size="sm">
+        <Card size="sm" className="px-2">
           <CardHeader>
             <CardTitle>Container Logs</CardTitle>
             <CardDescription>
@@ -75,18 +75,23 @@ export default function RouteDetails() {
             <CardTitle>Basic Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Item title="Alias" value={routeDetails.alias} />
-            <Item title="Agent" value={routeDetails.agent} />
-            <Item title="Host" value={routeDetails.host} className="font-mono" />
-            <Item title="Scheme" value={routeDetails.scheme} kind="badge" />
-            <Item title="Origin URL" value={routeDetails.purl} className="font-mono break-all" />
-            {routeDetails.lurl && (
-              <Item
-                title="Listening URL"
-                value={routeDetails.lurl}
-                className="font-mono break-all"
-              />
-            )}
+            <DataList>
+              {routeDetails.provider && (
+                <DataListRow label="Provider" value={routeDetails.provider} />
+              )}
+              <DataListRow label="Alias" value={routeDetails.alias} />
+              <DataListRow label="Agent" value={routeDetails.agent} />
+              <DataListRow label="Host" value={routeDetails.host} />
+              <DataListRow label="Scheme" value={routeDetails.scheme} />
+              <DataListRow label="Origin URL" value={routeDetails.purl} className="break-all" />
+              {routeDetails.lurl && (
+                <DataListRow
+                  label="Listening URL"
+                  value={routeDetails.lurl}
+                  className="break-all"
+                />
+              )}
+            </DataList>
           </CardContent>
         </Card>
         <Card size="sm" className="md:col-span-2 md:rounded-l-none px-2">
@@ -117,36 +122,34 @@ export default function RouteDetails() {
             <CardTitle>Status</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <Item
-              title="Route Excluded"
-              value={routeDetails.excluded ? 'Yes' : 'No'}
-              kind="badge"
-              variant={routeDetails.excluded ? 'destructive' : 'outline'}
-            />
-            {routeDetails.health && (
-              <>
-                <div className="grid grid-cols-2 gap-4">
+            <DataList>
+              <DataListRow label="Route Excluded" value={routeDetails.excluded ? 'Yes' : 'No'} />
+              {routeDetails.health && (
+                <>
                   {routeDetails.excluded_reason && (
-                    <Item title="Excluded reason" value={routeDetails.excluded_reason} />
+                    <DataListRow label="Excluded reason" value={routeDetails.excluded_reason} />
                   )}
-                  <Item title="Status" value={routeDetails.health.status} />
-                  <Item
-                    title="Latency"
+                  <DataListRow label="Status" value={routeDetails.health.status} />
+                  <DataListRow
+                    label="Latency"
                     value={formatDuration(routeDetails.health.latency, { unit: 'ms' })}
                   />
-                  <Item
-                    title="Uptime"
+                  <DataListRow
+                    label="Uptime"
                     value={formatDuration(routeDetails.health.uptime, { unit: 's' })}
                   />
-                  <Item title="Last Seen" value={formatRelTime(routeDetails.health.lastSeen)} />
-                </div>
-                {routeDetails.health.detail && (
-                  <div className="md:col-span-2">
-                    <Title>Details</Title>
-                    <div className="text-sm">{routeDetails.health.detail}</div>
-                  </div>
-                )}
-              </>
+                  <DataListRow
+                    label="Last Seen"
+                    value={formatRelTime(routeDetails.health.lastSeen)}
+                  />
+                </>
+              )}
+            </DataList>
+            {routeDetails.health?.detail && (
+              <div>
+                <Label className="text-muted-foreground">Details</Label>
+                <div className="text-sm">{routeDetails.health.detail}</div>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -155,39 +158,28 @@ export default function RouteDetails() {
             <CardTitle>Configuration</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex flex-wrap gap-4">
+            <DataList>
               {routeDetails.response_header_timeout && (
-                <Item
-                  title="Response Header Timeout"
+                <DataListRow
+                  label="Response Header Timeout"
                   value={`${routeDetails.response_header_timeout} ms`}
                 />
               )}
               {(routeDetails.scheme === 'http' ||
                 routeDetails.scheme === 'https' ||
                 routeDetails.scheme === 'h2c') && (
-                <Item
-                  title="Compression"
+                <DataListRow
+                  label="Compression"
                   value={routeDetails.disable_compression ? 'Disabled' : 'Enabled'}
-                  kind="badge"
-                  variant={routeDetails.disable_compression ? 'destructive' : 'secondary'}
                 />
               )}
               {routeDetails.scheme === 'https' && (
-                <Item
-                  title="TLS Verify"
+                <DataListRow
+                  label="TLS Verify"
                   value={routeDetails.no_tls_verify ? 'Disabled' : 'Enabled'}
-                  kind="badge"
-                  variant={routeDetails.no_tls_verify ? 'destructive' : 'secondary'}
                 />
               )}
-            </div>
-
-            {routeDetails.provider && (
-              <div>
-                <Label className="text-muted-foreground">Provider</Label>
-                <div className="text-sm">{routeDetails.provider}</div>
-              </div>
-            )}
+            </DataList>
           </CardContent>
         </Card>
       </div>
@@ -203,32 +195,26 @@ export default function RouteDetails() {
             <CardTitle>Health Check</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 gap-4">
-              <Item
-                title="Enabled"
+            <DataList>
+              <DataListRow
+                label="Enabled"
                 value={routeDetails.healthcheck.disable ? 'No' : 'Yes'}
-                variant={routeDetails.healthcheck.disable ? 'destructive' : 'secondary'}
               />
-              <Item title="Retries" value={routeDetails.healthcheck.retries} />
-              <Item
-                title="Interval"
+              <DataListRow label="Retries" value={routeDetails.healthcheck.retries} />
+              <DataListRow
+                label="Interval"
                 value={formatDuration(routeDetails.healthcheck.interval / 1000, { unit: 'us' })}
               />
-              <Item
-                title="Timeout"
+              <DataListRow
+                label="Timeout"
                 value={formatDuration(routeDetails.healthcheck.timeout / 1000, { unit: 'us' })}
               />
-              <Item
-                title="Use GET"
+              <DataListRow
+                label="Use GET"
                 value={routeDetails.healthcheck.use_get ? 'Yes' : 'No'}
-                variant="outline"
               />
-              <Item
-                title="Path"
-                value={routeDetails.healthcheck.path || '/'}
-                className="font-mono"
-              />
-            </div>
+              <DataListRow label="Path" value={routeDetails.healthcheck.path || '/'} />
+            </DataList>
           </CardContent>
         </Card>
         {showHomepageConfiguration && (
@@ -237,34 +223,25 @@ export default function RouteDetails() {
               <CardTitle>Homepage Configuration</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex gap-4">
-                <Item
-                  title="Favorite"
+              <DataList>
+                <DataListRow
+                  label="Favorite"
                   value={routeDetails.homepage.favorite ? 'Yes' : 'No'}
-                  kind="badge"
-                  variant={routeDetails.homepage.favorite ? 'secondary' : 'outline'}
                 />
-                <Item
-                  title="Show"
-                  value={routeDetails.homepage.show ? 'Yes' : 'No'}
-                  kind="badge"
-                  variant={routeDetails.homepage.show ? 'secondary' : 'outline'}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <Item title="Name" value={routeDetails.homepage.name} />
-                <Item title="Category" value={routeDetails.homepage.category} />
-                <Item title="Description" value={routeDetails.homepage.description} />
-                <Item title="Icon" value={routeDetails.homepage.icon} className="font-mono" />
-              </div>
-              <Item title="URL" value={routeDetails.homepage.url} className="font-mono break-all" />
+                <DataListRow label="Show" value={routeDetails.homepage.show ? 'Yes' : 'No'} />
+                <DataListRow label="Name" value={routeDetails.homepage.name} />
+                <DataListRow label="Category" value={routeDetails.homepage.category} />
+                <DataListRow label="Description" value={routeDetails.homepage.description} />
+                <DataListRow label="Icon" value={routeDetails.homepage.icon} />
+                <DataListRow label="URL" value={routeDetails.homepage.url} className="break-all" />
+              </DataList>
             </CardContent>
           </Card>
         )}
       </div>
       {/* Rules */}
       {routeDetails.rules && routeDetails.rules.length > 0 && (
-        <Card size="sm">
+        <Card size="sm" className="px-2">
           <CardHeader>
             <CardTitle>Rules ({routeDetails.rules.length})</CardTitle>
           </CardHeader>
@@ -287,7 +264,7 @@ export default function RouteDetails() {
       )}
       {/* Path Patterns */}
       {routeDetails.path_patterns && routeDetails.path_patterns.length > 0 && (
-        <Card size="sm">
+        <Card size="sm" className="px-2">
           <CardHeader>
             <Title>Path Patterns</Title>
           </CardHeader>
@@ -304,47 +281,30 @@ export default function RouteDetails() {
       )}
       {/* Container Information */}
       {routeDetails.container && (
-        <Card size="sm">
+        <Card size="sm" className="px-2">
           <CardHeader>
             <CardTitle>Docker Container</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Item
-                title="Name"
-                value={routeDetails.container.container_name}
-                className="font-mono"
-              />
-              <Item
-                title="Docker Host"
-                value={routeDetails.container.docker_cfg.url}
-                className="font-mono"
-              />
-              <Item title="Image" value={routeDetails.container.image.name} className="font-mono" />
-              <Item
-                title="Container ID"
+            <DataList>
+              <DataListRow label="Name" value={routeDetails.container.container_name} />
+              <DataListRow label="Docker Host" value={routeDetails.container.docker_cfg.url} />
+              <DataListRow label="Image" value={routeDetails.container.image.name} />
+              <DataListRow
+                label="Container ID"
                 value={routeDetails.container.container_id.slice(0, 12)}
-                className="font-mono"
               />
-              <Item title="Network" value={routeDetails.container.network} />
-              <Item title="Public Hostname" value={routeDetails.container.public_hostname} />
-              <Item title="Private Hostname" value={routeDetails.container.private_hostname} />
-            </div>
-
-            <div className="flex gap-4">
-              {/* <Item
-                title="Running"
-                value={routeDetails.container.running ? 'Yes' : 'No'}
-                kind="badge"
-                variant={routeDetails.container.running ? 'secondary' : 'destructive'}
-              /> */}
-              <Item
-                title="Container Excluded"
+              <DataListRow label="Network" value={routeDetails.container.network} />
+              <DataListRow label="Public Hostname" value={routeDetails.container.public_hostname} />
+              <DataListRow
+                label="Private Hostname"
+                value={routeDetails.container.private_hostname}
+              />
+              <DataListRow
+                label="Container Excluded"
                 value={routeDetails.container.is_excluded ? 'Yes' : 'No'}
-                kind="badge"
-                variant={routeDetails.container.is_excluded ? 'destructive' : 'outline'}
               />
-            </div>
+            </DataList>
 
             <div>
               <Title>Public Ports</Title>
@@ -400,7 +360,7 @@ export default function RouteDetails() {
       )}
       {/* Load Balancer */}
       {routeDetails.load_balance && (
-        <Card size="sm">
+        <Card size="sm" className="px-2">
           <CardHeader>
             <CardTitle>Load Balancer</CardTitle>
           </CardHeader>
@@ -415,7 +375,7 @@ export default function RouteDetails() {
       )}
       {/* Middlewares */}
       {routeDetails.middlewares && Object.keys(routeDetails.middlewares).length > 0 && (
-        <Card size="sm">
+        <Card size="sm" className="px-2">
           <CardHeader>
             <CardTitle>Middlewares</CardTitle>
           </CardHeader>
@@ -426,7 +386,7 @@ export default function RouteDetails() {
       )}
       {/* Additional Configuration */}
       {(routeDetails.access_log || routeDetails.idlewatcher) && (
-        <Card size="sm">
+        <Card size="sm" className="px-2">
           <CardHeader>
             <CardTitle>Additional Configuration</CardTitle>
           </CardHeader>
@@ -461,31 +421,4 @@ export default function RouteDetails() {
 
 function Title({ children }: { children: React.ReactNode }) {
   return <Label className="text-muted-foreground">{children}</Label>
-}
-
-function Item({
-  title,
-  value,
-  className,
-  kind = 'text',
-  variant = 'secondary',
-}: {
-  title: string
-  value: string | number | undefined | null
-  kind?: 'text' | 'badge'
-  variant?: 'secondary' | 'outline' | 'destructive' | 'outline'
-  className?: string
-}) {
-  return (
-    <div className={cn(kind === 'badge' && 'flex items-center gap-4')}>
-      <Title>{title}</Title>
-      {kind === 'badge' ? (
-        <Badge variant={variant}>{value || 'None'}</Badge>
-      ) : (
-        <div className={cn('text-sm', className)}>
-          {value || <span className={cn('text-muted-foreground', className)}>None</span>}
-        </div>
-      )}
-    </div>
-  )
 }
