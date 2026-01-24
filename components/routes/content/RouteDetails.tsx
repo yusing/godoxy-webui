@@ -7,8 +7,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import Code from '@/components/ui/code'
 import { DataList, DataListRow } from '@/components/ui/data-list'
 import { Label } from '@/components/ui/label'
+import type { IdlewatcherConfig } from '@/lib/api'
 import { api } from '@/lib/api-client'
-import { formatDuration, formatRelTime } from '@/lib/format'
+import { formatDuration, formatGoDuration, formatRelTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { yaml } from '@codemirror/lang-yaml'
 import { IconArrowRight } from '@tabler/icons-react'
@@ -407,7 +408,7 @@ export default function RouteDetails() {
                 <Title>Idle Watcher</Title>
                 <CodeMirror
                   className="mt-1"
-                  value={stringifyYAML(routeDetails.idlewatcher)}
+                  value={stringifyYAML(formatIdlewatcher(routeDetails.idlewatcher))}
                   extensions={[yaml()]}
                 />
               </div>
@@ -417,6 +418,15 @@ export default function RouteDetails() {
       )}
     </div>
   )
+}
+
+function formatIdlewatcher(idlewatcher: IdlewatcherConfig) {
+  return {
+    ...idlewatcher,
+    idle_timeout: formatGoDuration(idlewatcher.idle_timeout),
+    wake_timeout: formatGoDuration(idlewatcher.wake_timeout),
+    stop_timeout: formatGoDuration(idlewatcher.stop_timeout),
+  }
 }
 
 function Title({ children }: { children: React.ReactNode }) {

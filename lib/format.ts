@@ -22,6 +22,10 @@ function formatPrecision(value: number, precision: number) {
   return Math.round(value * factor) / factor
 }
 
+export function formatGoDuration(dur: number): string {
+  return formatDuration(dur / 1000, { unit: 'us' })
+}
+
 export function formatDuration(dur: number, options?: { unit?: 'us' | 'ms' | 's' }): string {
   const { unit = 's' } = options ?? {}
   if (dur < 0) {
