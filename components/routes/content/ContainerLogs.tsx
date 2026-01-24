@@ -1,6 +1,7 @@
 import LoadingRing from '@/components/LoadingRing'
 import { Button } from '@/components/ui/button'
 import { useWebSocketApi } from '@/hooks/websocket'
+import { formatRelTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 import Convert from 'ansi-to-html'
@@ -10,14 +11,11 @@ import { store } from '../store'
 
 const convertANSI = new Convert()
 
-type LogLine = { id: number; content: string }
-
 export default function ContainerLogs({ containerId }: { containerId: string }) {
-  const [lines, { push, reset }] = useList<LogLine>()
+  const [lines, { push, reset }] = useList<string>()
   const topRef = useRef<HTMLDivElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
   const logsRef = useRef<HTMLDivElement>(null)
-  const idRef = useRef(0)
   const autoScroll = store.logsAutoScroll.use() ?? false
   const scrollDirection = useRef<'up' | 'down'>('down')
 
@@ -37,7 +35,6 @@ export default function ContainerLogs({ containerId }: { containerId: string }) 
   }, [logsRef])
 
   useEffect(() => {
-    idRef.current = 0
     reset()
   }, [containerId, reset])
 
@@ -47,7 +44,6 @@ export default function ContainerLogs({ containerId }: { containerId: string }) 
         <LogProvider
           containerId={containerId}
           push={push}
-          idRef={idRef}
           autoScroll={autoScroll}
           logsRef={logsRef}
         />
@@ -70,13 +66,14 @@ function ContainerLogsInner({
   bottomRef,
   scrollDirection,
 }: {
-  lines: LogLine[]
+  lines: string[]
   logsRef: React.RefObject<HTMLDivElement | null>
   topRef: React.RefObject<HTMLDivElement | null>
   bottomRef: React.RefObject<HTMLDivElement | null>
   scrollDirection: React.RefObject<'up' | 'down'>
 }) {
   'use memo'
+
   return (
     <>
       <div className="flex flex-col gap-1 overflow-auto h-full max-h-[45vh]" ref={logsRef}>
@@ -86,7 +83,11 @@ function ContainerLogsInner({
             <LoadingRing />
           </div>
         ) : (
-          lines.map(line => <LogEntry key={line.id} line={line} />)
+          <div className="grid grid-cols-[auto_1fr] gap-1">
+            {lines.map((line, index) => (
+              <LogEntry key={index} line={line} index={index} />
+            ))}
+          </div>
         )}
         <div ref={bottomRef} />
       </div>
@@ -124,18 +125,16 @@ function LogChevron({ direction }: { direction: React.RefObject<'up' | 'down'> }
 function LogProvider({
   containerId,
   push,
-  idRef,
   autoScroll,
   logsRef,
 }: {
   containerId: string
-  push: (data: LogLine) => void
-  idRef: React.RefObject<number>
+  push: (data: string) => void
   autoScroll: boolean
   logsRef: React.RefObject<HTMLDivElement | null>
 }) {
   const handlePush = useCallback(
-    (data: LogLine) => {
+    (data: string) => {
       push(data)
       if (autoScroll) {
         const logsContainer = logsRef.current
@@ -151,66 +150,107 @@ function LogProvider({
     endpoint: `/docker/logs/${containerId}`,
     json: false,
     onMessage: data => {
-      handlePush({ id: idRef.current++, content: data })
+      handlePush(data)
     },
     onError: error => {
-      handlePush({ id: idRef.current++, content: `${new Date().toISOString()} ${error}` })
+      handlePush(`${new Date().toISOString()} ${error}`)
     },
   })
 
   return null
 }
 
-function LogEntry({ line }: { line: LogLine }) {
+function LogEntry({ line, index }: { line: string; index: number }) {
   'use memo'
-  const parsedLine = useMemo(() => parseLogLine(line.content), [line.content])
-  const lineHTML = useMemo(() => convertANSI.toHtml(parsedLine.content), [parsedLine.content])
+  const timestamp = line.slice(0, line.indexOf(' '))
+  const date = new Date(timestamp)
+  const content = stripTimestampPrefix(line.slice(timestamp.length + 1))
+  const lineHTML = useMemo(() => convertANSI.toHtml(content), [content])
 
   return (
-    <div
-      className={cn(
-        'w-full font-mono font-medium items-center',
-        'flex gap-2',
-        line.id % 2 && 'bg-muted'
-      )}
-    >
-      <div className="min-w-fit h-min border rounded-md px-2 py-0.5 text-xs">{parsedLine.time}</div>
+    <>
+      <FormattedDate date={date} />
       <pre
-        className="whitespace-pre-wrap text-wrap text-xs leading-none"
+        className={cn(
+          'whitespace-pre-wrap text-wrap text-xs leading-none font-mono font-medium h-full flex items-center px-2',
+          index % 2 && 'bg-muted'
+        )}
         dangerouslySetInnerHTML={{ __html: lineHTML }}
       />
-    </div>
+    </>
   )
 }
 
-// 2025-02-19T17:06:57.726414698Z [xxx] 2025/02/19 17:06:57 xxxx
-const parseLogLine = (line: string) => {
-  const [timestamp] = line.split(' ', 1)
-  const date = new Date(timestamp!)
-  return {
-    time: date.toLocaleString('en-US', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-    }),
-    content: stripTimestamp(line.slice(timestamp!.length + 1)),
-  }
+function FormattedDate({ date }: { date: Date }) {
+  const formattedDate = useFormattedDate(date)
+  return (
+    <span className="font-mono font-medium h-min py-0.5 text-xs w-full text-right">
+      {formattedDate}
+    </span>
+  )
 }
 
-function stripTimestamp(line: string) {
+/**
+ * Hook that formats a date as a dynamic relative time string, updating
+ * frequently to stay current as time passes.
+ *
+ * The update interval adapts based on how far the given date is from "now":
+ * - Under 60 seconds   → updates every 1 second
+ * - Under 60 minutes   → updates every 10 seconds
+ * - Under 24 hours     → updates every 1 minute
+ * - Under 7 days       → updates every 10 minutes
+ * - Older              → updates every 1 hour
+ *
+ * The hook keeps the formatted value in local state, and internally
+ * reschedules the next update with setTimeout to avoid unnecessary renders.
+ * On cleanup, it clears any scheduled timeout.
+ */
+const useFormattedDate = (date: Date) => {
+  const [formattedDate, setFormattedDate] = useState('')
+  const dateMs = date.getTime()
+  useEffect(() => {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined
+    const schedule = () => {
+      const now = new Date()
+      const diffSeconds = Math.abs(now.getTime() - dateMs) / 1000
+      let intervalMs = 1000
+      if (diffSeconds < 60) {
+        intervalMs = 1000
+      } else if (diffSeconds < 60 * 60) {
+        intervalMs = 10_000
+      } else if (diffSeconds < 60 * 60 * 24) {
+        intervalMs = 60_000
+      } else if (diffSeconds < 60 * 60 * 24 * 7) {
+        intervalMs = 10 * 60_000
+      } else {
+        intervalMs = 60 * 60_000
+      }
+      setFormattedDate(formatRelTime(dateMs, now))
+      timeoutId = setTimeout(schedule, intervalMs)
+    }
+    schedule()
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
+    }
+  }, [dateMs])
+  return formattedDate
+}
+
+const timePart =
+  '\\d{1,2}:\\d{1,2}(?::\\d{1,2})?(?:[.,]\\d+)?(?:\\s*[ap]m)?(?:\\s*(?:Z|[+-]\\d{2}:?\\d{2}|UTC|GMT))?'
+const dateYmd = '\\d{4}[-/.]\\d{1,2}[-/.]\\d{1,2}'
+const dateDmy = '\\d{1,2}[-/.]\\d{1,2}[-/.]\\d{2,4}'
+const timestampPrefix = new RegExp(
+  `^(?:\\u001b\\[[0-9;]*m)*(?:\\[\\s*\\]\\s*)?(?:\\[\\s*|\\(\\s*)?(?:${dateYmd}[T ,]+${timePart}|${dateYmd}|${dateDmy}(?:[ T,]+${timePart})?|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s+\\d{1,2}\\s+${timePart}(?:\\s+\\d{4})?|${timePart})(?:\\s*(?:\\]|\\)))?(?:\\u001b\\[[0-9;]*m)*\\s*`,
+  'i'
+)
+
+function stripTimestampPrefix(line: string) {
   if (line.startsWith('{')) {
     // json
     return line
   }
-  return line
-    .replace(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:[.,]\d*)?Z/, '')
-    .replace(
-      /(?:\u001b\[\d{2}m)?(?:\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}[-/]\d{1,2}[-/]\d{4})[,\s]*/,
-      ''
-    )
-    .replace(/(?:\d{1,2}:\d{1,2}(?::\d{1,2})?\s*(?:[ap]m)?(?:\u001b\[32m)?)(?:[.,]\d*)?/i, '')
-    .replace('[]', '')
+  return line.replace(timestampPrefix, '')
 }
