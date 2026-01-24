@@ -5,7 +5,7 @@ import { formatRelTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 import Convert from 'ansi-to-html'
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { useList } from 'react-use'
 import { store } from '../store'
 
@@ -18,6 +18,19 @@ export default function ContainerLogs({ containerId }: { containerId: string }) 
   const logsRef = useRef<HTMLDivElement>(null)
   const autoScroll = store.logsAutoScroll.use() ?? false
   const scrollDirection = useRef<'up' | 'down'>('down')
+
+  useEffect(() => {
+    if (!autoScroll) return
+    const anchor = bottomRef.current
+    if (!anchor) return
+
+    // Avoid `behavior: 'smooth'` here: log streaming causes repeated effects
+    // which will interrupt the animation and often land mid-way.
+    const raf = requestAnimationFrame(() => {
+      anchor.scrollIntoView({ block: 'end', behavior: 'auto' })
+    })
+    return () => cancelAnimationFrame(raf)
+  }, [autoScroll, containerId, lines.length])
 
   useEffect(() => {
     const logs = logsRef.current
@@ -41,12 +54,7 @@ export default function ContainerLogs({ containerId }: { containerId: string }) 
   return (
     <div className="relative">
       <Suspense>
-        <LogProvider
-          containerId={containerId}
-          push={push}
-          autoScroll={autoScroll}
-          logsRef={logsRef}
-        />
+        <LogProvider containerId={containerId} push={push} />
       </Suspense>
       <ContainerLogsInner
         lines={lines}
@@ -125,35 +133,74 @@ function LogChevron({ direction }: { direction: React.RefObject<'up' | 'down'> }
 function LogProvider({
   containerId,
   push,
-  autoScroll,
-  logsRef,
 }: {
   containerId: string
-  push: (data: string) => void
-  autoScroll: boolean
-  logsRef: React.RefObject<HTMLDivElement | null>
+  push: (...data: string[]) => void
 }) {
-  const handlePush = useCallback(
+  const containerIdRef = useRef(containerId)
+
+  const pendingLinesRef = useRef<string[]>([])
+  const flushTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const flush = useCallback(() => {
+    if (flushTimeoutRef.current) {
+      clearTimeout(flushTimeoutRef.current)
+      flushTimeoutRef.current = null
+    }
+
+    if (pendingLinesRef.current.length === 0) {
+      return
+    }
+
+    const batch = pendingLinesRef.current
+    pendingLinesRef.current = []
+    push(...batch)
+  }, [push])
+
+  const scheduleFlush = useCallback(() => {
+    // Aggregate multiple websocket messages into a single list push.
+    // Throttle interval is intentionally small to keep UI responsive.
+    const throttleMs = 75
+    if (flushTimeoutRef.current) return
+    flushTimeoutRef.current = setTimeout(flush, throttleMs)
+  }, [flush])
+
+  const enqueue = useCallback(
     (data: string) => {
-      push(data)
-      if (autoScroll) {
-        const logsContainer = logsRef.current
-        if (logsContainer) {
-          logsContainer.scrollTo({ top: logsContainer.scrollHeight, behavior: 'smooth' })
-        }
-      }
+      pendingLinesRef.current.push(data)
+      scheduleFlush()
     },
-    [push, autoScroll, logsRef]
+    [scheduleFlush]
   )
+
+  useLayoutEffect(() => {
+    containerIdRef.current = containerId
+    pendingLinesRef.current = []
+    if (flushTimeoutRef.current) {
+      clearTimeout(flushTimeoutRef.current)
+      flushTimeoutRef.current = null
+    }
+  }, [containerId])
+
+  useEffect(() => {
+    return () => {
+      if (flushTimeoutRef.current) {
+        clearTimeout(flushTimeoutRef.current)
+        flushTimeoutRef.current = null
+      }
+    }
+  }, [])
 
   useWebSocketApi<string>({
     endpoint: `/docker/logs/${containerId}`,
     json: false,
     onMessage: data => {
-      handlePush(data)
+      if (containerIdRef.current !== containerId) return
+      enqueue(data)
     },
     onError: error => {
-      handlePush(`${new Date().toISOString()} ${error}`)
+      if (containerIdRef.current !== containerId) return
+      enqueue(`${new Date().toISOString()} ${error}`)
     },
   })
 
@@ -162,14 +209,15 @@ function LogProvider({
 
 function LogEntry({ line, index }: { line: string; index: number }) {
   'use memo'
-  const timestamp = line.slice(0, line.indexOf(' '))
-  const date = new Date(timestamp)
-  const content = stripTimestampPrefix(line.slice(timestamp.length + 1))
+  const firstSpace = line.indexOf(' ')
+  const timestamp = firstSpace === -1 ? '' : line.slice(0, firstSpace)
+  const date = timestamp ? new Date(timestamp) : null
+  const content = date ? stripTimestampPrefix(line.slice(timestamp.length + 1)) : line
   const lineHTML = useMemo(() => convertANSI.toHtml(content), [content])
 
   return (
     <>
-      <FormattedDate date={date} />
+      <FormattedDate dateMs={date?.getTime() ?? null} />
       <pre
         className={cn(
           'whitespace-pre-wrap text-wrap text-xs leading-none font-mono font-medium h-full flex items-center px-2',
@@ -181,10 +229,10 @@ function LogEntry({ line, index }: { line: string; index: number }) {
   )
 }
 
-function FormattedDate({ date }: { date: Date }) {
-  const formattedDate = useFormattedDate(date)
+function FormattedDate({ dateMs }: { dateMs: number | null }) {
+  const formattedDate = useFormattedDate(dateMs)
   return (
-    <span className="font-mono font-medium h-min py-0.5 text-xs w-full text-right">
+    <span className="font-mono font-medium h-min py-0.5 text-xs w-full text-right text-nowrap">
       {formattedDate}
     </span>
   )
@@ -205,12 +253,15 @@ function FormattedDate({ date }: { date: Date }) {
  * reschedules the next update with setTimeout to avoid unnecessary renders.
  * On cleanup, it clears any scheduled timeout.
  */
-const useFormattedDate = (date: Date) => {
+const useFormattedDate = (dateMs: number | null) => {
   const [formattedDate, setFormattedDate] = useState('')
-  const dateMs = date.getTime()
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout> | undefined
     const schedule = () => {
+      if (dateMs == null || Number.isNaN(dateMs)) {
+        setFormattedDate('')
+        return
+      }
       const now = new Date()
       const diffSeconds = Math.abs(now.getTime() - dateMs) / 1000
       let intervalMs = 1000
@@ -242,8 +293,9 @@ const timePart =
   '\\d{1,2}:\\d{1,2}(?::\\d{1,2})?(?:[.,]\\d+)?(?:\\s*[ap]m)?(?:\\s*(?:Z|[+-]\\d{2}:?\\d{2}|UTC|GMT))?'
 const dateYmd = '\\d{4}[-/.]\\d{1,2}[-/.]\\d{1,2}'
 const dateDmy = '\\d{1,2}[-/.]\\d{1,2}[-/.]\\d{2,4}'
+const dateMd = '\\d{1,2}[-/.]\\d{1,2}'
 const timestampPrefix = new RegExp(
-  `^(?:\\u001b\\[[0-9;]*m)*(?:\\[\\s*\\]\\s*)?(?:\\[\\s*|\\(\\s*)?(?:${dateYmd}[T ,]+${timePart}|${dateYmd}|${dateDmy}(?:[ T,]+${timePart})?|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s+\\d{1,2}\\s+${timePart}(?:\\s+\\d{4})?|${timePart})(?:\\s*(?:\\]|\\)))?(?:\\u001b\\[[0-9;]*m)*\\s*`,
+  `^(?:\\u001b\\[[0-9;]*m)*(?:\\[\\s*\\]\\s*)?(?:\\[\\s*|\\(\\s*)?(?:${dateYmd}[T ,]+${timePart}|${dateYmd}|${dateDmy}(?:[ T,]+${timePart})?|${dateMd}(?:[ T,]+${timePart})?|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s+\\d{1,2}\\s+${timePart}(?:\\s+\\d{4})?|${timePart})(?:\\s*(?:\\]|\\)))?(?:\\u001b\\[[0-9;]*m)*\\s*`,
   'i'
 )
 
