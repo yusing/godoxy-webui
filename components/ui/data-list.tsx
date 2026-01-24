@@ -1,14 +1,19 @@
 import { cn } from '@/lib/utils'
-import { type ReactNode } from 'react'
+import { Children, type ReactNode } from 'react'
 
-function DataList({ className, children, ...props }: React.ComponentProps<'div'>) {
+function DataList({
+  className,
+  children,
+  fallback,
+  ...props
+}: React.ComponentProps<'div'> & { fallback?: ReactNode }) {
   return (
     <div
       className={cn(
         'w-full text-sm grid grid-cols-1 sm:grid-cols-[max-content_auto_1fr] gap-y-2 gap-x-4',
         className
       )}
-      children={children}
+      children={Children.count(children) > 0 ? children : fallback}
       {...props}
     />
   )
