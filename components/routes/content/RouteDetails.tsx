@@ -143,15 +143,12 @@ export default function RouteDetails() {
                     label="Last Seen"
                     value={formatRelTime(routeDetails.health.lastSeen)}
                   />
+                  {routeDetails.health?.detail && (
+                    <DataListRow label="Details" value={routeDetails.health.detail} />
+                  )}
                 </>
               )}
             </DataList>
-            {routeDetails.health?.detail && (
-              <div>
-                <Label className="text-muted-foreground">Details</Label>
-                <div className="text-sm">{routeDetails.health.detail}</div>
-              </div>
-            )}
           </CardContent>
         </Card>
         <Card size="sm" className="md:rounded-l-none px-2">
