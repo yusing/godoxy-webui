@@ -200,11 +200,11 @@ export default function RouteDetails() {
               <DataListRow label="Retries" value={routeDetails.healthcheck.retries} />
               <DataListRow
                 label="Interval"
-                value={formatDuration(routeDetails.healthcheck.interval / 1000, { unit: 'us' })}
+                value={formatGoDuration(routeDetails.healthcheck.interval)}
               />
               <DataListRow
                 label="Timeout"
-                value={formatDuration(routeDetails.healthcheck.timeout / 1000, { unit: 'us' })}
+                value={formatGoDuration(routeDetails.healthcheck.timeout)}
               />
               <DataListRow
                 label="Use GET"
