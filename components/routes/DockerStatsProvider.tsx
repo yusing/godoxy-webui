@@ -62,7 +62,6 @@ export default function DockerStatsProvider() {
 
   useWebSocketApi<ContainerStatsResponse>({
     endpoint: `/docker/stats/${routeId}`,
-    httpAsInitial: true,
     shouldConnect,
     onMessage: data => {
       if (!routeKey) return
