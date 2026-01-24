@@ -278,44 +278,64 @@ export default function RouteDetails() {
       )}
       {/* Container Information */}
       {routeDetails.container && (
-        <Card size="sm" className="px-2">
-          <CardHeader>
-            <CardTitle>Docker Container</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <DataList>
-              <DataListRow label="Name" value={routeDetails.container.container_name} />
-              <DataListRow label="Docker Host" value={routeDetails.container.docker_cfg.url} />
-              <DataListRow label="Image" value={routeDetails.container.image.name} />
-              <DataListRow
-                label="Container ID"
-                value={routeDetails.container.container_id.slice(0, 12)}
-              />
-              <DataListRow label="Network" value={routeDetails.container.network} />
-              <DataListRow label="Public Hostname" value={routeDetails.container.public_hostname} />
-              <DataListRow
-                label="Private Hostname"
-                value={routeDetails.container.private_hostname}
-              />
-              <DataListRow
-                label="Container Excluded"
-                value={routeDetails.container.is_excluded ? 'Yes' : 'No'}
-              />
-            </DataList>
+        <div>
+          <Card size="sm" className="px-2 rounded-b-none">
+            <CardHeader>
+              <CardTitle>Container Information</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DataList>
+                <DataListRow label="Name" value={routeDetails.container.container_name} />
+                <DataListRow label="Docker Host" value={routeDetails.container.docker_cfg.url} />
+                <DataListRow label="Image" value={routeDetails.container.image.name} />
+                <DataListRow
+                  label="Container ID"
+                  value={routeDetails.container.container_id.slice(0, 12)}
+                />
+                <DataListRow label="Network" value={routeDetails.container.network} />
+                <DataListRow
+                  label="Public Hostname"
+                  value={routeDetails.container.public_hostname}
+                />
+                <DataListRow
+                  label="Private Hostname"
+                  value={routeDetails.container.private_hostname}
+                />
+                <DataListRow
+                  label="Container Excluded"
+                  value={routeDetails.container.is_excluded ? 'Yes' : 'No'}
+                />
+              </DataList>
+            </CardContent>
+          </Card>
 
-            <div>
-              <Title>Public Ports</Title>
-              <div className="text-sm font-mono">
+          <Card size="sm" className="px-2 rounded-t-none rounded-b-none">
+            <CardHeader>
+              <CardTitle>Public Ports</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DataList
+                fallback={
+                  <div className="text-sm text-muted-foreground mt-1">No public ports exposed</div>
+                }
+              >
                 {Object.entries(routeDetails.container.public_ports || {}).map(([key, port]) => (
-                  <div key={key}>
-                    {port.IP}:{port.PublicPort} → {port.PrivatePort}/{port.Type}
-                  </div>
-                )) || 'No public ports exposed'}
-              </div>
-            </div>
+                  <DataListRow
+                    key={key}
+                    label={`${port.IP}:${port.PublicPort}`}
+                    value={`${port.PrivatePort}/${port.Type}`}
+                    seperator={<IconArrowRight className="size-4" />}
+                  />
+                ))}
+              </DataList>
+            </CardContent>
+          </Card>
 
-            <div className="space-y-2">
-              <Title>Labels</Title>
+          <Card size="sm" className="px-2 rounded-t-none rounded-b-none">
+            <CardHeader>
+              <CardTitle>Labels</CardTitle>
+            </CardHeader>
+            <CardContent>
               {routeDetails.container.labels &&
               Object.keys(routeDetails.container.labels).length > 0 ? (
                 <DataList>
@@ -326,34 +346,44 @@ export default function RouteDetails() {
               ) : (
                 <div className="text-sm text-muted-foreground mt-1">No labels</div>
               )}
-            </div>
-            <div className="space-y-2">
-              <Title>Mounts</Title>
-              {routeDetails.container.mounts &&
-              Object.keys(routeDetails.container.mounts).length > 0 ? (
-                <DataList>
-                  {Object.entries(routeDetails.container.mounts).map(([source, destination]) => (
+            </CardContent>
+          </Card>
+          <Card
+            size="sm"
+            className={cn('px-2 rounded-t-none', routeDetails.container.errors && 'rounded-b-none')}
+          >
+            <CardHeader>
+              <CardTitle>Mounts</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DataList
+                fallback={<div className="text-sm text-muted-foreground mt-1">No mounts</div>}
+              >
+                {Object.entries(routeDetails.container?.mounts ?? {}).map(
+                  ([source, destination]) => (
                     <DataListRow
                       key={source}
                       label={source}
                       value={destination}
                       seperator={<IconArrowRight className="size-4" />}
                     />
-                  ))}
-                </DataList>
-              ) : (
-                <div className="text-sm text-muted-foreground mt-1">No mounts</div>
-              )}
-            </div>
+                  )
+                )}
+              </DataList>
+            </CardContent>
+          </Card>
 
-            {routeDetails.container.errors && (
-              <div>
-                <Title>Errors</Title>
+          {routeDetails.container.errors && (
+            <Card size="sm" className="px-2 rounded-t-none">
+              <CardHeader>
+                <CardTitle>Errors</CardTitle>
+              </CardHeader>
+              <CardContent>
                 <div className="text-sm text-error">{routeDetails.container.errors}</div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       )}
       {/* Load Balancer */}
       {routeDetails.load_balance && (
