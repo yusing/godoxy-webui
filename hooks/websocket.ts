@@ -104,26 +104,25 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
       // Handle different close codes
       if (event.code === 1000) {
         // Normal closure
-        handleError(null)
+        handleErrorRef.current?.(null)
       } else if (event.code === 1006) {
         // Abnormal closure (likely network issue or server disconnect)
-        handleError('Connection lost unexpectedly')
+        handleErrorRef.current?.('Connection lost unexpectedly')
       } else {
-        handleError(`Connection closed: ${event.reason || 'Unknown reason'}`)
+        handleErrorRef.current?.(`Connection closed: ${event.reason || 'Unknown reason'}`)
       }
 
       onClose?.(event)
     },
-    [endpoint, onClose, handleError]
+    [endpoint, onClose]
   )
 
   // Handle errors
   const handleEventError = useCallback(
     (error: Event) => {
       logger.error('WebSocket error', error)
-      onError?.(error.toString())
     },
-    [onError]
+    []
   )
 
   // Handle incoming messages
@@ -142,10 +141,10 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
         // Treat any incoming message as a heartbeat
         lastHeartbeat.current = Date.now()
       } catch (error) {
-        handleError(`Failed to parse WebSocket message on ${endpoint}: ${error}`)
+        handleErrorRef.current?.(`Failed to parse WebSocket message on ${endpoint}: ${error}`)
       }
     },
-    [endpoint, onMessage, json, handleError, deduplicate]
+    [endpoint, onMessage, json, deduplicate]
   )
 
   // Fetch initial data via HTTP using the same URL and query as socketURL
@@ -182,13 +181,13 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
         if (error instanceof Error && error.name === 'AbortError') {
           return
         }
-        handleError(`Failed to fetch initial data from ${endpoint}: ${error}`)
+        handleErrorRef.current?.(`Failed to fetch initial data from ${endpoint}: ${error}`)
       }
     }
 
     fetchInitialData()
     return () => controller.abort()
-  }, [query, socketURL, json, onMessage, handleError, endpoint, httpAsInitial])
+  }, [query, socketURL, json, onMessage, endpoint, httpAsInitial])
 
   // Use WebSocket hook with enhanced configuration
   const { sendJsonMessage, sendMessage, readyState, getWebSocket } = useWebSocket<TMessage>(
@@ -208,7 +207,7 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
       reconnectInterval,
       retryOnError: true,
       onReconnectStop: numAttempts => {
-        handleError(`Failed to reconnect after ${numAttempts} attempts`)
+        handleErrorRef.current?.(`Failed to reconnect after ${numAttempts} attempts`)
       },
       // Enable heartbeat for automatic ping-pong handling
       // Replaced with custom heartbeat handling for now, it's not working as expected
@@ -255,13 +254,13 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
         dataSent.current = true
         logger.debug(`WebSocket subscription message sent on ${endpoint}:`, subscriptionData)
       } catch (error) {
-        handleError(`Failed to send subscription message on ${endpoint}: ${error}`)
+        handleErrorRef.current?.(`Failed to send subscription message on ${endpoint}: ${error}`)
       }
     }
     if (readyState === ReadyState.CLOSED || readyState === ReadyState.CLOSING) {
       dataSent.current = false
     }
-  }, [readyState, subscriptionData, endpoint, handleError])
+  }, [readyState, subscriptionData, endpoint])
 
   // heartbeat
   useEffect(() => {
