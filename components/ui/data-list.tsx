@@ -1,24 +1,15 @@
 import { cn } from '@/lib/utils'
-import { useMemo, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
 
-function DataList({
-  labels,
-  className,
-  ...props
-}: React.ComponentProps<'div'> & { labels?: string[] }) {
-  const longestLabel = useMemo(() => {
-    if (!labels) return 10
-    return Math.max(...labels.map(l => l.length))
-  }, [labels])
+function DataList({ className, children, ...props }: React.ComponentProps<'div'>) {
   return (
     <div
-      className={cn('w-full text-sm space-y-2', className)}
+      className={cn(
+        'w-full text-sm grid grid-cols-1 sm:grid-cols-[max-content_1fr] gap-y-2 gap-x-4',
+        className
+      )}
+      children={children}
       {...props}
-      style={
-        {
-          '--data-list-label-width': `${longestLabel + 2}ch`,
-        } as React.CSSProperties
-      }
     />
   )
 }
@@ -28,19 +19,21 @@ function DataListRow({
   seperator,
   value,
   className,
+  rowClassName,
   ...props
 }: React.ComponentProps<'div'> & {
   label: string
   value: ReactNode
   seperator?: ReactNode
+  rowClassName?: string
 }) {
   // On mobile: show label on top of value
   // On desktop: show label and value side by side, 1:2 ratio
   return (
-    <div className={cn('flex flex-col sm:flex-row sm:gap-4 items-center', className)} {...props}>
-      <span className="text-muted-foreground w-(--data-list-label-width) font-medium">{label}</span>
-      {seperator}
-      <span className="min-w-0 w-full wrap-break-word">{value}</span>
+    <div className={cn('contents', rowClassName)} {...props}>
+      <span className="text-muted-foreground font-medium">{label}</span>
+      {seperator && <span className="hidden sm:inline-flex items-center">{seperator}</span>}
+      <span className={cn('min-w-0 w-full wrap-break-word', className)}>{value}</span>
     </div>
   )
 }

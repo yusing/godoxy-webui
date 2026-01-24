@@ -361,7 +361,7 @@ export default function RouteDetails() {
               <Title>Labels</Title>
               {routeDetails.container.labels &&
               Object.keys(routeDetails.container.labels).length > 0 ? (
-                <DataList labels={Object.keys(routeDetails.container.labels)}>
+                <DataList>
                   {Object.entries(routeDetails.container.labels).map(([key, value]) => (
                     <DataListRow key={key} label={key} value={value} />
                   ))}
@@ -374,7 +374,7 @@ export default function RouteDetails() {
               <Title>Mounts</Title>
               {routeDetails.container.mounts &&
               Object.keys(routeDetails.container.mounts).length > 0 ? (
-                <DataList labels={Object.keys(routeDetails.container.mounts)}>
+                <DataList>
                   {Object.entries(routeDetails.container.mounts).map(([source, destination]) => (
                     <DataListRow
                       key={source}

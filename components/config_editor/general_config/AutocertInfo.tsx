@@ -49,9 +49,7 @@ export default function AutocertInfo({
 
 function CertInfo({ certInfo }: { certInfo: CertInfo }) {
   return (
-    <DataList
-      labels={['Subject', 'Issuer', 'Registration', 'Expiry', 'DNS names', 'Email addresses']}
-    >
+    <DataList>
       <DataListRow label="Subject" value={certInfo.subject} />
       <DataListRow label="Issuer" value={certInfo.issuer} />
       <DataListRow label="Registration" value={formatTimestamp(certInfo.not_before)} />
