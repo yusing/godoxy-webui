@@ -75,7 +75,7 @@ export default function RouteDetails() {
           <CardHeader>
             <CardTitle>Basic Information</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent>
             <DataList>
               {routeDetails.provider && (
                 <DataListRow label="Provider" value={routeDetails.provider} />
@@ -122,7 +122,7 @@ export default function RouteDetails() {
           <CardHeader>
             <CardTitle>Status</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent>
             <DataList>
               <DataListRow label="Route Excluded" value={routeDetails.excluded ? 'Yes' : 'No'} />
               {routeDetails.health && (
@@ -158,17 +158,13 @@ export default function RouteDetails() {
           <CardHeader>
             <CardTitle>Configuration</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent>
             <DataList>
-              {routeDetails.response_header_timeout && (
-                <DataListRow
-                  label="Response Header Timeout"
-                  value={`${routeDetails.response_header_timeout} ms`}
-                />
-              )}
-              {(routeDetails.scheme === 'http' ||
-                routeDetails.scheme === 'https' ||
-                routeDetails.scheme === 'h2c') && (
+              <DataListRow
+                label="Response Header Timeout"
+                value={formatGoDuration(routeDetails.response_header_timeout) || '60s'}
+              />
+              {!isStream && (
                 <DataListRow
                   label="Compression"
                   value={routeDetails.disable_compression ? 'Disabled' : 'Enabled'}
@@ -223,7 +219,7 @@ export default function RouteDetails() {
             <CardHeader>
               <CardTitle>Homepage Configuration</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent>
               <DataList>
                 <DataListRow
                   label="Favorite"
@@ -286,7 +282,7 @@ export default function RouteDetails() {
           <CardHeader>
             <CardTitle>Docker Container</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent>
             <DataList>
               <DataListRow label="Name" value={routeDetails.container.container_name} />
               <DataListRow label="Docker Host" value={routeDetails.container.docker_cfg.url} />
@@ -391,7 +387,7 @@ export default function RouteDetails() {
           <CardHeader>
             <CardTitle>Additional Configuration</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent>
             {routeDetails.access_log && (
               <div>
                 <Title>Access Log</Title>
