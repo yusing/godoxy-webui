@@ -1948,11 +1948,11 @@ export namespace Metrics {
 
 export namespace Proxmox {
   /**
-   * @description Get journalctl output
+   * @description Get journalctl output for node or LXC container. If vmid is not provided, streams node journalctl.
    * @tags proxmox, websocket
    * @name Journalctl
    * @summary Get journalctl output
-   * @request GET:/proxmox/journalctl/{node}/{vmid}
+   * @request GET:/proxmox/journalctl/{node}
    * @response `200` `string` Journalctl output
    * @response `400` `ErrorResponse` Invalid request
    * @response `403` `ErrorResponse` Unauthorized
@@ -1961,11 +1961,11 @@ export namespace Proxmox {
    */
   export namespace Journalctl {
     export type RequestParams = {
+      /** Node name */
       node: string
-      vmid: number
     }
     export type RequestQuery = {
-      /** limit */
+      /** Limit output lines (1-1000) */
       limit?: number
     }
     export type RequestBody = never
@@ -1974,11 +1974,11 @@ export namespace Proxmox {
   }
 
   /**
-   * @description Get journalctl output
+   * @description Get journalctl output for node or LXC container. If vmid is not provided, streams node journalctl.
    * @tags proxmox, websocket
    * @name Journalctl2
    * @summary Get journalctl output
-   * @request GET:/proxmox/journalctl/{node}/{vmid}/{service}
+   * @request GET:/proxmox/journalctl/{node}/{vmid}
    * @originalName journalctl
    * @duplicate
    * @response `200` `string` Journalctl output
@@ -1989,12 +1989,45 @@ export namespace Proxmox {
    */
   export namespace Journalctl2 {
     export type RequestParams = {
+      /** Node name */
       node: string
-      service?: string
-      vmid: number
+      /** Container VMID (optional - if not provided, streams node journalctl) */
+      vmid?: number
     }
     export type RequestQuery = {
-      /** limit */
+      /** Limit output lines (1-1000) */
+      limit?: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = string
+  }
+
+  /**
+   * @description Get journalctl output for node or LXC container. If vmid is not provided, streams node journalctl.
+   * @tags proxmox, websocket
+   * @name Journalctl3
+   * @summary Get journalctl output
+   * @request GET:/proxmox/journalctl/{node}/{vmid}/{service}
+   * @originalName journalctl
+   * @duplicate
+   * @response `200` `string` Journalctl output
+   * @response `400` `ErrorResponse` Invalid request
+   * @response `403` `ErrorResponse` Unauthorized
+   * @response `404` `ErrorResponse` Node not found
+   * @response `500` `ErrorResponse` Internal server error
+   */
+  export namespace Journalctl3 {
+    export type RequestParams = {
+      /** Node name */
+      node: string
+      /** Service name (e.g., 'pveproxy' for node, 'container@.service' format for LXC) */
+      service?: string
+      /** Container VMID (optional - if not provided, streams node journalctl) */
+      vmid?: number
+    }
+    export type RequestQuery = {
+      /** Limit output lines (1-1000) */
       limit?: number
     }
     export type RequestBody = never
@@ -3377,12 +3410,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
   }
   proxmox = {
     /**
-     * @description Get journalctl output
+     * @description Get journalctl output for node or LXC container. If vmid is not provided, streams node journalctl.
      *
      * @tags proxmox, websocket
      * @name Journalctl
      * @summary Get journalctl output
-     * @request GET:/proxmox/journalctl/{node}/{vmid}
+     * @request GET:/proxmox/journalctl/{node}
      * @response `200` `string` Journalctl output
      * @response `400` `ErrorResponse` Invalid request
      * @response `403` `ErrorResponse` Unauthorized
@@ -3391,9 +3424,41 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     journalctl: (
       node: string,
-      vmid: number,
       query?: {
-        /** limit */
+        /** Limit output lines (1-1000) */
+        limit?: number
+      },
+      params: RequestParams = {}
+    ) =>
+      this.request<string, ErrorResponse>({
+        path: `/proxmox/journalctl/${node}`,
+        method: 'GET',
+        query: query,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get journalctl output for node or LXC container. If vmid is not provided, streams node journalctl.
+     *
+     * @tags proxmox, websocket
+     * @name Journalctl2
+     * @summary Get journalctl output
+     * @request GET:/proxmox/journalctl/{node}/{vmid}
+     * @originalName journalctl
+     * @duplicate
+     * @response `200` `string` Journalctl output
+     * @response `400` `ErrorResponse` Invalid request
+     * @response `403` `ErrorResponse` Unauthorized
+     * @response `404` `ErrorResponse` Node not found
+     * @response `500` `ErrorResponse` Internal server error
+     */
+    journalctl2: (
+      node: string,
+      vmid?: number,
+      query?: {
+        /** Limit output lines (1-1000) */
         limit?: number
       },
       params: RequestParams = {}
@@ -3408,10 +3473,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Get journalctl output
+     * @description Get journalctl output for node or LXC container. If vmid is not provided, streams node journalctl.
      *
      * @tags proxmox, websocket
-     * @name Journalctl2
+     * @name Journalctl3
      * @summary Get journalctl output
      * @request GET:/proxmox/journalctl/{node}/{vmid}/{service}
      * @originalName journalctl
@@ -3422,12 +3487,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @response `404` `ErrorResponse` Node not found
      * @response `500` `ErrorResponse` Internal server error
      */
-    journalctl2: (
+    journalctl3: (
       node: string,
-      vmid: number,
+      vmid?: number,
       service?: string,
       query?: {
-        /** limit */
+        /** Limit output lines (1-1000) */
         limit?: number
       },
       params: RequestParams = {}

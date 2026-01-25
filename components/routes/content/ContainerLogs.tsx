@@ -62,7 +62,7 @@ function ContainerLogsInner({
 }: {
   routeKey: RouteKey
   logsRef: React.RefObject<HTMLDivElement | null>
-  termRef: React.MutableRefObject<Terminal | null>
+  termRef: React.RefObject<Terminal | null>
   hasLogs: boolean
   setHasLogs: (hasLogs: boolean) => void
 }) {
@@ -227,7 +227,7 @@ function LogProvider({
   onLog,
 }: {
   routeKey: RouteKey
-  termRef: React.MutableRefObject<Terminal | null>
+  termRef: React.RefObject<Terminal | null>
   autoScroll: boolean
   isProxmox: boolean
   onLog: () => void
@@ -240,12 +240,15 @@ function LogProvider({
   const endpoint = useMemo(() => {
     if (containerId) {
       return `/docker/logs/${containerId}`
-    } else if (proxmox && proxmox.node && proxmox.vmid) {
-      if (proxmox.service) {
-        return `/proxmox/journalctl/${proxmox.node}/${proxmox.vmid}/${proxmox.service}`
-      } else {
-        return `/proxmox/journalctl/${proxmox.node}/${proxmox.vmid}`
+    } else if (proxmox && proxmox.node) {
+      let basePath = `/proxmox/journalctl/${proxmox.node}`
+      if (proxmox.vmid) {
+        basePath += `/${proxmox.vmid}`
       }
+      if (proxmox.service) {
+        basePath += `/${proxmox.service}`
+      }
+      return basePath
     }
     return ''
   }, [containerId, proxmox])

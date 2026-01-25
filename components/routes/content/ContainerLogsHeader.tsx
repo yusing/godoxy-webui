@@ -1,8 +1,22 @@
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import type { ContainerImage } from '@/lib/api'
+import type { Container, ContainerImage, ProxmoxNodeConfig } from '@/lib/api'
 import { store, type RouteKey } from '../store'
+
+function formatContainerName(container?: Container, proxmox?: ProxmoxNodeConfig): string {
+  if (container) {
+    return container.container_name
+  }
+  if (proxmox) {
+    if (proxmox.vmid) {
+      return `${proxmox.vmname} (${proxmox.vmid}) from ${proxmox.node}`
+    } else {
+      return `Node ${proxmox.node}`
+    }
+  }
+  return 'Unknown'
+}
 
 export default function ContainerLogsHeader({ routeKey }: { routeKey: RouteKey }) {
   const container = store.routeDetails[routeKey]!.container.use()
@@ -17,9 +31,7 @@ export default function ContainerLogsHeader({ routeKey }: { routeKey: RouteKey }
 
   return (
     <div className="flex items-center gap-2">
-      <Label>
-        {container?.container_name ?? `${proxmox?.vmname} (${proxmox?.vmid}) from ${proxmox?.node}`}
-      </Label>
+      <Label>{formatContainerName(container, proxmox)}</Label>
       <Badge variant={'secondary'}>
         {container
           ? formatContainerImage(container.image)
