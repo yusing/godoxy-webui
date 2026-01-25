@@ -35,7 +35,11 @@ export default function LogsHeader({ routeKey }: { routeKey: RouteKey }) {
       <Badge variant={'secondary'}>
         {container
           ? formatContainerImage(container.image)
-          : (proxmox?.service ?? 'Service not set')}
+          : proxmox?.files
+            ? proxmox.files.join(',')
+            : proxmox?.services
+              ? proxmox.services.join(',')
+              : 'Services or files not set'}
       </Badge>
       <div
         className={`w-2 h-2 rounded-full bg-${containerStatusColors[container?.state ?? proxmoxStatus ?? 'stopped']}-400`}

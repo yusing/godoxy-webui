@@ -17,6 +17,7 @@ import '@xterm/xterm/css/xterm.css'
 import '@fontsource/cascadia-code/400.css'
 import '@fontsource/cascadia-code/700.css'
 
+import { Query } from '@/lib/query'
 import '../style.css'
 import { resolveThemeColorsAsync } from './logs'
 
@@ -298,15 +299,28 @@ function LogProvider({
   const endpoint = useMemo(() => {
     if (containerId) {
       return `/docker/logs/${containerId}`
-    } else if (proxmox && proxmox.node) {
-      let basePath = `/proxmox/journalctl/${proxmox.node}`
+    }
+    if (proxmox && proxmox.node) {
+      if (proxmox.files && proxmox.files.length > 0) {
+        const basePath = `/proxmox/tail`
+        const query = new Query()
+        query.add('node', proxmox.node)
+        query.addAll('file', proxmox.files)
+        if (proxmox.vmid) {
+          query.add('vmid', proxmox.vmid.toString())
+        }
+        return `${basePath}?${query.toString()}`
+      }
+      const basePath = `/proxmox/journalctl`
+      const query = new Query()
+      query.add('node', proxmox.node)
       if (proxmox.vmid) {
-        basePath += `/${proxmox.vmid}`
+        query.add('vmid', proxmox.vmid.toString())
       }
-      if (proxmox.service) {
-        basePath += `/${proxmox.service}`
+      if (proxmox.services && proxmox.services.length > 0) {
+        query.addAll('service', proxmox.services)
       }
-      return basePath
+      return `${basePath}?${query.toString()}`
     }
     return ''
   }, [containerId, proxmox])

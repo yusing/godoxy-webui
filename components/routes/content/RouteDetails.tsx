@@ -402,7 +402,18 @@ export default function RouteDetails() {
               <DataListRow label="Node" value={routeDetails.proxmox.node} />
               <DataListRow label="VM ID" value={routeDetails.proxmox.vmid} />
               <DataListRow label="VM Name" value={routeDetails.proxmox.vmname} />
-              <DataListRow label="Service" value={routeDetails.proxmox.service} />
+              <>
+                {routeDetails.proxmox.services &&
+                  routeDetails.proxmox.services.map((service, index) => (
+                    <DataListRow key={service} label={`Service ${index + 1}`} value={service} />
+                  ))}
+              </>
+              <>
+                {routeDetails.proxmox.files &&
+                  routeDetails.proxmox.files.map((file, index) => (
+                    <DataListRow key={file} label={`File ${index + 1}`} value={file} />
+                  ))}
+              </>
             </DataList>
           </CardContent>
         </Card>

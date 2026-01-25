@@ -398,12 +398,6 @@ export interface DiskUsageStat {
   used_percent: number
 }
 
-export interface DockerConfig {
-  container_id: string
-  container_name: string
-  docker_cfg: DockerProviderConfig
-}
-
 export interface DockerProviderConfig {
   tls: DockerTLSConfig
   url: string
@@ -644,7 +638,7 @@ export type IconsSource = 'https://' | '@target' | '@walkxcode' | '@selfhst'
 
 export interface IdlewatcherConfig {
   depends_on: string[]
-  docker: DockerConfig
+  docker: IdlewatcherDockerConfig
   /**
    * 0: no idle watcher.
    * Positive: idle watcher with idle timeout.
@@ -652,13 +646,24 @@ export interface IdlewatcherConfig {
    */
   idle_timeout: TimeDuration
   no_loading_page: boolean
-  proxmox: ProxmoxNodeConfig
+  proxmox: IdlewatcherProxmoxNodeConfig
   /** Optional path that must be hit to start container */
   start_endpoint: string
   stop_method: ContainerStopMethod
   stop_signal: string
   stop_timeout: TimeDuration
   wake_timeout: TimeDuration
+}
+
+export interface IdlewatcherDockerConfig {
+  container_id: string
+  container_name: string
+  docker_cfg: DockerProviderConfig
+}
+
+export interface IdlewatcherProxmoxNodeConfig {
+  node: string
+  vmid: number
 }
 
 export interface ListFilesResponse {
@@ -834,10 +839,12 @@ export interface ProviderStats {
 export type ProviderType = 'docker' | 'file' | 'agent'
 
 export interface ProxmoxNodeConfig {
+  files: string[]
   node: string
-  service?: string
+  services: string[]
+  /** unset: auto discover; explicit 0: node-level route; >0: lxc/qemu resource route */
   vmid: number
-  vmname?: string
+  vmname: string
 }
 
 export interface ProxmoxNodeStats {
@@ -1969,7 +1976,7 @@ export namespace Proxmox {
    * @tags proxmox, websocket
    * @name Journalctl
    * @summary Get journalctl output
-   * @request GET:/proxmox/journalctl/{node}
+   * @request GET:/proxmox/journalctl
    * @response `200` `string` Journalctl output
    * @response `400` `ErrorResponse` Invalid request
    * @response `403` `ErrorResponse` Unauthorized
@@ -1977,13 +1984,21 @@ export namespace Proxmox {
    * @response `500` `ErrorResponse` Internal server error
    */
   export namespace Journalctl {
-    export type RequestParams = {
+    export type RequestParams = {}
+    export type RequestQuery = {
+      /**
+       * Limit output lines (1-1000)
+       * @min 1
+       * @max 1000
+       * @default 100
+       */
+      limit?: number
       /** Node name */
       node: string
-    }
-    export type RequestQuery = {
-      /** Limit output lines (1-1000) */
-      limit?: number
+      /** Service names */
+      service?: string[]
+      /** Container VMID (optional - if not provided, streams node journalctl) */
+      vmid?: number
     }
     export type RequestBody = never
     export type RequestHeaders = {}
@@ -1995,7 +2010,7 @@ export namespace Proxmox {
    * @tags proxmox, websocket
    * @name Journalctl2
    * @summary Get journalctl output
-   * @request GET:/proxmox/journalctl/{node}/{vmid}
+   * @request GET:/proxmox/journalctl/{node}
    * @originalName journalctl
    * @duplicate
    * @response `200` `string` Journalctl output
@@ -2008,12 +2023,21 @@ export namespace Proxmox {
     export type RequestParams = {
       /** Node name */
       node: string
-      /** Container VMID (optional - if not provided, streams node journalctl) */
-      vmid?: number
     }
     export type RequestQuery = {
-      /** Limit output lines (1-1000) */
+      /**
+       * Limit output lines (1-1000)
+       * @min 1
+       * @max 1000
+       * @default 100
+       */
       limit?: number
+      /** Node name */
+      node: string
+      /** Service names */
+      service?: string[]
+      /** Container VMID (optional - if not provided, streams node journalctl) */
+      vmid?: number
     }
     export type RequestBody = never
     export type RequestHeaders = {}
@@ -2025,7 +2049,7 @@ export namespace Proxmox {
    * @tags proxmox, websocket
    * @name Journalctl3
    * @summary Get journalctl output
-   * @request GET:/proxmox/journalctl/{node}/{vmid}/{service}
+   * @request GET:/proxmox/journalctl/{node}/{vmid}
    * @originalName journalctl
    * @duplicate
    * @response `200` `string` Journalctl output
@@ -2038,14 +2062,66 @@ export namespace Proxmox {
     export type RequestParams = {
       /** Node name */
       node: string
-      /** Service name (e.g., 'pveproxy' for node, 'container@.service' format for LXC) */
-      service?: string
       /** Container VMID (optional - if not provided, streams node journalctl) */
       vmid?: number
     }
     export type RequestQuery = {
-      /** Limit output lines (1-1000) */
+      /**
+       * Limit output lines (1-1000)
+       * @min 1
+       * @max 1000
+       * @default 100
+       */
       limit?: number
+      /** Node name */
+      node: string
+      /** Service names */
+      service?: string[]
+      /** Container VMID (optional - if not provided, streams node journalctl) */
+      vmid?: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = string
+  }
+
+  /**
+   * @description Get journalctl output for node or LXC container. If vmid is not provided, streams node journalctl.
+   * @tags proxmox, websocket
+   * @name Journalctl4
+   * @summary Get journalctl output
+   * @request GET:/proxmox/journalctl/{node}/{vmid}/{service}
+   * @originalName journalctl
+   * @duplicate
+   * @response `200` `string` Journalctl output
+   * @response `400` `ErrorResponse` Invalid request
+   * @response `403` `ErrorResponse` Unauthorized
+   * @response `404` `ErrorResponse` Node not found
+   * @response `500` `ErrorResponse` Internal server error
+   */
+  export namespace Journalctl4 {
+    export type RequestParams = {
+      /** Node name */
+      node: string
+      /** Service names */
+      service?: string[]
+      /** Container VMID (optional - if not provided, streams node journalctl) */
+      vmid?: number
+    }
+    export type RequestQuery = {
+      /**
+       * Limit output lines (1-1000)
+       * @min 1
+       * @max 1000
+       * @default 100
+       */
+      limit?: number
+      /** Node name */
+      node: string
+      /** Service names */
+      service?: string[]
+      /** Container VMID (optional - if not provided, streams node journalctl) */
+      vmid?: number
     }
     export type RequestBody = never
     export type RequestHeaders = {}
@@ -2159,6 +2235,40 @@ export namespace Proxmox {
       vmid: number
     }
     export type RequestQuery = {}
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = string
+  }
+
+  /**
+   * @description Get tail output for node or LXC container. If vmid is not provided, streams node tail.
+   * @tags proxmox, websocket
+   * @name Tail
+   * @summary Get tail output
+   * @request GET:/proxmox/tail
+   * @response `200` `string` Tail output
+   * @response `400` `ErrorResponse` Invalid request
+   * @response `403` `ErrorResponse` Unauthorized
+   * @response `404` `ErrorResponse` Node not found
+   * @response `500` `ErrorResponse` Internal server error
+   */
+  export namespace Tail {
+    export type RequestParams = {}
+    export type RequestQuery = {
+      /** File paths */
+      file: string[]
+      /**
+       * Limit output lines (1-1000)
+       * @min 1
+       * @max 1000
+       * @default 100
+       */
+      limit?: number
+      /** Node name */
+      node: string
+      /** Container VMID (optional - if not provided, streams node journalctl) */
+      vmid?: number
+    }
     export type RequestBody = never
     export type RequestHeaders = {}
     export type ResponseBody = string
@@ -3455,7 +3565,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @tags proxmox, websocket
      * @name Journalctl
      * @summary Get journalctl output
-     * @request GET:/proxmox/journalctl/{node}
+     * @request GET:/proxmox/journalctl
      * @response `200` `string` Journalctl output
      * @response `400` `ErrorResponse` Invalid request
      * @response `403` `ErrorResponse` Unauthorized
@@ -3463,10 +3573,63 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @response `500` `ErrorResponse` Internal server error
      */
     journalctl: (
-      node: string,
-      query?: {
-        /** Limit output lines (1-1000) */
+      query: {
+        /**
+         * Limit output lines (1-1000)
+         * @min 1
+         * @max 1000
+         * @default 100
+         */
         limit?: number
+        /** Node name */
+        node: string
+        /** Service names */
+        service?: string[]
+        /** Container VMID (optional - if not provided, streams node journalctl) */
+        vmid?: number
+      },
+      params: RequestParams = {}
+    ) =>
+      this.request<string, ErrorResponse>({
+        path: `/proxmox/journalctl`,
+        method: 'GET',
+        query: query,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get journalctl output for node or LXC container. If vmid is not provided, streams node journalctl.
+     *
+     * @tags proxmox, websocket
+     * @name Journalctl2
+     * @summary Get journalctl output
+     * @request GET:/proxmox/journalctl/{node}
+     * @originalName journalctl
+     * @duplicate
+     * @response `200` `string` Journalctl output
+     * @response `400` `ErrorResponse` Invalid request
+     * @response `403` `ErrorResponse` Unauthorized
+     * @response `404` `ErrorResponse` Node not found
+     * @response `500` `ErrorResponse` Internal server error
+     */
+    journalctl2: (
+      node: string,
+      query: {
+        /**
+         * Limit output lines (1-1000)
+         * @min 1
+         * @max 1000
+         * @default 100
+         */
+        limit?: number
+        /** Node name */
+        node: string
+        /** Service names */
+        service?: string[]
+        /** Container VMID (optional - if not provided, streams node journalctl) */
+        vmid?: number
       },
       params: RequestParams = {}
     ) =>
@@ -3483,7 +3646,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Get journalctl output for node or LXC container. If vmid is not provided, streams node journalctl.
      *
      * @tags proxmox, websocket
-     * @name Journalctl2
+     * @name Journalctl3
      * @summary Get journalctl output
      * @request GET:/proxmox/journalctl/{node}/{vmid}
      * @originalName journalctl
@@ -3494,13 +3657,24 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @response `404` `ErrorResponse` Node not found
      * @response `500` `ErrorResponse` Internal server error
      */
-    journalctl2: (
+    journalctl3: (
       node: string,
-      vmid?: number,
-      query?: {
-        /** Limit output lines (1-1000) */
+      query: {
+        /**
+         * Limit output lines (1-1000)
+         * @min 1
+         * @max 1000
+         * @default 100
+         */
         limit?: number
+        /** Node name */
+        node: string
+        /** Service names */
+        service?: string[]
+        /** Container VMID (optional - if not provided, streams node journalctl) */
+        vmid?: number
       },
+      vmid?: number,
       params: RequestParams = {}
     ) =>
       this.request<string, ErrorResponse>({
@@ -3516,7 +3690,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @description Get journalctl output for node or LXC container. If vmid is not provided, streams node journalctl.
      *
      * @tags proxmox, websocket
-     * @name Journalctl3
+     * @name Journalctl4
      * @summary Get journalctl output
      * @request GET:/proxmox/journalctl/{node}/{vmid}/{service}
      * @originalName journalctl
@@ -3527,14 +3701,25 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @response `404` `ErrorResponse` Node not found
      * @response `500` `ErrorResponse` Internal server error
      */
-    journalctl3: (
+    journalctl4: (
       node: string,
-      vmid?: number,
-      service?: string,
-      query?: {
-        /** Limit output lines (1-1000) */
+      query: {
+        /**
+         * Limit output lines (1-1000)
+         * @min 1
+         * @max 1000
+         * @default 100
+         */
         limit?: number
+        /** Node name */
+        node: string
+        /** Service names */
+        service?: string[]
+        /** Container VMID (optional - if not provided, streams node journalctl) */
+        vmid?: number
       },
+      service?: string[],
+      vmid?: number,
       params: RequestParams = {}
     ) =>
       this.request<string, ErrorResponse>({
@@ -3644,6 +3829,46 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       this.request<string, ErrorResponse>({
         path: `/proxmox/stats/${node}/${vmid}`,
         method: 'GET',
+        ...params,
+      }),
+
+    /**
+     * @description Get tail output for node or LXC container. If vmid is not provided, streams node tail.
+     *
+     * @tags proxmox, websocket
+     * @name Tail
+     * @summary Get tail output
+     * @request GET:/proxmox/tail
+     * @response `200` `string` Tail output
+     * @response `400` `ErrorResponse` Invalid request
+     * @response `403` `ErrorResponse` Unauthorized
+     * @response `404` `ErrorResponse` Node not found
+     * @response `500` `ErrorResponse` Internal server error
+     */
+    tail: (
+      query: {
+        /** File paths */
+        file: string[]
+        /**
+         * Limit output lines (1-1000)
+         * @min 1
+         * @max 1000
+         * @default 100
+         */
+        limit?: number
+        /** Node name */
+        node: string
+        /** Container VMID (optional - if not provided, streams node journalctl) */
+        vmid?: number
+      },
+      params: RequestParams = {}
+    ) =>
+      this.request<string, ErrorResponse>({
+        path: `/proxmox/tail`,
+        method: 'GET',
+        query: query,
+        type: ContentType.Json,
+        format: 'json',
         ...params,
       }),
   }
