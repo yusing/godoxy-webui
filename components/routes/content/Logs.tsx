@@ -285,7 +285,7 @@ function LogProvider({
 
     const parseTimestamp = !isProxmox
     for (const line of batch) {
-      term.writeln(formatLineForTerminal(line, parseTimestamp))
+      term.writeln(formatLineForTerminal(line, parseTimestamp, isProxmox))
     }
 
     onLog()
@@ -370,7 +370,7 @@ function LogProvider({
   return null
 }
 
-function formatLineForTerminal(line: string, parseTimestamp: boolean) {
+function formatLineForTerminal(line: string, parseTimestamp: boolean, isProxmox: boolean = false) {
   const firstSpace = parseTimestamp ? line.indexOf(' ') : -1
   const timestamp = firstSpace === -1 ? '' : line.slice(0, firstSpace)
   const date = timestamp ? new Date(timestamp) : null
@@ -378,6 +378,15 @@ function formatLineForTerminal(line: string, parseTimestamp: boolean) {
   const hasDate = date != null && !Number.isNaN(dateMs)
 
   const content = hasDate ? stripTimestampPrefix(line.slice(timestamp.length + 1)) : line
+
+  // For Proxmox journalctl logs, try to parse the journalctl format (e.g., "Jan 25 14:55:23")
+  if (!hasDate && isProxmox) {
+    const journalDate = parseJournalctlTimestamp(line)
+    if (journalDate) {
+      return `\u001b[37m${formatLocalDateTime(journalDate)}\u001b[0m ${colorizeLogLevel(stripTimestampPrefix(line))}`
+    }
+  }
+
   if (!hasDate) {
     return colorizeLogLevel(content)
   }
@@ -446,6 +455,43 @@ const timestampPrefix = new RegExp(
   `^(?:\\u001b\\[[0-9;]*m)*(?:\\[\\s*\\]\\s*)?(?:\\[\\s*|\\(\\s*)?(?:${dateYmd}[T ,]+${timePart}|${dateYmd}|${dateDmy}(?:[ T,]+${timePart})?|${dateMd}(?:[ T,]+${timePart})?|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s+\\d{1,2}\\s+${timePart}(?:\\s+\\d{4})?|${timePart})(?:\\s*(?:\\]|\\)))?(?:\\u001b\\[[0-9;]*m)*\\s*`,
   'i'
 )
+
+const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+const journalctlRegex = /^([A-Z][a-z]{2})\s+(\d{1,2})\s+(\d{2}):(\d{2}):(\d{2})/
+
+function parseJournalctlTimestamp(line: string): Date | null {
+  const match = line.match(journalctlRegex)
+  if (!match) return null
+
+  const month = match[1]!
+  const dayStr = match[2]!
+  const hourStr = match[3]!
+  const minuteStr = match[4]!
+  const secondStr = match[5]!
+
+  const monthIndex = monthNames.indexOf(month)
+  if (monthIndex === -1) return null
+
+  const now = new Date()
+  const year = now.getFullYear()
+
+  const date = new Date(
+    year,
+    monthIndex,
+    parseInt(dayStr, 10),
+    parseInt(hourStr, 10),
+    parseInt(minuteStr, 10),
+    parseInt(secondStr, 10)
+  )
+
+  // Handle year wrap-around (log from January when current month is later)
+  if (date > now && now.getMonth() < monthIndex) {
+    date.setFullYear(year - 1)
+  }
+
+  return date
+}
 
 function stripTimestampPrefix(line: string) {
   if (line.startsWith('{')) {
