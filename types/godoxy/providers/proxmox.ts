@@ -8,13 +8,40 @@ export type ProxmoxConfig = {
    */
   url: URL
   /**
-   * Token ID
+   * Username
+   *
+   * @description Required for journalctl log streaming
+   * @examples ["root"]
    */
-  token_id: string
+  username?: string
+  /**
+   * Password
+   *
+   * @description Required for journalctl log streaming
+   * @examples ["password"]
+   */
+  password?: string
+  /**
+   * Authentication realm
+   *
+   * @description Authentication realm
+   * @default "pam"
+   */
+  realm?: string
+  /**
+   * Token ID
+   *
+   * @description API token ID, uses password authentication if not set
+   * @examples ["root@pam!godoxy-token"]
+   */
+  token_id?: string
   /**
    * API secret
+   *
+   * @description API secret, uses password authentication if not set
+   * @examples ["secret"]
    */
-  secret: string
+  secret?: string
   /**
    * Skip TLS verification
    */
