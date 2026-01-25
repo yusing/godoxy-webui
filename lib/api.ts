@@ -1157,86 +1157,6 @@ export namespace Agent {
   }
 }
 
-export namespace Api {
-  /**
-   * @description Get journalctl output
-   * @tags proxmox, websocket
-   * @name Journalctl
-   * @summary Get journalctl output
-   * @request GET:/api/v1/proxmox/journalctl/{node}/{vmid}
-   * @response `200` `string` Journalctl output
-   * @response `400` `ErrorResponse` Invalid request
-   * @response `403` `ErrorResponse` Unauthorized
-   * @response `404` `ErrorResponse` Node not found
-   * @response `500` `ErrorResponse` Internal server error
-   */
-  export namespace Journalctl {
-    export type RequestParams = {
-      node: string
-      vmid: number
-    }
-    export type RequestQuery = {
-      /** limit */
-      limit?: number
-    }
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = string
-  }
-
-  /**
-   * @description Get journalctl output
-   * @tags proxmox, websocket
-   * @name Journalctl2
-   * @summary Get journalctl output
-   * @request GET:/api/v1/proxmox/journalctl/{node}/{vmid}/{service}
-   * @originalName journalctl
-   * @duplicate
-   * @response `200` `string` Journalctl output
-   * @response `400` `ErrorResponse` Invalid request
-   * @response `403` `ErrorResponse` Unauthorized
-   * @response `404` `ErrorResponse` Node not found
-   * @response `500` `ErrorResponse` Internal server error
-   */
-  export namespace Journalctl2 {
-    export type RequestParams = {
-      node: string
-      service?: string
-      vmid: number
-    }
-    export type RequestQuery = {
-      /** limit */
-      limit?: number
-    }
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = string
-  }
-
-  /**
-   * @description Get proxmox stats in format of "STATUS|CPU%%|MEM USAGE/LIMIT|MEM%%|NET I/O|BLOCK I/O"
-   * @tags proxmox, websocket
-   * @name Stats
-   * @summary Get proxmox stats
-   * @request GET:/api/v1/proxmox/stats/{node}/{vmid}
-   * @response `200` `string` Stats output
-   * @response `400` `ErrorResponse` Invalid request
-   * @response `403` `ErrorResponse` Unauthorized
-   * @response `404` `ErrorResponse` Node not found
-   * @response `500` `ErrorResponse` Internal server error
-   */
-  export namespace Stats {
-    export type RequestParams = {
-      node: string
-      vmid: number
-    }
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = string
-  }
-}
-
 export namespace Auth {
   /**
    * @description Handles the callback from the provider after successful authentication
@@ -2026,6 +1946,152 @@ export namespace Metrics {
   }
 }
 
+export namespace Proxmox {
+  /**
+   * @description Get journalctl output
+   * @tags proxmox, websocket
+   * @name Journalctl
+   * @summary Get journalctl output
+   * @request GET:/proxmox/journalctl/{node}/{vmid}
+   * @response `200` `string` Journalctl output
+   * @response `400` `ErrorResponse` Invalid request
+   * @response `403` `ErrorResponse` Unauthorized
+   * @response `404` `ErrorResponse` Node not found
+   * @response `500` `ErrorResponse` Internal server error
+   */
+  export namespace Journalctl {
+    export type RequestParams = {
+      node: string
+      vmid: number
+    }
+    export type RequestQuery = {
+      /** limit */
+      limit?: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = string
+  }
+
+  /**
+   * @description Get journalctl output
+   * @tags proxmox, websocket
+   * @name Journalctl2
+   * @summary Get journalctl output
+   * @request GET:/proxmox/journalctl/{node}/{vmid}/{service}
+   * @originalName journalctl
+   * @duplicate
+   * @response `200` `string` Journalctl output
+   * @response `400` `ErrorResponse` Invalid request
+   * @response `403` `ErrorResponse` Unauthorized
+   * @response `404` `ErrorResponse` Node not found
+   * @response `500` `ErrorResponse` Internal server error
+   */
+  export namespace Journalctl2 {
+    export type RequestParams = {
+      node: string
+      service?: string
+      vmid: number
+    }
+    export type RequestQuery = {
+      /** limit */
+      limit?: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = string
+  }
+
+  /**
+   * @description Restart LXC container by node and vmid
+   * @tags proxmox
+   * @name LxcRestart
+   * @summary Restart LXC container
+   * @request POST:/proxmox/lxc/:node/:vmid/restart
+   * @response `200` `SuccessResponse` OK
+   * @response `400` `ErrorResponse` Invalid request
+   * @response `404` `ErrorResponse` Node not found
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace LxcRestart {
+    export type RequestParams = {
+      node: string
+      vmid: number
+    }
+    export type RequestQuery = {}
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = SuccessResponse
+  }
+
+  /**
+   * @description Start LXC container by node and vmid
+   * @tags proxmox
+   * @name LxcStart
+   * @summary Start LXC container
+   * @request POST:/proxmox/lxc/:node/:vmid/start
+   * @response `200` `SuccessResponse` OK
+   * @response `400` `ErrorResponse` Invalid request
+   * @response `404` `ErrorResponse` Node not found
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace LxcStart {
+    export type RequestParams = {
+      node: string
+      vmid: number
+    }
+    export type RequestQuery = {}
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = SuccessResponse
+  }
+
+  /**
+   * @description Stop LXC container by node and vmid
+   * @tags proxmox
+   * @name LxcStop
+   * @summary Stop LXC container
+   * @request POST:/proxmox/lxc/:node/:vmid/stop
+   * @response `200` `SuccessResponse` OK
+   * @response `400` `ErrorResponse` Invalid request
+   * @response `404` `ErrorResponse` Node not found
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace LxcStop {
+    export type RequestParams = {
+      node: string
+      vmid: number
+    }
+    export type RequestQuery = {}
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = SuccessResponse
+  }
+
+  /**
+   * @description Get proxmox stats in format of "STATUS|CPU%%|MEM USAGE/LIMIT|MEM%%|NET I/O|BLOCK I/O"
+   * @tags proxmox, websocket
+   * @name Stats
+   * @summary Get proxmox stats
+   * @request GET:/proxmox/stats/{node}/{vmid}
+   * @response `200` `string` Stats output
+   * @response `400` `ErrorResponse` Invalid request
+   * @response `403` `ErrorResponse` Unauthorized
+   * @response `404` `ErrorResponse` Node not found
+   * @response `500` `ErrorResponse` Internal server error
+   */
+  export namespace Stats {
+    export type RequestParams = {
+      node: string
+      vmid: number
+    }
+    export type RequestQuery = {}
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = string
+  }
+}
+
 export namespace Reload {
   /**
    * @description Reload config
@@ -2414,94 +2480,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/agent/verify`,
         method: 'POST',
         body: request,
-        type: ContentType.Json,
-        format: 'json',
-        ...params,
-      }),
-  }
-  api = {
-    /**
-     * @description Get journalctl output
-     *
-     * @tags proxmox, websocket
-     * @name Journalctl
-     * @summary Get journalctl output
-     * @request GET:/api/v1/proxmox/journalctl/{node}/{vmid}
-     * @response `200` `string` Journalctl output
-     * @response `400` `ErrorResponse` Invalid request
-     * @response `403` `ErrorResponse` Unauthorized
-     * @response `404` `ErrorResponse` Node not found
-     * @response `500` `ErrorResponse` Internal server error
-     */
-    journalctl: (
-      node: string,
-      vmid: number,
-      query?: {
-        /** limit */
-        limit?: number
-      },
-      params: RequestParams = {}
-    ) =>
-      this.request<string, ErrorResponse>({
-        path: `/api/v1/proxmox/journalctl/${node}/${vmid}`,
-        method: 'GET',
-        query: query,
-        type: ContentType.Json,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Get journalctl output
-     *
-     * @tags proxmox, websocket
-     * @name Journalctl2
-     * @summary Get journalctl output
-     * @request GET:/api/v1/proxmox/journalctl/{node}/{vmid}/{service}
-     * @originalName journalctl
-     * @duplicate
-     * @response `200` `string` Journalctl output
-     * @response `400` `ErrorResponse` Invalid request
-     * @response `403` `ErrorResponse` Unauthorized
-     * @response `404` `ErrorResponse` Node not found
-     * @response `500` `ErrorResponse` Internal server error
-     */
-    journalctl2: (
-      node: string,
-      vmid: number,
-      service?: string,
-      query?: {
-        /** limit */
-        limit?: number
-      },
-      params: RequestParams = {}
-    ) =>
-      this.request<string, ErrorResponse>({
-        path: `/api/v1/proxmox/journalctl/${node}/${vmid}/${service}`,
-        method: 'GET',
-        query: query,
-        type: ContentType.Json,
-        format: 'json',
-        ...params,
-      }),
-
-    /**
-     * @description Get proxmox stats in format of "STATUS|CPU%%|MEM USAGE/LIMIT|MEM%%|NET I/O|BLOCK I/O"
-     *
-     * @tags proxmox, websocket
-     * @name Stats
-     * @summary Get proxmox stats
-     * @request GET:/api/v1/proxmox/stats/{node}/{vmid}
-     * @response `200` `string` Stats output
-     * @response `400` `ErrorResponse` Invalid request
-     * @response `403` `ErrorResponse` Unauthorized
-     * @response `404` `ErrorResponse` Node not found
-     * @response `500` `ErrorResponse` Internal server error
-     */
-    stats: (node: string, vmid: number, params: RequestParams = {}) =>
-      this.request<string, ErrorResponse>({
-        path: `/api/v1/proxmox/stats/${node}/${vmid}`,
-        method: 'GET',
         type: ContentType.Json,
         format: 'json',
         ...params,
@@ -3393,6 +3371,154 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/metrics/uptime`,
         method: 'GET',
         query: query,
+        format: 'json',
+        ...params,
+      }),
+  }
+  proxmox = {
+    /**
+     * @description Get journalctl output
+     *
+     * @tags proxmox, websocket
+     * @name Journalctl
+     * @summary Get journalctl output
+     * @request GET:/proxmox/journalctl/{node}/{vmid}
+     * @response `200` `string` Journalctl output
+     * @response `400` `ErrorResponse` Invalid request
+     * @response `403` `ErrorResponse` Unauthorized
+     * @response `404` `ErrorResponse` Node not found
+     * @response `500` `ErrorResponse` Internal server error
+     */
+    journalctl: (
+      node: string,
+      vmid: number,
+      query?: {
+        /** limit */
+        limit?: number
+      },
+      params: RequestParams = {}
+    ) =>
+      this.request<string, ErrorResponse>({
+        path: `/proxmox/journalctl/${node}/${vmid}`,
+        method: 'GET',
+        query: query,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get journalctl output
+     *
+     * @tags proxmox, websocket
+     * @name Journalctl2
+     * @summary Get journalctl output
+     * @request GET:/proxmox/journalctl/{node}/{vmid}/{service}
+     * @originalName journalctl
+     * @duplicate
+     * @response `200` `string` Journalctl output
+     * @response `400` `ErrorResponse` Invalid request
+     * @response `403` `ErrorResponse` Unauthorized
+     * @response `404` `ErrorResponse` Node not found
+     * @response `500` `ErrorResponse` Internal server error
+     */
+    journalctl2: (
+      node: string,
+      vmid: number,
+      service?: string,
+      query?: {
+        /** limit */
+        limit?: number
+      },
+      params: RequestParams = {}
+    ) =>
+      this.request<string, ErrorResponse>({
+        path: `/proxmox/journalctl/${node}/${vmid}/${service}`,
+        method: 'GET',
+        query: query,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Restart LXC container by node and vmid
+     *
+     * @tags proxmox
+     * @name LxcRestart
+     * @summary Restart LXC container
+     * @request POST:/proxmox/lxc/:node/:vmid/restart
+     * @response `200` `SuccessResponse` OK
+     * @response `400` `ErrorResponse` Invalid request
+     * @response `404` `ErrorResponse` Node not found
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    lxcRestart: (node: string, vmid: number, params: RequestParams = {}) =>
+      this.request<SuccessResponse, ErrorResponse>({
+        path: `/proxmox/lxc/${node}/${vmid}/restart`,
+        method: 'POST',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Start LXC container by node and vmid
+     *
+     * @tags proxmox
+     * @name LxcStart
+     * @summary Start LXC container
+     * @request POST:/proxmox/lxc/:node/:vmid/start
+     * @response `200` `SuccessResponse` OK
+     * @response `400` `ErrorResponse` Invalid request
+     * @response `404` `ErrorResponse` Node not found
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    lxcStart: (node: string, vmid: number, params: RequestParams = {}) =>
+      this.request<SuccessResponse, ErrorResponse>({
+        path: `/proxmox/lxc/${node}/${vmid}/start`,
+        method: 'POST',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Stop LXC container by node and vmid
+     *
+     * @tags proxmox
+     * @name LxcStop
+     * @summary Stop LXC container
+     * @request POST:/proxmox/lxc/:node/:vmid/stop
+     * @response `200` `SuccessResponse` OK
+     * @response `400` `ErrorResponse` Invalid request
+     * @response `404` `ErrorResponse` Node not found
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    lxcStop: (node: string, vmid: number, params: RequestParams = {}) =>
+      this.request<SuccessResponse, ErrorResponse>({
+        path: `/proxmox/lxc/${node}/${vmid}/stop`,
+        method: 'POST',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get proxmox stats in format of "STATUS|CPU%%|MEM USAGE/LIMIT|MEM%%|NET I/O|BLOCK I/O"
+     *
+     * @tags proxmox, websocket
+     * @name Stats
+     * @summary Get proxmox stats
+     * @request GET:/proxmox/stats/{node}/{vmid}
+     * @response `200` `string` Stats output
+     * @response `400` `ErrorResponse` Invalid request
+     * @response `403` `ErrorResponse` Unauthorized
+     * @response `404` `ErrorResponse` Node not found
+     * @response `500` `ErrorResponse` Internal server error
+     */
+    stats: (node: string, vmid: number, params: RequestParams = {}) =>
+      this.request<string, ErrorResponse>({
+        path: `/proxmox/stats/${node}/${vmid}`,
+        method: 'GET',
+        type: ContentType.Json,
         format: 'json',
         ...params,
       }),
