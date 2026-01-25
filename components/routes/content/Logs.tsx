@@ -456,7 +456,20 @@ const timestampPrefix = new RegExp(
   'i'
 )
 
-const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const monthNames = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+]
 
 const journalctlRegex = /^([A-Z][a-z]{2})\s+(\d{1,2})\s+(\d{2}):(\d{2}):(\d{2})/
 
@@ -464,13 +477,9 @@ function parseJournalctlTimestamp(line: string): Date | null {
   const match = line.match(journalctlRegex)
   if (!match) return null
 
-  const month = match[1]!
-  const dayStr = match[2]!
-  const hourStr = match[3]!
-  const minuteStr = match[4]!
-  const secondStr = match[5]!
+  const [, month, dayStr, hourStr, minuteStr, secondStr] = match
 
-  const monthIndex = monthNames.indexOf(month)
+  const monthIndex = monthNames.indexOf(month!)
   if (monthIndex === -1) return null
 
   const now = new Date()
@@ -479,10 +488,10 @@ function parseJournalctlTimestamp(line: string): Date | null {
   const date = new Date(
     year,
     monthIndex,
-    parseInt(dayStr, 10),
-    parseInt(hourStr, 10),
-    parseInt(minuteStr, 10),
-    parseInt(secondStr, 10)
+    parseInt(dayStr!, 10),
+    parseInt(hourStr!, 10),
+    parseInt(minuteStr!, 10),
+    parseInt(secondStr!, 10)
   )
 
   // Handle year wrap-around (log from January when current month is later)
