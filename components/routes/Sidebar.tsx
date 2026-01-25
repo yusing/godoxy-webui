@@ -38,6 +38,7 @@ export default function RoutesSidebar({ className }: { className?: string }) {
           </PopoverTrigger>
           <PopoverContent className="flex flex-col gap-2">
             <Setting field="dockerOnly" label="Docker only" />
+            <Setting field="proxmoxOnly" label="Proxmox only" />
             <Setting field="hideUnknown" label="Hide unknown" />
             <Setting field="hideExcluded" label="Hide excluded (non-proxied)" />
             <Setting field="hideUptimebar" label="Hide uptime bar" />
@@ -82,24 +83,35 @@ function RoutesSidebarItemList() {
 }
 
 function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: RouteKey }) {
-  const [hideUnknown, hideExcluded, dockerOnly] = store.displaySettings.useCompute(settings => [
-    settings.hideUnknown,
-    settings.hideExcluded,
-    settings.dockerOnly,
-  ])
+  const [hideUnknown, hideExcluded, dockerOnly, proxmoxOnly] = store.displaySettings.useCompute(
+    settings => [
+      settings.hideUnknown,
+      settings.hideExcluded,
+      settings.dockerOnly,
+      settings.proxmoxOnly,
+    ]
+  )
   const currentStatus = store.uptime[routeKey]!.current_status.use()
-  const [isDocker, displayName, excluded] = store.routeDetails[routeKey]!.useCompute(details => {
-    if (!details) {
-      return [false, '', false]
+  const [isDocker, isProxmox, displayName, excluded] = store.routeDetails[routeKey]!.useCompute(
+    details => {
+      if (!details) {
+        return [false, false, '', false]
+      }
+      return [
+        Boolean(details.container),
+        Boolean(details.proxmox),
+        details.homepage.name,
+        details.excluded,
+      ]
     }
-    return [Boolean(details.container), details.homepage.name, details.excluded]
-  })
+  )
 
   const hideUptimebarState = store.displaySettings.hideUptimebar
 
   if (hideUnknown && currentStatus === 'unknown') return null
   if (hideExcluded && excluded) return null
   if (dockerOnly && !isDocker) return null
+  if (proxmoxOnly && !isProxmox) return null
 
   return (
     <div className="flex flex-col">

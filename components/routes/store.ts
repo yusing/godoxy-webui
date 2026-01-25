@@ -6,6 +6,7 @@ import { createStore } from 'juststore'
 
 export type RouteDisplaySettings = {
   dockerOnly: boolean
+  proxmoxOnly: boolean
   hideUnknown: boolean
   hideExcluded: boolean
   hideUptimebar: boolean
@@ -46,6 +47,7 @@ export const store = createStore<RouteState>('routes', {
   proxmoxNodeStats: {},
   displaySettings: {
     dockerOnly: false,
+    proxmoxOnly: false,
     hideUnknown: false,
     hideExcluded: false,
     hideUptimebar: false,
