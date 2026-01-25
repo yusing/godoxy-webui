@@ -17,11 +17,22 @@
   );
 }
 
-/* Add internal padding to xterm terminal */
+:root {
+  --xterm-background: #ffffff;
+  --xterm-foreground: #24292f;
+}
+
+.dark {
+  --xterm-background: #0d1117;
+  --xterm-foreground: #c9d1d9;
+}
+
 .container-logs-terminal .xterm {
   padding: 8px;
+  background-color: var(--xterm-background);
 }
 
 .container-logs-terminal .xterm-viewport {
   padding: 8px;
+  background-color: var(--xterm-background);
 }

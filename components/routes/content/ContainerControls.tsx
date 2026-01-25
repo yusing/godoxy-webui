@@ -22,7 +22,8 @@ const containerActions = [
     label: 'Stop',
     Icon: IconSquare,
     variant: 'destructive' as const,
-    className: 'bg-destructive hover:bg-destructive/80 text-destructive-foreground',
+    className:
+      'bg-destructive/70 dark:bg-destructive hover:bg-destructive/80 text-destructive-foreground/70 dark:text-destructive-foreground',
     enableIfDocker: (running: boolean) => running,
     enableIfProxmox: (status: string) => status === 'running',
   },

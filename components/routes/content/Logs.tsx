@@ -1,6 +1,7 @@
 import LoadingRing from '@/components/LoadingRing'
 import { Button } from '@/components/ui/button'
 import { useWebSocketApi } from '@/hooks/websocket'
+import { useTheme } from 'next-themes'
 
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 import { FitAddon } from '@xterm/addon-fit'
@@ -17,6 +18,7 @@ import '@fontsource/cascadia-code/400.css'
 import '@fontsource/cascadia-code/700.css'
 
 import '../style.css'
+import { resolveThemeColors, resolveThemeColorsAsync } from './logs'
 
 export default function Logs({ routeKey }: { routeKey: RouteKey }) {
   const logsRef = useRef<HTMLDivElement>(null)
@@ -53,6 +55,25 @@ export default function Logs({ routeKey }: { routeKey: RouteKey }) {
     </div>
   )
 }
+
+const ansi = {
+  reset: '\u001b[0m',
+  red: '\u001b[31m',
+  green: '\u001b[32m',
+  yellow: '\u001b[33m',
+  blue: '\u001b[34m',
+  magenta: '\u001b[35m',
+  cyan: '\u001b[36m',
+  white: '\u001b[37m',
+  black: '\u001b[30m',
+  dim: '\u001b[2m',
+  brightRed: '\u001b[91m',
+  brightGreen: '\u001b[92m',
+  brightYellow: '\u001b[93m',
+  brightBlue: '\u001b[94m',
+  brightCyan: '\u001b[96m',
+  brightMagenta: '\u001b[95m',
+} as const
 
 function LogsInner({
   routeKey,
@@ -137,10 +158,7 @@ function LogsInner({
         fontWeight: '400',
         fontWeightBold: '700',
         lineHeight: 1.2,
-        theme: {
-          background: 'transparent',
-          foreground: '#ffffff',
-        },
+        theme: resolveThemeColors(),
       })
 
       const fitAddon = new FitAddon()
@@ -188,6 +206,7 @@ function LogsInner({
 
   return (
     <>
+      <LogThemeUpdater termRef={termRef} />
       <div className="relative h-full max-h-[45vh] overflow-hidden rounded-md border bg-muted/30 tracking-normal">
         <div ref={logsRef} className="container-logs-terminal h-full w-full" />
         {!hasLogs && (
@@ -221,6 +240,35 @@ function LogsInner({
 
 function LogChevron({ direction }: { direction: 'up' | 'down' }) {
   return direction === 'up' ? <IconChevronUp /> : <IconChevronDown />
+}
+
+function LogThemeUpdater({ termRef }: { termRef: React.RefObject<Terminal | null> }) {
+  const { resolvedTheme } = useTheme()
+  const prevThemeRef = useRef<string | undefined>(undefined)
+
+  useEffect(() => {
+    if (resolvedTheme === prevThemeRef.current) return
+    prevThemeRef.current = resolvedTheme
+
+    const term = termRef.current
+    if (!term) return
+
+    let cancelled = false
+
+    const updateTheme = async () => {
+      const colors = await resolveThemeColorsAsync()
+      if (cancelled || termRef.current !== term) return
+      term.options.theme = colors
+    }
+
+    updateTheme()
+
+    return () => {
+      cancelled = true
+    }
+  }, [resolvedTheme, termRef])
+
+  return null
 }
 
 function LogProvider({
@@ -371,79 +419,363 @@ function LogProvider({
 }
 
 function formatLineForTerminal(line: string, parseTimestamp: boolean, isProxmox: boolean = false) {
-  const firstSpace = parseTimestamp ? line.indexOf(' ') : -1
-  const timestamp = firstSpace === -1 ? '' : line.slice(0, firstSpace)
-  const date = timestamp ? new Date(timestamp) : null
-  const dateMs = date ? date.getTime() : Number.NaN
-  const hasDate = date != null && !Number.isNaN(dateMs)
+  const ts = parseTimestamp ? extractLeadingTimestamp(line) : null
+  const timestamp = ts?.raw ?? ''
+  const date = ts?.date ?? null
+  const hasDate = date != null
 
-  const content = hasDate ? stripTimestampPrefix(line.slice(timestamp.length + 1)) : line
+  const content = hasDate ? stripTimestampPrefix(line.slice(timestamp.length).trimStart()) : line
 
   // For Proxmox journalctl logs, try to parse the journalctl format (e.g., "Jan 25 14:55:23")
   if (!hasDate && isProxmox) {
     const journalDate = parseJournalctlTimestamp(line)
     if (journalDate) {
-      return `\u001b[37m${formatLocalDateTime(journalDate)}\u001b[0m ${colorizeLogLevel(stripTimestampPrefix(line))}`
+      const body = formatLogContent(stripTimestampPrefix(line), { hasExternalTimestamp: true })
+      return `${formatLocalDateTimeColored(journalDate)} ${body}`
     }
   }
 
   if (!hasDate) {
-    return colorizeLogLevel(content)
+    return formatLogContent(content, { hasExternalTimestamp: !isProxmox })
   }
 
   // Prepend a static timestamp. Use ANSI dim for readability without changing log colors.
-  return `\u001b[37m${formatLocalDateTime(date)}\u001b[0m ${colorizeLogLevel(content)}`
+  return `${formatLocalDateTimeColored(date)} ${formatLogContent(content, { hasExternalTimestamp: true })}`
+}
+
+function extractLeadingTimestamp(line: string): { raw: string; date: Date } | null {
+  // Common: "2026-01-25T14:59:40.329Z" or "2026-01-25 14:59:40.329"
+  const full = line.match(
+    /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:[.,]\d+)?(?:Z|[+-]\d{2}:?\d{2})?/
+  )
+  if (full) {
+    const raw = full[0]
+    const iso = raw.includes(' ') ? raw.replace(' ', 'T') : raw
+    const date = new Date(iso)
+    if (!Number.isNaN(date.getTime())) return { raw, date }
+  }
+
+  // Fallback: date-only prefix "2026-01-25".
+  const dateOnly = line.match(/^\d{4}-\d{2}-\d{2}/)
+  if (dateOnly) {
+    const raw = dateOnly[0]
+    const date = new Date(raw)
+    if (!Number.isNaN(date.getTime())) return { raw, date }
+  }
+
+  return null
+}
+
+function formatLogContent(line: string, opts: { hasExternalTimestamp: boolean }): string {
+  const formatted = tryFormatJsonLogLine(line, opts)
+  return formatted ?? colorizeLogLevel(line)
+}
+
+function tryFormatJsonLogLine(
+  line: string,
+  opts: { hasExternalTimestamp: boolean }
+): string | null {
+  const firstBrace = line.indexOf('{')
+  if (firstBrace === -1) return null
+
+  const extracted = extractFirstJsonObject(line, firstBrace)
+  if (!extracted) return null
+
+  const { prefix, jsonText, suffix } = extracted
+
+  const parsed = safeJsonParse(jsonText)
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null
+
+  const obj = parsed as Record<string, unknown>
+
+  const levelInfo = extractLevel(obj)
+  const levelBadge = levelInfo ? formatLevelBadge(levelInfo.value) : ''
+
+  const timeInfo = !opts.hasExternalTimestamp ? extractTimestamp(obj) : null
+  const timestampPrefix = timeInfo ? `${formatLocalDateTimeColored(timeInfo)} ` : ''
+
+  const excludeKeys = new Set<string>()
+  if (levelInfo) excludeKeys.add(levelInfo.key)
+  if (timeInfo) {
+    for (const k of ['time', 'timestamp', 'ts', '@timestamp', 'datetime']) excludeKeys.add(k)
+  }
+
+  const kv = formatJsonKv(obj, { excludeKeys })
+  if (!kv) return null
+
+  const renderedPrefix = prefix.trim() ? `${ansi.dim}${prefix.trim()}${ansi.reset} ` : ''
+  const renderedSuffix = suffix.trim() ? ` ${ansi.dim}${suffix.trim()}${ansi.reset}` : ''
+
+  const header = levelBadge ? `${levelBadge} ` : ''
+  return `${timestampPrefix}${renderedPrefix}${header}${kv}${renderedSuffix}`.trimEnd()
+}
+
+function extractFirstJsonObject(
+  line: string,
+  startIndex: number
+): { prefix: string; jsonText: string; suffix: string } | null {
+  let depth = 0
+  let inString = false
+  let escaping = false
+
+  for (let i = startIndex; i < line.length; i++) {
+    const ch = line[i]!
+
+    if (escaping) {
+      escaping = false
+      continue
+    }
+    if (inString) {
+      if (ch === '\\') {
+        escaping = true
+      } else if (ch === '"') {
+        inString = false
+      }
+      continue
+    }
+
+    if (ch === '"') {
+      inString = true
+      continue
+    }
+
+    if (ch === '{') {
+      depth++
+    } else if (ch === '}') {
+      depth--
+      if (depth === 0) {
+        const jsonText = line.slice(startIndex, i + 1)
+        return {
+          prefix: line.slice(0, startIndex),
+          jsonText,
+          suffix: line.slice(i + 1),
+        }
+      }
+      if (depth < 0) return null
+    }
+  }
+
+  return null
+}
+
+function safeJsonParse(value: string): unknown | null {
+  try {
+    return JSON.parse(value)
+  } catch {
+    return null
+  }
+}
+
+function extractLevel(obj: Record<string, unknown>): { key: string; value: string } | null {
+  const keys = ['level', 'loglevel', 'severity']
+  for (const key of keys) {
+    const v = obj[key]
+    if (typeof v === 'string' && v.trim()) return { key, value: v }
+  }
+  return null
+}
+
+function extractTimestamp(obj: Record<string, unknown>): Date | null {
+  const candidates = ['time', 'timestamp', 'ts', '@timestamp', 'datetime']
+  for (const key of candidates) {
+    const v = obj[key]
+    if (typeof v === 'string') {
+      const d = new Date(v)
+      if (!Number.isNaN(d.getTime())) return d
+    }
+    if (typeof v === 'number' && Number.isFinite(v)) {
+      // Heuristic: > 1e12 is ms, otherwise seconds.
+      const ms = v > 1e12 ? v : v * 1000
+      const d = new Date(ms)
+      if (!Number.isNaN(d.getTime())) return d
+    }
+  }
+  return null
+}
+
+function formatLevelBadge(levelRaw: string): string {
+  const level = normalizeLevel(levelRaw)
+  const color = colorForLevel(level)
+  return `${color}[${level}]${ansi.reset}`
+}
+
+function normalizeLevel(levelRaw: string): string {
+  const l = levelRaw.trim().toLowerCase()
+  if (l === 'warning') return 'WARN'
+  if (l === 'information') return 'INFO'
+  if (l === 'critical') return 'FATAL'
+  if (l === 'err') return 'ERROR'
+  if (l === 'dbg') return 'DEBUG'
+  if (l === 'trc') return 'TRACE'
+  return l.toUpperCase()
+}
+
+function colorForLevel(level: string): string {
+  switch (level) {
+    case 'FATAL':
+    case 'CRITICAL':
+      return ansi.brightRed
+    case 'ERROR':
+    case 'ERR':
+    case 'SEVERE':
+      return ansi.red
+    case 'WARN':
+    case 'WARNING':
+      return ansi.yellow
+    case 'INFO':
+    case 'INFORMATION':
+      return ansi.green
+    case 'DEBUG':
+    case 'DBG':
+      return ansi.blue
+    case 'TRACE':
+    case 'TRC':
+      return ansi.dim
+    case 'SUCCESS':
+    case 'OK':
+    case 'PASS':
+      return ansi.brightGreen
+    default:
+      return ansi.cyan
+  }
+}
+
+function formatJsonKv(
+  obj: Record<string, unknown>,
+  opts: {
+    excludeKeys: Set<string>
+  }
+): string {
+  const keys = Object.keys(obj)
+  if (keys.length === 0) return ''
+
+  const priorityKeys = [
+    'sender',
+    'component',
+    'service',
+    'msg',
+    'message',
+    'method',
+    'proto',
+    'uri',
+    'path',
+    'remote_addr',
+    'local_addr',
+    'request_id',
+    'user_agent',
+    'resp_status',
+    'status',
+    'resp_size',
+    'elapsed_ms',
+    'elapsed',
+    'error',
+    'err',
+  ]
+
+  const ordered = new Set<string>()
+  for (const k of priorityKeys) {
+    if (k in obj && !opts.excludeKeys.has(k)) ordered.add(k)
+  }
+  for (const k of keys) {
+    if (!opts.excludeKeys.has(k)) ordered.add(k)
+  }
+
+  const parts: string[] = []
+  for (const key of ordered) {
+    const value = obj[key]
+    if (value === undefined) continue
+    parts.push(formatKvPair(key, value))
+  }
+
+  return parts.join(' ')
+}
+
+function formatKvPair(key: string, value: unknown): string {
+  const keyColor = colorForKey(key)
+  const sep = `${ansi.dim}=${ansi.reset}`
+
+  // Special-case common HTTP-ish fields for readability.
+  if ((key === 'resp_status' || key === 'status') && typeof value === 'number') {
+    const statusColor =
+      value >= 500
+        ? ansi.red
+        : value >= 400
+          ? ansi.brightRed
+          : value >= 300
+            ? ansi.brightYellow
+            : ansi.green
+    return `${keyColor}${key}${ansi.reset}${sep}${statusColor}${value}${ansi.reset}`
+  }
+
+  return `${keyColor}${key}${ansi.reset}${sep}${formatKvValue(value)}`
+}
+
+function formatKvValue(value: unknown): string {
+  if (value == null) return `${ansi.dim}null${ansi.reset}`
+
+  if (typeof value === 'string') {
+    return `"${escapeKvString(value)}"`
+  }
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value)
+  }
+
+  // Objects/arrays: compact JSON.
+  try {
+    return `"${escapeKvString(JSON.stringify(value))}"`
+  } catch {
+    return `"${escapeKvString(String(value))}"`
+  }
+}
+
+function escapeKvString(value: string): string {
+  return value
+    .replace(/\\/g, '\\\\')
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r')
+    .replace(/\t/g, '\\t')
+    .replace(/"/g, '\\"')
+}
+
+function colorForKey(key: string): string {
+  // Stable, deterministic color per key for quick scanning.
+  const palette = [
+    ansi.brightCyan,
+    ansi.brightYellow,
+    ansi.brightGreen,
+    ansi.brightBlue,
+    ansi.brightMagenta,
+  ]
+  let hash = 0
+  for (let i = 0; i < key.length; i++) {
+    hash = (hash * 31 + key.charCodeAt(i)) >>> 0
+  }
+  return palette[hash % palette.length]!
 }
 
 function colorizeLogLevel(line: string): string {
-  // ANSI color codes
-  const colors = {
-    reset: '\u001b[0m',
-    red: '\u001b[31m',
-    green: '\u001b[32m',
-    yellow: '\u001b[33m',
-    blue: '\u001b[34m',
-    magenta: '\u001b[35m',
-    cyan: '\u001b[36m',
-    dim: '\u001b[2m',
-    brightRed: '\u001b[91m',
-    brightGreen: '\u001b[92m',
-    brightYellow: '\u001b[93m',
-  }
-
   // Log level patterns - case insensitive
   const patterns: { regex: RegExp; color: string }[] = [
-    { regex: /\[(FATAL|CRITICAL)\]/gi, color: colors.brightRed },
-    { regex: /\[(ERROR|ERR|SEVERE)\]/gi, color: colors.red },
-    { regex: /\[(WARN|WARNING)\]/gi, color: colors.yellow },
-    { regex: /\[(INFO|INFORMATION)\]/gi, color: colors.green },
-    { regex: /\[(DEBUG|DBG)\]/gi, color: colors.blue },
-    { regex: /\[(TRACE|TRC)\]/gi, color: colors.dim },
-    { regex: /\[(SUCCESS|OK|PASS)\]/gi, color: colors.brightGreen },
-    // JSON-style: "level":"debug"
-    { regex: /"(?:level|loglevel|severity)"\s*:\s*"(fatal|critical)"/gi, color: colors.brightRed },
-    { regex: /"(?:level|loglevel|severity)"\s*:\s*"(error|err|severe)"/gi, color: colors.red },
-    { regex: /"(?:level|loglevel|severity)"\s*:\s*"(warn|warning)"/gi, color: colors.yellow },
-    { regex: /"(?:level|loglevel|severity)"\s*:\s*"(info|information)"/gi, color: colors.green },
-    { regex: /"(?:level|loglevel|severity)"\s*:\s*"(debug|dbg)"/gi, color: colors.blue },
-    { regex: /"(?:level|loglevel|severity)"\s*:\s*"(trace|trc)"/gi, color: colors.dim },
-    {
-      regex: /"(?:level|loglevel|severity)"\s*:\s*"(success|ok|pass)"/gi,
-      color: colors.brightGreen,
-    },
+    { regex: /\[(FATAL|CRITICAL)\]/gi, color: ansi.brightRed },
+    { regex: /\[(ERROR|ERR|SEVERE)\]/gi, color: ansi.red },
+    { regex: /\[(WARN|WARNING)\]/gi, color: ansi.yellow },
+    { regex: /\[(INFO|INFORMATION)\]/gi, color: ansi.green },
+    { regex: /\[(DEBUG|DBG)\]/gi, color: ansi.blue },
+    { regex: /\[(TRACE|TRC)\]/gi, color: ansi.dim },
+    { regex: /\[(SUCCESS|OK|PASS)\]/gi, color: ansi.brightGreen },
   ]
 
   let result = line
   for (const { regex, color } of patterns) {
-    result = result.replace(regex, `${color}$&${colors.reset}`)
+    result = result.replace(regex, `${color}$&${ansi.reset}`)
   }
 
   return result
 }
 
-function formatLocalDateTime(date: Date) {
+function formatLocalDateTimeColored(date: Date) {
   const pad2 = (n: number) => String(n).padStart(2, '0')
-  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())} ${pad2(date.getHours())}:${pad2(date.getMinutes())}:${pad2(date.getSeconds())}`
+  return `${ansi.dim}${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())} ${pad2(date.getHours())}:${pad2(date.getMinutes())}:${pad2(date.getSeconds())}${ansi.reset}`
 }
 
 const timePart =
@@ -456,20 +788,7 @@ const timestampPrefix = new RegExp(
   'i'
 )
 
-const monthNames = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-]
+const monthNames = 'Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' ')
 
 const journalctlRegex = /^([A-Z][a-z]{2})\s+(\d{1,2})\s+(\d{2}):(\d{2}):(\d{2})/
 
