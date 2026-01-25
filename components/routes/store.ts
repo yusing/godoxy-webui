@@ -30,6 +30,7 @@ type RouteState = {
   uptime: Record<RouteKey, RouteUptimeAggregate>
   routeDetails: Record<RouteKey, RouteRoute>
   dockerStats: Record<RouteKey, DockerStatsSummary | null>
+  proxmoxStats: Record<RouteKey, string | null>
   displaySettings: RouteDisplaySettings
   logsAutoScroll: boolean
   mobileDialogOpen: boolean
@@ -40,6 +41,7 @@ export const store = createStore<RouteState>('routes', {
   uptime: {},
   routeDetails: {},
   dockerStats: {},
+  proxmoxStats: {},
   displaySettings: {
     dockerOnly: false,
     hideUnknown: false,

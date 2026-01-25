@@ -1,117 +1,210 @@
 import LoadingRing from '@/components/LoadingRing'
 import { Button } from '@/components/ui/button'
 import { useWebSocketApi } from '@/hooks/websocket'
-import { formatRelTime } from '@/lib/format'
-import { cn } from '@/lib/utils'
+
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
-import Convert from 'ansi-to-html'
+import { FitAddon } from '@xterm/addon-fit'
+import { WebFontsAddon } from '@xterm/addon-web-fonts'
+import { Terminal } from '@xterm/xterm'
+
 import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { useList } from 'react-use'
-import { store } from '../store'
+import { store, type RouteKey } from '../store'
 
-const convertANSI = new Convert()
+import '@xterm/xterm/css/xterm.css'
 
-export default function ContainerLogs({ containerId }: { containerId: string }) {
-  const [lines, { push, reset }] = useList<string>()
-  const topRef = useRef<HTMLDivElement>(null)
-  const bottomRef = useRef<HTMLDivElement>(null)
+import '@fontsource/cascadia-code/400.css'
+import '@fontsource/cascadia-code/700.css'
+
+import '../style.css'
+
+export default function ContainerLogs({ routeKey }: { routeKey: RouteKey }) {
   const logsRef = useRef<HTMLDivElement>(null)
+  const termRef = useRef<Terminal | null>(null)
   const autoScroll = store.logsAutoScroll.use() ?? false
-  const scrollDirection = useRef<'up' | 'down'>('down')
+  const [hasLogs, setHasLogs] = useState(false)
 
-  useEffect(() => {
-    if (!autoScroll) return
-    const anchor = bottomRef.current
-    if (!anchor) return
+  const isProxmox = store.routeDetails[routeKey]!.proxmox.useCompute(proxmox => Boolean(proxmox))
 
-    // Avoid `behavior: 'smooth'` here: log streaming causes repeated effects
-    // which will interrupt the animation and often land mid-way.
-    const raf = requestAnimationFrame(() => {
-      anchor.scrollIntoView({ block: 'end', behavior: 'auto' })
-    })
-    return () => cancelAnimationFrame(raf)
-  }, [autoScroll, containerId, lines.length])
-
-  useEffect(() => {
-    const logs = logsRef.current
-    const calcChevronShouldUp = () => {
-      if (!logs) {
-        return
-      }
-      scrollDirection.current = logs.scrollTop >= logs.scrollHeight / 2 ? 'up' : 'down'
-    }
-    logs?.addEventListener('scroll', calcChevronShouldUp)
-
-    return () => {
-      logs?.removeEventListener('scroll', calcChevronShouldUp)
-    }
-  }, [logsRef])
-
-  useEffect(() => {
-    reset()
-  }, [containerId, reset])
+  const onLog = useCallback(() => {
+    setHasLogs(true)
+  }, [])
 
   return (
     <div className="relative">
       <Suspense>
-        <LogProvider containerId={containerId} push={push} />
+        <LogProvider
+          key={routeKey}
+          routeKey={routeKey}
+          termRef={termRef}
+          autoScroll={autoScroll}
+          isProxmox={isProxmox}
+          onLog={onLog}
+        />
       </Suspense>
       <ContainerLogsInner
-        lines={lines}
+        key={routeKey}
+        routeKey={routeKey}
         logsRef={logsRef}
-        topRef={topRef}
-        bottomRef={bottomRef}
-        scrollDirection={scrollDirection}
+        termRef={termRef}
+        hasLogs={hasLogs}
+        setHasLogs={setHasLogs}
       />
     </div>
   )
 }
 
 function ContainerLogsInner({
-  lines,
+  routeKey,
   logsRef,
-  topRef,
-  bottomRef,
-  scrollDirection,
+  termRef,
+  hasLogs,
+  setHasLogs,
 }: {
-  lines: string[]
+  routeKey: RouteKey
   logsRef: React.RefObject<HTMLDivElement | null>
-  topRef: React.RefObject<HTMLDivElement | null>
-  bottomRef: React.RefObject<HTMLDivElement | null>
-  scrollDirection: React.RefObject<'up' | 'down'>
+  termRef: React.MutableRefObject<Terminal | null>
+  hasLogs: boolean
+  setHasLogs: (hasLogs: boolean) => void
 }) {
   'use memo'
 
+  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('down')
+  const fitAddonRef = useRef<FitAddon | null>(null)
+
+  // Reset hasLogs when route changes
+  useLayoutEffect(() => {
+    setHasLogs(false)
+  }, [routeKey, setHasLogs])
+
+  useLayoutEffect(() => {
+    const container = logsRef.current
+    if (!container) return
+
+    // Ensure we're starting from a clean DOM node.
+    container.innerHTML = ''
+
+    let cancelled = false
+    let raf: number | null = null
+    let resizeObserver: ResizeObserver | null = null
+
+    const updateScrollDirection = () => {
+      const term = termRef.current
+      if (!term) return
+      // Check if we're in the bottom half of the buffer
+      const totalLines = term.buffer.active.length
+      const viewportLines = term.rows
+      const scrollOffset = term.buffer.active.viewportY
+      // viewportY is the offset from the top of the buffer
+      // If we're past the midpoint, show up arrow
+      const maxScroll = Math.max(0, totalLines - viewportLines)
+      const next = scrollOffset >= maxScroll / 2 ? 'up' : 'down'
+      setScrollDirection(prev => (prev === next ? prev : next))
+    }
+
+    const cleanup = () => {
+      cancelled = true
+      if (raf != null) cancelAnimationFrame(raf)
+      resizeObserver?.disconnect()
+      fitAddonRef.current = null
+      termRef.current?.dispose()
+      termRef.current = null
+    }
+
+    const scheduleFit = () => {
+      if (raf != null) cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        if (cancelled) return
+        try {
+          fitAddonRef.current?.fit()
+        } catch {
+          // FitAddon throws when container isn't measurable (e.g. hidden).
+        }
+      })
+    }
+
+    const init = async () => {
+      // xterm.js renders to canvas and cannot resolve CSS variables directly.
+      // We must compute the actual color value at runtime.
+
+      const term = new Terminal({
+        convertEol: true,
+        disableStdin: true,
+        scrollback: 5000,
+        allowTransparency: true,
+        fontFamily: '"Cascadia Code", monospace',
+        fontSize: 12,
+        fontWeight: '400',
+        fontWeightBold: '700',
+        lineHeight: 1.2,
+        theme: {
+          background: 'transparent',
+          foreground: '#ffffff',
+        },
+      })
+
+      const fitAddon = new FitAddon()
+      term.loadAddon(fitAddon)
+
+      // Use the official xterm web fonts addon to ensure fonts are loaded
+      // before xterm measures character widths. This prevents spacing artifacts.
+      const webFontsAddon = new WebFontsAddon()
+      term.loadAddon(webFontsAddon)
+
+      // Wait for fonts to be fully loaded before opening the terminal
+      await webFontsAddon.loadFonts(['Cascadia Code'])
+      if (cancelled) return
+
+      term.open(container)
+
+      termRef.current = term
+      fitAddonRef.current = fitAddon
+
+      resizeObserver = new ResizeObserver(() => scheduleFit())
+      resizeObserver.observe(container)
+
+      // Listen for scroll events using xterm's onScroll event
+      term.onScroll(() => updateScrollDirection())
+      updateScrollDirection()
+
+      scheduleFit()
+    }
+
+    void init()
+
+    return () => cleanup()
+  }, [logsRef, termRef])
+
+  useEffect(() => {
+    const term = termRef.current
+    if (term) {
+      term.reset()
+      term.clear()
+    }
+  }, [routeKey, termRef])
+
   return (
     <>
-      <div className="flex flex-col gap-1 overflow-auto h-full max-h-[45vh]" ref={logsRef}>
-        <div ref={topRef} />
-        {lines.length === 0 ? (
-          <div className="flex items-center justify-center">
+      <div className="relative h-full max-h-[45vh] overflow-hidden rounded-md border bg-muted/30 tracking-normal">
+        <div ref={logsRef} className="container-logs-terminal h-full w-full" />
+        {!hasLogs && (
+          <div className="absolute inset-0 flex items-center justify-center">
             <LoadingRing />
           </div>
-        ) : (
-          <div className="grid grid-cols-[auto_1fr] gap-1">
-            {lines.map((line, index) => (
-              <LogEntry key={index} line={line} index={index} />
-            ))}
-          </div>
         )}
-        <div ref={bottomRef} />
       </div>
       <div className="absolute bottom-2 right-2">
         <Button
           size="icon"
-          className="bg-teal-500 text-white"
-          aria-label="Scroll to bottom"
+          className="bg-teal-500/80 text-white"
+          aria-label={scrollDirection === 'up' ? 'Scroll to top' : 'Scroll to bottom'}
           onClick={() => {
-            const logsContainer = logsRef.current
-            if (!logsContainer) return
+            const term = termRef.current
+            if (!term) return
 
-            if (scrollDirection.current === 'up') {
-              logsContainer.scrollTo({ top: 0, behavior: 'smooth' })
+            if (scrollDirection === 'up') {
+              term.scrollToTop()
             } else {
-              logsContainer.scrollTo({ top: logsContainer.scrollHeight, behavior: 'smooth' })
+              term.scrollToBottom()
             }
           }}
         >
@@ -122,22 +215,47 @@ function ContainerLogsInner({
   )
 }
 
-function LogChevron({ direction }: { direction: React.RefObject<'up' | 'down'> }) {
-  const [currentDirection, setCurrentDirection] = useState<'up' | 'down'>('down')
-  useEffect(() => {
-    setCurrentDirection(direction.current)
-  }, [direction])
-  return currentDirection === 'up' ? <IconChevronUp /> : <IconChevronDown />
+function LogChevron({ direction }: { direction: 'up' | 'down' }) {
+  return direction === 'up' ? <IconChevronUp /> : <IconChevronDown />
 }
 
 function LogProvider({
-  containerId,
-  push,
+  routeKey,
+  termRef,
+  autoScroll,
+  isProxmox,
+  onLog,
 }: {
-  containerId: string
-  push: (...data: string[]) => void
+  routeKey: RouteKey
+  termRef: React.MutableRefObject<Terminal | null>
+  autoScroll: boolean
+  isProxmox: boolean
+  onLog: () => void
 }) {
+  const proxmox = store.routeDetails[routeKey]!.proxmox.use()
+  const containerId = store.routeDetails[routeKey]!.container.useCompute(
+    container => container?.container_id
+  )
+
+  const endpoint = useMemo(() => {
+    if (containerId) {
+      return `/docker/logs/${containerId}`
+    } else if (proxmox && proxmox.node && proxmox.vmid) {
+      if (proxmox.service) {
+        return `/proxmox/journalctl/${proxmox.node}/${proxmox.vmid}/${proxmox.service}`
+      } else {
+        return `/proxmox/journalctl/${proxmox.node}/${proxmox.vmid}`
+      }
+    }
+    return ''
+  }, [containerId, proxmox])
+
   const containerIdRef = useRef(containerId)
+  const autoScrollRef = useRef(autoScroll)
+
+  useEffect(() => {
+    autoScrollRef.current = autoScroll
+  }, [autoScroll])
 
   const pendingLinesRef = useRef<string[]>([])
   const flushTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -152,13 +270,26 @@ function LogProvider({
       return
     }
 
+    const term = termRef.current
+    if (!term) return
+
     const batch = pendingLinesRef.current
     pendingLinesRef.current = []
-    push(...batch)
-  }, [push])
+
+    const parseTimestamp = !isProxmox
+    for (const line of batch) {
+      term.writeln(formatLineForTerminal(line, parseTimestamp))
+    }
+
+    onLog()
+
+    if (autoScrollRef.current) {
+      term.scrollToBottom()
+    }
+  }, [termRef, isProxmox, onLog])
 
   const scheduleFlush = useCallback(() => {
-    // Aggregate multiple websocket messages into a single list push.
+    // Aggregate multiple websocket messages into a single terminal write.
     // Throttle interval is intentionally small to keep UI responsive.
     const throttleMs = 75
     if (flushTimeoutRef.current) return
@@ -167,10 +298,21 @@ function LogProvider({
 
   const enqueue = useCallback(
     (data: string) => {
-      pendingLinesRef.current.push(data)
+      if (proxmox) {
+        // journalctl
+        for (let line of data.split('\n')) {
+          line = line.trim()
+          if (!line) {
+            continue
+          }
+          pendingLinesRef.current.push(line)
+        }
+      } else {
+        pendingLinesRef.current.push(data.trim())
+      }
       scheduleFlush()
     },
-    [scheduleFlush]
+    [scheduleFlush, proxmox]
   )
 
   useLayoutEffect(() => {
@@ -191,9 +333,23 @@ function LogProvider({
     }
   }, [])
 
+  useEffect(() => {
+    if (!endpoint) {
+      const term = termRef.current
+      if (term) {
+        term.writeln(formatLineForTerminal(`${new Date().toISOString()} No logs available`, true))
+        onLog()
+      }
+    }
+  }, [endpoint, termRef, onLog])
+
   useWebSocketApi<string>({
-    endpoint: `/docker/logs/${containerId}`,
+    endpoint,
     json: false,
+    query: {
+      limit: 100,
+    },
+    shouldConnect: !!endpoint,
     onMessage: data => {
       if (containerIdRef.current !== containerId) return
       enqueue(data)
@@ -207,86 +363,25 @@ function LogProvider({
   return null
 }
 
-function LogEntry({ line, index }: { line: string; index: number }) {
-  'use memo'
-  const firstSpace = line.indexOf(' ')
+function formatLineForTerminal(line: string, parseTimestamp: boolean) {
+  const firstSpace = parseTimestamp ? line.indexOf(' ') : -1
   const timestamp = firstSpace === -1 ? '' : line.slice(0, firstSpace)
   const date = timestamp ? new Date(timestamp) : null
-  const content = date ? stripTimestampPrefix(line.slice(timestamp.length + 1)) : line
-  const lineHTML = useMemo(() => convertANSI.toHtml(content), [content])
+  const dateMs = date ? date.getTime() : Number.NaN
+  const hasDate = date != null && !Number.isNaN(dateMs)
 
-  return (
-    <>
-      <FormattedDate dateMs={date?.getTime() ?? null} />
-      <pre
-        className={cn(
-          'whitespace-pre-wrap text-wrap text-xs leading-none font-mono font-medium h-full flex items-center px-2',
-          index % 2 && 'bg-muted'
-        )}
-        dangerouslySetInnerHTML={{ __html: lineHTML }}
-      />
-    </>
-  )
+  const content = hasDate ? stripTimestampPrefix(line.slice(timestamp.length + 1)) : line
+  if (!hasDate) {
+    return content
+  }
+
+  // Prepend a static timestamp. Use ANSI dim for readability without changing log colors.
+  return `\u001b[37m${formatLocalDateTime(date)}\u001b[0m ${content}`
 }
 
-function FormattedDate({ dateMs }: { dateMs: number | null }) {
-  const formattedDate = useFormattedDate(dateMs)
-  return (
-    <span className="font-mono font-medium h-min py-0.5 text-xs w-full text-right text-nowrap">
-      {formattedDate}
-    </span>
-  )
-}
-
-/**
- * Hook that formats a date as a dynamic relative time string, updating
- * frequently to stay current as time passes.
- *
- * The update interval adapts based on how far the given date is from "now":
- * - Under 60 seconds   → updates every 1 second
- * - Under 60 minutes   → updates every 10 seconds
- * - Under 24 hours     → updates every 1 minute
- * - Under 7 days       → updates every 10 minutes
- * - Older              → updates every 1 hour
- *
- * The hook keeps the formatted value in local state, and internally
- * reschedules the next update with setTimeout to avoid unnecessary renders.
- * On cleanup, it clears any scheduled timeout.
- */
-const useFormattedDate = (dateMs: number | null) => {
-  const [formattedDate, setFormattedDate] = useState('')
-  useEffect(() => {
-    let timeoutId: ReturnType<typeof setTimeout> | undefined
-    const schedule = () => {
-      if (dateMs == null || Number.isNaN(dateMs)) {
-        setFormattedDate('')
-        return
-      }
-      const now = new Date()
-      const diffSeconds = Math.abs(now.getTime() - dateMs) / 1000
-      let intervalMs = 1000
-      if (diffSeconds < 60) {
-        intervalMs = 1000
-      } else if (diffSeconds < 60 * 60) {
-        intervalMs = 10_000
-      } else if (diffSeconds < 60 * 60 * 24) {
-        intervalMs = 60_000
-      } else if (diffSeconds < 60 * 60 * 24 * 7) {
-        intervalMs = 10 * 60_000
-      } else {
-        intervalMs = 60 * 60_000
-      }
-      setFormattedDate(formatRelTime(dateMs, now))
-      timeoutId = setTimeout(schedule, intervalMs)
-    }
-    schedule()
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-      }
-    }
-  }, [dateMs])
-  return formattedDate
+function formatLocalDateTime(date: Date) {
+  const pad2 = (n: number) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())} ${pad2(date.getHours())}:${pad2(date.getMinutes())}:${pad2(date.getSeconds())}`
 }
 
 const timePart =

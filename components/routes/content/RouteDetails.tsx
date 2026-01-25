@@ -58,16 +58,16 @@ export default function RouteDetails() {
 
   return (
     <div className="space-y-2 w-full">
-      {routeDetails.container && (
+      {(routeDetails.container || routeDetails.proxmox) && (
         <Card size="sm" className="px-2">
           <CardHeader>
             <CardTitle>Container Logs</CardTitle>
             <CardDescription>
-              <ContainerLogsHeader container={routeDetails.container} />
+              <ContainerLogsHeader routeKey={routeKey} />
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ContainerLogs containerId={routeDetails.container.container_id} />
+            <ContainerLogs routeKey={routeKey} />
           </CardContent>
         </Card>
       )}
@@ -383,6 +383,21 @@ export default function RouteDetails() {
             </Card>
           )}
         </div>
+      )}
+      {routeDetails.proxmox && (
+        <Card size="sm" className="px-2">
+          <CardHeader>
+            <CardTitle>Proxmox</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <DataList>
+              <DataListRow label="Node" value={routeDetails.proxmox.node} />
+              <DataListRow label="VM ID" value={routeDetails.proxmox.vmid} />
+              <DataListRow label="VM Name" value={routeDetails.proxmox.vmname} />
+              <DataListRow label="Service" value={routeDetails.proxmox.service} />
+            </DataList>
+          </CardContent>
+        </Card>
       )}
       {/* Load Balancer */}
       {routeDetails.load_balance && (

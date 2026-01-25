@@ -652,7 +652,7 @@ export interface IdlewatcherConfig {
    */
   idle_timeout: TimeDuration
   no_loading_page: boolean
-  proxmox: ProxmoxConfig
+  proxmox: ProxmoxNodeConfig
   /** Optional path that must be hit to start container */
   start_endpoint: string
   stop_method: ContainerStopMethod
@@ -833,9 +833,11 @@ export interface ProviderStats {
 
 export type ProviderType = 'docker' | 'file' | 'agent'
 
-export interface ProxmoxConfig {
+export interface ProxmoxNodeConfig {
   node: string
+  service?: string
   vmid: number
+  vmname?: string
 }
 
 export interface ProxyStats {
@@ -884,6 +886,7 @@ export interface Route {
   port: Port
   /** for backward compatibility */
   provider?: string | null
+  proxmox?: ProxmoxNodeConfig | null
   purl: string
   response_header_timeout: number
   root: string
@@ -946,6 +949,7 @@ export interface RouteRoute {
   port: Port
   /** for backward compatibility */
   provider?: string | null
+  proxmox?: ProxmoxNodeConfig | null
   purl: string
   response_header_timeout: number
   root: string
@@ -1150,6 +1154,86 @@ export namespace Agent {
     export type RequestBody = VerifyNewAgentRequest
     export type RequestHeaders = {}
     export type ResponseBody = SuccessResponse
+  }
+}
+
+export namespace Api {
+  /**
+   * @description Get journalctl output
+   * @tags proxmox, websocket
+   * @name Journalctl
+   * @summary Get journalctl output
+   * @request GET:/api/v1/proxmox/journalctl/{node}/{vmid}
+   * @response `200` `string` Journalctl output
+   * @response `400` `ErrorResponse` Invalid request
+   * @response `403` `ErrorResponse` Unauthorized
+   * @response `404` `ErrorResponse` Node not found
+   * @response `500` `ErrorResponse` Internal server error
+   */
+  export namespace Journalctl {
+    export type RequestParams = {
+      node: string
+      vmid: number
+    }
+    export type RequestQuery = {
+      /** limit */
+      limit?: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = string
+  }
+
+  /**
+   * @description Get journalctl output
+   * @tags proxmox, websocket
+   * @name Journalctl2
+   * @summary Get journalctl output
+   * @request GET:/api/v1/proxmox/journalctl/{node}/{vmid}/{service}
+   * @originalName journalctl
+   * @duplicate
+   * @response `200` `string` Journalctl output
+   * @response `400` `ErrorResponse` Invalid request
+   * @response `403` `ErrorResponse` Unauthorized
+   * @response `404` `ErrorResponse` Node not found
+   * @response `500` `ErrorResponse` Internal server error
+   */
+  export namespace Journalctl2 {
+    export type RequestParams = {
+      node: string
+      service?: string
+      vmid: number
+    }
+    export type RequestQuery = {
+      /** limit */
+      limit?: number
+    }
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = string
+  }
+
+  /**
+   * @description Get proxmox stats in format of "STATUS|CPU%%|MEM USAGE/LIMIT|MEM%%|NET I/O|BLOCK I/O"
+   * @tags proxmox, websocket
+   * @name Stats
+   * @summary Get proxmox stats
+   * @request GET:/api/v1/proxmox/stats/{node}/{vmid}
+   * @response `200` `string` Stats output
+   * @response `400` `ErrorResponse` Invalid request
+   * @response `403` `ErrorResponse` Unauthorized
+   * @response `404` `ErrorResponse` Node not found
+   * @response `500` `ErrorResponse` Internal server error
+   */
+  export namespace Stats {
+    export type RequestParams = {
+      node: string
+      vmid: number
+    }
+    export type RequestQuery = {}
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = string
   }
 }
 
@@ -1363,6 +1447,8 @@ export namespace Docker {
       from?: string
       /** levels */
       levels?: string
+      /** limit */
+      limit?: number
       /** show stderr */
       stderr?: boolean
       /** show stdout */
@@ -2333,6 +2419,94 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         ...params,
       }),
   }
+  api = {
+    /**
+     * @description Get journalctl output
+     *
+     * @tags proxmox, websocket
+     * @name Journalctl
+     * @summary Get journalctl output
+     * @request GET:/api/v1/proxmox/journalctl/{node}/{vmid}
+     * @response `200` `string` Journalctl output
+     * @response `400` `ErrorResponse` Invalid request
+     * @response `403` `ErrorResponse` Unauthorized
+     * @response `404` `ErrorResponse` Node not found
+     * @response `500` `ErrorResponse` Internal server error
+     */
+    journalctl: (
+      node: string,
+      vmid: number,
+      query?: {
+        /** limit */
+        limit?: number
+      },
+      params: RequestParams = {}
+    ) =>
+      this.request<string, ErrorResponse>({
+        path: `/api/v1/proxmox/journalctl/${node}/${vmid}`,
+        method: 'GET',
+        query: query,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get journalctl output
+     *
+     * @tags proxmox, websocket
+     * @name Journalctl2
+     * @summary Get journalctl output
+     * @request GET:/api/v1/proxmox/journalctl/{node}/{vmid}/{service}
+     * @originalName journalctl
+     * @duplicate
+     * @response `200` `string` Journalctl output
+     * @response `400` `ErrorResponse` Invalid request
+     * @response `403` `ErrorResponse` Unauthorized
+     * @response `404` `ErrorResponse` Node not found
+     * @response `500` `ErrorResponse` Internal server error
+     */
+    journalctl2: (
+      node: string,
+      vmid: number,
+      service?: string,
+      query?: {
+        /** limit */
+        limit?: number
+      },
+      params: RequestParams = {}
+    ) =>
+      this.request<string, ErrorResponse>({
+        path: `/api/v1/proxmox/journalctl/${node}/${vmid}/${service}`,
+        method: 'GET',
+        query: query,
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get proxmox stats in format of "STATUS|CPU%%|MEM USAGE/LIMIT|MEM%%|NET I/O|BLOCK I/O"
+     *
+     * @tags proxmox, websocket
+     * @name Stats
+     * @summary Get proxmox stats
+     * @request GET:/api/v1/proxmox/stats/{node}/{vmid}
+     * @response `200` `string` Stats output
+     * @response `400` `ErrorResponse` Invalid request
+     * @response `403` `ErrorResponse` Unauthorized
+     * @response `404` `ErrorResponse` Node not found
+     * @response `500` `ErrorResponse` Internal server error
+     */
+    stats: (node: string, vmid: number, params: RequestParams = {}) =>
+      this.request<string, ErrorResponse>({
+        path: `/api/v1/proxmox/stats/${node}/${vmid}`,
+        method: 'GET',
+        type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+  }
   auth = {
     /**
      * @description Handles the callback from the provider after successful authentication
@@ -2542,6 +2716,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         from?: string
         /** levels */
         levels?: string
+        /** limit */
+        limit?: number
         /** show stderr */
         stderr?: boolean
         /** show stdout */

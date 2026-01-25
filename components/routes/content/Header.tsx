@@ -4,6 +4,7 @@ import { Label } from '@/components/ui/label'
 import { formatPercent } from '@/lib/format'
 import { decodeRouteKey } from '../utils'
 import DockerStatsBar from './DockerStatsBar'
+import ProxmoxStatsBar from './ProxmoxStatsBar'
 
 export default function RoutePageHeader() {
   const selected = useSelectedRoute()
@@ -27,6 +28,7 @@ export default function RoutePageHeader() {
         )}
       </div>
       <DockerStatsBar routeKey={selected} />
+      <ProxmoxStatsBar routeKey={selected} />
     </div>
   )
 }
