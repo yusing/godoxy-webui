@@ -46,7 +46,7 @@ function StatsCell({ cell }: { cell: StatsCellConfig }) {
 
 function StatsRow({ cells }: { cells: StatsCellConfig[] }) {
   return (
-    <div className="flex flex-wrap items-stretch gap-px [&>[data-slot]:not(:has(~[data-slot]))]:rounded-r-lg! [&>[data-slot]~[data-slot]]:rounded-l-none [&>[data-slot]~[data-slot]]:border-l-0 *:data-slot:rounded-r-none">
+    <div className="flex flex-wrap items-stretch gap-1">
       {cells.map(cell => (
         <StatsCell key={cell.label} cell={cell} />
       ))}

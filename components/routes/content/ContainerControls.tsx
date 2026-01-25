@@ -3,6 +3,7 @@
 import { store, type RouteKey } from '@/components/routes/store'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
 import { IconPlayerPlay, IconRotate, IconSquare } from '@tabler/icons-react'
@@ -22,16 +23,13 @@ const containerActions = [
     label: 'Stop',
     Icon: IconSquare,
     variant: 'destructive' as const,
-    className:
-      'bg-destructive/70 dark:bg-destructive hover:bg-destructive/80 text-destructive-foreground/70 dark:text-destructive-foreground',
     enableIfDocker: (running: boolean) => running,
     enableIfProxmox: (status: string) => status === 'running',
   },
   {
     label: 'Restart',
     Icon: IconRotate,
-    variant: 'default' as const,
-    className: 'bg-warning hover:bg-warning/80 text-warning-foreground',
+    variant: 'secondary' as const,
     enableIfDocker: (running: boolean) => running,
     enableIfProxmox: (status: string) => status === 'running',
   },
@@ -127,8 +125,10 @@ export default function ContainerControls({ routeKey }: { routeKey: RouteKey }) 
           onClick={() => handleAction(action)}
           className={action.className}
         >
-          <action.Icon className="size-3.5" />
-          {action.label}
+          <Tooltip>
+            <TooltipTrigger render={() => <action.Icon className="size-3 text-inherit" />} />
+            <TooltipContent>{action.label}</TooltipContent>
+          </Tooltip>
         </Button>
       ))}
     </ButtonGroup>

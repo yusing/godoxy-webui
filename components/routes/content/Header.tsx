@@ -3,8 +3,8 @@ import { store, useSelectedRoute } from '@/components/routes/store'
 import { Label } from '@/components/ui/label'
 import { formatPercent } from '@/lib/format'
 import { decodeRouteKey } from '../utils'
-import { ContainerStatsBar } from './StatsBar'
 import ContainerControls from './ContainerControls'
+import { ContainerStatsBar } from './StatsBar'
 
 export default function RoutePageHeader() {
   const selected = useSelectedRoute()
@@ -25,9 +25,9 @@ export default function RoutePageHeader() {
             <Label className="text-sm text-muted-foreground">{percentage} uptime (1h)</Label>
           </div>
         )}
+        <ContainerControls routeKey={selected} />
       </div>
       <ContainerStatsBar routeKey={selected} />
-      <ContainerControls routeKey={selected} />
     </div>
   )
 }
