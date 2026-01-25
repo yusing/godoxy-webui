@@ -15,8 +15,8 @@ import { IconArrowRight } from '@tabler/icons-react'
 import { useEffect } from 'react'
 import { stringify as stringifyYAML } from 'yaml'
 import { decodeRouteKey } from '../utils'
-import ContainerLogs from './ContainerLogs'
-import ContainerLogsHeader from './ContainerLogsHeader'
+import Logs from './Logs'
+import LogsHeader from './LogsHeader'
 import RouteResponseTimeChart from './ResponseTimeChart'
 
 export default function RouteDetails() {
@@ -27,6 +27,14 @@ export default function RouteDetails() {
   const isStream = routeDetails?.scheme === 'tcp' || routeDetails?.scheme === 'udp'
   const isExcluded = routeDetails?.excluded
   const showHomepageConfiguration = !isStream && !isExcluded
+  const showLogs = routeDetails?.container || routeDetails?.proxmox
+  const logType = routeDetails?.container
+    ? 'Container'
+    : routeDetails?.proxmox
+      ? routeDetails.proxmox.vmid
+        ? 'Proxmox VM'
+        : 'Proxmox Node'
+      : 'Unknown'
 
   useEffect(() => {
     if (routeKey) {
@@ -58,16 +66,16 @@ export default function RouteDetails() {
 
   return (
     <div className="space-y-2 w-full">
-      {(routeDetails.container || routeDetails.proxmox) && (
+      {showLogs && (
         <Card size="sm" className="px-2">
           <CardHeader>
-            <CardTitle>Container Logs</CardTitle>
+            <CardTitle>{logType} Logs</CardTitle>
             <CardDescription>
-              <ContainerLogsHeader routeKey={routeKey} />
+              <LogsHeader routeKey={routeKey} />
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ContainerLogs routeKey={routeKey} />
+            <Logs routeKey={routeKey} />
           </CardContent>
         </Card>
       )}

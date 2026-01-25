@@ -840,6 +840,23 @@ export interface ProxmoxNodeConfig {
   vmname?: string
 }
 
+export interface ProxmoxNodeStats {
+  load_avg_15m: string
+  load_avg_1m: string
+  load_avg_5m: string
+  cpu_model: string
+  cpu_usage: string
+  kernel_version: string
+  mem_pct: string
+  mem_total: string
+  mem_usage: string
+  pve_version: string
+  rootfs_pct: string
+  rootfs_total: string
+  rootfs_usage: string
+  uptime: string
+}
+
 export interface ProxyStats {
   providers: Record<string, ProviderStats>
   reverse_proxies: RouteStats
@@ -2102,10 +2119,33 @@ export namespace Proxmox {
   }
 
   /**
-   * @description Get proxmox stats in format of "STATUS|CPU%%|MEM USAGE/LIMIT|MEM%%|NET I/O|BLOCK I/O"
+   * @description Get proxmox node stats in json
    * @tags proxmox, websocket
-   * @name Stats
-   * @summary Get proxmox stats
+   * @name NodeStats
+   * @summary Get proxmox node stats
+   * @request GET:/proxmox/stats/{node}
+   * @response `200` `ProxmoxNodeStats` Stats output
+   * @response `400` `ErrorResponse` Invalid request
+   * @response `403` `ErrorResponse` Unauthorized
+   * @response `404` `ErrorResponse` Node not found
+   * @response `500` `ErrorResponse` Internal server error
+   */
+  export namespace NodeStats {
+    export type RequestParams = {
+      /** Node name */
+      node: string
+    }
+    export type RequestQuery = {}
+    export type RequestBody = never
+    export type RequestHeaders = {}
+    export type ResponseBody = ProxmoxNodeStats
+  }
+
+  /**
+   * @description Get proxmox VM stats in format of "STATUS|CPU%%|MEM USAGE/LIMIT|MEM%%|NET I/O|BLOCK I/O"
+   * @tags proxmox, websocket
+   * @name VmStats
+   * @summary Get proxmox VM stats
    * @request GET:/proxmox/stats/{node}/{vmid}
    * @response `200` `string` Stats output
    * @response `400` `ErrorResponse` Invalid request
@@ -2113,7 +2153,7 @@ export namespace Proxmox {
    * @response `404` `ErrorResponse` Node not found
    * @response `500` `ErrorResponse` Internal server error
    */
-  export namespace Stats {
+  export namespace VmStats {
     export type RequestParams = {
       node: string
       vmid: number
@@ -3567,11 +3607,32 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       }),
 
     /**
-     * @description Get proxmox stats in format of "STATUS|CPU%%|MEM USAGE/LIMIT|MEM%%|NET I/O|BLOCK I/O"
+     * @description Get proxmox node stats in json
      *
      * @tags proxmox, websocket
-     * @name Stats
-     * @summary Get proxmox stats
+     * @name NodeStats
+     * @summary Get proxmox node stats
+     * @request GET:/proxmox/stats/{node}
+     * @response `200` `ProxmoxNodeStats` Stats output
+     * @response `400` `ErrorResponse` Invalid request
+     * @response `403` `ErrorResponse` Unauthorized
+     * @response `404` `ErrorResponse` Node not found
+     * @response `500` `ErrorResponse` Internal server error
+     */
+    nodeStats: (node: string, params: RequestParams = {}) =>
+      this.request<ProxmoxNodeStats, ErrorResponse>({
+        path: `/proxmox/stats/${node}`,
+        method: 'GET',
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Get proxmox VM stats in format of "STATUS|CPU%%|MEM USAGE/LIMIT|MEM%%|NET I/O|BLOCK I/O"
+     *
+     * @tags proxmox, websocket
+     * @name VmStats
+     * @summary Get proxmox VM stats
      * @request GET:/proxmox/stats/{node}/{vmid}
      * @response `200` `string` Stats output
      * @response `400` `ErrorResponse` Invalid request
@@ -3579,12 +3640,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @response `404` `ErrorResponse` Node not found
      * @response `500` `ErrorResponse` Internal server error
      */
-    stats: (node: string, vmid: number, params: RequestParams = {}) =>
+    vmStats: (node: string, vmid: number, params: RequestParams = {}) =>
       this.request<string, ErrorResponse>({
         path: `/proxmox/stats/${node}/${vmid}`,
         method: 'GET',
-        type: ContentType.Json,
-        format: 'json',
         ...params,
       }),
   }

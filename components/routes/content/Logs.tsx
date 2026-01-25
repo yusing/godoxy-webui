@@ -17,7 +17,7 @@ import '@fontsource/cascadia-code/700.css'
 
 import '../style.css'
 
-export default function ContainerLogs({ routeKey }: { routeKey: RouteKey }) {
+export default function Logs({ routeKey }: { routeKey: RouteKey }) {
   const logsRef = useRef<HTMLDivElement>(null)
   const termRef = useRef<Terminal | null>(null)
   const autoScroll = store.logsAutoScroll.use() ?? false
@@ -41,7 +41,7 @@ export default function ContainerLogs({ routeKey }: { routeKey: RouteKey }) {
           onLog={onLog}
         />
       </Suspense>
-      <ContainerLogsInner
+      <LogsInner
         key={routeKey}
         routeKey={routeKey}
         logsRef={logsRef}
@@ -53,7 +53,7 @@ export default function ContainerLogs({ routeKey }: { routeKey: RouteKey }) {
   )
 }
 
-function ContainerLogsInner({
+function LogsInner({
   routeKey,
   logsRef,
   termRef,

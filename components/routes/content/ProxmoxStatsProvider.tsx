@@ -1,17 +1,18 @@
 'use client'
 
 import { useWebSocketApi } from '@/hooks/websocket'
+import type { ProxmoxNodeStats } from '@/lib/api'
 import { useEffect } from 'react'
 import { store, useSelectedRoute } from '../store'
 
 export default function ProxmoxStatsProvider() {
   const routeKey = useSelectedRoute()
   const proxmox = store.routeDetails[routeKey]?.useCompute(details => details?.proxmox)
-  const shouldConnect = proxmox !== undefined
+  const isProxmox = proxmox !== undefined
 
   useWebSocketApi<string>({
     endpoint: `/proxmox/stats/${proxmox?.node}/${proxmox?.vmid}`,
-    shouldConnect,
+    shouldConnect: isProxmox && !!proxmox?.vmid,
     json: false,
     onMessage: data => {
       if (!routeKey) return
@@ -19,11 +20,21 @@ export default function ProxmoxStatsProvider() {
     },
   })
 
+  useWebSocketApi<ProxmoxNodeStats>({
+    endpoint: `/proxmox/stats/${proxmox?.node}`,
+    shouldConnect: isProxmox && !proxmox?.vmid,
+    onMessage: data => {
+      if (!routeKey) return
+      store.proxmoxNodeStats[routeKey]!.set(data)
+    },
+  })
+
   useEffect(() => {
     if (!routeKey) return
-    if (!shouldConnect) {
+    if (!isProxmox) {
       store.proxmoxStats[routeKey]!.reset()
+      store.proxmoxNodeStats[routeKey]!.reset()
     }
-  }, [routeKey, shouldConnect])
+  }, [routeKey, isProxmox])
   return null
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useFragment } from '@/hooks/fragment'
-import type { RouteRoute, RouteUptimeAggregate } from '@/lib/api'
+import type { ProxmoxNodeStats, RouteRoute, RouteUptimeAggregate } from '@/lib/api'
 import { createStore } from 'juststore'
 
 export type RouteDisplaySettings = {
@@ -31,6 +31,7 @@ type RouteState = {
   routeDetails: Record<RouteKey, RouteRoute>
   dockerStats: Record<RouteKey, DockerStatsSummary | null>
   proxmoxStats: Record<RouteKey, string | null>
+  proxmoxNodeStats: Record<RouteKey, ProxmoxNodeStats | null>
   displaySettings: RouteDisplaySettings
   logsAutoScroll: boolean
   mobileDialogOpen: boolean
@@ -42,6 +43,7 @@ export const store = createStore<RouteState>('routes', {
   routeDetails: {},
   dockerStats: {},
   proxmoxStats: {},
+  proxmoxNodeStats: {},
   displaySettings: {
     dockerOnly: false,
     hideUnknown: false,

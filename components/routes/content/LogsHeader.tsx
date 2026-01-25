@@ -18,7 +18,7 @@ function formatContainerName(container?: Container, proxmox?: ProxmoxNodeConfig)
   return 'Unknown'
 }
 
-export default function ContainerLogsHeader({ routeKey }: { routeKey: RouteKey }) {
+export default function LogsHeader({ routeKey }: { routeKey: RouteKey }) {
   const container = store.routeDetails[routeKey]!.container.use()
   const proxmox = store.routeDetails[routeKey]!.proxmox.use()
   const proxmoxStatus = store.proxmoxStats[routeKey]?.useCompute(line =>

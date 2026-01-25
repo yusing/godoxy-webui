@@ -46,9 +46,9 @@ export default function ContainerControls({ routeKey }: { routeKey: RouteKey }) 
   const [isLoading, setIsLoading] = useState<string | null>(null)
 
   const isDocker = containerId !== undefined
-  const isProxmox = proxmoxConfig !== undefined && proxmoxConfig !== null
+  const isProxmoxLXC = proxmoxConfig && proxmoxConfig.vmid
 
-  if (!isDocker && !isProxmox) {
+  if (!isDocker && !isProxmoxLXC) {
     return null
   }
 
@@ -73,7 +73,7 @@ export default function ContainerControls({ routeKey }: { routeKey: RouteKey }) 
           default:
             return
         }
-      } else if (isProxmox && proxmoxConfig) {
+      } else if (isProxmoxLXC && proxmoxConfig) {
         const { node, vmid } = proxmoxConfig
         switch (action.label) {
           case 'Start':
@@ -107,7 +107,7 @@ export default function ContainerControls({ routeKey }: { routeKey: RouteKey }) 
     if (isDocker) {
       return action.enableIfDocker(dockerRunning ?? false)
     }
-    if (isProxmox) {
+    if (isProxmoxLXC) {
       return action.enableIfProxmox(proxmoxStatus ?? '')
     }
     return false

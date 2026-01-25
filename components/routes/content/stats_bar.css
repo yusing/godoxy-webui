@@ -1,96 +1,200 @@
+/*
+ * Dashboard Status Color System
+ * A vibrant yet consistent palette organized by metric category
+ * Light mode: Soft pastel backgrounds with dark text
+ * Dark mode: Rich saturated backgrounds with white text
+ */
+
 :root {
-  --color-blue-spruce-50: oklch(97.43% 0.019 188.84);
-  --color-blue-spruce-100: oklch(95.15% 0.039 186.59);
-  --color-blue-spruce-200: oklch(90.55% 0.072 187.3);
-  --color-blue-spruce-300: oklch(86.54% 0.103 185.42);
-  --color-blue-spruce-400: oklch(82.9% 0.124 184.7);
-  --color-blue-spruce-500: oklch(80% 0.137 182.4);
-  --color-blue-spruce-600: oklch(67.68% 0.115 183.06);
-  --color-blue-spruce-700: oklch(55% 0.093 182.4);
-  --color-blue-spruce-800: oklch(41.29% 0.068 183.63);
-  --color-blue-spruce-900: oklch(26.59% 0.042 182.22);
-  --color-blue-spruce-950: oklch(21.81% 0.033 184.73);
+  /* Base/Background */
+  --ds-base-bg: #f8fafc;
 
-  --color-shamrock-50: oklch(96.77% 0.012 157);
-  --color-shamrock-100: oklch(93.47% 0.026 158.19);
-  --color-shamrock-200: oklch(86.97% 0.052 157.43);
-  --color-shamrock-300: oklch(80.53% 0.078 156.48);
-  --color-shamrock-400: oklch(74.2% 0.103 155.24);
-  --color-shamrock-500: oklch(68.07% 0.127 153.59);
-  --color-shamrock-600: oklch(57.86% 0.106 153.71);
-  --color-shamrock-700: oklch(47.18% 0.084 153.9);
-  --color-shamrock-800: oklch(35.85% 0.061 154.24);
-  --color-shamrock-900: oklch(23.55% 0.034 155.04);
-  --color-shamrock-950: oklch(19.39% 0.025 156.24);
+  /* Status Colors - Soft greens/reds */
+  --ds-status-bg: #e2e8f0;
+  --ds-status-stopped-bg: #fecaca;
+  --ds-running-bg: #bbf7d0;
+  --ds-running-no-bg: #fecaca;
 
-  --color-muted-teal-50: oklch(96.65% 0.01 155.1);
-  --color-muted-teal-100: oklch(93.21% 0.021 156.81);
-  --color-muted-teal-200: oklch(86.27% 0.039 157.31);
-  --color-muted-teal-300: oklch(79.41% 0.06 156.23);
-  --color-muted-teal-400: oklch(72.56% 0.082 155.12);
-  --color-muted-teal-500: oklch(65.6% 0.1 154.23);
-  --color-muted-teal-600: oklch(55.93% 0.085 153.97);
-  --color-muted-teal-700: oklch(45.62% 0.067 154.31);
-  --color-muted-teal-800: oklch(34.7% 0.047 154.97);
-  --color-muted-teal-900: oklch(23.05% 0.028 154.42);
-  --color-muted-teal-950: oklch(19.21% 0.02 153.63);
+  /* CPU - Soft blue */
+  --ds-cpu-bg: #dbeafe;
 
-  --color-ash-grey-50: oklch(96.36% 0.003 106.45);
-  --color-ash-grey-100: oklch(92.81% 0.007 124.45);
-  --color-ash-grey-200: oklch(85.38% 0.011 118.06);
-  --color-ash-grey-300: oklch(77.89% 0.019 120.77);
-  --color-ash-grey-400: oklch(70.03% 0.023 121.14);
-  --color-ash-grey-500: oklch(62.24% 0.031 120.28);
-  --color-ash-grey-600: oklch(52.91% 0.025 121.38);
-  --color-ash-grey-700: oklch(43.45% 0.021 121.2);
-  --color-ash-grey-800: oklch(33.21% 0.014 118.57);
-  --color-ash-grey-900: oklch(22.24% 0.01 125);
-  --color-ash-grey-950: oklch(18.44% 0.006 122.04);
+  /* Memory - Soft purple */
+  --ds-mem-usage-bg: #ede9fe;
+  --ds-mem-percent-bg: #e9d5ff;
 
-  --color-cinnamon-wood-50: oklch(96.05% 0.01 41.88);
-  --color-cinnamon-wood-100: oklch(91.81% 0.019 38.15);
-  --color-cinnamon-wood-200: oklch(83.56% 0.039 38.08);
-  --color-cinnamon-wood-300: oklch(75.35% 0.063 38.85);
-  --color-cinnamon-wood-400: oklch(67.3% 0.086 39.75);
-  --color-cinnamon-wood-500: oklch(59.23% 0.111 39.3);
-  --color-cinnamon-wood-600: oklch(50.55% 0.092 39.61);
-  --color-cinnamon-wood-700: oklch(41.29% 0.074 38.8);
-  --color-cinnamon-wood-800: oklch(31.55% 0.051 38.12);
-  --color-cinnamon-wood-900: oklch(21.16% 0.028 38.1);
-  --color-cinnamon-wood-950: oklch(17.77% 0.021 40.79);
+  /* Network - Soft cyan */
+  --ds-net-bg: #cffafe;
 
-  --ds-running-bg: var(--color-info);
-  --ds-cpu-bg: var(--color-blue-spruce-100);
-  --ds-mem-usage-bg: var(--color-shamrock-100);
-  --ds-mem-percent-bg: var(--color-muted-teal-100);
-  --ds-net-bg: var(--color-ash-grey-100);
-  --ds-block-bg: var(--color-cinnamon-wood-100);
+  /* Block I/O - Soft amber */
+  --ds-block-bg: #fef3c7;
+
+  /* Filesystem - Soft emerald */
+  --ds-rootfs-bg: #d1fae5;
+  --ds-rootfs-percent-bg: #a7f3d0;
+
+  /* System Info - Soft slate tones */
+  --ds-pve-bg: #e2e8f0;
+  --ds-kernel-bg: #f1f5f9;
+  --ds-cpu-model-bg: #dbeafe;
+  --ds-load-bg: #e0f2fe;
+  --ds-uptime-bg: #ccfbf1;
+
+  /* Text colors for light mode */
+  --ds-text-default: #1e293b;
+  --ds-text-muted: #64748b;
+  --ds-text-cpu: #1d4ed8;
+  --ds-text-mem: #6d28d9;
+  --ds-text-net: #0e7490;
+  --ds-text-block: #b45309;
+  --ds-text-rootfs: #047857;
+  --ds-text-status-stopped: #b91c1c;
+  --ds-text-running: #047857;
+  --ds-text-running-no: #b91c1c;
 }
 
 .dark {
-  --ds-running-bg: var(--color-info);
-  --ds-cpu-bg: var(--color-blue-spruce-800);
-  --ds-mem-usage-bg: var(--color-shamrock-800);
-  --ds-mem-percent-bg: var(--color-muted-teal-700);
-  --ds-net-bg: var(--color-ash-grey-800);
-  --ds-block-bg: var(--color-cinnamon-wood-800);
+  /* Base/Background - Deeper dark for dark mode */
+  --ds-base-bg: #0f0f1a;
+
+  /* Status Colors - Slightly muted but still vibrant */
+  --ds-status-bg: #1e293b;
+  --ds-status-stopped-bg: #b91c1c;
+  --ds-running-bg: #047857;
+  --ds-running-no-bg: #dc2626;
+
+  /* CPU - Deep vibrant blue */
+  --ds-cpu-bg: #1d4ed8;
+
+  /* Memory - Rich deep purple */
+  --ds-mem-usage-bg: #6d28d9;
+  --ds-mem-percent-bg: #7c3aed;
+
+  /* Network - Deep cyan */
+  --ds-net-bg: #0e7490;
+
+  /* Block I/O - Deep amber */
+  --ds-block-bg: #b45309;
+
+  /* Filesystem - Deep emerald */
+  --ds-rootfs-bg: #047857;
+  --ds-rootfs-percent-bg: #059669;
+
+  /* System Info - Deeper slate tones */
+  --ds-pve-bg: #1e293b;
+  --ds-kernel-bg: #334155;
+  --ds-cpu-model-bg: #172554;
+  --ds-load-bg: #075985;
+  --ds-uptime-bg: #115e59;
+
+  /* Text colors for dark mode - all white/light */
+  --ds-text-default: #f8fafc;
+  --ds-text-muted: #cbd5e1;
+  --ds-text-cpu: #ffffff;
+  --ds-text-mem: #ffffff;
+  --ds-text-net: #ffffff;
+  --ds-text-block: #ffffff;
+  --ds-text-rootfs: #ffffff;
+  --ds-text-status-stopped: #ffffff;
+  --ds-text-running: #ffffff;
+  --ds-text-running-no: #ffffff;
 }
 
+/*
+ * Utility Classes
+ */
+
+/* Common card styling for consistency */
+[class^='ds-'] {
+  color: var(--ds-text-default);
+  border-radius: 0.5rem;
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+[class^='ds-']:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+.dark [class^='ds-']:hover {
+  filter: brightness(1.1);
+}
+
+/* Status */
+.ds-status {
+  background-color: var(--ds-status-bg);
+  color: var(--ds-text-default);
+}
+.ds-status-stopped {
+  background-color: var(--ds-status-stopped-bg);
+  color: var(--ds-text-status-stopped);
+}
 .ds-running {
   background-color: var(--ds-running-bg);
+  color: var(--ds-text-running);
 }
+.ds-running-no {
+  background-color: var(--ds-running-no-bg);
+  color: var(--ds-text-running-no);
+}
+
+/* CPU */
 .ds-cpu {
   background-color: var(--ds-cpu-bg);
+  color: var(--ds-text-cpu);
 }
+
+/* Memory */
 .ds-mem-usage {
   background-color: var(--ds-mem-usage-bg);
+  color: var(--ds-text-mem);
 }
 .ds-mem-percent {
   background-color: var(--ds-mem-percent-bg);
+  color: var(--ds-text-mem);
 }
+
+/* Network */
 .ds-net {
   background-color: var(--ds-net-bg);
+  color: var(--ds-text-net);
 }
+
+/* Block I/O */
 .ds-block {
   background-color: var(--ds-block-bg);
+  color: var(--ds-text-block);
+}
+
+/* Filesystem */
+.ds-rootfs {
+  background-color: var(--ds-rootfs-bg);
+  color: var(--ds-text-rootfs);
+}
+.ds-rootfs-percent {
+  background-color: var(--ds-rootfs-percent-bg);
+  color: var(--ds-text-rootfs);
+}
+
+/* System Info */
+.ds-pve {
+  background-color: var(--ds-pve-bg);
+  color: var(--ds-text-default);
+}
+.ds-kernel {
+  background-color: var(--ds-kernel-bg);
+  color: var(--ds-text-default);
+}
+.ds-cpu-model {
+  background-color: var(--ds-cpu-model-bg);
+  color: var(--ds-text-cpu);
+}
+.ds-load {
+  background-color: var(--ds-load-bg);
+  color: var(--ds-text-cpu);
+}
+.ds-uptime {
+  background-color: var(--ds-uptime-bg);
+  color: var(--ds-text-rootfs);
 }
