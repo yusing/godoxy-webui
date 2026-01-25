@@ -3,8 +3,7 @@ import { store, useSelectedRoute } from '@/components/routes/store'
 import { Label } from '@/components/ui/label'
 import { formatPercent } from '@/lib/format'
 import { decodeRouteKey } from '../utils'
-import DockerStatsBar from './DockerStatsBar'
-import ProxmoxStatsBar from './ProxmoxStatsBar'
+import { ContainerStatsBar } from './StatsBar'
 import ContainerControls from './ContainerControls'
 
 export default function RoutePageHeader() {
@@ -24,12 +23,10 @@ export default function RoutePageHeader() {
         {percentage && (
           <div className="flex items-center gap-2 flex-wrap">
             <Label className="text-sm text-muted-foreground">{percentage} uptime (1h)</Label>
-            {/* {isDocker && <DockerStatsBar routeKey={selected} />} */}
           </div>
         )}
       </div>
-      <DockerStatsBar routeKey={selected} />
-      <ProxmoxStatsBar routeKey={selected} />
+      <ContainerStatsBar routeKey={selected} />
       <ContainerControls routeKey={selected} />
     </div>
   )
