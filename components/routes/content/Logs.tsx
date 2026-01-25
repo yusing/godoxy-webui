@@ -18,7 +18,7 @@ import '@fontsource/cascadia-code/400.css'
 import '@fontsource/cascadia-code/700.css'
 
 import '../style.css'
-import { resolveThemeColors, resolveThemeColorsAsync } from './logs'
+import { resolveThemeColorsAsync } from './logs'
 
 export default function Logs({ routeKey }: { routeKey: RouteKey }) {
   const logsRef = useRef<HTMLDivElement>(null)
@@ -147,6 +147,10 @@ function LogsInner({
     const init = async () => {
       // xterm.js renders to canvas and cannot resolve CSS variables directly.
       // We must compute the actual color value at runtime.
+      // Use async resolution to ensure CSS variables are ready.
+
+      const theme = await resolveThemeColorsAsync()
+      if (cancelled) return
 
       const term = new Terminal({
         convertEol: true,
@@ -158,7 +162,7 @@ function LogsInner({
         fontWeight: '400',
         fontWeightBold: '700',
         lineHeight: 1.2,
-        theme: resolveThemeColors(),
+        theme,
       })
 
       const fitAddon = new FitAddon()
@@ -206,7 +210,9 @@ function LogsInner({
 
   return (
     <>
-      <LogThemeUpdater termRef={termRef} />
+      <Suspense>
+        <LogThemeUpdater termRef={termRef} />
+      </Suspense>
       <div className="relative h-full max-h-[45vh] overflow-hidden rounded-md border bg-muted/30 tracking-normal">
         <div ref={logsRef} className="container-logs-terminal h-full w-full" />
         {!hasLogs && (
