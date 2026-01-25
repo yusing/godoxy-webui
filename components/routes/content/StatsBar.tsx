@@ -25,6 +25,35 @@ function formatPercent(value?: number | null) {
   return `${clamped.toFixed(clamped < 10 ? 1 : 0)}%`
 }
 
+function StatsCell({ cell }: { cell: StatsCellConfig }) {
+  return (
+    <div
+      style={cell.minWidth ? { minWidth: cell.minWidth } : undefined}
+      data-slot="stats-cell"
+      className={cn(
+        'flex flex-col gap-0.5 rounded-md px-2 py-1',
+        'text-[10px] text-muted-foreground',
+        cell.className
+      )}
+    >
+      <div className="text-[9px] uppercase tracking-wide whitespace-nowrap">{cell.label}</div>
+      <div className="text-[11px] font-medium text-foreground whitespace-nowrap tabular-nums">
+        {cell.getValue() ?? '—'}
+      </div>
+    </div>
+  )
+}
+
+function StatsRow({ cells }: { cells: StatsCellConfig[] }) {
+  return (
+    <div className="flex flex-wrap items-stretch gap-px [&>[data-slot]:not(:has(~[data-slot]))]:rounded-r-lg! [&>[data-slot]~[data-slot]]:rounded-l-none [&>[data-slot]~[data-slot]]:border-l-0 *:data-slot:rounded-r-none">
+      {cells.map(cell => (
+        <StatsCell key={cell.label} cell={cell} />
+      ))}
+    </div>
+  )
+}
+
 export function StatsBar({ cells, isVisible, splitAfter }: StatsBarProps) {
   if (!isVisible) return null
 
@@ -33,46 +62,8 @@ export function StatsBar({ cells, isVisible, splitAfter }: StatsBarProps) {
 
   return (
     <div className="contents">
-      <div className="flex flex-wrap items-center gap-1.5">
-        {line1.map(cell => (
-          <div
-            key={cell.label}
-            style={cell.minWidth ? { minWidth: cell.minWidth } : undefined}
-            className={cn(
-              'flex flex-col gap-0.5 rounded-md px-2 py-1',
-              'text-[10px] text-muted-foreground',
-              cell.className
-            )}
-          >
-            <div className="text-[9px] uppercase tracking-wide whitespace-nowrap">{cell.label}</div>
-            <div className="text-[11px] font-medium text-foreground whitespace-nowrap tabular-nums">
-              {cell.getValue() ?? '—'}
-            </div>
-          </div>
-        ))}
-      </div>
-      {line2.length > 0 && (
-        <div className="flex flex-wrap items-center gap-1.5">
-          {line2.map(cell => (
-            <div
-              key={cell.label}
-              style={cell.minWidth ? { minWidth: cell.minWidth } : undefined}
-              className={cn(
-                'flex flex-col gap-0.5 rounded-md px-2 py-1',
-                'text-[10px] text-muted-foreground',
-                cell.className
-              )}
-            >
-              <div className="text-[9px] uppercase tracking-wide whitespace-nowrap">
-                {cell.label}
-              </div>
-              <div className="text-[11px] font-medium text-foreground whitespace-nowrap tabular-nums">
-                {cell.getValue() ?? '—'}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      <StatsRow cells={line1} />
+      {line2.length > 0 && <StatsRow cells={line2} />}
     </div>
   )
 }
