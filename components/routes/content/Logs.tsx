@@ -5,6 +5,7 @@ import { useWebSocketApi } from '@/hooks/websocket'
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 import { FitAddon } from '@xterm/addon-fit'
 import { WebFontsAddon } from '@xterm/addon-web-fonts'
+import { WebLinksAddon } from '@xterm/addon-web-links'
 import { Terminal } from '@xterm/xterm'
 
 import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
@@ -144,6 +145,9 @@ function LogsInner({
 
       const fitAddon = new FitAddon()
       term.loadAddon(fitAddon)
+
+      const webLinksAddon = new WebLinksAddon()
+      term.loadAddon(webLinksAddon)
 
       // Use the official xterm web fonts addon to ensure fonts are loaded
       // before xterm measures character widths. This prevents spacing artifacts.
@@ -375,11 +379,57 @@ function formatLineForTerminal(line: string, parseTimestamp: boolean) {
 
   const content = hasDate ? stripTimestampPrefix(line.slice(timestamp.length + 1)) : line
   if (!hasDate) {
-    return content
+    return colorizeLogLevel(content)
   }
 
   // Prepend a static timestamp. Use ANSI dim for readability without changing log colors.
-  return `\u001b[37m${formatLocalDateTime(date)}\u001b[0m ${content}`
+  return `\u001b[37m${formatLocalDateTime(date)}\u001b[0m ${colorizeLogLevel(content)}`
+}
+
+function colorizeLogLevel(line: string): string {
+  // ANSI color codes
+  const colors = {
+    reset: '\u001b[0m',
+    red: '\u001b[31m',
+    green: '\u001b[32m',
+    yellow: '\u001b[33m',
+    blue: '\u001b[34m',
+    magenta: '\u001b[35m',
+    cyan: '\u001b[36m',
+    dim: '\u001b[2m',
+    brightRed: '\u001b[91m',
+    brightGreen: '\u001b[92m',
+    brightYellow: '\u001b[93m',
+  }
+
+  // Log level patterns - case insensitive
+  const patterns: { regex: RegExp; color: string }[] = [
+    { regex: /\[(FATAL|CRITICAL)\]/gi, color: colors.brightRed },
+    { regex: /\[(ERROR|ERR|SEVERE)\]/gi, color: colors.red },
+    { regex: /\[(WARN|WARNING)\]/gi, color: colors.yellow },
+    { regex: /\[(INFO|INFORMATION)\]/gi, color: colors.green },
+    { regex: /\[(DEBUG|DBG)\]/gi, color: colors.blue },
+    { regex: /\[(TRACE|TRC)\]/gi, color: colors.dim },
+    { regex: /\[(SUCCESS|OK|PASS)\]/gi, color: colors.brightGreen },
+    // JSON-style: "level":"debug"
+    { regex: /"(?:level|loglevel|severity)"\s*:\s*"(fatal|critical)"/gi, color: colors.brightRed },
+    { regex: /"(?:level|loglevel|severity)"\s*:\s*"(error|err|severe)"/gi, color: colors.red },
+    { regex: /"(?:level|loglevel|severity)"\s*:\s*"(warn|warning)"/gi, color: colors.yellow },
+    { regex: /"(?:level|loglevel|severity)"\s*:\s*"(info|information)"/gi, color: colors.green },
+    { regex: /"(?:level|loglevel|severity)"\s*:\s*"(debug|dbg)"/gi, color: colors.blue },
+    { regex: /"(?:level|loglevel|severity)"\s*:\s*"(trace|trc)"/gi, color: colors.dim },
+    {
+      regex: /"(?:level|loglevel|severity)"\s*:\s*"(success|ok|pass)"/gi,
+      color: colors.brightGreen,
+    },
+  ]
+
+  let result = line
+  for (const { regex, color } of patterns) {
+    result = result.replace(regex, `${color}$&${colors.reset}`)
+  }
+
+  return result
 }
 
 function formatLocalDateTime(date: Date) {
