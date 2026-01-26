@@ -117,7 +117,7 @@ export function AddAgentDialogButton() {
         return e
       })
       .then(async res => {
-        states.agent.set(undefined)
+        states.agent.reset()
         setOpen(false)
         toast.success('Agent added', { description: res.data.message })
       })

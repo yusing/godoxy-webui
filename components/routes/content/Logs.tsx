@@ -339,8 +339,8 @@ function LogProvider({
   termRef: React.RefObject<Terminal | null>
   isProxmox: boolean
 }) {
-  const proxmox = store.routeDetails[routeKey]!.proxmox.use()
-  const containerId = store.routeDetails[routeKey]!.container.useCompute(
+  const proxmox = store.routeDetails[routeKey]?.proxmox.use()
+  const containerId = store.routeDetails[routeKey]?.container.useCompute(
     container => container?.container_id
   )
 

@@ -19,8 +19,8 @@ function formatContainerName(container?: Container, proxmox?: ProxmoxNodeConfig)
 }
 
 export default function LogsHeader({ routeKey }: { routeKey: RouteKey }) {
-  const container = store.routeDetails[routeKey]!.container.use()
-  const proxmox = store.routeDetails[routeKey]!.proxmox.use()
+  const container = store.routeDetails[routeKey]?.container.use()
+  const proxmox = store.routeDetails[routeKey]?.proxmox.use()
   const proxmoxStatus = store.proxmoxStats[routeKey]?.useCompute(line =>
     line ? (line.slice(0, line.indexOf('|')) as 'stopped' | 'running' | 'suspended') : undefined
   )

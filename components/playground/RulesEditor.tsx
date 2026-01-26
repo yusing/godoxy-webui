@@ -9,7 +9,11 @@ export default function RulesEditor() {
   return (
     <div className="flex flex-col h-full space-y-2">
       <span className="font-medium text-sm text-muted-foreground">Rules (YAML)</span>
-      <YAMLEditor value={rules} onChange={setRules} className="border rounded-md w-full h-full" />
+      <YAMLEditor
+        value={rules}
+        onChange={rules => setRules(rules)}
+        className="border rounded-md w-full h-full"
+      />
     </div>
   )
 }

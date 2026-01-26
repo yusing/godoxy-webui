@@ -91,12 +91,10 @@ function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: Route
       settings.proxmoxOnly,
     ]
   )
-  const currentStatus = store.uptime[routeKey]!.current_status.use()
+  const currentStatus = store.uptime[routeKey]?.current_status.use()
   const [isDocker, isProxmox, displayName, excluded] = store.routeDetails[routeKey]!.useCompute(
     details => {
-      if (!details) {
-        return [false, false, '', false]
-      }
+      if (!details) return [false, false, '', false]
       return [
         Boolean(details.container),
         Boolean(details.proxmox),
@@ -108,7 +106,7 @@ function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: Route
 
   const hideUptimebarState = store.displaySettings.hideUptimebar
 
-  if (hideUnknown && currentStatus === 'unknown') return null
+  if (hideUnknown && (!currentStatus || currentStatus === 'unknown')) return null
   if (hideExcluded && excluded) return null
   if (dockerOnly && !isDocker) return null
   if (proxmoxOnly && !isProxmox) return null

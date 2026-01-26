@@ -104,7 +104,7 @@ export default function AppGrid() {
                   )}
                   placeholder="More"
                   emptyMessage="No more categories"
-                  onValueChange={value => setActiveCategory(value ?? undefined)}
+                  onValueChange={value => setActiveCategory(value ?? 'All')}
                 />
               )}
             </TabsList>

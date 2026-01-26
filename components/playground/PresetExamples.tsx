@@ -21,7 +21,11 @@ export default function PresetExamples() {
 
     store.rules.set(example.rules)
     store.mockRequest.set(example.mockRequest)
-    store.mockResponse.set(example.mockResponse)
+    if (example.mockResponse) {
+      store.mockResponse.set(example.mockResponse)
+    } else {
+      store.mockResponse.reset()
+    }
 
     setSelectedExample(exampleName)
   }

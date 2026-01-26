@@ -78,7 +78,7 @@ function AutocertConfigForm({
   state: ObjectState<Autocert.AutocertConfig>
   onAddExtra?: (() => void) | undefined
 }) {
-  const base = state as ObjectState<Autocert.AutocertConfigBase>
+  const base = state as unknown as ObjectState<Autocert.AutocertConfigBase>
   // remove email, domains, cert_path, key_path, resolvers when provider is local
   useEffect(() => {
     const unsubscribe = state.provider.subscribe(v => {

@@ -254,9 +254,7 @@ function StoreObjectInput<T extends FieldValues>({
       canAdd={!readonly && canAddKey(schema)}
       readonly={readonly}
       onAdd={() =>
-        state['']?.set(
-          getDefaultValue(getAdditionalPropertiesSchema(schema)) as T[string] | undefined
-        )
+        state['']?.set(getDefaultValue(getAdditionalPropertiesSchema(schema)) as T[string])
       }
       badge={
         <state.Show on={value => !value || Object.keys(value).length === 0}>
