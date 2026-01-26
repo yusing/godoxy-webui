@@ -2,16 +2,19 @@
 
 import { CodeMirror } from '@/components/ObjectDataList'
 import { store, useSelectedRoute } from '@/components/routes/store'
+import KeyboardReturn from '@/components/svg/keyboard-return'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Code from '@/components/ui/code'
 import { DataList, DataListRow } from '@/components/ui/data-list'
+import { Kbd } from '@/components/ui/kbd'
 import { Label } from '@/components/ui/label'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { IdlewatcherConfig } from '@/lib/api'
 import { formatDuration, formatGoDuration, formatRelTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { yaml } from '@codemirror/lang-yaml'
-import { IconArrowRight } from '@tabler/icons-react'
+import { IconArrowRight, IconInfoCircle } from '@tabler/icons-react'
 import { useEffect } from 'react'
 import { stringify as stringifyYAML } from 'yaml'
 import { decodeRouteKey } from '../utils'
@@ -69,7 +72,22 @@ export default function RouteDetails() {
       {showLogs && (
         <Card size="sm" className="px-2">
           <CardHeader>
-            <CardTitle>{logType} Logs</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <span>{logType} Logs</span>
+              <Tooltip>
+                <TooltipTrigger>
+                  <IconInfoCircle className="size-4" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <Label className="text-xs">
+                    <Kbd>
+                      <KeyboardReturn /> Enter
+                    </Kbd>{' '}
+                    to maximize / minimize
+                  </Label>
+                </TooltipContent>
+              </Tooltip>
+            </CardTitle>
             <CardDescription>
               <LogsHeader routeKey={routeKey} />
             </CardDescription>

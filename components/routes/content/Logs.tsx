@@ -1,15 +1,28 @@
-import LoadingRing from '@/components/LoadingRing'
 import { Button } from '@/components/ui/button'
 import { useWebSocketApi } from '@/hooks/websocket'
 import { useTheme } from 'next-themes'
 
-import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
+import {
+  IconArrowsMaximize,
+  IconArrowsMinimize,
+  IconChevronDown,
+  IconChevronUp,
+} from '@tabler/icons-react'
 import { FitAddon } from '@xterm/addon-fit'
 import { WebFontsAddon } from '@xterm/addon-web-fonts'
 import { WebLinksAddon } from '@xterm/addon-web-links'
 import { Terminal } from '@xterm/xterm'
 
-import { Suspense, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import {
+  Suspense,
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { store, type RouteKey } from '../store'
 
 import '@xterm/xterm/css/xterm.css'
@@ -19,85 +32,23 @@ import '@fontsource/cascadia-code/700.css'
 
 import { Query } from '@/lib/query'
 import '../style.css'
-import { resolveThemeColorsAsync } from './logs'
+import {
+  extractLeadingTimestamp,
+  parseJournalctlTimestamp,
+  resolveThemeColorsAsync,
+  stripTimestampPrefix,
+} from './logs'
+
+import { createAtom, type Atom } from 'juststore'
 
 export default function Logs({ routeKey }: { routeKey: RouteKey }) {
   const logsRef = useRef<HTMLDivElement>(null)
   const termRef = useRef<Terminal | null>(null)
-  const autoScroll = store.logsAutoScroll.use() ?? false
-  const [hasLogs, setHasLogs] = useState(false)
+  const fitAddonRef = useRef<FitAddon | null>(null)
+  const setScrollDirectionRef = useRef<((next: 'up' | 'down') => void) | null>(null)
+  const maximizedAtom = createAtom(useId(), false)
 
   const isProxmox = store.routeDetails[routeKey]!.proxmox.useCompute(proxmox => Boolean(proxmox))
-
-  const onLog = useCallback(() => {
-    setHasLogs(true)
-  }, [])
-
-  return (
-    <div className="relative">
-      <Suspense>
-        <LogProvider
-          key={routeKey}
-          routeKey={routeKey}
-          termRef={termRef}
-          autoScroll={autoScroll}
-          isProxmox={isProxmox}
-          onLog={onLog}
-        />
-      </Suspense>
-      <LogsInner
-        key={routeKey}
-        routeKey={routeKey}
-        logsRef={logsRef}
-        termRef={termRef}
-        hasLogs={hasLogs}
-        setHasLogs={setHasLogs}
-      />
-    </div>
-  )
-}
-
-const ansi = {
-  reset: '\u001b[0m',
-  red: '\u001b[31m',
-  green: '\u001b[32m',
-  yellow: '\u001b[33m',
-  blue: '\u001b[34m',
-  magenta: '\u001b[35m',
-  cyan: '\u001b[36m',
-  white: '\u001b[37m',
-  black: '\u001b[30m',
-  dim: '\u001b[2m',
-  brightRed: '\u001b[91m',
-  brightGreen: '\u001b[92m',
-  brightYellow: '\u001b[93m',
-  brightBlue: '\u001b[94m',
-  brightCyan: '\u001b[96m',
-  brightMagenta: '\u001b[95m',
-} as const
-
-function LogsInner({
-  routeKey,
-  logsRef,
-  termRef,
-  hasLogs,
-  setHasLogs,
-}: {
-  routeKey: RouteKey
-  logsRef: React.RefObject<HTMLDivElement | null>
-  termRef: React.RefObject<Terminal | null>
-  hasLogs: boolean
-  setHasLogs: (hasLogs: boolean) => void
-}) {
-  'use memo'
-
-  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('down')
-  const fitAddonRef = useRef<FitAddon | null>(null)
-
-  // Reset hasLogs when route changes
-  useLayoutEffect(() => {
-    setHasLogs(false)
-  }, [routeKey, setHasLogs])
 
   useLayoutEffect(() => {
     const container = logsRef.current
@@ -121,7 +72,7 @@ function LogsInner({
       // If we're past the midpoint, show up arrow
       const maxScroll = Math.max(0, totalLines - viewportLines)
       const next = scrollOffset >= maxScroll / 2 ? 'up' : 'down'
-      setScrollDirection(prev => (prev === next ? prev : next))
+      setScrollDirectionRef.current?.(next)
     }
 
     const cleanup = () => {
@@ -199,7 +150,7 @@ function LogsInner({
     void init()
 
     return () => cleanup()
-  }, [logsRef, termRef])
+  }, [routeKey])
 
   useEffect(() => {
     const term = termRef.current
@@ -209,39 +160,140 @@ function LogsInner({
     }
   }, [routeKey, termRef])
 
+  useEffect(() => {
+    const unsubscribe = maximizedAtom.subscribe(maximized => {
+      const log = logsRef.current
+      if (log) {
+        log.setAttribute('data-maximized', maximized.toString())
+      }
+    })
+    return unsubscribe
+  })
+
   return (
     <>
       <Suspense>
+        <LogProvider key={routeKey} routeKey={routeKey} termRef={termRef} isProxmox={isProxmox} />
+      </Suspense>
+      <LogsInner
+        key={routeKey}
+        maximizedAtom={maximizedAtom}
+        logsRef={logsRef}
+        termRef={termRef}
+        setScrollDirectionRef={setScrollDirectionRef}
+      />
+    </>
+  )
+}
+
+const ansi = {
+  reset: '\u001b[0m',
+  red: '\u001b[31m',
+  green: '\u001b[32m',
+  yellow: '\u001b[33m',
+  blue: '\u001b[34m',
+  magenta: '\u001b[35m',
+  cyan: '\u001b[36m',
+  white: '\u001b[37m',
+  black: '\u001b[30m',
+  dim: '\u001b[2m',
+  brightRed: '\u001b[91m',
+  brightGreen: '\u001b[92m',
+  brightYellow: '\u001b[93m',
+  brightBlue: '\u001b[94m',
+  brightCyan: '\u001b[96m',
+  brightMagenta: '\u001b[95m',
+} as const
+
+function LogsInner({
+  maximizedAtom,
+  logsRef,
+  termRef,
+  setScrollDirectionRef,
+}: {
+  maximizedAtom: Atom<boolean>
+  logsRef: React.RefObject<HTMLDivElement | null>
+  termRef: React.RefObject<Terminal | null>
+  setScrollDirectionRef: React.RefObject<((next: 'up' | 'down') => void) | null>
+}) {
+  'use memo'
+
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('down')
+
+  useEffect(() => {
+    setScrollDirectionRef.current = next =>
+      setScrollDirection(prev => (prev === next ? prev : next))
+  }, [setScrollDirectionRef, setScrollDirection])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        maximizedAtom.set(!maximizedAtom.value)
+        if (containerRef.current) {
+          containerRef.current.focus()
+        }
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown, true)
+    return () => window.removeEventListener('keydown', handleKeyDown, true)
+  }, [containerRef, maximizedAtom])
+
+  return (
+    <div
+      ref={containerRef}
+      className="relative
+      has-data-[maximized=true]:absolute has-data-[maximized=true]:px-[5vw] has-data-[maximized=true]:py-[5vh] has-data-[maximized=true]:top-0 has-data-[maximized=true]:left-0
+      has-data-[maximized=true]:h-full has-data-[maximized=true]:w-full
+      has-data-[maximized=true]:p-4 has-data-[maximized=true]:z-50"
+      tabIndex={0}
+    >
+      <Suspense>
         <LogThemeUpdater termRef={termRef} />
       </Suspense>
-      <div className="relative h-full max-h-[45vh] overflow-hidden rounded-md border bg-muted/30 tracking-normal">
-        <div ref={logsRef} className="container-logs-terminal h-full w-full" />
-        {!hasLogs && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <LoadingRing />
-          </div>
-        )}
-      </div>
-      <div className="absolute bottom-2 right-2">
-        <Button
-          size="icon"
-          className="bg-teal-500/80 text-white"
-          aria-label={scrollDirection === 'up' ? 'Scroll to top' : 'Scroll to bottom'}
-          onClick={() => {
-            const term = termRef.current
-            if (!term) return
+      <div
+        className="overflow-hidden rounded-md border bg-muted/30 tracking-normal p-2 h-[45vh] has-data-[maximized=true]:h-full relative"
+        style={{
+          backgroundColor: 'var(--xterm-background)',
+        }}
+      >
+        <div ref={logsRef} className="h-full w-full" />
+        <div className="absolute top-4 right-4">
+          <maximizedAtom.Render>
+            {(maximized, setExpanded) => (
+              <Button
+                size="icon"
+                variant="ghost"
+                className="bg-background/80 hover:bg-background"
+                aria-label={maximized ? 'Minimize logs' : 'Maximize logs'}
+                onClick={() => setExpanded(!maximized)}
+              >
+                {maximized ? <IconArrowsMinimize /> : <IconArrowsMaximize />}
+              </Button>
+            )}
+          </maximizedAtom.Render>
+        </div>
+        <div className="absolute bottom-4 right-4">
+          <Button
+            size="icon"
+            className="bg-teal-500/80 text-white"
+            aria-label={scrollDirection === 'up' ? 'Scroll to top' : 'Scroll to bottom'}
+            onClick={() => {
+              const term = termRef.current
+              if (!term) return
 
-            if (scrollDirection === 'up') {
-              term.scrollToTop()
-            } else {
-              term.scrollToBottom()
-            }
-          }}
-        >
-          <LogChevron direction={scrollDirection} />
-        </Button>
+              if (scrollDirection === 'up') {
+                term.scrollToTop()
+              } else {
+                term.scrollToBottom()
+              }
+            }}
+          >
+            <LogChevron direction={scrollDirection} />
+          </Button>
+        </div>
       </div>
-    </>
+    </div>
   )
 }
 
@@ -281,15 +333,11 @@ function LogThemeUpdater({ termRef }: { termRef: React.RefObject<Terminal | null
 function LogProvider({
   routeKey,
   termRef,
-  autoScroll,
   isProxmox,
-  onLog,
 }: {
   routeKey: RouteKey
   termRef: React.RefObject<Terminal | null>
-  autoScroll: boolean
   isProxmox: boolean
-  onLog: () => void
 }) {
   const proxmox = store.routeDetails[routeKey]!.proxmox.use()
   const containerId = store.routeDetails[routeKey]!.container.useCompute(
@@ -326,11 +374,6 @@ function LogProvider({
   }, [containerId, proxmox])
 
   const containerIdRef = useRef(containerId)
-  const autoScrollRef = useRef(autoScroll)
-
-  useEffect(() => {
-    autoScrollRef.current = autoScroll
-  }, [autoScroll])
 
   const pendingLinesRef = useRef<string[]>([])
   const flushTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -356,12 +399,10 @@ function LogProvider({
       term.writeln(formatLineForTerminal(line, parseTimestamp, isProxmox))
     }
 
-    onLog()
-
-    if (autoScrollRef.current) {
+    if (store.logsAutoScroll.value) {
       term.scrollToBottom()
     }
-  }, [termRef, isProxmox, onLog])
+  }, [termRef, isProxmox])
 
   const scheduleFlush = useCallback(() => {
     // Aggregate multiple websocket messages into a single terminal write.
@@ -413,10 +454,9 @@ function LogProvider({
       const term = termRef.current
       if (term) {
         term.writeln(formatLineForTerminal(`${new Date().toISOString()} No logs available`, true))
-        onLog()
       }
     }
-  }, [endpoint, termRef, onLog])
+  }, [endpoint, termRef])
 
   useWebSocketApi<string>({
     endpoint,
@@ -440,8 +480,8 @@ function LogProvider({
 
 function formatLineForTerminal(line: string, parseTimestamp: boolean, isProxmox: boolean = false) {
   const ts = parseTimestamp ? extractLeadingTimestamp(line) : null
-  const timestamp = ts?.raw ?? ''
-  const date = ts?.date ?? null
+  const timestamp = ts ?? ''
+  const date = ts ? new Date(ts) : null
   const hasDate = date != null
 
   const content = hasDate ? stripTimestampPrefix(line.slice(timestamp.length).trimStart()) : line
@@ -461,29 +501,6 @@ function formatLineForTerminal(line: string, parseTimestamp: boolean, isProxmox:
 
   // Prepend a static timestamp. Use ANSI dim for readability without changing log colors.
   return `${formatLocalDateTimeColored(date)} ${formatLogContent(content, { hasExternalTimestamp: true })}`
-}
-
-function extractLeadingTimestamp(line: string): { raw: string; date: Date } | null {
-  // Common: "2026-01-25T14:59:40.329Z" or "2026-01-25 14:59:40.329"
-  const full = line.match(
-    /^\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:[.,]\d+)?(?:Z|[+-]\d{2}:?\d{2})?/
-  )
-  if (full) {
-    const raw = full[0]
-    const iso = raw.includes(' ') ? raw.replace(' ', 'T') : raw
-    const date = new Date(iso)
-    if (!Number.isNaN(date.getTime())) return { raw, date }
-  }
-
-  // Fallback: date-only prefix "2026-01-25".
-  const dateOnly = line.match(/^\d{4}-\d{2}-\d{2}/)
-  if (dateOnly) {
-    const raw = dateOnly[0]
-    const date = new Date(raw)
-    if (!Number.isNaN(date.getTime())) return { raw, date }
-  }
-
-  return null
 }
 
 function formatLogContent(line: string, opts: { hasExternalTimestamp: boolean }): string {
@@ -796,55 +813,4 @@ function colorizeLogLevel(line: string): string {
 function formatLocalDateTimeColored(date: Date) {
   const pad2 = (n: number) => String(n).padStart(2, '0')
   return `${ansi.dim}${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())} ${pad2(date.getHours())}:${pad2(date.getMinutes())}:${pad2(date.getSeconds())}${ansi.reset}`
-}
-
-const timePart =
-  '\\d{1,2}:\\d{1,2}(?::\\d{1,2})?(?:[.,]\\d+)?(?:\\s*[ap]m)?(?:\\s*(?:Z|[+-]\\d{2}:?\\d{2}|UTC|GMT))?'
-const dateYmd = '\\d{4}[-/.]\\d{1,2}[-/.]\\d{1,2}'
-const dateDmy = '\\d{1,2}[-/.]\\d{1,2}[-/.]\\d{2,4}'
-const dateMd = '\\d{1,2}[-/.]\\d{1,2}'
-const timestampPrefix = new RegExp(
-  `^(?:\\u001b\\[[0-9;]*m)*(?:\\[\\s*\\]\\s*)?(?:\\[\\s*|\\(\\s*)?(?:${dateYmd}[T ,]+${timePart}|${dateYmd}|${dateDmy}(?:[ T,]+${timePart})?|${dateMd}(?:[ T,]+${timePart})?|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s+\\d{1,2}\\s+${timePart}(?:\\s+\\d{4})?|${timePart})(?:\\s*(?:\\]|\\)))?(?:\\u001b\\[[0-9;]*m)*\\s*`,
-  'i'
-)
-
-const monthNames = 'Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' ')
-
-const journalctlRegex = /^([A-Z][a-z]{2})\s+(\d{1,2})\s+(\d{2}):(\d{2}):(\d{2})/
-
-function parseJournalctlTimestamp(line: string): Date | null {
-  const match = line.match(journalctlRegex)
-  if (!match) return null
-
-  const [, month, dayStr, hourStr, minuteStr, secondStr] = match
-
-  const monthIndex = monthNames.indexOf(month!)
-  if (monthIndex === -1) return null
-
-  const now = new Date()
-  const year = now.getFullYear()
-
-  const date = new Date(
-    year,
-    monthIndex,
-    parseInt(dayStr!, 10),
-    parseInt(hourStr!, 10),
-    parseInt(minuteStr!, 10),
-    parseInt(secondStr!, 10)
-  )
-
-  // Handle year wrap-around (log from January when current month is later)
-  if (date > now && now.getMonth() < monthIndex) {
-    date.setFullYear(year - 1)
-  }
-
-  return date
-}
-
-function stripTimestampPrefix(line: string) {
-  if (line.startsWith('{')) {
-    // json
-    return line
-  }
-  return line.replace(timestampPrefix, '')
 }
