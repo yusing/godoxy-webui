@@ -165,41 +165,50 @@ export default function ArrowNavigation() {
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [])
 
-  store.navigation.activeItemIndex.subscribe(index => {
-    const numVisibleItems = getVisibleItems().length
-    if (index < -1) {
-      index = -1
-    } else if (index >= numVisibleItems) {
-      index = numVisibleItems - 1
-    }
+  useEffect(() => {
+    const unsubscribe = store.navigation.activeItemIndex.subscribe(index => {
+      const numVisibleItems = getVisibleItems().length
+      if (index < -1) {
+        index = -1
+      } else if (index >= numVisibleItems) {
+        index = numVisibleItems - 1
+      }
 
-    // remove data-active from current active item
-    const currentActiveItem = document.querySelector(`.app-item[data-active="true"]`)
-    if (currentActiveItem) {
-      currentActiveItem.removeAttribute('data-active')
-    }
-    // add data-active to new active item
-    const newActiveItem = document.querySelector(`.app-item[data-index="${index}"]`)
-    if (newActiveItem) {
-      newActiveItem.setAttribute('data-active', 'true')
-      scrollItemIntoViewIfNeeded(newActiveItem)
-    }
+      // remove data-active from current active item
+      const currentActiveItem = document.querySelector(`.app-item[data-active="true"]`)
+      if (currentActiveItem) {
+        currentActiveItem.removeAttribute('data-active')
+      }
+      // add data-active to new active item
+      const newActiveItem = document.querySelector(`.app-item[data-index="${index}"]`)
+      if (newActiveItem) {
+        newActiveItem.setAttribute('data-active', 'true')
+        scrollItemIntoViewIfNeeded(newActiveItem)
+      }
+    })
+    return unsubscribe
   })
 
   // Reset navigation when category changes
-  store.navigation.activeCategory.subscribe(() => {
-    // reset active item
-    setActiveItem(-1)
+  useEffect(() => {
+    const unsubscribe = store.navigation.activeCategory.subscribe(() => {
+      // reset active item
+      setActiveItem(-1)
+    })
+    return unsubscribe
   })
 
   // Reset navigation when search query changes
-  store.searchQuery.subscribe(v => {
-    // set first visible item as active item (only while searching)
-    if (v) {
-      setActiveItem(0)
-    } else {
-      setActiveItem(-1)
-    }
+  useEffect(() => {
+    const unsubscribe = store.searchQuery.subscribe(v => {
+      // set first visible item as active item (only while searching)
+      if (v) {
+        setActiveItem(0)
+      } else {
+        setActiveItem(-1)
+      }
+    })
+    return unsubscribe
   })
 
   return null

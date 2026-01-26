@@ -4,7 +4,7 @@ import { api, formatErrorString } from '@/lib/api-client'
 import type { ConfigFile } from '@/types/file'
 import type { Config } from '@/types/godoxy'
 import { AxiosError } from 'axios'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import isEqual from 'react-fast-compare'
 import { useMount } from 'react-use'
 import { parse as parseYAML, stringify as stringifyYAML } from 'yaml'
@@ -26,69 +26,77 @@ export default function ConfigStateSyncronizer() {
       .finally(() => configStore.isLoading.set(false))
   })
 
-  configStore.activeFile.subscribe(activeFile => {
-    configStore.unsavedChanges.reset()
-    if (activeFile.isNewFile) {
-      configStore.content.set('')
-      configStore.isLoading.set(false)
-      configStore.error.reset()
-      return
-    }
-    configStore.content.reset()
-    configStore.isLoading.set(true)
-    configStore.error.reset()
-    api.file
-      .get({
-        type: activeFile?.type ?? 'config',
-        filename: activeFile?.filename ?? 'config.yml',
-      })
-      .then(r => configStore.content.set(r.data))
-      .catch(err => configStore.error.set(formatErrorString(err)))
-      .finally(() => configStore.isLoading.set(false))
-  })
-
-  configStore.configObject.subscribe(config => {
-    try {
-      if (isEqual(config, parseYAML(configStore.content.value ?? ''))) {
+  useEffect(() => {
+    const unsubscribe = configStore.activeFile.subscribe(activeFile => {
+      configStore.unsavedChanges.reset()
+      if (activeFile.isNewFile) {
+        configStore.content.set('')
+        configStore.isLoading.set(false)
+        configStore.error.reset()
         return
       }
-    } catch {
-      configStore.validateError.set('invalid yaml')
-      return
-    }
-    const yaml = stringifyYAML(config)
-    configStore.content.set(yaml)
-    validate(yaml, configStore.activeFile.type.value).then(err =>
-      configStore.validateError.set(err as GoDoxyError)
-    )
+      configStore.content.reset()
+      configStore.isLoading.set(true)
+      configStore.error.reset()
+      api.file
+        .get({
+          type: activeFile?.type ?? 'config',
+          filename: activeFile?.filename ?? 'config.yml',
+        })
+        .then(r => configStore.content.set(r.data))
+        .catch(err => configStore.error.set(formatErrorString(err)))
+        .finally(() => configStore.isLoading.set(false))
+    })
+    return unsubscribe
+  })
+
+  useEffect(() => {
+    const unsubscribe = configStore.configObject.subscribe(config => {
+      try {
+        if (isEqual(config, parseYAML(configStore.content.value ?? ''))) {
+          return
+        }
+      } catch {
+        configStore.validateError.set('invalid yaml')
+        return
+      }
+      const yaml = stringifyYAML(config)
+      configStore.content.set(yaml)
+      validate(yaml, configStore.activeFile.type.value).then(err =>
+        configStore.validateError.set(err as GoDoxyError)
+      )
+    })
+    return unsubscribe
   })
 
   const lastActiveFile = useRef(configStore.activeFile.filename.value)
 
   // when content changes, set the rootObject and validate
-  // eslint-disable-next-line react-hooks/refs
-  configStore.content.subscribe(content => {
-    if (!content) {
-      configStore.configObject.reset()
-      configStore.validateError.reset()
-      configStore.unsavedChanges.reset()
-      return
-    }
-
-    try {
-      const config = parseYAML(content) as Config.Config
-      if (lastActiveFile.current === configStore.activeFile.filename.value) {
-        configStore.unsavedChanges[configStore.activeSection.value]!.set(true)
-      } else {
-        lastActiveFile.current = configStore.activeFile.filename.value
+  useEffect(() => {
+    const unsubscribe = configStore.content.subscribe(content => {
+      if (!content) {
+        configStore.configObject.reset()
+        configStore.validateError.reset()
+        configStore.unsavedChanges.reset()
+        return
       }
-      configStore.configObject.set(config)
-      validate(content, configStore.activeFile.type.value).then(err =>
-        configStore.validateError.set(err as GoDoxyError)
-      )
-    } catch {
-      configStore.validateError.set('invalid yaml')
-    }
+
+      try {
+        const config = parseYAML(content) as Config.Config
+        if (lastActiveFile.current === configStore.activeFile.filename.value) {
+          configStore.unsavedChanges[configStore.activeSection.value]!.set(true)
+        } else {
+          lastActiveFile.current = configStore.activeFile.filename.value
+        }
+        configStore.configObject.set(config)
+        validate(content, configStore.activeFile.type.value).then(err =>
+          configStore.validateError.set(err as GoDoxyError)
+        )
+      } catch {
+        configStore.validateError.set('invalid yaml')
+      }
+    })
+    return unsubscribe
   })
 
   return <></>

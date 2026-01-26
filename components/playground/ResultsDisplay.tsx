@@ -18,7 +18,7 @@ import { yaml } from '@codemirror/lang-yaml'
 import { IconCheck, IconX } from '@tabler/icons-react'
 import { EditorView } from '@uiw/react-codemirror'
 import { motion } from 'motion/react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { stringify as stringifyYAML } from 'yaml'
 import { GoDoxyErrorAlert, type GoDoxyError } from '../GoDoxyError'
 import { CodeMirror } from '../ObjectDataList'
@@ -28,8 +28,11 @@ export default function ResultsDisplay() {
   const response = store.playgroundResponse.use()
   const [animKey, setAnimKey] = useState(0)
 
-  store.playgroundResponse.subscribe(() => {
-    setAnimKey(prev => prev + 1)
+  useEffect(() => {
+    const unsubscribe = store.playgroundResponse.subscribe(() => {
+      setAnimKey(prev => prev + 1)
+    })
+    return unsubscribe
   })
 
   if (!response) {

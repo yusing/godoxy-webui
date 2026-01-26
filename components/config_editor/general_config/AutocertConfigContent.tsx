@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useRef } from 'react'
+import { Suspense, useEffect, useRef } from 'react'
 
 import { FormContainer } from '@/components/form/FormContainer'
 import { StoreFieldInput } from '@/components/form/StoreFieldInput'
@@ -80,23 +80,26 @@ function AutocertConfigForm({
 }) {
   const base = state as ObjectState<Autocert.AutocertConfigBase>
   // remove email, domains, cert_path, key_path, resolvers when provider is local
-  state.provider.subscribe(v => {
-    if (v === undefined) return
+  useEffect(() => {
+    const unsubscribe = state.provider.subscribe(v => {
+      if (v === undefined) return
 
-    let next: Partial<Autocert.AutocertConfig> = {
-      provider: v,
-    }
-    if (v !== 'local') {
-      next = {
-        ...next,
-        email: base.email.value,
-        domains: base.domains.value,
-        cert_path: base.cert_path.value,
-        key_path: base.key_path.value,
-        resolvers: base.resolvers.value,
+      let next: Partial<Autocert.AutocertConfig> = {
+        provider: v,
       }
-    }
-    state.set(next as Autocert.AutocertConfig)
+      if (v !== 'local') {
+        next = {
+          ...next,
+          email: base.email.value,
+          domains: base.domains.value,
+          cert_path: base.cert_path.value,
+          key_path: base.key_path.value,
+          resolvers: base.resolvers.value,
+        }
+      }
+      state.set(next as Autocert.AutocertConfig)
+    })
+    return unsubscribe
   })
 
   return (

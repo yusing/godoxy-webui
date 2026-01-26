@@ -96,9 +96,13 @@ export default function RouteEditForm({
   const streamForm = form as FormStore<Routes.StreamRoute>
   const fsForm = form as unknown as FormStore<Routes.FileServerRoute>
 
-  if (onUpdate) {
-    form.subscribe(onUpdate)
-  }
+  useEffect(() => {
+    if (onUpdate) {
+      const unsubscribe = form.subscribe(onUpdate)
+      return unsubscribe
+    }
+    return undefined
+  })
 
   // const scheme = form.watch('scheme')
   // const isStream = scheme === 'tcp' || scheme === 'udp'
