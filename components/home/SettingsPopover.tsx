@@ -63,10 +63,20 @@ export default function SettingsPopover() {
                 <div className="space-y-1">
                   <p>Prefer monochrome light or dark icons based on the current theme.</p>
                   <div className="flex items-center gap-1">
-                    <span className="bg-white text-black p-0.5 border rounded-md">Light icons</span>
-                    on <Moon className="size-3 inline-block" /> night mode,
-                    <span className="bg-black text-white p-0.5 border rounded-md">dark icons</span>
-                    on <Sun className="size-3 inline-block" /> light mode.
+                    <span className="bg-white text-black p-0.5 border rounded-md text-nowrap">
+                      Light icons
+                    </span>
+                    <span className="text-nowrap">
+                      on <Moon className="size-3 inline-block" /> Dark mode
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="bg-black text-white p-0.5 border rounded-md text-nowrap">
+                      Dark icons
+                    </span>
+                    <span className="text-nowrap">
+                      on <Sun className="size-3 inline-block" /> Light mode
+                    </span>
                   </div>
                 </div>
               }
