@@ -29,7 +29,7 @@ import type { StreamPort } from '@/types/godoxy/types'
 import { IconCheck, IconChevronDown, IconX } from '@tabler/icons-react'
 import type { VariantProps } from 'class-variance-authority'
 import { useForm, type FormState, type FormStore } from 'juststore'
-import { useCallback, useEffect, useMemo } from 'react'
+import { Activity, useCallback, useEffect, useMemo } from 'react'
 import { useAsync } from 'react-use'
 import { middlewareUseToSnakeCase } from '../middleware_compose/utils'
 import { configStore } from '../store'
@@ -100,10 +100,6 @@ export default function RouteEditForm({
     }
   )
 
-  /* For type safety, we need to cast the form to the specific type */
-  const streamForm = form as FormStore<Routes.StreamRoute>
-  const fsForm = form as unknown as FormStore<Routes.FileServerRoute>
-
   useEffect(() => {
     if (onUpdate) {
       const unsubscribe = form.subscribe(onUpdate)
@@ -163,94 +159,106 @@ export default function RouteEditForm({
       </div>
 
       {/* Host and Port */}
-      <form.scheme.Show on={scheme => scheme !== 'fileserver'}>
-        <FieldSet className="grid grid-cols-2 gap-4">
-          <StoreFormInputField
-            state={streamForm.host}
-            title="Host"
-            placeholder={details?.host ?? 'localhost'}
-          />
-
-          <form.scheme.Render>
-            {scheme => {
-              return (
-                <>
-                  {isStream(scheme) && (
-                    <StoreFormInputField
-                      state={streamForm.bind.withDefault('0.0.0.0')}
-                      title="Bind Host"
-                      placeholder={details?.bind ?? '0.0.0.0'}
-                      type="ip"
-                    />
-                  )}
-                  {/** Listening Port */}
-                  {isStream(scheme) && (
-                    <StoreFormInputField
-                      state={streamForm.port.derived({
-                        from: v => utils.getListeningPort(v ?? 0),
-                        to: v =>
-                          `${v}:${utils.getProxyPort(streamForm.port.value ?? 0)}` as StreamPort,
-                      })}
-                      title="Listen Port"
-                      placeholder={details?.port.listening?.toString() ?? '53'}
-                      type="number"
-                      min={0} // 0 means random port
-                      max={65535}
-                    />
-                  )}
-                  {/** Proxy Port */}
-                  <StoreFormInputField
-                    state={streamForm.port.derived({
-                      from: v => utils.getProxyPort(v ?? 0),
-                      to: v => {
-                        if (!isStream(scheme)) {
-                          return v as StreamPort
-                        }
-                        return `${utils.getListeningPort(streamForm.port.value ?? 0)}:${v}` as StreamPort
-                      },
-                    })}
-                    title="Proxy Port"
-                    placeholder={details?.port.proxy?.toString() ?? '3000'}
-                    type="number"
-                    min={1} // proxy port cannot be 0
-                    max={65535}
-                  />
-                </>
-              )
-            }}
-          </form.scheme.Render>
-        </FieldSet>
-      </form.scheme.Show>
+      <HostPortFields
+        form={form as FormStore<Routes.ReverseProxyRoute | Routes.StreamRoute>}
+        details={details}
+      />
 
       {/* Root */}
       <form.scheme.Show on={scheme => scheme === 'fileserver'}>
-        <>
-          <StoreFormInputField
-            state={fsForm.root}
-            title="Root"
-            placeholder="/path/to/files"
-            required
-          />
-          <StoreFormCheckboxField
-            state={fsForm.spa}
-            title="SPA"
-            description={
-              <span>
-                Serve Single Page Applications (SPA) mode.
-                <br />
-                <span>
-                  Similar to <code>nginx</code> <code>try_files</code> directive.
-                </span>
-              </span>
-            }
-          />
-          <StoreFormInputField state={fsForm.index} title="Index" placeholder="/index.html" />
-        </>
+        <FileServerFields form={form as FormStore<Routes.FileServerRoute>} />
       </form.scheme.Show>
 
       {/* Advanced Options */}
       <AdvancedOptions form={form} details={details} />
     </form>
+  )
+}
+
+function HostPortFields({
+  form,
+  details,
+}: {
+  form: FormStore<Routes.ReverseProxyRoute | Routes.StreamRoute>
+  details?: RouteResponse
+}) {
+  const mode = form.useCompute(form =>
+    isHTTP(form.scheme) || isStream(form.scheme) ? 'visible' : 'hidden'
+  )
+  const stream = form.useCompute(form => isStream(form.scheme))
+
+  return (
+    <Activity mode={mode}>
+      <FieldSet className="grid grid-cols-2 gap-4">
+        <StoreFormInputField
+          state={form.host}
+          title="Host"
+          placeholder={details?.host ?? 'localhost'}
+        />
+
+        {stream && (
+          <StoreFormInputField
+            state={(form as FormStore<Routes.StreamRoute>).bind?.withDefault('0.0.0.0')}
+            title="Bind Host"
+            placeholder={details?.bind ?? '0.0.0.0'}
+            type="ip"
+          />
+        )}
+        {/** Listening Port */}
+        {stream && (
+          <StoreFormInputField
+            state={(form as FormStore<Routes.StreamRoute>).port.derived({
+              from: v => utils.getListeningPort(v ?? 0),
+              to: v => `${v}:${utils.getProxyPort(form.port.value ?? 0)}` as StreamPort,
+            })}
+            title="Listen Port"
+            placeholder={details?.port.listening?.toString() ?? '53'}
+            type="number"
+            min={0} // 0 means random port
+            max={65535}
+          />
+        )}
+        {/** Proxy Port */}
+        <StoreFormInputField
+          state={(form as FormStore<Routes.StreamRoute>).port.derived({
+            from: v => utils.getProxyPort(v ?? 0),
+            to: v => {
+              if (!stream) {
+                return v as StreamPort
+              }
+              return `${utils.getListeningPort(form.port.value ?? 0)}:${v}` as StreamPort
+            },
+          })}
+          title="Proxy Port"
+          placeholder={details?.port.proxy?.toString() ?? '3000'}
+          type="number"
+          min={1} // proxy port cannot be 0
+          max={65535}
+        />
+      </FieldSet>
+    </Activity>
+  )
+}
+
+function FileServerFields({ form }: { form: FormStore<Routes.FileServerRoute> }) {
+  return (
+    <>
+      <StoreFormInputField state={form.root} title="Root" placeholder="/path/to/files" required />
+      <StoreFormCheckboxField
+        state={form.spa}
+        title="SPA"
+        description={
+          <span>
+            Serve Single Page Applications (SPA) mode.
+            <br />
+            <span>
+              Similar to <code>nginx</code> <code>try_files</code> directive.
+            </span>
+          </span>
+        }
+      />
+      <StoreFormInputField state={form.index} title="Index" placeholder="/index.html" />
+    </>
   )
 }
 
