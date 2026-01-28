@@ -4,6 +4,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Field, FieldLabel } from '@/components/ui/field'
 import { Separator } from '@/components/ui/separator'
 import { StoreCheckboxField } from '@/juststore-shadcn/src/components/store/Checkbox'
+import type { Route as RouteResponse } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import type { Routes } from '@/types/godoxy'
 import type { CIDR } from '@/types/godoxy/types'
@@ -16,18 +17,20 @@ import * as utils from './utils'
 export default function RouteDisplay({
   alias,
   route,
+  details,
   onEdit,
   onDuplicate,
   onDelete,
 }: {
   alias: string
   route: Routes.Route
+  details?: RouteResponse
   onEdit: () => void
   onDuplicate: () => void
   onDelete: () => void
 }) {
-  const listeningAddress = utils.getListeningAddress(route)
-  const proxyAddress = utils.getProxyAddressOrRoot(route)
+  const listeningAddress = utils.getListeningAddress(route, details)
+  const proxyAddress = utils.getProxyAddressOrRoot(route, details)
 
   const [iconBg, iconFg] = utils.getIconColorsByScheme(route.scheme)
 

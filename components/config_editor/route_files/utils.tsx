@@ -1,3 +1,4 @@
+import type { Route as RouteResponse } from '@/lib/api'
 import type { Routes } from '@/types/godoxy'
 import type { Port, StreamPort } from '@/types/godoxy/types'
 import { IconFolder, IconGlobe, IconWifi } from '@tabler/icons-react'
@@ -113,17 +114,24 @@ function getListeningPort(port: StreamPort | Port | number | string): string {
   return s[0]!
 }
 
-function getListeningAddress(route: Routes.Route): string | undefined {
+function getListeningAddress(route: Routes.Route, details?: RouteResponse): string | undefined {
   if (route.scheme !== 'tcp' && route.scheme !== 'udp') {
     const proto = typeof window !== 'undefined' ? window.location.protocol : 'https:'
     return `${proto}//:443`
   }
-  return `${route.scheme}://:${getListeningPort(route.port)}`
+  const scheme = route.scheme ?? details?.scheme ?? 'http'
+  const listeningPort = route.port
+    ? getListeningPort(route.port)
+    : details?.port.listening?.toString()
+  return `${scheme}://:${listeningPort}`
 }
 
-function getProxyAddressOrRoot(route: Routes.Route): string {
+function getProxyAddressOrRoot(route: Routes.Route, details?: RouteResponse): string {
   if (route.scheme === 'fileserver') return route.root
-  return `${route.scheme ?? 'http'}://${route.host}:${getProxyPort(route.port || (route.scheme === 'http' ? 80 : 443))}`
+  const scheme = route.scheme ?? details?.scheme ?? 'http'
+  const host = route.host ?? details?.host ?? ''
+  const port = route.port ?? details?.port.proxy ?? (scheme === 'http' ? 80 : 443)
+  return `${scheme}://${host}:${getProxyPort(port)}`
 }
 
 function getRouteType(scheme: Routes.Route['scheme']) {

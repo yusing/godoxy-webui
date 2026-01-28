@@ -1,7 +1,9 @@
 import type { GoDoxyError } from '@/components/GoDoxyError'
+import type { Route } from '@/lib/api'
 import type { ConfigFile, ConfigFiles } from '@/types/file'
 import type { Config, MiddlewareCompose, Routes } from '@/types/godoxy'
 import { createStore, type Store } from 'juststore'
+import type { RouteKey } from '../routes/store'
 
 type ConfigState<
   T extends Config.Config | Routes.Routes | MiddlewareCompose.MiddlewareCompose,
@@ -16,6 +18,7 @@ type ConfigState<
   configObject: T | undefined
   validateError: GoDoxyError | undefined
   unsavedChanges: Record<Sections, boolean>
+  routeDetails: Record<RouteKey, Route>
 }
 
 const defaultConfig: ConfigFile = {
@@ -33,6 +36,7 @@ export const configStore = createStore<ConfigState<Config.Config>>('config', {
   configObject: undefined,
   validateError: undefined,
   unsavedChanges: {} as Record<string, boolean>,
+  routeDetails: {},
 })
 
 export const routesConfigStore = configStore as unknown as Store<ConfigState<Routes.Routes>>

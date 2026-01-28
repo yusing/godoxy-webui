@@ -1,7 +1,11 @@
+import type { RouteKey } from '@/components/routes/store'
+import { encodeRouteKey } from '@/components/routes/utils'
 import { Card, CardContent } from '@/components/ui/card'
+import { useWebSocketApi } from '@/hooks/websocket'
+import type { Route } from '@/lib/api'
 import type { Routes } from '@/types/godoxy'
 import { useMemo, useState } from 'react'
-import { routesConfigStore } from '../store'
+import { configStore, routesConfigStore } from '../store'
 import RouteDisplay from './RouteDisplay'
 import RouteEditForm from './RouteEditForm'
 
@@ -30,6 +34,7 @@ export default function RouteList() {
 
   return (
     <div className="flex flex-col gap-4 overflow-y-auto h-full">
+      <RouteDetailsProvider />
       {Object.entries(routes ?? {}).map(([key, value]) => (
         <Card key={key} className="p-2">
           <CardContent className="px-2">
@@ -87,4 +92,22 @@ function RouteCardContent({
       onDelete={() => onDelete(alias)}
     />
   )
+}
+
+function RouteDetailsProvider() {
+  useWebSocketApi<Route[]>({
+    endpoint: '/route/list',
+    onMessage: data => {
+      configStore.routeDetails.set(
+        data.reduce(
+          (acc, route) => {
+            acc[encodeRouteKey(route.alias)] = route
+            return acc
+          },
+          {} as Record<RouteKey, Route>
+        )
+      )
+    },
+  })
+  return null
 }

@@ -1,4 +1,5 @@
 import { NamedListInput } from '@/components/form/NamedListInput'
+import { encodeRouteKey } from '@/components/routes/utils'
 import { StoreFormCheckboxField } from '@/components/store/Checkbox'
 import { StoreFormInputField } from '@/components/store/Input'
 import { StoreFormSelectField } from '@/components/store/Select'
@@ -14,6 +15,7 @@ import {
   FieldSeparator,
   FieldSet,
 } from '@/components/ui/field'
+import type { Route as RouteResponse } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import {
   MiddlewareComposeSchema,
@@ -30,6 +32,7 @@ import { useForm, type FormState, type FormStore } from 'juststore'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useAsync } from 'react-use'
 import { middlewareUseToSnakeCase } from '../middleware_compose/utils'
+import { configStore } from '../store'
 import * as utils from './utils'
 
 type RouteEditFormProps = {
@@ -75,15 +78,18 @@ export default function RouteEditForm({
   cancelButtonVariant = 'ghost',
   cancelButtonClassName,
 }: RouteEditFormProps) {
+  const details = configStore.routeDetails[encodeRouteKey(alias)]?.use()
+  const scheme = route.scheme
+  const host = 'host' in route ? route.host : undefined
+  const port = 'port' in route ? route.port : undefined
   const form = useForm<Routes.Route>(
     {
       ...route,
-      alias: alias,
-      scheme: route.scheme || 'http',
-      host: 'host' in route ? route.host : 'localhost',
-      // @ts-expect-error intended
-      port: 'port' in route ? route.port : 3000,
-    },
+      alias,
+      scheme,
+      host,
+      port,
+    } as Routes.Route,
     {
       alias: {
         validate: value => {
@@ -159,7 +165,11 @@ export default function RouteEditForm({
       {/* Host and Port */}
       <form.scheme.Show on={scheme => scheme !== 'fileserver'}>
         <FieldSet className="grid grid-cols-2 gap-4">
-          <StoreFormInputField state={streamForm.host} title="Host" placeholder="localhost" />
+          <StoreFormInputField
+            state={streamForm.host}
+            title="Host"
+            placeholder={details?.host ?? 'localhost'}
+          />
 
           <form.scheme.Render>
             {scheme => {
@@ -169,7 +179,7 @@ export default function RouteEditForm({
                     <StoreFormInputField
                       state={streamForm.bind.withDefault('0.0.0.0')}
                       title="Bind Host"
-                      placeholder="0.0.0.0"
+                      placeholder={details?.bind ?? '0.0.0.0'}
                       type="ip"
                     />
                   )}
@@ -182,7 +192,7 @@ export default function RouteEditForm({
                           `${v}:${utils.getProxyPort(streamForm.port.value ?? 0)}` as StreamPort,
                       })}
                       title="Listen Port"
-                      placeholder="tcp"
+                      placeholder={details?.port.listening?.toString() ?? '53'}
                       type="number"
                       min={0} // 0 means random port
                       max={65535}
@@ -200,7 +210,7 @@ export default function RouteEditForm({
                       },
                     })}
                     title="Proxy Port"
-                    placeholder="3000"
+                    placeholder={details?.port.proxy?.toString() ?? '3000'}
                     type="number"
                     min={1} // proxy port cannot be 0
                     max={65535}
@@ -239,12 +249,18 @@ export default function RouteEditForm({
       </form.scheme.Show>
 
       {/* Advanced Options */}
-      <AdvancedOptions form={form} />
+      <AdvancedOptions form={form} details={details} />
     </form>
   )
 }
 
-function AdvancedOptions({ form }: { form: FormStore<Routes.Route> }) {
+function AdvancedOptions({
+  form,
+  details,
+}: {
+  form: FormStore<Routes.Route>
+  details?: RouteResponse
+}) {
   const rpForm = form as unknown as FormStore<Routes.ReverseProxyRoute>
 
   return (
@@ -352,15 +368,14 @@ function AdvancedOptions({ form }: { form: FormStore<Routes.Route> }) {
                 <StoreFormInputField
                   state={rpForm.proxmox.node}
                   title="Node"
-                  placeholder="pve"
+                  placeholder={details?.proxmox?.node ?? 'pve'}
                   required
                 />
                 <StoreFormInputField
                   state={rpForm.proxmox.vmid}
                   title="VMID"
-                  placeholder="119"
+                  placeholder={details?.proxmox?.vmid?.toString() ?? '119'}
                   type="number"
-                  min={100}
                 />
               </div>
               <StoreFormInputField
