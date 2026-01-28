@@ -2,7 +2,9 @@ import type { RouteKey } from '@/components/routes/store'
 import { encodeRouteKey } from '@/components/routes/utils'
 import { Card, CardContent } from '@/components/ui/card'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Separator } from '@/components/ui/separator'
 import YAMLEditor from '@/components/YAMLEditor'
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { Route } from '@/lib/api'
@@ -81,7 +83,7 @@ function RouteCardContent({
           showCloseButton={false}
           initialFocus={false}
         >
-          <div className="grid grid-cols-[1fr_500px] gap-2">
+          <div className="grid grid-cols-[1fr_1px_500px] gap-2">
             <ScrollArea className="h-[90vh]">
               <RouteEditForm
                 alias={alias}
@@ -97,9 +99,13 @@ function RouteCardContent({
                 onUpdate={editingRoute.set}
               />
             </ScrollArea>
-            <editingRoute.Render>
-              {value => <YAMLEditor readOnly value={stringifyYAML(value)} />}
-            </editingRoute.Render>
+            <Separator orientation="vertical" />
+            <div className="flex flex-col gap-2">
+              <Label className="pl-2 text-sm">Read-only Preview</Label>
+              <editingRoute.Render>
+                {value => <YAMLEditor readOnly value={stringifyYAML(value)} />}
+              </editingRoute.Render>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
