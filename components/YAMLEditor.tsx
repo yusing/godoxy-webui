@@ -9,7 +9,7 @@ import { CodeMirror } from './ObjectDataList'
 
 export type YAMLEditorProps = {
   schema?: JSONSchema
-  onChange: (value: string) => void
+  onChange?: (value: string) => void
 } & ReactCodeMirrorProps
 
 export default function YAMLEditor({

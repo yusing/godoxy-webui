@@ -6,6 +6,7 @@ import { StoreFormSelectField } from '@/components/store/Select'
 import { StoreFormTextAreaField } from '@/components/store/TextArea'
 import { Button, type buttonVariants } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
   Field,
   FieldDescription,
@@ -38,6 +39,7 @@ import * as utils from './utils'
 type RouteEditFormProps = {
   route: Routes.Route
   alias: string
+  dialog?: boolean
   onCancel: (form: FormStore<Routes.Route>) => void
   onUpdate?: (route: Routes.Route) => void
   onSave: (route: Routes.Route) => void
@@ -67,6 +69,7 @@ function isHTTP(scheme: string | undefined) {
 export default function RouteEditForm({
   route,
   alias,
+  dialog = false,
   onCancel,
   onUpdate,
   onSave,
@@ -106,24 +109,15 @@ export default function RouteEditForm({
       return unsubscribe
     }
     return undefined
-  })
+  }, [onUpdate, form])
 
-  // const scheme = form.watch('scheme')
-  // const isStream = scheme === 'tcp' || scheme === 'udp'
   const SaveButtonIcon = saveButtonIcon
   const CancelButtonIcon = cancelButtonIcon
-
-  return (
-    <form
-      onSubmit={form.handleSubmit(values => {
-        onSave(values)
-        form.reset()
-      })}
-      className="space-y-4"
-    >
-      {/* Header with save/cancel buttons */}
-      <div className="flex items-center justify-between gap-4 px-0.5">
-        <h3 className="text-lg font-semibold">{headerText}</h3>
+  /* Header with save/cancel buttons */
+  const header = dialog ? (
+    <DialogHeader>
+      <DialogTitle className="flex items-center justify-between gap-4">
+        <span>{headerText}</span>
         <div className="flex gap-2">
           <Button type="submit" size="sm">
             <SaveButtonIcon className="size-4" />
@@ -140,7 +134,42 @@ export default function RouteEditForm({
             {cancelButtonText}
           </Button>
         </div>
+      </DialogTitle>
+    </DialogHeader>
+  ) : (
+    <div className="flex items-center justify-between gap-4 px-0.5">
+      <h3 className="text-lg font-semibold">{headerText}</h3>
+      <div className="flex gap-2">
+        <Button type="submit" size="sm">
+          <SaveButtonIcon className="size-4" />
+          {saveButtonText}
+        </Button>
+        <Button
+          type="button"
+          variant={cancelButtonVariant}
+          size="sm"
+          onClick={() => onCancel(form)}
+          className={cancelButtonClassName}
+        >
+          <CancelButtonIcon className="size-4" />
+          {cancelButtonText}
+        </Button>
       </div>
+    </div>
+  )
+
+  // const scheme = form.watch('scheme')
+  // const isStream = scheme === 'tcp' || scheme === 'udp'
+
+  return (
+    <form
+      onSubmit={form.handleSubmit(values => {
+        onSave(values)
+        form.reset()
+      })}
+      className="flex flex-col gap-4"
+    >
+      {header}
 
       <div className="flex gap-4">
         {/* Route Type */}
@@ -377,7 +406,6 @@ function AdvancedOptions({
                   state={rpForm.proxmox.node}
                   title="Node"
                   placeholder={details?.proxmox?.node ?? 'pve'}
-                  required
                 />
                 <StoreFormInputField
                   state={rpForm.proxmox.vmid}
