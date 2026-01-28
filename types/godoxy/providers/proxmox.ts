@@ -47,3 +47,26 @@ export type ProxmoxConfig = {
    */
   no_tls_verify?: boolean
 }
+
+export type ProxmoxRouteConfig = {
+  /**
+   * Node name
+   * @examples ["pve"]
+   */
+  node: string
+  /**
+   * VMID
+   * @examples [119]
+   */
+  vmid?: number
+  /**
+   * Service names
+   * @examples ["nginx"]
+   */
+  services?: string[]
+  /**
+   * Log files
+   * @examples ["/var/log/nginx/access.log"]
+   */
+  files?: string[]
+}

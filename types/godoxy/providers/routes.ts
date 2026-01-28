@@ -1,3 +1,4 @@
+import type { IdlewatcherConfig } from '@/lib/api'
 import type { RequestLogConfig } from '../config/access_log'
 import type { RuleDo, RuleOn } from '../config/rules'
 import type { MiddlewaresMap } from '../middlewares/middlewares'
@@ -5,6 +6,7 @@ import type { Duration, Hostname, IPv4, IPv6, PathPattern, Port, StreamPort } fr
 import type { HealthcheckConfig } from './healthcheck'
 import type { HomepageConfig } from './homepage'
 import type { LoadBalanceConfig } from './loadbalance'
+import type { ProxmoxRouteConfig } from './proxmox'
 export const PROXY_SCHEMES = ['http', 'https', 'h2c'] as const
 export const STREAM_SCHEMES = ['tcp', 'udp'] as const
 
@@ -42,10 +44,7 @@ type WithRuleOptions =
       rule_file?: LocalRuleFile | RulePresetFile
     }
 
-export type Route = (ReverseProxyRoute | FileServerRoute | StreamRoute) & {
-  /** Route agent */
-  agent?: string
-} & WithRuleOptions
+export type Route = (ReverseProxyRoute | FileServerRoute | StreamRoute) & WithRuleOptions
 
 export type Routes = {
   [key: string]: Route
@@ -83,6 +82,10 @@ export type ReverseProxyRoute = {
   homepage?: HomepageConfig
   /** Access log config */
   access_log?: RequestLogConfig
+  /** Proxmox config */
+  proxmox?: ProxmoxRouteConfig
+  /** Idlewatcher config */
+  idlewatcher?: Omit<IdlewatcherConfig, 'docker' | 'proxmox'>
 } & HTTPConfig
 
 export type HTTPConfig = {
@@ -169,4 +172,8 @@ export type StreamRoute = {
   agent?: string
   /** Healthcheck config */
   healthcheck?: HealthcheckConfig
+  /** Proxmox config */
+  proxmox?: ProxmoxRouteConfig
+  /** Idlewatcher config */
+  idlewatcher?: Omit<IdlewatcherConfig, 'docker' | 'proxmox'>
 }
