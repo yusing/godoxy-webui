@@ -52,6 +52,7 @@ function NamedListInputItem<IndexType extends string, T extends Record<IndexType
       <MapInput<T>
         label={name}
         readonly={readonly}
+        card={false}
         placeholder={placeholder}
         level={level + 1}
         keyField={keyField}
