@@ -13,6 +13,7 @@ import {
   FieldSeparator,
   FieldSet,
 } from '@/components/ui/field'
+import { StoreFormTextAreaField } from '@/juststore-shadcn/src/components/store/TextArea'
 import { api } from '@/lib/api-client'
 import {
   MiddlewareComposeSchema,
@@ -20,6 +21,7 @@ import {
   type Middlewares,
   type Routes,
 } from '@/types/godoxy'
+import { STOP_METHODS, STOP_SIGNALS } from '@/types/godoxy/providers/idlewatcher'
 import { LOAD_BALANCE_MODES, type LoadBalanceMode } from '@/types/godoxy/providers/loadbalance'
 import type { StreamPort } from '@/types/godoxy/types'
 import { IconCheck, IconChevronDown, IconX } from '@tabler/icons-react'
@@ -138,19 +140,21 @@ export default function RouteEditForm({
         </div>
       </div>
 
-      {/* Route Type */}
-      <StoreFormSelectField
-        state={(form.scheme as FormState<string>).withDefault('http')}
-        options={utils.routeSchemes}
-      />
+      <div className="flex gap-4">
+        {/* Route Type */}
+        <StoreFormSelectField
+          state={(form.scheme as FormState<string>).withDefault('http')}
+          options={utils.routeSchemes}
+        />
 
-      {/* Alias */}
-      <StoreFormInputField
-        state={form.alias}
-        title="Alias"
-        required
-        placeholder="app or app.example.com"
-      />
+        {/* Alias */}
+        <StoreFormInputField
+          state={form.alias}
+          title="Alias"
+          required
+          placeholder="app or app.example.com"
+        />
+      </div>
 
       {/* Host and Port */}
       <form.scheme.Show on={scheme => scheme !== 'fileserver'}>
@@ -294,16 +298,18 @@ function AdvancedOptions({ form }: { form: FormStore<Routes.Route> }) {
             <StoreFormCheckboxField state={form.healthcheck.disable} title="Disable" />
             <StoreFormInputField state={form.healthcheck.path} title="Path" placeholder="/" />
             <StoreFormCheckboxField state={form.healthcheck.use_get} title="Use GET" />
-            <StoreFormInputField
-              state={form.healthcheck.interval}
-              title="Interval"
-              placeholder="5s"
-            />
-            <StoreFormInputField
-              state={form.healthcheck.timeout}
-              title="Timeout"
-              placeholder="5s"
-            />
+            <div className="flex gap-2">
+              <StoreFormInputField
+                state={form.healthcheck.interval}
+                title="Interval"
+                placeholder="5s"
+              />
+              <StoreFormInputField
+                state={form.healthcheck.timeout}
+                title="Timeout"
+                placeholder="5s"
+              />
+            </div>
           </FieldGroup>
         </FieldSet>
 
@@ -328,6 +334,109 @@ function AdvancedOptions({ form }: { form: FormStore<Routes.Route> }) {
                 state={rpForm.load_balance.link}
                 title="Route Link"
                 placeholder="route-alias"
+              />
+            </FieldGroup>
+          </FieldSet>
+        </form.scheme.Show>
+
+        {/* Proxmox - for reverse proxy and stream */}
+        <form.scheme.Show on={scheme => isHTTP(scheme) || isStream(scheme)}>
+          <FieldSeparator />
+          <FieldSet>
+            <FieldLegend variant="label">Proxmox</FieldLegend>
+            <FieldDescription>
+              Stream logs from Proxmox nodes, idlewatcher integration
+            </FieldDescription>
+            <FieldGroup className="gap-4">
+              <div className="flex gap-2">
+                <StoreFormInputField
+                  state={rpForm.proxmox.node}
+                  title="Node"
+                  placeholder="pve"
+                  required
+                />
+                <StoreFormInputField
+                  state={rpForm.proxmox.vmid}
+                  title="VMID"
+                  placeholder="119"
+                  type="number"
+                  min={100}
+                />
+              </div>
+              <StoreFormInputField
+                state={rpForm.proxmox.services.derived({
+                  from: v => v?.join(',') ?? '',
+                  to: v => v.split(','),
+                })}
+                title="Services"
+                placeholder="nginx"
+                description="Service names (comma-separated)"
+              />
+              <StoreFormTextAreaField
+                state={rpForm.proxmox.files.derived({
+                  from: v => v?.join('\n') ?? '',
+                  to: v => v.split('\n'),
+                })}
+                title="Log Files"
+                placeholder="/var/log/nginx/access.log"
+                description="Log file paths (newline-separated)"
+              />
+            </FieldGroup>
+          </FieldSet>
+        </form.scheme.Show>
+
+        {/* Idlewatcher - for reverse proxy and stream */}
+        <form.scheme.Show on={scheme => isHTTP(scheme) || isStream(scheme)}>
+          <FieldSeparator />
+          <FieldSet>
+            <FieldLegend variant="label">Idlewatcher</FieldLegend>
+            <FieldDescription>Automatically stop and start resources when idle</FieldDescription>
+            <FieldGroup className="gap-4">
+              <div className="flex gap-2">
+                <StoreFormInputField
+                  state={rpForm.idlewatcher.idle_timeout}
+                  title="Idle Timeout"
+                  placeholder="5m"
+                  description="Duration of inactivity before stopping"
+                />
+                <StoreFormInputField
+                  state={rpForm.idlewatcher.wake_timeout}
+                  title="Wake Timeout"
+                  placeholder="30s"
+                  description="Time to wait for start"
+                />
+              </div>
+              <div className="flex gap-2">
+                <StoreFormInputField
+                  state={rpForm.idlewatcher.stop_timeout}
+                  title="Stop Timeout"
+                  placeholder="30s"
+                  description="Time to wait for stop"
+                />
+                <StoreFormSelectField
+                  state={rpForm.idlewatcher.stop_method}
+                  title="Stop Method"
+                  defaultValue="stop"
+                  options={STOP_METHODS.map(method => ({
+                    value: method,
+                    label: method.charAt(0).toUpperCase() + method.slice(1),
+                  }))}
+                />
+                <StoreFormSelectField
+                  state={rpForm.idlewatcher.stop_signal}
+                  title="Stop Signal"
+                  defaultValue=""
+                  options={STOP_SIGNALS.filter(signal => signal.startsWith('SIG')).map(signal => ({
+                    value: signal,
+                    label: signal || 'default',
+                  }))}
+                />
+              </div>
+              <StoreFormInputField
+                state={rpForm.idlewatcher.start_endpoint}
+                title="Start Endpoint"
+                placeholder="/wake"
+                description="Path to wake the resource"
               />
             </FieldGroup>
           </FieldSet>
