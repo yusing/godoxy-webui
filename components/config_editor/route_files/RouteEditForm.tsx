@@ -2,6 +2,7 @@ import { NamedListInput } from '@/components/form/NamedListInput'
 import { StoreFormCheckboxField } from '@/components/store/Checkbox'
 import { StoreFormInputField } from '@/components/store/Input'
 import { StoreFormSelectField } from '@/components/store/Select'
+import { StoreFormTextAreaField } from '@/components/store/TextArea'
 import { Button, type buttonVariants } from '@/components/ui/button'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
@@ -13,7 +14,6 @@ import {
   FieldSeparator,
   FieldSet,
 } from '@/components/ui/field'
-import { StoreFormTextAreaField } from '@/juststore-shadcn/src/components/store/TextArea'
 import { api } from '@/lib/api-client'
 import {
   MiddlewareComposeSchema,
