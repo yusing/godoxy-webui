@@ -417,19 +417,13 @@ function AdvancedOptions({ form }: { form: FormStore<Routes.Route> }) {
                   state={rpForm.idlewatcher.stop_method}
                   title="Stop Method"
                   defaultValue="stop"
-                  options={STOP_METHODS.map(method => ({
-                    value: method,
-                    label: method.charAt(0).toUpperCase() + method.slice(1),
-                  }))}
+                  options={STOP_METHODS}
                 />
                 <StoreFormSelectField
                   state={rpForm.idlewatcher.stop_signal}
                   title="Stop Signal"
-                  defaultValue=""
-                  options={STOP_SIGNALS.filter(signal => signal.startsWith('SIG')).map(signal => ({
-                    value: signal,
-                    label: signal || 'default',
-                  }))}
+                  defaultValue="SIGTERM"
+                  options={STOP_SIGNALS.filter(signal => signal.startsWith('SIG'))}
                 />
               </div>
               <StoreFormInputField
