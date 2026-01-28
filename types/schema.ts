@@ -16,6 +16,7 @@ export {
 }
 
 type PropertyType = 'string' | 'number' | 'boolean' | 'object' | 'array' | (string & {})
+type PrimitiveType = string | number | boolean
 
 type JSONSchema = {
   title?: string
@@ -23,8 +24,8 @@ type JSONSchema = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   examples?: any[]
   type?: PropertyType | PropertyType[]
-  const?: string
-  enum?: string[]
+  const?: PrimitiveType
+  enum?: PrimitiveType[]
   properties?: PropertySchema
   items?: JSONSchema
   additionalProperties?: boolean | JSONSchema
@@ -42,7 +43,7 @@ type JSONSchema = {
   dependentSchemas?: { [property: string]: JSONSchema }
   pattern?: string
   format?: string
-  default?: string | number | boolean | null | object | []
+  default?: PrimitiveType | null | object | []
   minimum?: number
   maximum?: number
   exclusiveMinimum?: boolean | number
@@ -138,13 +139,13 @@ function getPropertySchema(
   return {}
 }
 
-function distinct(list: string[]): string[] {
+function distinct<T extends PrimitiveType>(list: T[]): T[] {
   if (list.length < 2) return list
   return Array.from(new Set(list))
 }
 
-function getAllowedValuesFromProperty(schema: JSONSchema): string[] {
-  const items: string[] = []
+function getAllowedValuesFromProperty(schema: JSONSchema): PrimitiveType[] {
+  const items: PrimitiveType[] = []
   if (schema.const) {
     items.push(schema.const)
   }
@@ -159,7 +160,10 @@ function getAllowedValuesFromProperty(schema: JSONSchema): string[] {
   return distinct(items)
 }
 
-function getAllowedValues(schema: JSONSchema | undefined, keyField: string): string[] | undefined {
+function getAllowedValues(
+  schema: JSONSchema | undefined,
+  keyField: string
+): PrimitiveType[] | undefined {
   if (!schema) return undefined
   if (schema.items?.enum) {
     return schema.items.enum
@@ -172,7 +176,7 @@ function getAllowedValues(schema: JSONSchema | undefined, keyField: string): str
           acc.push(...getAllowedValuesFromProperty(field))
         }
         return acc
-      }, [] as string[])
+      }, [] as PrimitiveType[])
     )
     if (items.length === 0) {
       return undefined
@@ -181,7 +185,7 @@ function getAllowedValues(schema: JSONSchema | undefined, keyField: string): str
   }
   if (schema.properties?.[keyField]) {
     const field = schema.properties[keyField]
-    const items: string[] = []
+    const items: PrimitiveType[] = []
     items.push(...getAllowedValuesFromProperty(field))
     if (items.length === 0) {
       return undefined

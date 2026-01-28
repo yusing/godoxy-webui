@@ -263,7 +263,7 @@ function AdvancedOptions({ form }: { form: FormStore<Routes.Route> }) {
             <FieldLegend variant="label">HTTP Config</FieldLegend>
             <FieldDescription>Configure HTTP-specific settings</FieldDescription>
             <FieldGroup className="gap-4">
-              <AgentSelect state={form.agent} />
+              <AgentSelect state={rpForm.agent} />
 
               {/* No TLS Verify - for HTTPS proxy */}
               <form.scheme.Show on={scheme => scheme === 'https'}>

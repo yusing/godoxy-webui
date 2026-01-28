@@ -105,7 +105,7 @@ function FieldInput<T>({
             </SelectTrigger>
             <SelectContent>
               {allowedValues.map(item => (
-                <SelectItem value={item} key={item}>
+                <SelectItem value={stringify(item)} key={stringify(item)}>
                   {item}
                 </SelectItem>
               ))}

@@ -120,7 +120,7 @@ export function StoreFieldInput<T extends FieldValues>({
                 </SelectTrigger>
                 <SelectContent>
                   {allowedValues.map(item => (
-                    <SelectItem value={item} key={item}>
+                    <SelectItem value={stringify(item)} key={stringify(item)}>
                       {item}
                     </SelectItem>
                   ))}
