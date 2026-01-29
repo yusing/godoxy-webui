@@ -937,61 +937,11 @@ export interface RouteApiRawRule {
   on: string
 }
 
-export type RouteApiRoutesByProvider = Record<string, RouteRoute[]>
+export type RouteApiRoutesByProvider = Record<string, Route[]>
 
 export interface RouteProvider {
   full_name: string
   short_name: string
-}
-
-export interface RouteRoute {
-  access_log?: RequestLoggerConfig | null
-  agent: string
-  alias: string
-  /** for TCP and UDP routes, bind address to listen on */
-  bind?: string | null
-  /** Docker only */
-  container?: Container | null
-  disable_compression: boolean
-  excluded?: boolean | null
-  excluded_reason?: string | null
-  /** for swagger */
-  health: HealthJSON
-  /** null on load-balancer routes */
-  healthcheck?: HealthCheckConfig | null
-  homepage: HomepageItemConfig
-  host: string
-  idlewatcher?: IdlewatcherConfig | null
-  /** Index file to serve for single-page app mode */
-  index: string
-  load_balance?: LoadBalancerConfig | null
-  /** private fields */
-  lurl?: string | null
-  middlewares?: Record<string, TypesLabelMap>
-  no_tls_verify: boolean
-  path_patterns?: string[] | null
-  port: Port
-  /** for backward compatibility */
-  provider?: string | null
-  proxmox?: ProxmoxNodeConfig | null
-  purl: string
-  response_header_timeout: number
-  root: string
-  rule_file?: string | null
-  rules?: RulesRule[] | null
-  scheme: 'http' | 'https' | 'h2c' | 'tcp' | 'udp' | 'fileserver'
-  /** Single-page app mode: serves index for non-existent paths */
-  spa: boolean
-  /** Path to client certificate */
-  ssl_certificate: string
-  /** Path to client certificate key */
-  ssl_certificate_key: string
-  /** Allowed TLS protocols */
-  ssl_protocols: string[]
-  /** SSL/TLS proxy options (nginx-like) */
-  ssl_server_name: string
-  /** Path to trusted CA certificates */
-  ssl_trusted_certificate: string
 }
 
 export interface RouteStats {
@@ -2371,6 +2321,48 @@ export namespace Route {
   }
 
   /**
+   * @description Validate route,
+   * @tags route, websocket
+   * @name Validate
+   * @summary Validate route
+   * @request GET:/route/validate
+   * @response `200` `SuccessResponse` Route validated
+   * @response `400` `ErrorResponse` Bad request
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `417` `any` Validation failed
+   * @response `500` `ErrorResponse` Internal server error
+   */
+  export namespace Validate {
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = Route
+    export type RequestHeaders = {}
+    export type ResponseBody = SuccessResponse
+  }
+
+  /**
+   * @description Validate route,
+   * @tags route, websocket
+   * @name Validate2
+   * @summary Validate route
+   * @request POST:/route/validate
+   * @originalName validate
+   * @duplicate
+   * @response `200` `SuccessResponse` Route validated
+   * @response `400` `ErrorResponse` Bad request
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `417` `any` Validation failed
+   * @response `500` `ErrorResponse` Internal server error
+   */
+  export namespace Validate2 {
+    export type RequestParams = {}
+    export type RequestQuery = {}
+    export type RequestBody = Route
+    export type RequestHeaders = {}
+    export type ResponseBody = SuccessResponse
+  }
+
+  /**
    * @description List route
    * @tags route
    * @name Route
@@ -3126,7 +3118,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         method: 'POST',
         query: query,
         body: file,
-        type: ContentType.Text,
         format: 'json',
         ...params,
       }),
@@ -3977,6 +3968,52 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/route/providers`,
         method: 'GET',
         type: ContentType.Json,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Validate route,
+     *
+     * @tags route, websocket
+     * @name Validate
+     * @summary Validate route
+     * @request GET:/route/validate
+     * @response `200` `SuccessResponse` Route validated
+     * @response `400` `ErrorResponse` Bad request
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `417` `any` Validation failed
+     * @response `500` `ErrorResponse` Internal server error
+     */
+    validate: (route: Route, params: RequestParams = {}) =>
+      this.request<SuccessResponse, ErrorResponse>({
+        path: `/route/validate`,
+        method: 'GET',
+        body: route,
+        format: 'json',
+        ...params,
+      }),
+
+    /**
+     * @description Validate route,
+     *
+     * @tags route, websocket
+     * @name Validate2
+     * @summary Validate route
+     * @request POST:/route/validate
+     * @originalName validate
+     * @duplicate
+     * @response `200` `SuccessResponse` Route validated
+     * @response `400` `ErrorResponse` Bad request
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `417` `any` Validation failed
+     * @response `500` `ErrorResponse` Internal server error
+     */
+    validate2: (route: Route, params: RequestParams = {}) =>
+      this.request<SuccessResponse, ErrorResponse>({
+        path: `/route/validate`,
+        method: 'POST',
+        body: route,
         format: 'json',
         ...params,
       }),

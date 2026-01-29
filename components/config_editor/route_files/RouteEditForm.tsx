@@ -417,7 +417,7 @@ function AdvancedOptions({
               <StoreFormInputField
                 state={rpForm.proxmox.services.derived({
                   from: v => v?.join(',') ?? '',
-                  to: v => v.split(','),
+                  to: v => (v ? v.split(',') : []),
                 })}
                 title="Services"
                 placeholder="nginx"
@@ -426,7 +426,7 @@ function AdvancedOptions({
               <StoreFormTextAreaField
                 state={rpForm.proxmox.files.derived({
                   from: v => v?.join('\n') ?? '',
-                  to: v => v.split('\n'),
+                  to: v => (v ? v.split('\n') : []),
                 })}
                 title="Log Files"
                 placeholder="/var/log/nginx/access.log"
