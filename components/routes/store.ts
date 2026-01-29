@@ -1,7 +1,7 @@
 'use client'
 
 import { useFragment } from '@/hooks/fragment'
-import type { ProxmoxNodeStats, RouteRoute, RouteUptimeAggregate } from '@/lib/api'
+import type { ProxmoxNodeStats, Route, RouteUptimeAggregate } from '@/lib/api'
 import { createStore } from 'juststore'
 
 export type RouteDisplaySettings = {
@@ -29,7 +29,7 @@ export type DockerStatsSummary = {
 type RouteState = {
   routeKeys: RouteKey[]
   uptime: Record<RouteKey, RouteUptimeAggregate>
-  routeDetails: Record<RouteKey, RouteRoute>
+  routeDetails: Record<RouteKey, Route>
   dockerStats: Record<RouteKey, DockerStatsSummary | null>
   proxmoxStats: Record<RouteKey, string | null>
   proxmoxNodeStats: Record<RouteKey, ProxmoxNodeStats | null>
