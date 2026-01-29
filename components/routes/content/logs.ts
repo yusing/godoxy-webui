@@ -1,4 +1,10 @@
-export { extractLeadingTimestamp, parseJournalctlTimestamp, resolveThemeColors, resolveThemeColorsAsync, stripTimestampPrefix };
+export {
+  extractDockerTimestamp,
+  extractLeadingTimestamp,
+  parseJournalctlTimestamp,
+  resolveThemeColors,
+  resolveThemeColorsAsync,
+}
 
 function resolveThemeColors(): { background: string; foreground: string } {
   const root = document.documentElement
@@ -36,7 +42,7 @@ const monthNames = 'Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' ')
 
 const journalctlRegex = /^([A-Z][a-z]{2})\s+(\d{1,2})\s+(\d{2}):(\d{2}):(\d{2})/
 
-function parseJournalctlTimestamp(line: string): Date | null {
+function parseJournalctlTimestamp(line: string) {
   const match = line.match(journalctlRegex)
   if (!match) return null
 
@@ -62,19 +68,25 @@ function parseJournalctlTimestamp(line: string): Date | null {
     date.setFullYear(year - 1)
   }
 
-  return date
+  return { date, match: match[0]! }
+}
+
+function extractDockerTimestamp(
+  line: string
+): { timestamp: string; date: Date; content: string } | null {
+  const separatorIndex = line.indexOf(' ')
+  if (separatorIndex <= 0) return null
+
+  const timestamp = line.slice(0, separatorIndex)
+  const date = new Date(timestamp)
+  if (!Number.isFinite(date.getTime())) return null
+
+  const content = line.slice(separatorIndex + 1).trimStart()
+  return { timestamp, date, content }
 }
 
 function extractLeadingTimestamp(line: string): string | null {
   const match = line.match(timestampPrefix)
   if (!match) return null
   return match[0]
-}
-
-function stripTimestampPrefix(line: string) {
-  if (line.startsWith('{')) {
-    // json
-    return line
-  }
-  return line.replace(timestampPrefix, '')
 }

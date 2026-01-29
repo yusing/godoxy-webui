@@ -33,10 +33,10 @@ import '@fontsource/cascadia-code/700.css'
 import { Query } from '@/lib/query'
 import '../style.css'
 import {
+  extractDockerTimestamp,
   extractLeadingTimestamp,
   parseJournalctlTimestamp,
   resolveThemeColorsAsync,
-  stripTimestampPrefix,
 } from './logs'
 
 import { createAtom, type Atom } from 'juststore'
@@ -47,8 +47,6 @@ export default function Logs({ routeKey }: { routeKey: RouteKey }) {
   const fitAddonRef = useRef<FitAddon | null>(null)
   const setScrollDirectionRef = useRef<((next: 'up' | 'down') => void) | null>(null)
   const maximizedAtom = createAtom(useId(), false)
-
-  const isProxmox = store.routeDetails[routeKey]!.proxmox.useCompute(proxmox => Boolean(proxmox))
 
   useLayoutEffect(() => {
     const container = logsRef.current
@@ -173,7 +171,7 @@ export default function Logs({ routeKey }: { routeKey: RouteKey }) {
   return (
     <>
       <Suspense>
-        <LogProvider key={routeKey} routeKey={routeKey} termRef={termRef} isProxmox={isProxmox} />
+        <LogProvider key={routeKey} routeKey={routeKey} termRef={termRef} />
       </Suspense>
       <LogsInner
         key={routeKey}
@@ -340,11 +338,9 @@ function LogThemeUpdater({ termRef }: { termRef: React.RefObject<Terminal | null
 function LogProvider({
   routeKey,
   termRef,
-  isProxmox,
 }: {
   routeKey: RouteKey
   termRef: React.RefObject<Terminal | null>
-  isProxmox: boolean
 }) {
   const proxmox = store.routeDetails[routeKey]?.proxmox.use()
   const containerId = store.routeDetails[routeKey]?.container.useCompute(
@@ -401,15 +397,15 @@ function LogProvider({
     const batch = pendingLinesRef.current
     pendingLinesRef.current = []
 
-    const parseTimestamp = !isProxmox
+    const isDocker = Boolean(containerId)
     for (const line of batch) {
-      term.writeln(formatLineForTerminal(line, parseTimestamp, isProxmox))
+      term.writeln(formatLineForTerminal(line, isDocker ? 'docker' : 'proxmox'))
     }
 
     if (store.logsAutoScroll.value) {
       term.scrollToBottom()
     }
-  }, [termRef, isProxmox])
+  }, [termRef, containerId])
 
   const scheduleFlush = useCallback(() => {
     // Aggregate multiple websocket messages into a single terminal write.
@@ -460,7 +456,9 @@ function LogProvider({
     if (!endpoint) {
       const term = termRef.current
       if (term) {
-        term.writeln(formatLineForTerminal(`${new Date().toISOString()} No logs available`, true))
+        term.writeln(
+          formatLineForTerminal(`${new Date().toISOString()} No logs available`, 'docker')
+        )
       }
     }
   }, [endpoint, termRef])
@@ -485,25 +483,31 @@ function LogProvider({
   return null
 }
 
-function formatLineForTerminal(line: string, parseTimestamp: boolean, isProxmox: boolean = false) {
-  const ts = parseTimestamp ? extractLeadingTimestamp(line) : null
-  const timestamp = ts ?? ''
-  const date = ts ? new Date(ts) : null
-  const hasDate = date != null
+function formatLineForTerminal(line: string, type: 'docker' | 'proxmox') {
+  const dockerTimestamp = type === 'docker' ? extractDockerTimestamp(line) : null
+  const ts = dockerTimestamp
+    ? dockerTimestamp.timestamp
+    : type !== 'docker'
+      ? extractLeadingTimestamp(line)
+      : null
+  const date = dockerTimestamp ? dockerTimestamp.date : ts ? new Date(ts) : null
+  const hasDate = date != null && Number.isFinite(date.getTime())
 
-  const content = hasDate ? stripTimestampPrefix(line.slice(timestamp.length).trimStart()) : line
+  const content = ts ? line.slice(ts.length).trimStart() : line
 
   // For Proxmox journalctl logs, try to parse the journalctl format (e.g., "Jan 25 14:55:23")
-  if (!hasDate && isProxmox) {
-    const journalDate = parseJournalctlTimestamp(line)
-    if (journalDate) {
-      const body = formatLogContent(stripTimestampPrefix(line), { hasExternalTimestamp: true })
-      return `${formatLocalDateTimeColored(journalDate)} ${body}`
+  if (!hasDate && type === 'proxmox') {
+    const ts = parseJournalctlTimestamp(line)
+    if (ts && ts.match) {
+      const body = formatLogContent(line.slice(ts.match.length).trimStart(), {
+        hasExternalTimestamp: true,
+      })
+      return `${formatLocalDateTimeColored(ts.date)} ${body}`
     }
   }
 
   if (!hasDate) {
-    return formatLogContent(content, { hasExternalTimestamp: !isProxmox })
+    return formatLogContent(content, { hasExternalTimestamp: type !== 'proxmox' })
   }
 
   // Prepend a static timestamp. Use ANSI dim for readability without changing log colors.
