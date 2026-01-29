@@ -30,7 +30,7 @@ export type WebSocketApiOptions<TMessage, TSubscription = unknown> = {
   onClose?: (event: CloseEvent) => void
   /** Optional callback for connection error */
   onError?: (error: string) => void
-  /** Number of reconnection attempts (default: 3) */
+  /** Number of reconnection attempts (default: infinite) */
   reconnectAttempts?: number
   /** Function to calculate reconnection interval (default: exponential backoff) */
   reconnectInterval?: (attemptNumber: number) => number
@@ -52,8 +52,8 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
   onOpen,
   onClose,
   onError,
-  reconnectAttempts = 10,
-  reconnectInterval = (numAttempts: number) => Math.min(1000 * Math.pow(2, numAttempts), 5000), // exponential backoff, max 5s
+  reconnectAttempts = Infinity,
+  reconnectInterval = (numAttempts: number) => Math.min(500 * Math.pow(2, numAttempts - 1), 3000), // exponential backoff, max 3s
 }: WebSocketApiOptions<TMessage, TSubscription>) {
   const dataSent = useRef(false)
   const lastHeartbeat = useRef(Date.now())
@@ -118,12 +118,9 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
   )
 
   // Handle errors
-  const handleEventError = useCallback(
-    (error: Event) => {
-      logger.error('WebSocket error', error)
-    },
-    []
-  )
+  const handleEventError = useCallback((error: Event) => {
+    logger.error('WebSocket error', error)
+  }, [])
 
   // Handle incoming messages
   const handleMessage = useCallback(
