@@ -228,12 +228,19 @@ function LogsInner({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Enter') {
-        maximizedAtom.set(!maximizedAtom.value)
-        if (containerRef.current) {
-          containerRef.current.focus()
-        }
-      }
+      if (e.key !== 'Enter') return
+
+      const container = containerRef.current
+      if (!container) return
+
+      const activeElement = document.activeElement
+      if (!activeElement || !container.contains(activeElement)) return
+
+      e.preventDefault()
+      e.stopPropagation()
+
+      maximizedAtom.set(!maximizedAtom.value)
+      container.focus()
     }
     window.addEventListener('keydown', handleKeyDown, true)
     return () => window.removeEventListener('keydown', handleKeyDown, true)

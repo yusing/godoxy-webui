@@ -19,7 +19,9 @@ import RouteUptimeBar from './UptimeBar'
 
 import { IconFilter } from '@tabler/icons-react'
 import type { FieldPath } from 'juststore'
+import { ArrowDown, ArrowUp } from 'lucide-react'
 import { AppIcon } from '../AppIcon'
+import { Kbd } from '../ui/kbd'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { ScrollArea } from '../ui/scroll-area'
 import { Switch } from '../ui/switch'
@@ -46,12 +48,132 @@ export default function RoutesSidebar({ className }: { className?: string }) {
         </Popover>
       </div>
       <RoutesSidebarSearchBox />
+      <RoutesSidebarKeyboardHints />
       <RoutesSidebarItemList />
       <Suspense>
         <RoutesUptimeProvider sidebarRef={sidebarRef} />
       </Suspense>
       <SelectedRouteResetter />
-      <ScrollIntoSelectedRoute />
+      {/* <ScrollIntoSelectedRoute /> */}
+      <RoutesSidebarArrowNavigation />
+    </div>
+  )
+}
+
+function isVisibleElement(element: HTMLElement | null) {
+  return !!element && (element.offsetParent !== null || element.getClientRects().length > 0)
+}
+
+function getVisibleRouteItems() {
+  // Sidebar is rendered twice for responsiveness, so we need to filter out the invisible elements
+  // See app/routes/page.tsx
+  return Array.from(
+    document.querySelectorAll<HTMLAnchorElement>(
+      '.sidebar-item-list .route-item:not([data-filtered="true"])'
+    )
+  ).filter(isVisibleElement)
+}
+
+function setActiveRouteByIndex(index: number) {
+  const items = getVisibleRouteItems()
+  if (items.length === 0) return
+
+  const prevActive = document.querySelector('.route-item[data-active="true"]')
+  if (prevActive) prevActive.removeAttribute('data-active')
+
+  const clampedIndex = Math.max(0, Math.min(index, items.length - 1))
+  const nextActive = items[clampedIndex]
+  if (nextActive) {
+    nextActive.setAttribute('data-active', 'true')
+    nextActive.scrollIntoView({ block: 'nearest' })
+  }
+}
+
+function handleRouteKeyDown(e: KeyboardEvent) {
+  switch (e.key) {
+    case 'Tab': {
+      e.preventDefault()
+      break
+    }
+    case 'ArrowDown': {
+      e.preventDefault()
+      const items = getVisibleRouteItems()
+      if (items.length === 0) return
+
+      const currentIndex = items.findIndex(item => item.getAttribute('data-active') === 'true')
+      if (currentIndex < 0) {
+        setActiveRouteByIndex(0)
+        break
+      }
+      if (currentIndex >= items.length - 1) return
+
+      setActiveRouteByIndex(currentIndex + 1)
+      break
+    }
+    case 'ArrowUp': {
+      e.preventDefault()
+      const items = getVisibleRouteItems()
+      if (items.length === 0) return
+
+      const currentIndex = items.findIndex(item => item.getAttribute('data-active') === 'true')
+      const prevIndex = Math.max(currentIndex - 1, 0)
+      setActiveRouteByIndex(prevIndex)
+      break
+    }
+    case 'Enter': {
+      e.preventDefault()
+      const active = document.querySelector<HTMLAnchorElement>('.route-item[data-active="true"]')
+      if (!active) return
+
+      const routeId = active.id.replace('route-', '')
+      if (!routeId) return
+
+      setSelectedRoute(routeId as RouteKey)
+      store.mobileDialogOpen.set(true)
+      break
+    }
+    case 'Escape': {
+      e.preventDefault()
+      const active = document.querySelector('.route-item[data-active="true"]')
+      if (active) active.removeAttribute('data-active')
+      break
+    }
+  }
+}
+
+function RoutesSidebarArrowNavigation() {
+  useEffect(() => {
+    document.addEventListener('keydown', handleRouteKeyDown)
+    return () => document.removeEventListener('keydown', handleRouteKeyDown)
+  }, [])
+
+  return null
+}
+
+function RoutesSidebarKeyboardHints() {
+  return (
+    <div className="sidebar-keyboard-hints border-x border-b px-3 py-2 text-xs text-muted-foreground flex flex-wrap items-center gap-3">
+      <div className="flex items-center gap-1">
+        <Kbd>
+          <ArrowUp className="h-3 w-3" />
+        </Kbd>
+        <Kbd>
+          <ArrowDown className="h-3 w-3" />
+        </Kbd>
+        <span>Move</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <Kbd>Enter</Kbd>
+        <span>Select</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <Kbd>Esc</Kbd>
+        <span>Clear</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <Kbd>A-Z</Kbd>
+        <span>Search</span>
+      </div>
     </div>
   )
 }
@@ -124,7 +246,7 @@ function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: Route
         className={cn(
           'route-item text-left p-3 transition-colors border-x border-b',
           'data-[filtered=true]:hidden',
-          'data-[active=true]:bg-accent',
+          'data-[active=true]:bg-accent data-[active=true]:border-2 data-[active=true]:border-primary',
           'hover:bg-muted/50'
         )}
       >
@@ -202,17 +324,17 @@ function SelectedRouteResetter() {
   return null
 }
 
-function ScrollIntoSelectedRoute() {
-  const selectedRoute = useSelectedRoute()
-  useEffect(() => {
-    if (selectedRoute) {
-      const el = document.getElementById(`route-${selectedRoute}`)
-      if (el) {
-        el.scrollIntoView({ behavior: 'smooth' })
-        el.setAttribute('data-active', 'true')
-      }
-    }
-  }, [selectedRoute])
+// function ScrollIntoSelectedRoute() {
+//   const selectedRoute = useSelectedRoute()
+//   useEffect(() => {
+//     if (selectedRoute) {
+//       const el = document.getElementById(`route-${selectedRoute}`)
+//       if (el) {
+//         el.scrollIntoView({ behavior: 'smooth' })
+//         el.setAttribute('data-active', 'true')
+//       }
+//     }
+//   }, [selectedRoute])
 
-  return null
-}
+//   return null
+// }

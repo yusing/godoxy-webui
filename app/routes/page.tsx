@@ -14,7 +14,7 @@ export default function RoutesPage() {
 function RoutesPageDesktop() {
   return (
     <div className="hidden md:flex">
-      <RoutesSidebar className="max-w-[35vw] min-w-[330px]" />
+      <RoutesSidebar className="max-w-[35vw] min-w-[360px]" />
       <RoutePageContent />
     </div>
   )

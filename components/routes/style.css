@@ -1,6 +1,7 @@
 :root {
   --sidebar-header-height: 40px;
   --sidebar-search-box-height: 40px;
+  --sidebar-keyboard-hints-height: 40px;
 }
 
 .sidebar-header {
@@ -11,9 +12,14 @@
   height: var(--sidebar-search-box-height);
 }
 
+.sidebar-keyboard-hints {
+  height: var(--sidebar-keyboard-hints-height);
+}
+
 .sidebar-item-list {
   height: calc(
-    100vh - var(--titlebar-height) - var(--sidebar-search-box-height) - var(--sidebar-header-height)
+    100vh - var(--titlebar-height) - var(--sidebar-search-box-height) -
+      var(--sidebar-header-height) - var(--sidebar-keyboard-hints-height)
   );
 }
 
