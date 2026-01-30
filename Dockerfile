@@ -1,4 +1,4 @@
-FROM oven/bun:1.3.6-alpine AS base
+FROM oven/bun:1.3.8-alpine AS base
 
 HEALTHCHECK NONE
 
@@ -41,7 +41,7 @@ RUN sed -i "s|link: '/'|link: '/../', rel: 'noopener noreferrer', target: '_self
     bun --bun run docs:build
 
 # Production image, copy all the files and run next
-FROM oven/bun:1.3.6-distroless AS release
+FROM oven/bun:1.3.8-distroless AS release
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
