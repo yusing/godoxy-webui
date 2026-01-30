@@ -1,9 +1,10 @@
 'use client'
 import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'motion/react'
-import { Suspense } from 'react'
+import { Suspense, useState } from 'react'
 import LoadingRing from '../LoadingRing'
 import { SidebarTrigger } from '../ui/sidebar'
+import { ConfigHeaderActionsProvider } from './ConfigHeaderActions'
 import { sectionsByFileType } from './sections'
 import { configStore } from './store'
 
@@ -11,6 +12,8 @@ export default function ConfigContent({ className }: { className?: string }) {
   const activeFile = configStore.activeFile.use()
   const activeSection = configStore.activeSection.use()
   const isLoading = configStore.isLoading.use()
+
+  const [headerActionsEl, setHeaderActionsEl] = useState<HTMLDivElement | null>(null)
 
   const section =
     sectionsByFileType[activeFile.type].sections.find(section => section.id === activeSection) ??
@@ -21,31 +24,37 @@ export default function ConfigContent({ className }: { className?: string }) {
 
   return (
     <div className={cn('relative', className)}>
-      <header className="py-2 pr-1 flex items-start sticky top-0 gap-1">
-        <SidebarTrigger className="size-8" />
-        <h1 className="text-xl font-bold">{label}</h1>
+      <header className="py-2 pr-1 flex justify-between sticky top-0 gap-1">
+        <div className="flex items-center gap-1">
+          <SidebarTrigger className="size-8" />
+          <h1 className="text-xl font-bold mr-auto">{label}</h1>
+        </div>
+        <div ref={setHeaderActionsEl} className="flex items-center gap-1" />
       </header>
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={`${activeFile.type}-${activeFile.filename}-${activeSection}`}
-          initial={{ opacity: 0, x: -6 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 6 }}
-          transition={{ duration: 0.25 }}
-        >
-          {isLoading ? (
-            <LoadingContent />
-          ) : Content ? (
-            <Suspense fallback={<LoadingContent />}>
-              <Content />
-            </Suspense>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full">
-              <span className="text-center text-muted-foreground">No content</span>
-            </div>
-          )}
-        </motion.div>
-      </AnimatePresence>
+
+      <ConfigHeaderActionsProvider target={headerActionsEl}>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={`${activeFile.type}-${activeFile.filename}-${activeSection}`}
+            initial={{ opacity: 0, x: -6 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 6 }}
+            transition={{ duration: 0.25 }}
+          >
+            {isLoading ? (
+              <LoadingContent />
+            ) : Content ? (
+              <Suspense fallback={<LoadingContent />}>
+                <Content />
+              </Suspense>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full">
+                <span className="text-center text-muted-foreground">No content</span>
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </ConfigHeaderActionsProvider>
     </div>
   )
 }
