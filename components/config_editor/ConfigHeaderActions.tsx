@@ -1,21 +1,35 @@
 'use client'
 
-import { createContext, useContext, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 
-const HeaderActionsTargetContext = createContext<HTMLElement | null>(null)
+type ConfigHeaderContextValue = {
+  actionsTarget: HTMLElement | null
+  titleTarget: HTMLElement | null
+  setTitleOverride: ((active: boolean) => void) | null
+}
 
-export function ConfigHeaderActionsProvider({
-  target,
+const ConfigHeaderContext = createContext<ConfigHeaderContextValue>({
+  actionsTarget: null,
+  titleTarget: null,
+  setTitleOverride: null,
+})
+
+export function ConfigHeaderProvider({
+  actionsTarget,
+  titleTarget,
+  setTitleOverride,
   children,
 }: {
-  target: HTMLElement | null
+  actionsTarget: HTMLElement | null
+  titleTarget: HTMLElement | null
+  setTitleOverride: (active: boolean) => void
   children: ReactNode
 }) {
   return (
-    <HeaderActionsTargetContext.Provider value={target}>
+    <ConfigHeaderContext.Provider value={{ actionsTarget, titleTarget, setTitleOverride }}>
       {children}
-    </HeaderActionsTargetContext.Provider>
+    </ConfigHeaderContext.Provider>
   )
 }
 
@@ -28,8 +42,25 @@ export function ConfigHeaderActionsProvider({
  *   </ConfigHeaderActions>
  */
 export function ConfigHeaderActions({ children }: { children: ReactNode }) {
-  const target = useContext(HeaderActionsTargetContext)
-  if (!target) return null
-  return createPortal(children, target)
+  const { actionsTarget } = useContext(ConfigHeaderContext)
+  if (!actionsTarget) return null
+  return createPortal(children, actionsTarget)
 }
 
+/**
+ * Renders its children into the ConfigContent header title area (replaces the label).
+ *
+ * Usage (inside any section Content):
+ *   <ConfigHeaderTitle>
+ *     <span>Custom Title</span>
+ *   </ConfigHeaderTitle>
+ */
+export function ConfigHeaderTitle({ children }: { children: ReactNode }) {
+  const { titleTarget, setTitleOverride } = useContext(ConfigHeaderContext)
+  useEffect(() => {
+    setTitleOverride?.(true)
+    return () => setTitleOverride?.(false)
+  }, [setTitleOverride])
+  if (!titleTarget) return null
+  return createPortal(children, titleTarget)
+}

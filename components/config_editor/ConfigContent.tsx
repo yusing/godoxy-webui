@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { Suspense, useState } from 'react'
 import LoadingRing from '../LoadingRing'
 import { SidebarTrigger } from '../ui/sidebar'
-import { ConfigHeaderActionsProvider } from './ConfigHeaderActions'
+import { ConfigHeaderProvider } from './ConfigHeaderActions'
 import { sectionsByFileType } from './sections'
 import { configStore } from './store'
 
@@ -14,6 +14,8 @@ export default function ConfigContent({ className }: { className?: string }) {
   const isLoading = configStore.isLoading.use()
 
   const [headerActionsEl, setHeaderActionsEl] = useState<HTMLDivElement | null>(null)
+  const [headerTitleEl, setHeaderTitleEl] = useState<HTMLHeadingElement | null>(null)
+  const [isTitleOverridden, setIsTitleOverridden] = useState(false)
 
   const section =
     sectionsByFileType[activeFile.type].sections.find(section => section.id === activeSection) ??
@@ -27,12 +29,18 @@ export default function ConfigContent({ className }: { className?: string }) {
       <header className="py-2 pr-1 flex justify-between sticky top-0 gap-1">
         <div className="flex items-center gap-1">
           <SidebarTrigger className="size-8" />
-          <h1 className="text-xl font-bold mr-auto">{label}</h1>
+          <h1 ref={setHeaderTitleEl} className="text-xl font-bold mr-auto">
+            {isTitleOverridden ? null : label}
+          </h1>
         </div>
         <div ref={setHeaderActionsEl} className="flex items-center gap-1" />
       </header>
 
-      <ConfigHeaderActionsProvider target={headerActionsEl}>
+      <ConfigHeaderProvider
+        actionsTarget={headerActionsEl}
+        titleTarget={headerTitleEl}
+        setTitleOverride={setIsTitleOverridden}
+      >
         <AnimatePresence mode="wait">
           <motion.div
             key={`${activeFile.type}-${activeFile.filename}-${activeSection}`}
@@ -54,7 +62,7 @@ export default function ConfigContent({ className }: { className?: string }) {
             )}
           </motion.div>
         </AnimatePresence>
-      </ConfigHeaderActionsProvider>
+      </ConfigHeaderProvider>
     </div>
   )
 }
