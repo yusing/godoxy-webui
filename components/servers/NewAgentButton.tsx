@@ -189,24 +189,27 @@ export function AddAgentDialogButton() {
           <StoreFormRadioField
             state={form.container_runtime}
             title="Runtime"
-            orientation="horizontal"
             options={['docker', 'podman']}
             labelProps={{ className: minWidth }}
           />
           <StoreCheckboxField
             state={states.addToConfig}
             title="Add to Config"
+            descriptionVariant="tooltip"
             description={
-              <>
-                Add agent to <Code>config.yml</Code> under <Code>providers.agents</Code>
-                <br /> This will remove all comments from the config file
-              </>
+              <div className="flex flex-col gap-1 text-nowrap">
+                <span>
+                  Add agent to <Code>config.yml</Code> under <Code>providers.agents</Code>.
+                </span>
+                <span>This will remove all comments from the config file</span>
+              </div>
             }
             labelProps={{ className: minWidth }}
           />
           <StoreCheckboxField
             state={states.explicitOnly}
             title="Explicit Only"
+            descriptionVariant="tooltip"
             description={
               <>
                 Only containers with GoDoxy labels <Code>proxy.*</Code> will be proxied
@@ -218,6 +221,7 @@ export function AddAgentDialogButton() {
             <StoreFormCheckboxField
               state={form.nightly}
               title="Nightly"
+              descriptionVariant="tooltip"
               description="Nightly builds are less stable and may contain bugs"
               labelProps={{ className: minWidth }}
             />

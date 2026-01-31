@@ -70,7 +70,6 @@ export default function AddFilePopoverButton(props: React.ComponentProps<typeof 
           <StoreFormRadioField
             state={form.type}
             title="File Type"
-            orientation="vertical"
             options={Object.values(fileTypeLabels).slice(1)} // exclude GoDoxy config type, config.yml is always created
             labelProps={{ className: 'text-xs' }}
           />

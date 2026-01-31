@@ -59,6 +59,7 @@ export default function SettingsPopover() {
               state={store.ui.iconThemeAware}
               title="Theme-Aware Icons"
               labelPlacement="right"
+              descriptionVariant="tooltip"
               description={
                 <div className="space-y-1">
                   <p>Prefer monochrome light or dark icons based on the current theme.</p>
@@ -86,6 +87,7 @@ export default function SettingsPopover() {
               title="Segment by Categories"
               labelPlacement="right"
               description="Group items into category sections in All/Favorites."
+              descriptionVariant="tooltip"
             />
           </div>
           <store.ui.showKeyboardHints.Render>
