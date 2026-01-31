@@ -51,11 +51,11 @@ function SystemInfoGraphsPage() {
 
   const agentStore = store.agents[agent]!
   const isTCPStreamSupported = agentStore.useCompute(
-    agent => !selectedAgent || agent.supports_tcp_stream, // main server is always supported
+    agent => !selectedAgent || agent?.supports_tcp_stream, // main server is always supported
     [selectedAgent]
   )
   const isUDPStreamSupported = agentStore.useCompute(
-    agent => !selectedAgent || agent.supports_udp_stream, // main server is always supported
+    agent => !selectedAgent || agent?.supports_udp_stream, // main server is always supported
     [selectedAgent]
   )
 
