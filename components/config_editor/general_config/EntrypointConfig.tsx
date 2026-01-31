@@ -1,8 +1,7 @@
 import { NamedListInput } from '@/components/form/NamedListInput'
 import { StoreMapInput } from '@/components/form/StoreMapInput'
 import { Card, CardContent } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
+import { StoreSwitchField } from '@/juststore-shadcn/src/components/store/Switch'
 import { ConfigSchema, MiddlewareComposeSchema } from '@/types/godoxy'
 import type { MiddlewareFileRef } from '@/types/godoxy/middlewares/middlewares'
 import { useMemo } from 'react'
@@ -20,16 +19,12 @@ export default function EntrypointConfigContent() {
 }
 
 function EntrypointProxyProtocolConfig() {
-  const supportProxyProtocol = configStore.configObject.entrypoint.support_proxy_protocol.use()
   return (
     <Card>
       <CardContent className="flex items-center gap-2">
-        <Label>Support proxy protocol</Label>
-        <Switch
-          checked={supportProxyProtocol}
-          onCheckedChange={checked =>
-            configStore.configObject.entrypoint.support_proxy_protocol.set(checked)
-          }
+        <StoreSwitchField
+          state={configStore.configObject.entrypoint.support_proxy_protocol}
+          title="Support proxy protocol"
         />
       </CardContent>
     </Card>
