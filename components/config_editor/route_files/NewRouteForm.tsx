@@ -1,10 +1,12 @@
+import { Dialog } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
 import type { Routes } from '@/types/godoxy'
 import { IconPlus, IconRefresh } from '@tabler/icons-react'
 import { useEffect, useMemo } from 'react'
-import { routesConfigStore } from '../store'
-import RouteEditForm from './RouteEditForm'
+import { configStore, routesConfigStore } from '../store'
+import RouteEditFormDialogContent from './RouteEditFormDialog'
 
-function removeAlias(route: Routes.Route|undefined): Routes.Route {
+function removeAlias(route: Routes.Route | undefined): Routes.Route {
   if (!route) return {}
   return {
     ...route,
@@ -12,12 +14,12 @@ function removeAlias(route: Routes.Route|undefined): Routes.Route {
   }
 }
 
-function removeAliasRecursively(routes: Routes.Routes|undefined): Routes.Routes {
+function removeAliasRecursively(routes: Routes.Routes | undefined): Routes.Routes {
   if (!routes) return {}
   return Object.fromEntries(Object.entries(routes).map(([key, value]) => [key, removeAlias(value)]))
 }
 
-export default function NewRouteForm() {
+export default function NewRouteForm({ isActive }: { isActive: boolean }) {
   const [config, setConfig] = routesConfigStore.configObject.useState()
 
   const routes = useMemo(() => (typeof config === 'object' ? config : {}), [config])
@@ -41,19 +43,27 @@ export default function NewRouteForm() {
   }
 
   return (
-    <div className="rounded-md border border-border p-4">
-      <RouteEditForm
+    <Dialog open={isActive} onOpenChange={open => !open && configStore.activeSection.reset()}>
+      <RouteEditFormDialogContent
         route={{}}
         alias=""
-        onSave={onSave}
-        onCancel={form => form.reset()}
-        headerText="New Route"
+        formatTitle={alias => (
+          <div className="flex items-center gap-2">
+            <Label className="text-muted-foreground">New Route: </Label>
+            <span className="font-semibold">{alias}</span>
+          </div>
+        )}
         saveButtonIcon={IconPlus}
         saveButtonText="Create"
-        cancelButtonIcon={IconRefresh}
-        cancelButtonText="Reset"
-        cancelButtonVariant="outline"
+        onSave={route => {
+          configStore.activeSection.reset()
+          onSave(route)
+        }}
+        secondActionButtonIcon={IconRefresh}
+        secondActionButtonText="Reset"
+        secondActionButtonVariant="outline"
+        onSecondAction={() => {}}
       />
-    </div>
+    </Dialog>
   )
 }

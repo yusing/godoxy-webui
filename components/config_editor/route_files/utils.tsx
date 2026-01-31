@@ -102,6 +102,16 @@ const routeSchemes = [
   },
 ] as const
 
+function isStream(scheme: string | undefined) {
+  if (scheme === undefined) return false // defaults to http
+  return scheme === 'tcp' || scheme === 'udp'
+}
+
+function isHTTP(scheme: string | undefined) {
+  if (scheme === undefined) return true // defaults to http
+  return scheme === 'http' || scheme === 'https' || scheme === 'h2c'
+}
+
 function getProxyPort(port: Port | StreamPort | number | string): string {
   const s = String(port).split(':')
   if (s.length === 2) return s[1]!
@@ -160,5 +170,7 @@ export {
   getProxyAddressOrRoot,
   getProxyPort,
   getRouteType,
+  isHTTP,
+  isStream,
   routeSchemes,
 }

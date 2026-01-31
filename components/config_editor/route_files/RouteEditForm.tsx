@@ -1,107 +1,99 @@
-import { NamedListInput } from '@/components/form/NamedListInput'
+import { FormSection, SectionedForm, type SectionItem } from '@/components/SectionedForm'
 import { encodeRouteKey } from '@/components/routes/utils'
-import { StoreFormCheckboxField } from '@/components/store/Checkbox'
-import { StoreFormInputField } from '@/components/store/Input'
-import { StoreFormSelectField } from '@/components/store/Select'
-import { StoreFormTextAreaField } from '@/components/store/TextArea'
 import { Button, type buttonVariants } from '@/components/ui/button'
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Separator } from '@/components/ui/separator'
+import { cn } from '@/lib/utils'
+import type { Routes } from '@/types/godoxy'
 import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSeparator,
-  FieldSet,
-} from '@/components/ui/field'
-import type { Route as RouteResponse } from '@/lib/api'
-import { api } from '@/lib/api-client'
-import {
-  MiddlewareComposeSchema,
-  type MiddlewareCompose,
-  type Middlewares,
-  type Routes,
-} from '@/types/godoxy'
-import { STOP_METHODS, STOP_SIGNALS } from '@/types/godoxy/providers/idlewatcher'
-import { LOAD_BALANCE_MODES, type LoadBalanceMode } from '@/types/godoxy/providers/loadbalance'
-import type { StreamPort } from '@/types/godoxy/types'
-import { IconCheck, IconChevronDown, IconX } from '@tabler/icons-react'
+  IconCheck,
+  IconFolders,
+  IconHeart,
+  IconLock,
+  IconRoute,
+  IconServer,
+  IconSettings,
+  IconStack2,
+  IconTimeDuration30,
+  IconX,
+} from '@tabler/icons-react'
 import type { VariantProps } from 'class-variance-authority'
-import { useForm, type FormState, type FormStore } from 'juststore'
-import { Activity, useCallback, useEffect, useMemo } from 'react'
-import { useAsync } from 'react-use'
-import { middlewareUseToSnakeCase } from '../middleware_compose/utils'
+import type { FormState } from 'juststore'
+import { useForm, type FormStore } from 'juststore'
+import React, { useEffect, useMemo } from 'react'
 import { configStore } from '../store'
-import * as utils from './utils'
+import { RouteFileServerSection } from './RouteFileServerSection'
+import { RouteGeneralSection } from './RouteGeneralSection'
+import { RouteHTTPConfigSection } from './RouteHTTPConfigSection'
+import { RouteHealthcheckSection } from './RouteHealthcheckSection'
+import { RouteIdlewatcherSection } from './RouteIdlewatcherSection'
+import { RouteMiddlewaresSection } from './RouteMiddlewaresSection'
+import { RouteProxmoxSection } from './RouteProxmoxSection'
+import RouteSSLConfigSection from './RouteSSLConfigSection'
+import { isHTTP, isStream } from './utils'
 
-type RouteEditFormProps = {
+export type RouteEditFormProps = {
+  className?: string
   route: Routes.Route
   alias: string
   dialog?: boolean
-  onCancel: (form: FormStore<Routes.Route>) => void
+  onSecondAction: (form: FormStore<Routes.Route>) => void
   onUpdate?: (route: Routes.Route) => void
   onSave: (route: Routes.Route) => void
-  headerText?: string
+  titlePortal?: (props: { children: React.ReactNode }) => React.ReactNode
+  actionButtonsPortal?: (props: { children: React.ReactNode }) => React.ReactNode
+  formatTitle?: (alias: string) => React.ReactNode
   saveButtonIcon?: React.ForwardRefExoticComponent<
     React.SVGProps<SVGSVGElement> & React.RefAttributes<SVGSVGElement>
   >
   saveButtonText?: string
-  cancelButtonIcon?: React.ForwardRefExoticComponent<
+  secondActionButtonIcon?: React.ForwardRefExoticComponent<
     React.SVGProps<SVGSVGElement> & React.RefAttributes<SVGSVGElement>
   >
-  cancelButtonText?: string
-  cancelButtonVariant?: VariantProps<typeof buttonVariants>['variant']
-  cancelButtonClassName?: string
+  secondActionButtonText?: string
+  secondActionButtonVariant?: VariantProps<typeof buttonVariants>['variant']
+  secondActionButtonClassName?: string
 }
 
-function isStream(scheme: string | undefined) {
-  if (scheme === undefined) return false // defaults to http
-  return scheme === 'tcp' || scheme === 'udp'
-}
-
-function isHTTP(scheme: string | undefined) {
-  if (scheme === undefined) return true // defaults to http
-  return scheme === 'http' || scheme === 'https' || scheme === 'h2c'
-}
+type FormSectionId =
+  | 'general'
+  | 'fileserver'
+  | 'http'
+  | 'ssl'
+  | 'healthcheck'
+  | 'proxmox'
+  | 'idlewatcher'
+  | 'middlewares'
 
 export default function RouteEditForm({
+  className,
   route,
   alias,
   dialog = false,
-  onCancel,
+  onSecondAction,
   onUpdate,
   onSave,
-  headerText = 'Edit Route',
+  titlePortal: TitlePortal,
+  actionButtonsPortal: ActionButtonsPortal,
+  formatTitle = (alias: string) => `Edit Route: ${alias}`,
   saveButtonIcon = IconCheck,
   saveButtonText = 'Done',
-  cancelButtonIcon = IconX,
-  cancelButtonText = 'Cancel',
-  cancelButtonVariant = 'ghost',
-  cancelButtonClassName,
+  secondActionButtonIcon = IconX,
+  secondActionButtonText = 'Cancel',
+  secondActionButtonVariant = 'ghost',
+  secondActionButtonClassName,
 }: RouteEditFormProps) {
   const details = configStore.routeDetails[encodeRouteKey(alias)]?.use()
-  const scheme = route.scheme
+  const scheme = route.scheme ?? details?.scheme
   const host = 'host' in route ? route.host : undefined
   const port = 'port' in route ? route.port : undefined
-  const form = useForm<Routes.Route>(
-    {
-      ...route,
-      alias,
-      scheme,
-      host,
-      port,
-    } as Routes.Route,
-    {
-      alias: {
-        validate: value => {
-          if (!value) return 'Alias is required'
-          return undefined
-        },
-      },
-    }
-  )
+  const form = useForm<Routes.Route>({
+    ...route,
+    alias,
+    scheme,
+    host,
+    port,
+  } as Routes.Route)
 
   useEffect(() => {
     if (onUpdate) {
@@ -111,55 +103,68 @@ export default function RouteEditForm({
     return undefined
   }, [onUpdate, form])
 
+  const formScheme = form.scheme as FormState<string | undefined>
+  const currentScheme = (formScheme.use() ?? details?.scheme) || 'http'
+  const showFileServer = currentScheme === 'fileserver'
+  const showHTTPConfig = isHTTP(currentScheme)
+  const showSSLConfig = currentScheme === 'https'
+  const showProxmox = true
+  const showIdlewatcher = isHTTP(currentScheme) || isStream(currentScheme)
+  const showMiddlewares = isHTTP(currentScheme)
+
+  const sections: SectionItem<FormSectionId>[] = useMemo(
+    () =>
+      [
+        { id: 'general', label: 'General', Icon: IconRoute, show: true },
+        {
+          id: 'fileserver',
+          label: 'File Server',
+          Icon: IconFolders,
+          show: showFileServer,
+        },
+        { id: 'http', label: 'HTTP Config', Icon: IconSettings, show: showHTTPConfig },
+        { id: 'ssl', label: 'SSL Config', Icon: IconLock, show: showSSLConfig },
+        { id: 'healthcheck', label: 'Health Check', Icon: IconHeart, show: true },
+        { id: 'proxmox', label: 'Proxmox', Icon: IconServer, show: showProxmox },
+        {
+          id: 'idlewatcher',
+          label: 'Idlewatcher',
+          Icon: IconTimeDuration30,
+          show: showIdlewatcher,
+        },
+        {
+          id: 'middlewares',
+          label: 'Middlewares',
+          Icon: IconStack2,
+          show: showMiddlewares,
+        },
+      ] as const,
+    [showFileServer, showHTTPConfig, showSSLConfig, showProxmox, showIdlewatcher, showMiddlewares]
+  )
+
   const SaveButtonIcon = saveButtonIcon
-  const CancelButtonIcon = cancelButtonIcon
-  /* Header with save/cancel buttons */
-  const header = dialog ? (
-    <DialogHeader>
-      <DialogTitle className="flex items-center justify-between gap-4">
-        <span>{headerText}</span>
-        <div className="flex gap-2">
-          <Button type="submit" size="sm">
-            <SaveButtonIcon className="size-4" />
-            {saveButtonText}
-          </Button>
-          <Button
-            type="button"
-            variant={cancelButtonVariant}
-            size="sm"
-            onClick={() => onCancel(form)}
-            className={cancelButtonClassName}
-          >
-            <CancelButtonIcon className="size-4" />
-            {cancelButtonText}
-          </Button>
-        </div>
-      </DialogTitle>
-    </DialogHeader>
-  ) : (
-    <div className="flex items-center justify-between gap-4 px-0.5">
-      <h3 className="text-lg font-semibold">{headerText}</h3>
-      <div className="flex gap-2">
-        <Button type="submit" size="sm">
-          <SaveButtonIcon className="size-4" />
-          {saveButtonText}
-        </Button>
-        <Button
-          type="button"
-          variant={cancelButtonVariant}
-          size="sm"
-          onClick={() => onCancel(form)}
-          className={cancelButtonClassName}
-        >
-          <CancelButtonIcon className="size-4" />
-          {cancelButtonText}
-        </Button>
-      </div>
+  const SecondActionButtonIcon = secondActionButtonIcon
+
+  const actionButtons = (
+    <div className="flex gap-2">
+      <Button
+        type="button"
+        variant={secondActionButtonVariant}
+        size="sm"
+        onClick={() => onSecondAction(form)}
+        className={secondActionButtonClassName}
+      >
+        <SecondActionButtonIcon className="size-4" />
+        {secondActionButtonText}
+      </Button>
+      <Button type="submit" size="sm">
+        <SaveButtonIcon className="size-4" />
+        {saveButtonText}
+      </Button>
     </div>
   )
 
-  // const scheme = form.watch('scheme')
-  // const isStream = scheme === 'tcp' || scheme === 'udp'
+  const formSectionCN = ''
 
   return (
     <form
@@ -167,432 +172,115 @@ export default function RouteEditForm({
         onSave(values)
         form.reset()
       })}
-      className="flex flex-col gap-4"
+      className={cn('flex flex-col gap-4 h-full min-h-0', !dialog && '-mx-1')}
     >
-      {header}
+      {dialog && formatTitle && (
+        <>
+          <DialogHeader>
+            <DialogTitle className="flex items-center justify-between gap-4">
+              <form.alias.Render>
+                {alias => <span>{formatTitle(alias ?? '')}</span>}
+              </form.alias.Render>
+              {actionButtons}
+            </DialogTitle>
+          </DialogHeader>
+          <Separator />
+        </>
+      )}
+      {!dialog && formatTitle && TitlePortal && (
+        <form.alias.Render>
+          {alias => <TitlePortal>{formatTitle(alias ?? '')}</TitlePortal>}
+        </form.alias.Render>
+      )}
+      {!dialog && ActionButtonsPortal && <ActionButtonsPortal>{actionButtons}</ActionButtonsPortal>}
 
-      <div className="flex gap-4">
-        {/* Route Type */}
-        <StoreFormSelectField
-          state={(form.scheme as FormState<string>).withDefault('http')}
-          options={utils.routeSchemes}
-        />
-
-        {/* Alias */}
-        <StoreFormInputField
-          state={form.alias}
-          title="Alias"
-          required
-          placeholder="app or app.example.com"
-        />
-      </div>
-
-      {/* Host and Port */}
-      <HostPortFields
-        form={form as FormStore<Routes.ReverseProxyRoute | Routes.StreamRoute>}
-        details={details}
-      />
-
-      {/* Root */}
-      <form.scheme.Show on={scheme => scheme === 'fileserver'}>
-        <FileServerFields form={form as FormStore<Routes.FileServerRoute>} />
-      </form.scheme.Show>
-
-      {/* Advanced Options */}
-      <AdvancedOptions form={form} details={details} />
-    </form>
-  )
-}
-
-function HostPortFields({
-  form,
-  details,
-}: {
-  form: FormStore<Routes.ReverseProxyRoute | Routes.StreamRoute>
-  details?: RouteResponse
-}) {
-  const mode = form.useCompute(form =>
-    isHTTP(form.scheme) || isStream(form.scheme) ? 'visible' : 'hidden'
-  )
-  const stream = form.useCompute(form => isStream(form.scheme))
-
-  return (
-    <Activity mode={mode}>
-      <FieldSet className="grid grid-cols-2 gap-4">
-        <StoreFormInputField
-          state={form.host}
-          title="Host"
-          placeholder={details?.host ?? 'localhost'}
-        />
-
-        {stream && (
-          <StoreFormInputField
-            state={(form as FormStore<Routes.StreamRoute>).bind?.withDefault('0.0.0.0')}
-            title="Bind Host"
-            placeholder={details?.bind ?? '0.0.0.0'}
-            type="ip"
-          />
-        )}
-        {/** Listening Port */}
-        {stream && (
-          <StoreFormInputField
-            state={(form as FormStore<Routes.StreamRoute>).port.derived({
-              from: v => utils.getListeningPort(v ?? 0),
-              to: v => `${v}:${utils.getProxyPort(form.port.value ?? 0)}` as StreamPort,
-            })}
-            title="Listen Port"
-            placeholder={details?.port.listening?.toString() ?? '53'}
-            type="number"
-            min={0} // 0 means random port
-            max={65535}
-          />
-        )}
-        {/** Proxy Port */}
-        <StoreFormInputField
-          state={(form as FormStore<Routes.StreamRoute>).port.derived({
-            from: v => utils.getProxyPort(v ?? 0),
-            to: v => {
-              if (!stream) {
-                return v as StreamPort
-              }
-              return `${utils.getListeningPort(form.port.value ?? 0)}:${v}` as StreamPort
-            },
-          })}
-          title="Proxy Port"
-          placeholder={details?.port.proxy?.toString() ?? '3000'}
-          type="number"
-          min={1} // proxy port cannot be 0
-          max={65535}
-        />
-      </FieldSet>
-    </Activity>
-  )
-}
-
-function FileServerFields({ form }: { form: FormStore<Routes.FileServerRoute> }) {
-  return (
-    <>
-      <StoreFormInputField state={form.root} title="Root" placeholder="/path/to/files" required />
-      <StoreFormCheckboxField
-        state={form.spa}
-        title="SPA"
-        description={
-          <span>
-            Serve Single Page Applications (SPA) mode.
-            <br />
-            <span>
-              Similar to <code>nginx</code> <code>try_files</code> directive.
-            </span>
-          </span>
-        }
-      />
-      <StoreFormInputField state={form.index} title="Index" placeholder="/index.html" />
-    </>
-  )
-}
-
-function AdvancedOptions({
-  form,
-  details,
-}: {
-  form: FormStore<Routes.Route>
-  details?: RouteResponse
-}) {
-  const rpForm = form as unknown as FormStore<Routes.ReverseProxyRoute>
-
-  return (
-    <Collapsible defaultOpen>
-      <CollapsibleTrigger
-        render={
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full justify-start text-muted-foreground"
-          />
-        }
+      <SectionedForm<FormSectionId>
+        sections={sections}
+        defaultSection="general"
+        dialog={dialog}
+        className="pr-2 snap-y snap-mandatory scroll-smooth"
       >
-        <IconChevronDown className="size-4" />
-        <span>Advanced Options</span>
-      </CollapsibleTrigger>
-      <CollapsibleContent className="mt-4 flex flex-col gap-4">
-        <form.scheme.Show on={scheme => isHTTP(scheme) || isStream(scheme)}>
-          <FieldSet>
-            <FieldLegend variant="label">HTTP Config</FieldLegend>
-            <FieldDescription>Configure HTTP-specific settings</FieldDescription>
-            <FieldGroup className="gap-4">
-              <AgentSelect state={rpForm.agent} />
-
-              {/* No TLS Verify - for HTTPS proxy */}
-              <form.scheme.Show on={scheme => scheme === 'https'}>
-                <StoreFormCheckboxField
-                  state={rpForm.no_tls_verify}
-                  title="No TLS Verify"
-                  description="Skip TLS certificate verification"
-                />
-              </form.scheme.Show>
-
-              {/* Response Header Timeout - for HTTP/HTTPS proxy */}
-              <StoreFormInputField
-                state={rpForm.response_header_timeout}
-                title="Response Header Timeout"
-                placeholder="60s"
-                description="Duration format: 30s, 5m, 1h, etc."
-              />
-            </FieldGroup>
-          </FieldSet>
-        </form.scheme.Show>
-
-        {/* Healthcheck - for all route types */}
-        <FieldSeparator />
-        <FieldSet>
-          <FieldLegend variant="label">Healthcheck</FieldLegend>
-          <FieldDescription>Monitor the health of the route</FieldDescription>
-          <FieldGroup className="gap-4">
-            <StoreFormCheckboxField state={form.healthcheck.disable} title="Disable" />
-            <StoreFormInputField state={form.healthcheck.path} title="Path" placeholder="/" />
-            <StoreFormCheckboxField state={form.healthcheck.use_get} title="Use GET" />
-            <div className="flex gap-2">
-              <StoreFormInputField
-                state={form.healthcheck.interval}
-                title="Interval"
-                placeholder="5s"
-              />
-              <StoreFormInputField
-                state={form.healthcheck.timeout}
-                title="Timeout"
-                placeholder="5s"
-              />
-            </div>
-          </FieldGroup>
-        </FieldSet>
-
-        {/* Load Balance - for HTTP/HTTPS proxy */}
-        <form.scheme.Show on={scheme => isHTTP(scheme)}>
-          <FieldSeparator />
-          <FieldSet>
-            <FieldLegend variant="label">Load Balance</FieldLegend>
-            <FieldDescription>Route requests to multiple upstreams</FieldDescription>
-            <FieldGroup className="gap-4">
-              <StoreFormSelectField
-                state={rpForm.load_balance.mode as FormState<LoadBalanceMode>}
-                title="Mode"
-                defaultValue="round_robin"
-                placeholder="Round Robin"
-                options={LOAD_BALANCE_MODES.map(mode => ({
-                  value: mode,
-                  label: mode.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
-                }))}
-              />
-              <StoreFormInputField
-                state={rpForm.load_balance.link}
-                title="Route Link"
-                placeholder="route-alias"
-              />
-            </FieldGroup>
-          </FieldSet>
-        </form.scheme.Show>
-
-        {/* Proxmox - for reverse proxy and stream */}
-        <form.scheme.Show on={scheme => isHTTP(scheme) || isStream(scheme)}>
-          <FieldSeparator />
-          <FieldSet>
-            <FieldLegend variant="label">Proxmox</FieldLegend>
-            <FieldDescription>
-              Stream logs from Proxmox nodes, idlewatcher integration
-            </FieldDescription>
-            <FieldGroup className="gap-4">
-              <div className="flex gap-2">
-                <StoreFormInputField
-                  state={rpForm.proxmox.node}
-                  title="Node"
-                  placeholder={details?.proxmox?.node ?? 'pve'}
-                />
-                <StoreFormInputField
-                  state={rpForm.proxmox.vmid}
-                  title="VMID"
-                  placeholder={details?.proxmox?.vmid?.toString() ?? '119'}
-                  type="number"
-                />
-              </div>
-              <StoreFormInputField
-                state={rpForm.proxmox.services.derived({
-                  from: v => v?.join(',') ?? '',
-                  to: v => (v ? v.split(',') : []),
-                })}
-                title="Services"
-                placeholder="nginx"
-                description="Service names (comma-separated)"
-              />
-              <StoreFormTextAreaField
-                state={rpForm.proxmox.files.derived({
-                  from: v => v?.join('\n') ?? '',
-                  to: v => (v ? v.split('\n') : []),
-                })}
-                title="Log Files"
-                placeholder="/var/log/nginx/access.log"
-                description="Log file paths (newline-separated)"
-              />
-            </FieldGroup>
-          </FieldSet>
-        </form.scheme.Show>
-
-        {/* Idlewatcher - for reverse proxy and stream */}
-        <form.scheme.Show on={scheme => isHTTP(scheme) || isStream(scheme)}>
-          <FieldSeparator />
-          <FieldSet>
-            <FieldLegend variant="label">Idlewatcher</FieldLegend>
-            <FieldDescription>Automatically stop and start resources when idle</FieldDescription>
-            <FieldGroup className="gap-4">
-              <div className="flex gap-2">
-                <StoreFormInputField
-                  state={rpForm.idlewatcher.idle_timeout}
-                  title="Idle Timeout"
-                  placeholder="5m"
-                  description="Duration of inactivity before stopping"
-                />
-                <StoreFormInputField
-                  state={rpForm.idlewatcher.wake_timeout}
-                  title="Wake Timeout"
-                  placeholder="30s"
-                  description="Time to wait for start"
-                />
-              </div>
-              <div className="flex gap-2">
-                <StoreFormInputField
-                  state={rpForm.idlewatcher.stop_timeout}
-                  title="Stop Timeout"
-                  placeholder="30s"
-                  description="Time to wait for stop"
-                />
-                <StoreFormSelectField
-                  state={rpForm.idlewatcher.stop_method}
-                  title="Stop Method"
-                  defaultValue="stop"
-                  options={STOP_METHODS}
-                />
-                <StoreFormSelectField
-                  state={rpForm.idlewatcher.stop_signal}
-                  title="Stop Signal"
-                  defaultValue="SIGTERM"
-                  options={STOP_SIGNALS.filter(signal => signal.startsWith('SIG'))}
-                />
-              </div>
-              <StoreFormInputField
-                state={rpForm.idlewatcher.start_endpoint}
-                title="Start Endpoint"
-                placeholder="/wake"
-                description="Path to wake the resource"
-              />
-            </FieldGroup>
-          </FieldSet>
-        </form.scheme.Show>
-
-        {/* Middleware */}
-        <form.scheme.Show on={scheme => isHTTP(scheme)}>
-          <RouteMiddlewareEditor state={rpForm.middlewares} />
-        </form.scheme.Show>
-      </CollapsibleContent>
-    </Collapsible>
-  )
-}
-
-function RouteMiddlewareEditor({
-  state,
-}: {
-  state: FormState<Middlewares.MiddlewaresMap | undefined>
-}) {
-  const [value, setValue] = state.useState()
-
-  const workingValue: MiddlewareCompose.EntrypointMiddlewares = useMemo(() => {
-    if (!value) return []
-    return Object.entries(value).map(([key, value]) => ({
-      use: middlewareUseToSnakeCase(key),
-      ...value,
-    }))
-  }, [value])
-
-  const onChangeMiddleware = useCallback(
-    (data: MiddlewareCompose.EntrypointMiddlewares) => {
-      setValue(
-        data.reduce((acc, item) => {
-          // @ts-expect-error intended
-          acc[item.use] = item
-          // remove the `use` field from the item (from the conversion above)
-          delete (item as unknown as { use?: string }).use
-          return acc
-        }, {} as Middlewares.MiddlewaresMap)
-      )
-    },
-    [setValue]
-  )
-
-  return (
-    <Field>
-      <FieldLabel>Middlewares</FieldLabel>
-      <NamedListInput
-        label=""
-        card={false}
-        nameField="use"
-        keyField="use"
-        schema={MiddlewareComposeSchema.definitions.MiddlewareComposeItem}
-        value={workingValue}
-        onChange={onChangeMiddleware}
-      />
-    </Field>
-  )
-}
-
-function AgentSelect({ state }: { state: FormState<string | undefined> }) {
-  const {
-    value: agentList,
-    error,
-    loading,
-  } = useAsync(async () => await api.agent.list().then(res => res.data))
-
-  useEffect(() => {
-    if (error) {
-      state.setError(error.message)
-    }
-  }, [error, state])
-
-  return (
-    <div className="flex items-end gap-2">
-      <StoreFormSelectField
-        state={state}
-        placeholder={loading ? 'Loading...' : 'Select Agent'}
-        options={(agentList ?? []).map(agent => ({
-          value: agent.addr,
-          label: (
-            <div className="flex flex-col">
-              <span className="font-medium">
-                {agent.name}@{agent.addr}
-              </span>
-              <div className="flex gap-1">
-                <span className="text-xs text-muted-foreground">
-                  <span className="font-semibold">Version:</span> {agent.version}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  <span className="font-semibold">Runtime:</span> {agent.runtime}
-                </span>
-              </div>
-            </div>
-          ),
-        }))}
-      />
-      <state.Render>
-        {(value, setValue) => (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="shrink-0"
-            onClick={() => setValue(undefined)}
-            disabled={!value}
+        {({ contentRef }) => (
+          <div
+            ref={contentRef}
+            className={cn('min-w-0 min-h-0 overflow-y-auto flex flex-col gap-4', className)}
           >
-            <IconX className="size-4" />
-          </Button>
+            <FormSection
+              id="general"
+              title="General"
+              description="Basic route settings"
+              className={formSectionCN}
+            >
+              <RouteGeneralSection form={form} details={details} />
+            </FormSection>
+
+            <FormSection
+              id="fileserver"
+              title="File Server"
+              description="Serve static files from a directory"
+              className={formSectionCN}
+            >
+              <RouteFileServerSection form={form as FormStore<Routes.FileServerRoute>} />
+            </FormSection>
+
+            <FormSection
+              id="http"
+              title="HTTP Config"
+              description="Configure HTTP-specific settings"
+              className={formSectionCN}
+            >
+              <RouteHTTPConfigSection form={form as FormStore<Routes.ReverseProxyRoute>} />
+            </FormSection>
+
+            <FormSection
+              id="ssl"
+              title="SSL Config"
+              description="Configure SSL-specific settings"
+              className={formSectionCN}
+            >
+              <RouteSSLConfigSection form={form as FormStore<Routes.ReverseProxyRoute>} />
+            </FormSection>
+
+            <FormSection
+              id="healthcheck"
+              title="Healthcheck"
+              description="Monitor the health of the route"
+              className={formSectionCN}
+            >
+              <RouteHealthcheckSection form={form} />
+            </FormSection>
+
+            <FormSection
+              id="proxmox"
+              title="Proxmox"
+              description="Stream logs from Proxmox nodes, idlewatcher integration"
+              className={formSectionCN}
+            >
+              <RouteProxmoxSection
+                form={form as FormStore<Routes.ReverseProxyRoute>}
+                details={details}
+              />
+            </FormSection>
+
+            <FormSection
+              id="idlewatcher"
+              title="Idlewatcher"
+              description="Automatically stop and start resources when idle"
+              className={formSectionCN}
+            >
+              <RouteIdlewatcherSection
+                form={form as FormStore<Routes.ReverseProxyRoute | Routes.StreamRoute>}
+              />
+            </FormSection>
+
+            <FormSection id="middlewares" title="Middlewares" className={formSectionCN}>
+              <RouteMiddlewaresSection
+                state={(form as FormStore<Routes.ReverseProxyRoute>).middlewares}
+              />
+            </FormSection>
+          </div>
         )}
-      </state.Render>
-    </div>
+      </SectionedForm>
+    </form>
   )
 }
