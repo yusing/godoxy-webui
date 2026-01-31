@@ -23,6 +23,8 @@ type SectionedFormProps<T extends SectionId> = {
 // Tracks the active section based on scroll position and manual navigation.
 // Adds light wheel snapping between sections while preserving normal smooth scroll.
 function useSectionTracker<T extends SectionId>(sections: SectionItem<T>[], defaultSection?: T) {
+  'use memo'
+
   const activeSection = createAtom<T | undefined>(useId(), defaultSection ?? sections[0]?.id)
   const contentRef = useRef<HTMLDivElement | null>(null)
   const manualTargetRef = useRef<{ id: T; until: number } | null>(null)
@@ -223,7 +225,9 @@ export function SectionedForm<T extends SectionId>({
   const visibleSections = sections.filter(s => s.show)
   const hiddenSections = sections.filter(s => !s.show)
   const escapeSectionId = (value: string) =>
-    typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(value) : value.replace(/["\\]/g, '\\$&')
+    typeof CSS !== 'undefined' && CSS.escape
+      ? CSS.escape(value)
+      : value.replace(/([^\w-])/g, c => `\\${c.charCodeAt(0).toString(16)} `)
   const hiddenStyle = hiddenSections.length
     ? `${hiddenSections
         .map(section => `[data-section="${escapeSectionId(section.id)}"]`)

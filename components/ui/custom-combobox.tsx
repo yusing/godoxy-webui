@@ -28,17 +28,17 @@ export function CustomCombobox<V, Multiple extends boolean | undefined = false>(
       >
         <div className="flex-1 text-left text-sm">
           <BaseCombobox.Value>
-            {(selected?: V | null) => (
-              <span className="truncate text-muted-foreground">
-                {(selected ? (
-                  <div className="flex items-center gap-2">
-                    {itemToIcon ? itemToIcon(selected) : null} {itemToStringLabel(selected)}
-                  </div>
-                ) : (
-                  placeholder
-                )) ?? 'Select option'}
-              </span>
-            )}
+            {(selected?: V | null) =>
+              selected ? (
+                <span className="flex items-center gap-2 truncate">
+                  {itemToIcon?.(selected)} {itemToStringLabel(selected)}
+                </span>
+              ) : (
+                <span className="truncate text-muted-foreground">
+                  {placeholder ?? 'Select option'}
+                </span>
+              )
+            }
           </BaseCombobox.Value>
         </div>
         <BaseCombobox.Icon className="ml-2 flex items-center text-muted-foreground">

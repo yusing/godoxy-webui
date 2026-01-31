@@ -4,6 +4,7 @@ import { FieldGroup } from '@/components/ui/field'
 import type { Route as RouteResponse } from '@/lib/api'
 import type { Routes } from '@/types/godoxy'
 import type { FormStore } from 'juststore'
+import { commaSeparatedToArray } from './utils'
 
 type RouteProxmoxSectionProps = {
   form: FormStore<Routes.ReverseProxyRoute>
@@ -29,7 +30,7 @@ export function RouteProxmoxSection({ form, details }: RouteProxmoxSectionProps)
       <StoreFormInputField
         state={form.proxmox.services.derived({
           from: v => v?.join(',') ?? '',
-          to: v => (v ? v.split(',') : []),
+          to: commaSeparatedToArray,
         })}
         title="Services"
         placeholder="nginx"

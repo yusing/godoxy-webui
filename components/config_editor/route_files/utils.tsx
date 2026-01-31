@@ -163,7 +163,17 @@ function getIconColorsByScheme(scheme: Routes.Route['scheme']): [string, string]
   }
 }
 
+function commaSeparatedToArray(value: string | undefined): string[] {
+  return value
+    ? value
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean)
+    : []
+}
+
 export {
+  commaSeparatedToArray,
   getIconColorsByScheme,
   getListeningAddress,
   getListeningPort,

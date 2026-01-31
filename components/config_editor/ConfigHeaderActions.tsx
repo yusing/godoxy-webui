@@ -57,10 +57,12 @@ export function ConfigHeaderActions({ children }: { children: ReactNode }) {
  */
 export function ConfigHeaderTitle({ children }: { children: ReactNode }) {
   const { titleTarget, setTitleOverride } = useContext(ConfigHeaderContext)
+  const canRender = !!titleTarget
   useEffect(() => {
+    if (!canRender) return
     setTitleOverride?.(true)
     return () => setTitleOverride?.(false)
-  }, [setTitleOverride])
+  }, [setTitleOverride, canRender])
   if (!titleTarget) return null
   return createPortal(children, titleTarget)
 }

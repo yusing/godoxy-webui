@@ -29,7 +29,7 @@ export function RouteHTTPConfigSection({ form }: RouteHTTPConfigSectionProps) {
         placeholder="Round Robin"
         options={LOAD_BALANCE_MODES.map(mode => ({
           value: mode,
-          label: mode.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          label: mode.replaceAll('_', ' ').replace(/\b\w/g, l => l.toUpperCase()),
         }))}
       />
       <StoreFormInputField

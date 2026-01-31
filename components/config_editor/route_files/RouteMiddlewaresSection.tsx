@@ -1,9 +1,9 @@
 import { NamedListInput } from '@/components/form/NamedListInput'
-import type { FormState } from 'juststore'
-import type { Middlewares, MiddlewareCompose } from '@/types/godoxy'
+import type { MiddlewareCompose, Middlewares } from '@/types/godoxy'
 import { MiddlewareComposeSchema } from '@/types/godoxy'
-import { middlewareUseToSnakeCase } from '../middleware_compose/utils'
+import type { FormState } from 'juststore'
 import { useCallback, useMemo } from 'react'
+import { middlewareUseToSnakeCase } from '../middleware_compose/utils'
 
 type RouteMiddlewaresSectionProps = {
   state: FormState<Middlewares.MiddlewaresMap | undefined>
@@ -23,11 +23,9 @@ export function RouteMiddlewaresSection({ state }: RouteMiddlewaresSectionProps)
   const onChangeMiddleware = useCallback(
     (data: MiddlewareCompose.EntrypointMiddlewares) => {
       setValue(
-        data.reduce((acc, item) => {
+        data.reduce((acc, { use, ...rest }) => {
           // @ts-expect-error intended
-          acc[item.use] = item
-          // remove the `use` field from the item (from the conversion above)
-          delete (item as { use?: string }).use
+          acc[use] = rest
           return acc
         }, {} as Middlewares.MiddlewaresMap)
       )

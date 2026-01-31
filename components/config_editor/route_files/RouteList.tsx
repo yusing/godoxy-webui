@@ -13,7 +13,7 @@ import RouteEditFormDialogContent from './RouteEditFormDialog'
 
 export default function RouteList() {
   const [config, setConfig] = routesConfigStore.useState('configObject')
-  const routes = useMemo(() => (typeof config === 'object' ? config : {}), [config])
+  const routes = useMemo(() => (config && typeof config === 'object' ? config : {}), [config])
 
   const onSave = (key: string, value: Routes.Route) => {
     setConfig({

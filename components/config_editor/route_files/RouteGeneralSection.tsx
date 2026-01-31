@@ -133,7 +133,7 @@ function AgentSelect({ state }: { state: FormState<string | undefined> }) {
       <StoreFormSelectField
         state={state}
         placeholder={
-          loading ? 'Loading...' : (agentList?.length ?? 0 > 0) ? 'Select Agent' : 'No agents found'
+          loading ? 'Loading...' : (agentList?.length ?? 0) > 0 ? 'Select Agent' : 'No agents found'
         }
         options={(agentList ?? []).map(agent => ({
           value: agent.addr,

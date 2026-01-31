@@ -21,6 +21,8 @@ export default function RouteEditFormDialogContent({
   onUpdate,
   ...props
 }: Omit<RouteEditFormProps, 'dialog'>) {
+  'use memo'
+
   const sendRouteRef = useRef<((yaml: Routes.Route) => void) | null>(null)
   const routeAtom = createAtom<Routes.Route>(
     `route-edit-form-dialog-content-${useId()}`,

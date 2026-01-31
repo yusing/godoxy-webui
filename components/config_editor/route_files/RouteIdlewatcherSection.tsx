@@ -5,6 +5,7 @@ import { StoreFormCheckboxField } from '@/juststore-shadcn/src/components/store/
 import type { Routes } from '@/types/godoxy'
 import { STOP_METHODS, STOP_SIGNALS } from '@/types/godoxy/providers/idlewatcher'
 import type { FormStore } from 'juststore'
+import { commaSeparatedToArray } from './utils'
 
 type RouteIdlewatcherSectionProps = {
   form: FormStore<Routes.ReverseProxyRoute | Routes.StreamRoute>
@@ -61,7 +62,7 @@ export function RouteIdlewatcherSection({ form }: RouteIdlewatcherSectionProps) 
       <StoreInputField
         state={form.idlewatcher.depends_on.derived({
           from: v => v?.join(','),
-          to: v => (v ? v.split(',') : []),
+          to: commaSeparatedToArray,
         })}
         title="Depends On"
         placeholder="route1,route2"
