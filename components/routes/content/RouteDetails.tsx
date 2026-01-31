@@ -153,11 +153,11 @@ export default function RouteDetails() {
           <CardContent>
             <DataList>
               <DataListRow label="Route Excluded" value={routeDetails.excluded ? 'Yes' : 'No'} />
+              {routeDetails.excluded_reason && (
+                <DataListRow label="Excluded reason" value={routeDetails.excluded_reason} />
+              )}
               {routeDetails.health && (
                 <>
-                  {routeDetails.excluded_reason && (
-                    <DataListRow label="Excluded reason" value={routeDetails.excluded_reason} />
-                  )}
                   <DataListRow label="Status" value={routeDetails.health.status} />
                   <DataListRow
                     label="Latency"
