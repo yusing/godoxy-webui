@@ -81,7 +81,7 @@ function extractDockerTimestamp(
   const date = new Date(timestamp)
   if (!Number.isFinite(date.getTime())) return null
 
-  const content = line.slice(separatorIndex + 1).trimStart()
+  const content = line.slice(separatorIndex + 1)
   return { timestamp, date, content }
 }
 

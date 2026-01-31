@@ -420,14 +420,14 @@ function LogProvider({
       if (proxmox) {
         // journalctl
         for (let line of data.split('\n')) {
-          line = line.trim()
+          line = line.trimEnd()
           if (!line) {
             continue
           }
           pendingLinesRef.current.push(line)
         }
       } else {
-        pendingLinesRef.current.push(data.trim())
+        pendingLinesRef.current.push(data.replace(/[\r\n]+$/g, ''))
       }
       scheduleFlush()
     },
@@ -483,6 +483,15 @@ function LogProvider({
   return null
 }
 
+function stripLeadingSeparator(value: string) {
+  if (!value) return value
+  const first = value[0]
+  if (first === ' ' || first === '\t') {
+    return value.slice(1)
+  }
+  return value
+}
+
 function formatLineForTerminal(line: string, type: 'docker' | 'proxmox') {
   const dockerTimestamp = type === 'docker' ? extractDockerTimestamp(line) : null
   const ts = dockerTimestamp
@@ -493,13 +502,17 @@ function formatLineForTerminal(line: string, type: 'docker' | 'proxmox') {
   const date = dockerTimestamp ? dockerTimestamp.date : ts ? new Date(ts) : null
   const hasDate = date != null && Number.isFinite(date.getTime())
 
-  const content = ts ? line.slice(ts.length).trimStart() : line
+  const content = dockerTimestamp
+    ? dockerTimestamp.content
+    : ts
+      ? stripLeadingSeparator(line.slice(ts.length))
+      : line
 
   // For Proxmox journalctl logs, try to parse the journalctl format (e.g., "Jan 25 14:55:23")
   if (!hasDate && type === 'proxmox') {
     const ts = parseJournalctlTimestamp(line)
     if (ts && ts.match) {
-      const body = formatLogContent(line.slice(ts.match.length).trimStart(), {
+      const body = formatLogContent(stripLeadingSeparator(line.slice(ts.match.length)), {
         hasExternalTimestamp: true,
       })
       return `${formatLocalDateTimeColored(ts.date)} ${body}`
