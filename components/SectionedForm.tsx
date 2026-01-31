@@ -30,8 +30,9 @@ function useSectionTracker<T extends SectionId>(sections: SectionItem<T>[], defa
 
   const getEffectiveActiveSection = useCallback(
     (current: T | undefined) => {
-      const effective = sections.find(s => s.id === current)
-      return effective?.id ?? sections[0]?.id ?? undefined
+      const effective = sections.find(s => s.show && s.id === current)
+      const fallback = sections.find(s => s.show)
+      return effective?.id ?? fallback?.id ?? undefined
     },
     [sections]
   )
@@ -40,8 +41,10 @@ function useSectionTracker<T extends SectionId>(sections: SectionItem<T>[], defa
     const contentEl = contentRef.current
     if (!contentEl) return
 
-    const candidates = Array.from(contentEl.querySelectorAll<HTMLElement>('[data-section]'))
-    if (candidates.length === 0) return
+    const getCandidates = () =>
+      Array.from(contentEl.querySelectorAll<HTMLElement>('[data-section]')).filter(
+        el => el.offsetParent !== null
+      )
 
     const getScrollRoot = () => {
       let node: HTMLElement | null = contentEl
@@ -88,6 +91,8 @@ function useSectionTracker<T extends SectionId>(sections: SectionItem<T>[], defa
 
       const manualTarget = manualTargetRef.current
       if (manualTarget && manualTarget.until > Date.now()) {
+        const candidates = getCandidates()
+        if (candidates.length === 0) return
         const targetEl = candidates.find(el => el.dataset.section === manualTarget.id)
         if (targetEl) {
           const targetTop = getSectionTop(targetEl)
@@ -101,6 +106,9 @@ function useSectionTracker<T extends SectionId>(sections: SectionItem<T>[], defa
           return
         }
       }
+
+      const candidates = getCandidates()
+      if (candidates.length === 0) return
 
       if (scrollTop <= 0) {
         activeSection.set(candidates[0]!.dataset.section as T)
@@ -152,6 +160,8 @@ function useSectionTracker<T extends SectionId>(sections: SectionItem<T>[], defa
 
       event.preventDefault()
 
+      const candidates = getCandidates()
+      if (candidates.length === 0) return
       const current = getEffectiveActiveSection(activeSection.value)
       const ids = candidates.map(item => item.dataset.section as T)
       const currentIndex = ids.findIndex(id => id === current)
@@ -180,7 +190,7 @@ function useSectionTracker<T extends SectionId>(sections: SectionItem<T>[], defa
       rootTarget.removeEventListener('wheel', onWheel)
       window.removeEventListener('resize', scheduleUpdate)
     }
-  }, [sections.length, activeSection, getEffectiveActiveSection])
+  }, [sections, activeSection, getEffectiveActiveSection])
 
   const scrollToSection = useCallback(
     (id: T) => {
@@ -211,6 +221,14 @@ export function SectionedForm<T extends SectionId>({
     useSectionTracker(sections, defaultSection)
 
   const visibleSections = sections.filter(s => s.show)
+  const hiddenSections = sections.filter(s => !s.show)
+  const escapeSectionId = (value: string) =>
+    typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(value) : value.replace(/["\\]/g, '\\$&')
+  const hiddenStyle = hiddenSections.length
+    ? `${hiddenSections
+        .map(section => `[data-section="${escapeSectionId(section.id)}"]`)
+        .join(',')} { display: none; }`
+    : ''
 
   function SectionButton({ item }: { item: (typeof visibleSections)[number] }) {
     const activeSectionValue = activeSection.use()
@@ -244,6 +262,7 @@ export function SectionedForm<T extends SectionId>({
     <div
       className={cn('grid grid-cols-[max-content_minmax(0,1fr)] gap-6 min-h-0 flex-1', className)}
     >
+      {hiddenStyle ? <style>{hiddenStyle}</style> : null}
       <nav
         aria-label="Form sections"
         className={cn('flex flex-col gap-1 self-start', dialog ? 'sticky top-14' : 'sticky top-2')}
