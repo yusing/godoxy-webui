@@ -5,10 +5,14 @@ services:
     restart: no
     image: godoxy-frontend
     env_file: .env
+    user: 1000:1000
     build:
       context: .
       dockerfile: ${DOCKERFILE:-dev.Dockerfile}
     volumes:
+      - ./node_modules:/app/node_modules:ro
+      - ./package.json:/app/package.json:ro
+      - ./bun.lock:/app/bun.lock:ro
       - ./app:/app/app:ro
       - ./components:/app/components:ro
       - ./hooks:/app/hooks:ro
@@ -23,7 +27,8 @@ services:
       - ./juststore:/app/juststore:ro
       - ./juststore-shadcn:/app/juststore-shadcn:ro
     tmpfs:
-      - /var/cache/nginx
+      - /var/cache/nginx:uid=1000,gid=1000
+      - /app:rw,uid=1000,gid=1000
     labels:
       proxy.aliases: godoxy-dev
       proxy.*: |

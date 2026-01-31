@@ -5,12 +5,7 @@ HEALTHCHECK NONE
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=development
 
-USER 1000:1000
-
 WORKDIR /app
-
-COPY package.json ./
-RUN sed -i 's|"juststore": "./juststore",||' package.json && bun install --dev
 
 EXPOSE 3000
 
