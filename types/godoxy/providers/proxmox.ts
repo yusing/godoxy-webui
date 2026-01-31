@@ -10,6 +10,7 @@ export type ProxmoxConfig = {
   /**
    * Username
    *
+   * @title Username
    * @description Required for journalctl log streaming
    * @examples ["root"]
    */
@@ -17,6 +18,7 @@ export type ProxmoxConfig = {
   /**
    * Password
    *
+   * @title Password
    * @description Required for journalctl log streaming
    * @examples ["password"]
    */
@@ -24,6 +26,7 @@ export type ProxmoxConfig = {
   /**
    * Authentication realm
    *
+   * @title Authentication realm
    * @description Authentication realm
    * @default "pam"
    */
@@ -31,6 +34,7 @@ export type ProxmoxConfig = {
   /**
    * Token ID
    *
+   * @title Token ID
    * @description API token ID, uses password authentication if not set
    * @examples ["root@pam!godoxy-token"]
    */
@@ -38,6 +42,7 @@ export type ProxmoxConfig = {
   /**
    * API secret
    *
+   * @title API secret
    * @description API secret, uses password authentication if not set
    * @examples ["secret"]
    */
@@ -56,7 +61,9 @@ export type ProxmoxRouteConfig = {
   node: string
   /**
    * VMID
-   * @examples [119]
+   * @title VMID
+   * @description 0 for node-level route, >0 for container route
+   * @examples [0,119]
    */
   vmid?: number
   /**
