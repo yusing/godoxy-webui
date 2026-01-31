@@ -18,6 +18,7 @@ type FormContainerProps = {
   description?: ReactNode
   badge?: ReactNode
   card?: boolean
+  grid?: boolean
   level?: number
   footer?: ReactNode
   required?: boolean
@@ -32,6 +33,7 @@ export function FormContainer({
   description,
   badge,
   card = true,
+  grid = true,
   level = 0,
   footer,
   required,
@@ -84,11 +86,17 @@ export function FormContainer({
   const content =
     hasChildren &&
     (card ? (
-      <CardContent className="grid grid-cols-1 2xl:grid-cols-2 gap-3">{children}</CardContent>
+      <CardContent
+        className={cn(grid ? 'grid grid-cols-1 2xl:grid-cols-2 gap-3' : 'flex flex-col gap-3')}
+      >
+        {children}
+      </CardContent>
     ) : (
       <div
         className={cn(
-          'grid grid-cols-1 2xl:grid-cols-2 gap-3 has-[&>input]:mt-4 has-[&>select]:mt-4 has-[&>label]:mt-4',
+          grid
+            ? 'grid grid-cols-1 2xl:grid-cols-2 gap-3 has-[&>input]:mt-4 has-[&>select]:mt-4 has-[&>label]:mt-4'
+            : 'flex flex-col gap-3',
           level > 0 && hasChildren && 'p-2 border-l-3 border-border'
         )}
       >

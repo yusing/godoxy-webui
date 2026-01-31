@@ -27,6 +27,7 @@ type MapInputProps<T extends Record<string, unknown>> = {
   nameField?: keyof T
   schema?: JSONSchema
   card?: boolean
+  grid?: boolean
   footer?: ReactNode
   allowDelete?: boolean
   level?: number
@@ -63,6 +64,7 @@ function RecordInput<T extends Record<string, unknown>>({
   valueSchema,
   onChange,
   card = false,
+  grid = true,
   readonly = false,
 }: Readonly<RecordInputProps<T>>) {
   'use memo'
@@ -113,6 +115,7 @@ function RecordInput<T extends Record<string, unknown>>({
       label={label}
       description={description}
       card={card}
+      grid={grid}
       level={0}
       canAdd={!readonly}
       readonly={readonly}
@@ -146,6 +149,7 @@ function RecordInput<T extends Record<string, unknown>>({
               />
               <ListInput
                 card={false}
+                grid={grid}
                 readonly={readonly}
                 label={undefined}
                 value={Array.isArray(v) ? v : []}
@@ -182,6 +186,7 @@ function RecordInput<T extends Record<string, unknown>>({
                 />
                 <RecordInput
                   card={false}
+                  grid={grid}
                   readonly={readonly}
                   label={undefined}
                   value={nextValue}
@@ -211,6 +216,7 @@ function RecordInput<T extends Record<string, unknown>>({
               />
               <MapInput
                 card={false}
+                grid={grid}
                 readonly={readonly}
                 label={undefined}
                 description={getDescription(effSchema, displayKey)}
@@ -352,6 +358,7 @@ function ObjectInput<T extends Record<string, unknown>>({
   schema,
   allowDelete = true,
   card = true,
+  grid = true,
   footer,
   onChange,
   readonly = false,
@@ -392,6 +399,7 @@ function ObjectInput<T extends Record<string, unknown>>({
       label={label}
       description={description}
       card={card}
+      grid={grid}
       level={level}
       footer={footer}
       canAdd={!readonly && canAddKey(schema)}
@@ -411,6 +419,7 @@ function ObjectInput<T extends Record<string, unknown>>({
       {keys.map((k, index) => (
         <MapInputItem
           key={k}
+          grid={grid}
           entry={[k, mergedValues[k]]}
           index={index}
           schema={schema}
@@ -427,6 +436,7 @@ function ObjectInput<T extends Record<string, unknown>>({
 }
 
 type MapInputItemProps<T extends Record<string, unknown>> = {
+  grid?: boolean
   entry: [string, unknown]
   index: number
   schema: JSONSchema
@@ -439,6 +449,7 @@ type MapInputItemProps<T extends Record<string, unknown>> = {
 }
 
 function MapInputItem<T extends Record<string, unknown>>({
+  grid = true,
   entry: [k, v],
   index,
   schema,
@@ -462,7 +473,10 @@ function MapInputItem<T extends Record<string, unknown>>({
     const headerShown = canRenameKey
     const childLabel = headerShown ? undefined : nestedLabel
     return (
-      <div key={`${index}_list_wrap`} className="flex flex-col gap-2 col-span-full">
+      <div
+        key={`${index}_list_wrap`}
+        className="map-input-item-array flex flex-col gap-2 col-span-full"
+      >
         {headerShown && (
           <ComplexEntryHeader
             displayKey={k}
@@ -482,6 +496,7 @@ function MapInputItem<T extends Record<string, unknown>>({
         )}
         <ListInput
           card={false}
+          grid={grid}
           readonly={readonly}
           key={`${index}_list`}
           label={childLabel}
@@ -504,7 +519,10 @@ function MapInputItem<T extends Record<string, unknown>>({
       schema.additionalProperties
     ) {
       return (
-        <div key={`${index}_record_wrap`} className="flex flex-col gap-2 col-span-full">
+        <div
+          key={`${index}_record_wrap`}
+          className="map-input-item-record flex flex-col gap-2 col-span-full"
+        >
           {headerShown && (
             <ComplexEntryHeader
               displayKey={k}
@@ -524,6 +542,7 @@ function MapInputItem<T extends Record<string, unknown>>({
           )}
           <RecordInput
             card={false}
+            grid={grid}
             readonly={readonly}
             level={level + 1}
             key={`${index}_map`}
@@ -540,7 +559,10 @@ function MapInputItem<T extends Record<string, unknown>>({
       )
     }
     return (
-      <div key={`${index}_map_wrap`} className="flex flex-col gap-2 col-span-full">
+      <div
+        key={`${index}_map_wrap`}
+        className="map-input-item-map flex flex-col gap-2 col-span-full"
+      >
         {headerShown && (
           <ComplexEntryHeader
             displayKey={k}
@@ -560,6 +582,7 @@ function MapInputItem<T extends Record<string, unknown>>({
         )}
         <MapInput
           card={false}
+          grid={grid}
           readonly={readonly}
           level={level + 1}
           key={`${index}_map`}

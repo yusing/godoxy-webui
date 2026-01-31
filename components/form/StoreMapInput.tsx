@@ -53,6 +53,7 @@ function StoreRecordInput<T extends FieldValues>({
   description,
   placeholder,
   card = false,
+  grid = true,
   level = 0,
   readonly = false,
 }: Readonly<StoreRecordInputProps<T>>) {
@@ -64,6 +65,7 @@ function StoreRecordInput<T extends FieldValues>({
       label={label}
       description={description}
       card={card}
+      grid={grid}
       level={0}
       canAdd={!readonly}
       readonly={readonly}
@@ -72,6 +74,7 @@ function StoreRecordInput<T extends FieldValues>({
       {Array.from({ length: numKeys }).map((_, index) => (
         <StoreRecordInputItem
           key={index}
+          grid={grid}
           level={level}
           state={state}
           index={index}
@@ -85,6 +88,7 @@ function StoreRecordInput<T extends FieldValues>({
 }
 
 function StoreRecordInputItem<T extends FieldValues>({
+  grid = true,
   level,
   index,
   state,
@@ -97,6 +101,7 @@ function StoreRecordInputItem<T extends FieldValues>({
   state: ObjectState<T>
   valueSchema?: JSONSchema
   placeholder: { key?: string; value?: string } | undefined
+  grid?: boolean
   readonly?: boolean
 }) {
   'use memo'
@@ -154,6 +159,7 @@ function StoreRecordInputItem<T extends FieldValues>({
         <StoreListInput
           level={level + 1}
           card={false}
+          grid={grid}
           label={undefined}
           placeholder={placeholder?.value}
           state={child.ensureArray()}
@@ -172,6 +178,7 @@ function StoreRecordInputItem<T extends FieldValues>({
           <StoreRecordInput
             level={level + 1}
             card={false}
+            grid={grid}
             label={undefined}
             description={undefined}
             placeholder={placeholder}
@@ -188,6 +195,7 @@ function StoreRecordInputItem<T extends FieldValues>({
         <StoreMapInput
           level={level + 1}
           card={false}
+          grid={grid}
           label={undefined}
           description={getDescription(entrySchema, fieldKey)}
           placeholder={placeholder}
@@ -222,6 +230,7 @@ function StoreObjectInput<T extends FieldValues>({
   schema,
   allowDelete = true,
   card = true,
+  grid = true,
   level = 0,
   footer,
   hideUnknown = false,
@@ -249,6 +258,7 @@ function StoreObjectInput<T extends FieldValues>({
       label={label}
       description={description}
       card={card}
+      grid={grid}
       level={level}
       footer={footer}
       canAdd={!readonly && canAddKey(schema)}
@@ -265,6 +275,7 @@ function StoreObjectInput<T extends FieldValues>({
       {keys.map((k, index) => (
         <StoreMapInputItem
           key={index}
+          grid={grid}
           level={level}
           k={k as FieldPath<T>}
           state={state}
@@ -279,6 +290,7 @@ function StoreObjectInput<T extends FieldValues>({
 }
 
 function StoreMapInputItem<T extends FieldValues>({
+  grid = true,
   k: fieldKey,
   state,
   schema,
@@ -291,6 +303,7 @@ function StoreMapInputItem<T extends FieldValues>({
   schema: JSONSchema
   allowDelete: boolean
   level: number
+  grid?: boolean
   readonly?: boolean
 } & Pick<StoreMapInputProps<T>, 'state' | 'placeholder'>) {
   'use memo'
@@ -336,6 +349,7 @@ function StoreMapInputItem<T extends FieldValues>({
       <ComplexEntryFrame>
         <StoreListInput
           card={false}
+          grid={grid}
           level={level + 1}
           label={childLabel}
           state={child.ensureArray()}
@@ -357,6 +371,7 @@ function StoreMapInputItem<T extends FieldValues>({
         <ComplexEntryFrame>
           <StoreRecordInput
             card={false}
+            grid={grid}
             level={level + 1}
             label={childLabel}
             description={nestedDescription}
@@ -371,6 +386,7 @@ function StoreMapInputItem<T extends FieldValues>({
       <ComplexEntryFrame>
         <StoreMapInput
           card={false}
+          grid={grid}
           level={level + 1}
           label={childLabel}
           description={nestedDescription}

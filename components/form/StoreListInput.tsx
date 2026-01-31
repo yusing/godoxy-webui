@@ -14,6 +14,7 @@ type StoreListInputProps<T extends string> = {
   required?: boolean
   description?: string
   card?: boolean
+  grid?: boolean
   level?: number
   schema?: JSONSchema
   readonly?: boolean
@@ -26,6 +27,7 @@ export function StoreListInput<T extends string>({
   required = false,
   description,
   card = true,
+  grid = true,
   level = 0,
   schema,
   readonly = false,
@@ -53,6 +55,7 @@ export function StoreListInput<T extends string>({
       label={label}
       description={description}
       card={card}
+      grid={grid}
       level={level}
       required={required}
       onAdd={handleAddItem}

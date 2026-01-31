@@ -18,11 +18,13 @@ type NamedListInputProps<IndexType extends string, T extends Record<IndexType, u
   value: T[]
   onChange: (v: T[]) => void
   card?: boolean
+  grid?: boolean
   level?: number
   readonly?: boolean
 }
 
 function NamedListInputItem<IndexType extends string, T extends Record<IndexType, unknown>>({
+  grid = true,
   item,
   index,
   nameField,
@@ -34,6 +36,7 @@ function NamedListInputItem<IndexType extends string, T extends Record<IndexType
   level,
   readonly = false,
 }: {
+  grid?: boolean
   item: T
   index: number
   nameField: keyof T
@@ -48,11 +51,12 @@ function NamedListInputItem<IndexType extends string, T extends Record<IndexType
   'use memo'
   const name = item[nameField] as string
   return (
-    <div className="flex w-full flex-col gap-3 col-span-full">
+    <div className="named-list-input-item flex w-full flex-col gap-3 col-span-full">
       <MapInput<T>
         label={name}
         readonly={readonly}
         card={false}
+        grid={grid}
         placeholder={placeholder}
         level={level + 1}
         keyField={keyField}
@@ -95,6 +99,7 @@ export function NamedListInput<IndexType extends string, T extends Record<IndexT
   nameField = 'name' as IndexType,
   schema,
   card = true,
+  grid = true,
   level = 0,
   readonly = false,
 }: Readonly<NamedListInputProps<IndexType, T>>) {
@@ -138,6 +143,7 @@ export function NamedListInput<IndexType extends string, T extends Record<IndexT
     <FormContainer
       label={label}
       card={card}
+      grid={grid}
       level={level}
       onAdd={handleAddItem}
       canAdd={!readonly}
@@ -146,6 +152,7 @@ export function NamedListInput<IndexType extends string, T extends Record<IndexT
       {listValue.map((item, index) => (
         <NamedListInputItem
           key={`${index}_map`}
+          grid={grid}
           item={item}
           index={index}
           nameField={nameField}

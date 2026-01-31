@@ -16,6 +16,7 @@ type ListInputProps<T extends string> = {
   required?: boolean
   description?: string
   card?: boolean
+  grid?: boolean
   level?: number
   schema?: JSONSchema
   onChange: (v: T[]) => void
@@ -29,6 +30,7 @@ export function ListInput<T extends string>({
   required = false,
   description,
   card = true,
+  grid = true,
   level = 0,
   schema,
   onChange,
@@ -61,6 +63,7 @@ export function ListInput<T extends string>({
       label={label}
       description={description}
       card={card}
+      grid={grid}
       level={level}
       onAdd={handleAddItem}
       required={required}
