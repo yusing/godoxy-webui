@@ -43,15 +43,15 @@ export default function AutocertConfigContent() {
             <AutocertInfo navRef={navRef} />
           </CardContent>
         </Card>
-        <Card>
-          <CardContent flex>
-            <AutocertConfigForm
-              state={autocertConfig}
-              onAddExtra={() => autocertConfig.extra.push({ provider: 'local' })}
-            />
-          </CardContent>
-        </Card>
       </Carousel>
+      <Card>
+        <CardContent flex>
+          <AutocertConfigForm
+            state={autocertConfig}
+            onAddExtra={() => autocertConfig.extra.push({ provider: 'local' })}
+          />
+        </CardContent>
+      </Card>
     </div>
   )
 }
