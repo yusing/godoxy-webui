@@ -32,6 +32,7 @@ type Section = {
   icon: LucideIcon
   Content: (props: { isActive: boolean }) => React.ReactNode
   preload?: boolean
+  diffPaths?: string[]
 }
 
 const configSections: Section[] = [
@@ -40,54 +41,63 @@ const configSections: Section[] = [
     label: 'SSL Certificates',
     icon: Shield,
     Content: AutocertConfigContent,
+    diffPaths: ['autocert'],
   },
   {
     id: 'access-control',
     label: 'Access Control',
     icon: Key,
     Content: AccessControlConfigContent,
+    diffPaths: ['acl'],
   },
   {
     id: 'entrypoint',
     label: 'Entrypoint',
     icon: Globe,
     Content: EntrypointConfigContent,
+    diffPaths: ['entrypoint'],
   },
   {
     id: 'route-providers',
     label: 'Route Providers',
     icon: Route,
     Content: RouteProviderConfigContent,
+    diffPaths: ['providers.include', 'providers.docker', 'provider.agents'],
   },
   {
     id: 'proxmox',
     label: 'Proxmox',
     icon: Server,
     Content: ProxmoxConfigContent,
+    diffPaths: ['providers.proxmox'],
   },
   {
     id: 'maxmind',
     label: 'MaxMind',
     icon: Brain,
     Content: MaxmindConfigContent,
+    diffPaths: ['providers.maxmind'],
   },
   {
     id: 'notifications',
     label: 'Notifications',
     icon: Bell,
     Content: NotificationsConfigContent,
+    diffPaths: ['providers.notification'],
   },
   {
     id: 'match-domains',
     label: 'Domain Matching',
     icon: Link,
     Content: DomainMatchingConfigContent,
+    diffPaths: ['match_domains'],
   },
   {
     id: 'default-values',
     label: 'Default Values',
     icon: Settings,
     Content: DefaultValuesConfigContent,
+    diffPaths: ['defaults'],
   },
   // {
   //   id: 'homepage',

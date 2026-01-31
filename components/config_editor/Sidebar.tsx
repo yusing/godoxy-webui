@@ -3,7 +3,7 @@
 import type { FileType } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import { IconChevronRight, IconFile } from '@tabler/icons-react'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import {
   Command,
   CommandEmpty,
@@ -27,7 +27,7 @@ import AddFilePopoverButton from './AddFilePopoverButton'
 import ConfigReloadButton from './ConfigReloadButton'
 import ConfigSaveButton from './ConfigSaveButton'
 import { sectionsByFileType } from './sections'
-import { configStore } from './store'
+import { configStore, useDiffs } from './store'
 import { fileTypeLabels } from './types'
 
 export default function ConfigSidebar() {
@@ -135,7 +135,6 @@ function Sections() {
           {sections.map(function (section) {
             const Icon = section.icon
             const isActive = activeSection === section.id
-            const unsavedChanges = configStore.unsavedChanges[section.id]!
 
             return (
               <SidebarMenuItem key={section.id}>
@@ -151,12 +150,7 @@ function Sections() {
                     <span>{section.label}</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <unsavedChanges.Render>
-                      {unsavedChanges =>
-                        unsavedChanges &&
-                        !isActive && <span className="size-1.5 rounded-full bg-primary z-10" />
-                      }
-                    </unsavedChanges.Render>
+                    <UnsavedChangesIndicator isActive={isActive} diffPaths={section.diffPaths} />
                     {isActive && <IconChevronRight className="size-4 shrink-0" />}
                   </div>
                 </SidebarMenuButton>
@@ -167,4 +161,23 @@ function Sections() {
       </SidebarGroupContent>
     </SidebarGroup>
   )
+}
+
+function UnsavedChangesIndicator({
+  isActive,
+  diffPaths,
+}: {
+  isActive: boolean
+  diffPaths?: string[]
+}) {
+  const diffs = useDiffs()
+  const hasDiff = useMemo(
+    () => new Set(diffs).intersection(new Set(diffPaths)).size > 0,
+    [diffs, diffPaths]
+  )
+  return hasDiff ? (
+    <span
+      className={cn('size-1.5 rounded-full bg-primary z-10', isActive && 'bg-info-foreground')}
+    />
+  ) : null
 }

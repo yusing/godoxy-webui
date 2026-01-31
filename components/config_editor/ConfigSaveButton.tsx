@@ -3,7 +3,7 @@ import { toastError } from '@/lib/toast'
 import { IconCheck, IconDeviceFloppy, IconLoader2 } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { Button } from '../ui/button'
-import { configStore } from './store'
+import { configStore, resetDiffs } from './store'
 
 export default function ConfigSaveButton(props: React.ComponentProps<typeof Button>) {
   const activeFile = configStore.activeFile.use()
@@ -21,7 +21,7 @@ export default function ConfigSaveButton(props: React.ComponentProps<typeof Butt
         .finally(() => {
           setIsSaving(false)
           setIsSaved(true)
-          configStore.unsavedChanges.reset()
+          resetDiffs()
         })
     }
   }

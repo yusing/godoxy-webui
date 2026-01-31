@@ -1,8 +1,9 @@
 import type { GoDoxyError } from '@/components/GoDoxyError'
 import type { Route } from '@/lib/api'
+import { getDiffs } from '@/lib/diff'
 import type { ConfigFile, ConfigFiles } from '@/types/file'
 import type { Config, MiddlewareCompose, Routes } from '@/types/godoxy'
-import { createStore, type Store } from 'juststore'
+import { createMixedState, createStore, type Store } from 'juststore'
 import type { RouteKey } from '../routes/store'
 
 type ConfigState<
@@ -16,8 +17,8 @@ type ConfigState<
   isLoading: boolean
   error: string | undefined
   configObject: T | undefined
+  originalConfig: T | undefined
   validateError: GoDoxyError | undefined
-  unsavedChanges: Record<Sections, boolean>
   routeDetails: Record<RouteKey, Route>
 }
 
@@ -34,8 +35,8 @@ export const configStore = createStore<ConfigState<Config.Config>>('config', {
   isLoading: false,
   error: undefined,
   configObject: undefined,
+  originalConfig: undefined,
   validateError: undefined,
-  unsavedChanges: {} as Record<string, boolean>,
   routeDetails: {},
 })
 
@@ -43,3 +44,13 @@ export const routesConfigStore = configStore as unknown as Store<ConfigState<Rou
 export const middlewareComposeConfigStore = configStore as unknown as Store<
   ConfigState<MiddlewareCompose.MiddlewareCompose>
 >
+
+const diffState = createMixedState(configStore.originalConfig, configStore.configObject)
+
+export function useDiffs() {
+  return diffState.useCompute(([orig, current]) => getDiffs(orig, current))
+}
+
+export function resetDiffs() {
+  configStore.originalConfig.set(configStore.configObject.value)
+}
