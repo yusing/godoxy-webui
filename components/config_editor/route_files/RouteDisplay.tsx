@@ -104,7 +104,7 @@ const DEFAULT_CIDR_ALLOW = [
 
 function QuickSettings({ alias }: { alias: string }) {
   return (
-    <div className="flex flex-wrap gap-4 rounded-md">
+    <div className="flex flex-wrap md:grid md:grid-cols-2 gap-4 md:gap-2.5 rounded-md">
       <LANOnlyToggle alias={alias} />
       <HealthCheckToggle alias={alias} />
       <ShowOnDashboardToggle alias={alias} />
@@ -164,7 +164,7 @@ function LANOnlyToggle({ alias }: { alias: string }) {
         onCheckedChange={handleChange}
         aria-checked={ariaChecked}
       />
-      <FieldLabel htmlFor="lan-only">
+      <FieldLabel htmlFor="lan-only" className="text-xs">
         LAN Only
         {hasCustom && (
           <p className="text-xs text-muted-foreground">
@@ -182,6 +182,7 @@ function HealthCheckToggle({ alias }: { alias: string }) {
       state={store.state(`configObject.${alias}.healthcheck.disable`).withDefault(false)}
       title="No Health Check"
       labelPlacement="right"
+      labelProps={{ className: 'text-xs' }}
     />
   )
 }
@@ -202,6 +203,7 @@ function ShowOnDashboardToggle({ alias }: { alias: string }) {
       })}
       title="Show on Dashboard"
       labelPlacement="right"
+      labelProps={{ className: 'text-xs' }}
     />
   )
 }
