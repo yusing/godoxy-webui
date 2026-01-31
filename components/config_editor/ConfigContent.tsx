@@ -1,8 +1,7 @@
 'use client'
 import { cn } from '@/lib/utils'
 import { AnimatePresence, motion } from 'motion/react'
-import { Suspense, useState } from 'react'
-import LoadingRing from '../LoadingRing'
+import { useState } from 'react'
 import { SidebarTrigger } from '../ui/sidebar'
 import { ConfigHeaderProvider } from './ConfigHeaderActions'
 import { sectionsByFileType } from './sections'
@@ -11,15 +10,18 @@ import { configStore } from './store'
 export default function ConfigContent({ className }: { className?: string }) {
   const activeFile = configStore.activeFile.use()
   const activeSection = configStore.activeSection.use()
-  const isLoading = configStore.isLoading.use()
 
   const [headerActionsEl, setHeaderActionsEl] = useState<HTMLDivElement | null>(null)
-  const [headerTitleEl, setHeaderTitleEl] = useState<HTMLHeadingElement | null>(null)
+  const [headerTitleEl, setHeaderTitleEl] = useState<HTMLSpanElement | null>(null)
   const [isTitleOverridden, setIsTitleOverridden] = useState(false)
 
   const section =
     sectionsByFileType[activeFile.type].sections.find(section => section.id === activeSection) ??
     sectionsByFileType[activeFile.type].sections[0]!
+  const preloadedSections = sectionsByFileType[activeFile.type].sections.filter(
+    section => section.preload
+  )
+
   const label = section.label
 
   const Content = section.Content
@@ -29,8 +31,9 @@ export default function ConfigContent({ className }: { className?: string }) {
       <header className="py-2 pr-1 flex justify-between sticky top-0 gap-1">
         <div className="flex items-center gap-1">
           <SidebarTrigger className="size-8" />
-          <h1 ref={setHeaderTitleEl} className="text-xl font-bold mr-auto">
-            {isTitleOverridden ? null : label}
+          <h1 className="text-xl font-bold mr-auto flex items-center gap-2">
+            <span ref={setHeaderTitleEl} className="inline-flex items-center gap-2" />
+            {isTitleOverridden ? null : <span>{label}</span>}
           </h1>
         </div>
         <div ref={setHeaderActionsEl} className="flex items-center gap-1" />
@@ -41,36 +44,27 @@ export default function ConfigContent({ className }: { className?: string }) {
         titleTarget={headerTitleEl}
         setTitleOverride={setIsTitleOverridden}
       >
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`${activeFile.type}-${activeFile.filename}-${activeSection}`}
-            initial={{ opacity: 0, x: -6 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 6 }}
-            transition={{ duration: 0.25 }}
-          >
-            {isLoading ? (
-              <LoadingContent />
-            ) : Content ? (
-              <Suspense fallback={<LoadingContent />}>
-                <Content />
-              </Suspense>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full">
-                <span className="text-center text-muted-foreground">No content</span>
-              </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
+        {preloadedSections.map(section => {
+          return (
+            <div key={section.id} hidden={section.id !== activeSection}>
+              <section.Content isActive={section.id === activeSection} />
+            </div>
+          )
+        })}
+        {!section.preload && (
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`${activeFile.type}-${activeFile.filename}-${activeSection}`}
+              initial={{ opacity: 0, x: -6 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 6 }}
+              transition={{ duration: 0.25 }}
+            >
+              <Content isActive={activeSection === section.id} />
+            </motion.div>
+          </AnimatePresence>
+        )}
       </ConfigHeaderProvider>
-    </div>
-  )
-}
-
-function LoadingContent() {
-  return (
-    <div className="flex flex-col items-center justify-center h-full">
-      <LoadingRing />
     </div>
   )
 }
