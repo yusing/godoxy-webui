@@ -1,6 +1,6 @@
+import Logo from '@/app/icon0.svg'
 import { ModeToggle } from '@/components/ui/theme-toggle'
 import { cn } from '@/lib/utils'
-import Logo from '@/public/web-app-manifest-192x192.png'
 import { siteConfig } from '@/site-config'
 import { BookOpenText, Code, FlaskConical, Grid3X3, Route, Server } from 'lucide-react'
 import Image from 'next/image'

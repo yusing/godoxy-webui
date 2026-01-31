@@ -121,7 +121,7 @@
   --spacing: 0.25rem;
 
   --titlebar-height: 48px;
-  --sidebar-width: 20rem;
+  --sidebar-width: 16rem;
   --sidebar-width-mobile: 18rem;
   --sidebar-width-icon: 3rem;
   --sidebar-height: calc(100vh - var(--titlebar-height));
