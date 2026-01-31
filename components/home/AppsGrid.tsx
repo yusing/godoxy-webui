@@ -2,7 +2,7 @@
 
 import { CategoryIcon } from '@/components/home/CategoryIcon'
 import { Button } from '@/components/ui/button'
-import { Combobox } from '@/components/ui/combobox'
+import { CustomCombobox } from '@/components/ui/custom-combobox'
 import { Kbd } from '@/components/ui/kbd'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useWebSocketApi } from '@/hooks/websocket'
@@ -93,7 +93,7 @@ export default function AppGrid() {
                 </TabsTrigger>
               ))}
               {overflowTabs.length > 0 && (
-                <Combobox
+                <CustomCombobox
                   value={overflowTabs.find(c => c === activeCategory)}
                   items={overflowTabs}
                   itemToIcon={c => (
