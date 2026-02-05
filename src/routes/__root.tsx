@@ -8,6 +8,7 @@ import { siteConfig } from '@/site-config'
 import '@fontsource/geist'
 import '@fontsource/geist-mono'
 import appCss from '../styles.css?url'
+import { createClientOnlyFn, createIsomorphicFn } from '@tanstack/react-start'
 
 if (import.meta.env.DEV) {
   import('react-scan').then(({ scan }) => scan())
@@ -49,7 +50,11 @@ export const Route = createRootRoute({
   component: RootLayout,
 })
 
-registerSW({ immediate: true })
+const clientRegisterSW = createIsomorphicFn()
+  .client(() => registerSW({ immediate: true }))
+  .server(() => undefined)
+
+clientRegisterSW()
 
 function RootLayout() {
   return (
