@@ -1,10 +1,10 @@
+import { useMemo } from 'react'
 import { NamedListInput } from '@/components/form/NamedListInput'
 import { StoreMapInput } from '@/components/form/StoreMapInput'
-import { Card, CardContent } from '@/components/ui/card'
 import { StoreSwitchField } from '@/components/store/Switch'
+import { Card, CardContent } from '@/components/ui/card'
 import { ConfigSchema, MiddlewareComposeSchema } from '@/types/godoxy'
 import type { MiddlewareFileRef } from '@/types/godoxy/middlewares/middlewares'
-import { useMemo } from 'react'
 import { middlewareUseToSnakeCase } from '../middleware_compose/utils'
 import { configStore } from '../store'
 

@@ -1,9 +1,7 @@
 import { useCallback, useMemo } from 'react'
-
-import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
-
 import { MapInput } from '@/components/form/MapInput'
 import { Button } from '@/components/ui/button'
+import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
 import { FormContainer } from './FormContainer'
 import { stringify } from './utils'
 

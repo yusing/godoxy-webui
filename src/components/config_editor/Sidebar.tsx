@@ -1,7 +1,7 @@
-import type { FileType } from '@/lib/api'
-import { cn } from '@/lib/utils'
 import { IconChevronRight, IconFile } from '@tabler/icons-react'
 import { useEffect, useMemo } from 'react'
+import type { FileType } from '@/lib/api'
+import { cn } from '@/lib/utils'
 import {
   Command,
   CommandEmpty,
@@ -130,7 +130,7 @@ function Sections() {
       <SidebarGroupLabel>{label}</SidebarGroupLabel>
       <SidebarGroupContent className="flex-1">
         <SidebarMenu>
-          {sections.map((section) => {
+          {sections.map(section => {
             const Icon = section.icon
             const isActive = activeSection === section.id
 

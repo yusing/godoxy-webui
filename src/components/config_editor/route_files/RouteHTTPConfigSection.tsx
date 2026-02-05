@@ -1,10 +1,10 @@
+import type { FormState, FormStore } from 'juststore'
 import { StoreCheckboxField } from '@/components/store/Checkbox'
 import { StoreFormInputField } from '@/components/store/Input'
 import { StoreFormSelectField } from '@/components/store/Select'
 import { FieldGroup } from '@/components/ui/field'
 import type { Routes } from '@/types/godoxy'
 import { LOAD_BALANCE_MODES, type LoadBalanceMode } from '@/types/godoxy/providers/loadbalance'
-import type { FormState, FormStore } from 'juststore'
 
 type RouteHTTPConfigSectionProps = {
   form: FormStore<Routes.ReverseProxyRoute>

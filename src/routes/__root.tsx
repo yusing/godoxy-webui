@@ -1,11 +1,10 @@
-import { HeadContent, Outlet, Scripts, createRootRoute } from '@tanstack/react-router'
-
+import { registerSW } from 'virtual:pwa-register'
+import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
 import Titlebar from '@/components/layout/Titlebar'
 import TitlebarController from '@/components/layout/TitlebarController'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { Toaster } from '@/components/ui/sonner'
 import { siteConfig } from '@/site-config'
-import { registerSW } from 'virtual:pwa-register'
 import '@fontsource/geist'
 import '@fontsource/geist-mono'
 import appCss from '../styles.css?url'

@@ -4,13 +4,13 @@ import {
   Globe,
   Key,
   Link,
+  type LucideIcon,
   Plus,
   Route,
   Server,
   Settings,
   Shield,
   SlidersHorizontal,
-  type LucideIcon,
 } from 'lucide-react'
 
 import AccessControlConfigContent from './general_config/AccessControl'

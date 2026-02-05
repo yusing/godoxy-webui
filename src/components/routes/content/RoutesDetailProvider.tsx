@@ -1,6 +1,6 @@
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { Route } from '@/lib/api'
-import { store, type RouteKey } from '../store'
+import { type RouteKey, store } from '../store'
 import { encodeRouteKey } from '../utils'
 
 export default function RoutesDetailProvider() {

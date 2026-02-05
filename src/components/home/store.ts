@@ -1,5 +1,5 @@
-import type { HealthMap, HomepageCategory } from '@/lib/api'
 import { createStore } from 'juststore'
+import type { HealthMap, HomepageCategory } from '@/lib/api'
 
 export type ItemState = {
   alias: string

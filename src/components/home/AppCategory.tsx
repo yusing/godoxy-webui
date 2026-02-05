@@ -1,10 +1,10 @@
+import { useEffect, useMemo } from 'react'
 import type { HomepageItem } from '@/lib/api'
 import { match } from '@/lib/match'
-import { useEffect, useMemo } from 'react'
 import AppCategoryEmpty from './AppCategoryEmpty'
 import AppCategorySegmented from './AppCategorySegmented'
 import AppItem from './AppItem'
-import { store, type ItemState } from './store'
+import { type ItemState, store } from './store'
 
 function getItemState(items: HomepageItem[], searchQuery: string, category: string) {
   let isEmpty = true

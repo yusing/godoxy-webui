@@ -289,9 +289,9 @@ function getDefaultValue(
   function isObjectishSchema(inner: JSONSchema): boolean {
     return Boolean(
       isSchemaType(inner, 'object') ||
-      inner.properties ||
-      inner.additionalProperties ||
-      inner.patternProperties
+        inner.properties ||
+        inner.additionalProperties ||
+        inner.patternProperties
     )
   }
 

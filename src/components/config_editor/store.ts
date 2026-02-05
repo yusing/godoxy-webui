@@ -1,9 +1,9 @@
+import { createMixedState, createStore, type Store } from 'juststore'
 import type { GoDoxyError } from '@/components/GoDoxyError'
 import type { Route } from '@/lib/api'
 import { getDiffs } from '@/lib/diff'
 import type { ConfigFile, ConfigFiles } from '@/types/file'
 import type { Config, MiddlewareCompose, Routes } from '@/types/godoxy'
-import { createMixedState, createStore, type Store } from 'juststore'
 import type { RouteKey } from '../routes/store'
 
 type ConfigState<

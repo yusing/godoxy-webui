@@ -1,4 +1,4 @@
-import { store, type RouteKey } from '@/components/routes/store'
+import { type RouteKey, store } from '@/components/routes/store'
 import { formatBytes } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { parseProxmoxStatsLine } from './proxmox_stats'

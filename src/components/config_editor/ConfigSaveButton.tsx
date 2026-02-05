@@ -1,7 +1,7 @@
-import { api } from '@/lib/api-client'
-import { toastError } from '@/lib/toast'
 import { IconCheck, IconDeviceFloppy, IconLoader2 } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
+import { api } from '@/lib/api-client'
+import { toastError } from '@/lib/toast'
 import { Button } from '../ui/button'
 import { configStore, resetDiffs } from './store'
 

@@ -1,7 +1,7 @@
-import { formatDuration } from '@/lib/format'
 import type { FieldPath } from 'juststore'
+import { formatDuration } from '@/lib/format'
 import { Progress } from '../ui/progress'
-import { store, type Store } from './store'
+import { type Store, store } from './store'
 
 export default function SystemStatValue({
   valueKey,

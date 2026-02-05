@@ -1,6 +1,6 @@
+import { useEffect } from 'react'
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { ProxmoxNodeStats } from '@/lib/api'
-import { useEffect } from 'react'
 import { store, useSelectedRoute } from '../store'
 
 export default function ProxmoxStatsProvider() {

@@ -1,6 +1,6 @@
+import { createStore } from 'juststore'
 import { useFragment } from '@/hooks/fragment'
 import type { ProxmoxNodeStats, Route, RouteUptimeAggregate } from '@/lib/api'
-import { createStore } from 'juststore'
 
 export type RouteDisplaySettings = {
   dockerOnly: boolean

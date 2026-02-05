@@ -1,4 +1,5 @@
 import type { SVGProps } from 'react'
+
 const Google = (props: SVGProps<SVGSVGElement>) => (
   <svg
     width="1em"

@@ -1,7 +1,7 @@
-import type { RouteApiRawRule } from '@/lib/api'
 import { IconPlayerPlay } from '@tabler/icons-react'
 import { toast } from 'sonner'
 import { parse as parseYAML } from 'yaml'
+import type { RouteApiRawRule } from '@/lib/api'
 import { Button } from '../ui/button'
 import { store } from './store'
 import { usePlayground } from './usePlayground'

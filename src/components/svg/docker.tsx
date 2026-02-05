@@ -1,4 +1,5 @@
 import type { SVGProps } from 'react'
+
 const Docker = ({
   colored = false,
   ...props

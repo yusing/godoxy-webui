@@ -1,7 +1,3 @@
-import { useTheme } from '@/components/ThemeProvider'
-import { Button } from '@/components/ui/button'
-import { useWebSocketApi } from '@/hooks/websocket'
-
 import {
   IconArrowsMaximize,
   IconArrowsMinimize,
@@ -12,7 +8,6 @@ import { FitAddon } from '@xterm/addon-fit'
 import { WebFontsAddon } from '@xterm/addon-web-fonts'
 import { WebLinksAddon } from '@xterm/addon-web-links'
 import { Terminal } from '@xterm/xterm'
-
 import {
   Suspense,
   useCallback,
@@ -23,7 +18,10 @@ import {
   useRef,
   useState,
 } from 'react'
-import { store, type RouteKey } from '../store'
+import { useTheme } from '@/components/ThemeProvider'
+import { Button } from '@/components/ui/button'
+import { useWebSocketApi } from '@/hooks/websocket'
+import { type RouteKey, store } from '../store'
 
 import '@xterm/xterm/css/xterm.css'
 
@@ -32,9 +30,9 @@ import '@fontsource/cascadia-code/700.css'
 
 import { Query } from '@/lib/query'
 import '../style.css'
-import { formatLineForTerminal, resolveThemeColorsAsync } from './logs'
 
-import { createAtom, type Atom } from 'juststore'
+import { type Atom, createAtom } from 'juststore'
+import { formatLineForTerminal, resolveThemeColorsAsync } from './logs'
 
 export default function Logs({ routeKey }: { routeKey: RouteKey }) {
   const logsRef = useRef<HTMLDivElement>(null)

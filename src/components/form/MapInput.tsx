@@ -1,14 +1,12 @@
 import { IconCheck, IconPencil, IconTrash } from '@tabler/icons-react'
-import { useMemo, useRef, useState, type ReactNode } from 'react'
-
-import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
-
+import { type ReactNode, useMemo, useRef, useState } from 'react'
 import { FieldInput } from '@/components/form/FieldInput'
 import { ListInput } from '@/components/form/ListInput'
 import { Button } from '@/components/ui/button'
 import { InputGroup, InputGroupButton, InputGroupInput } from '@/components/ui/input-group'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
+import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
 import { Badge } from '../ui/badge'
 import { FormContainer } from './FormContainer'
 import { getEntryValueSchema, getKindAndEffectiveSchema, getMergedValuesAndKeys } from './map-utils'

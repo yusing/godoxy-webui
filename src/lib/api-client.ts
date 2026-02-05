@@ -1,5 +1,5 @@
-import { Api, type ErrorResponse } from '@/lib/api'
 import { AxiosError } from 'axios'
+import { Api, type ErrorResponse } from '@/lib/api'
 
 // this is for server side only, on client side we use relative path for middleware to handle
 const apiAddr = process.env.GODOXY_API_ADDR ? `http://${process.env.GODOXY_API_ADDR}` : ''

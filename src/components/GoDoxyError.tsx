@@ -1,6 +1,7 @@
+import { IconAlertCircle } from '@tabler/icons-react'
+import Convert from 'ansi-to-html'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
-
 import {
   TreeExpander,
   TreeLabel,
@@ -10,8 +11,6 @@ import {
   TreeProvider,
   TreeView,
 } from '@/components/ui/kibo-ui/tree'
-import { IconAlertCircle } from '@tabler/icons-react'
-import Convert from 'ansi-to-html'
 import { Alert, AlertDescription, AlertTitle } from './ui/alert'
 
 const convertANSI = new Convert()

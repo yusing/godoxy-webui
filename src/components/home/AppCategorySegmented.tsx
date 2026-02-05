@@ -1,7 +1,7 @@
-import type { HomepageItem } from '@/lib/api'
 import { useEffect, useMemo } from 'react'
+import type { HomepageItem } from '@/lib/api'
 import AppItem from './AppItem'
-import { store, type ItemState } from './store'
+import { type ItemState, store } from './store'
 
 type Group = { name: string; apps: HomepageItem[] }
 type MergedGroup = Group | { groups: Group[] }

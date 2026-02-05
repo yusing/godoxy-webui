@@ -1,10 +1,10 @@
+import type { FormStore } from 'juststore'
+import { StoreFormCheckboxField } from '@/components/store/Checkbox'
 import { StoreFormInputField, StoreInputField } from '@/components/store/Input'
 import { StoreFormSelectField } from '@/components/store/Select'
 import { FieldGroup } from '@/components/ui/field'
-import { StoreFormCheckboxField } from '@/components/store/Checkbox'
 import type { Routes } from '@/types/godoxy'
 import { STOP_METHODS, STOP_SIGNALS } from '@/types/godoxy/providers/idlewatcher'
-import type { FormStore } from 'juststore'
 import { commaSeparatedToArray } from './utils'
 
 type RouteIdlewatcherSectionProps = {

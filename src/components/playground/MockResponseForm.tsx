@@ -1,6 +1,6 @@
+import { json } from '@codemirror/lang-json'
 import { MapInput } from '@/components/form/MapInput'
 import { StoreInputField } from '@/components/store/Input'
-import { json } from '@codemirror/lang-json'
 import { FieldGroup, FieldLegend, FieldSet } from '../ui/field'
 import { StoreCodeMirrorField } from '../ui/store/CodeMirror'
 import { store } from './store'

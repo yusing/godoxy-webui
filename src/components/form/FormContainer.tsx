@@ -1,3 +1,5 @@
+import { IconChevronDown, IconPlus } from '@tabler/icons-react'
+import { Children, type ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -10,8 +12,6 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
-import { IconChevronDown, IconPlus } from '@tabler/icons-react'
-import { Children, type ReactNode } from 'react'
 
 type FormContainerProps = {
   label?: string

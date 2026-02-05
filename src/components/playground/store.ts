@@ -1,5 +1,5 @@
-import type { MockRequest, MockResponse, PlaygroundResponse } from '@/lib/api'
 import { createStore } from 'juststore'
+import type { MockRequest, MockResponse, PlaygroundResponse } from '@/lib/api'
 
 export interface PlaygroundState {
   rules: string

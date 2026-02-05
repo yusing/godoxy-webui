@@ -1,10 +1,10 @@
-import type { JSONSchema } from '@/types/schema'
 import { yaml } from '@codemirror/lang-yaml'
 import { linter } from '@codemirror/lint'
 import { hoverTooltip, type ReactCodeMirrorProps } from '@uiw/react-codemirror'
 import { stateExtensions } from 'codemirror-json-schema-refined'
 import { yamlSchemaHover, yamlSchemaLinter } from 'codemirror-json-schema-refined/yaml'
 import type { JSONSchema7 } from 'json-schema'
+import type { JSONSchema } from '@/types/schema'
 import { CodeMirror } from './ObjectDataList'
 
 export type YAMLEditorProps = {

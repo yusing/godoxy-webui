@@ -1,3 +1,6 @@
+import { IconRefresh } from '@tabler/icons-react'
+import Convert from 'ansi-to-html'
+import { useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -8,9 +11,6 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { useWebSocketApi } from '@/hooks/websocket'
-import { IconRefresh } from '@tabler/icons-react'
-import Convert from 'ansi-to-html'
-import { useCallback, useState } from 'react'
 
 const convert = new Convert()
 

@@ -1,5 +1,5 @@
+import { extname, join, sep } from 'node:path'
 import { createFileRoute } from '@tanstack/react-router'
-import { join, extname, sep } from 'node:path'
 
 function isSafe(pathSegs: string[]): boolean {
   return !pathSegs.some(seg => seg === '..')

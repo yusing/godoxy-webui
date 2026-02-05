@@ -1,7 +1,7 @@
+import { useEffect } from 'react'
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { ContainerStatsResponse } from '@/lib/api'
-import { useEffect } from 'react'
-import { store, useSelectedRoute, type DockerStatsSummary } from '../store'
+import { type DockerStatsSummary, store, useSelectedRoute } from '../store'
 
 function summarizeStats(stats: ContainerStatsResponse): DockerStatsSummary {
   const cpuTotal = stats.cpu_stats.cpu_usage.total_usage ?? 0

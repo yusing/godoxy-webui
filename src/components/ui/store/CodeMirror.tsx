@@ -1,7 +1,7 @@
+import { useMemo } from 'react'
 import { CodeMirror } from '@/components/ObjectDataList'
 import { StoreLabel } from '@/components/store/Label'
 import type { FormComponentProps, Prettify, StoreFieldPropsCommon } from '@/components/store/types'
-import { useMemo } from 'react'
 import { Field, FieldDescription } from '../field'
 
 type CodeMirrorFieldProps<Form = false> = Prettify<

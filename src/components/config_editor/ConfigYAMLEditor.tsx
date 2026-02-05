@@ -1,6 +1,6 @@
+import type { ReactCodeMirrorProps } from '@uiw/react-codemirror'
 import { ConfigSchema, MiddlewareComposeSchema, RoutesSchema } from '@/types/godoxy'
 import type { JSONSchema } from '@/types/schema'
-import type { ReactCodeMirrorProps } from '@uiw/react-codemirror'
 import { CodeMirror } from '../ObjectDataList'
 import YAMLEditor from '../YAMLEditor'
 import { configStore } from './store'

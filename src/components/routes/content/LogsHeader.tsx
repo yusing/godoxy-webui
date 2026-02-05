@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import type { Container, ContainerImage, ProxmoxNodeConfig } from '@/lib/api'
-import { store, type RouteKey } from '../store'
+import { type RouteKey, store } from '../store'
 
 function formatContainerName(container?: Container, proxmox?: ProxmoxNodeConfig): string {
   if (container) {

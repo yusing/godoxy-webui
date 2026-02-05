@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import { siteConfig } from '@/site-config'
+
 import tailwindcss from '@tailwindcss/vite'
 import { devtools } from '@tanstack/devtools-vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
@@ -8,6 +8,7 @@ import { nitro } from 'nitro/vite'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import tsconfigPaths from 'vite-tsconfig-paths'
+import { siteConfig } from '@/site-config'
 
 const isDemoSite = process.env.DEMO_SITE === 'true'
 
@@ -82,5 +83,6 @@ function pwaConfig(outdir: string) {
       theme_color: '#fffbfb',
       background_color: '#000000',
       display: 'standalone',
-    }})
+    },
+  })
 }

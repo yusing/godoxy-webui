@@ -1,9 +1,9 @@
+import type { FormStore } from 'juststore'
 import { StoreFormInputField } from '@/components/store/Input'
 import { StoreFormTextAreaField } from '@/components/store/TextArea'
 import { FieldGroup } from '@/components/ui/field'
 import type { Route as RouteResponse } from '@/lib/api'
 import type { Routes } from '@/types/godoxy'
-import type { FormStore } from 'juststore'
 import { commaSeparatedToArray } from './utils'
 
 type RouteProxmoxSectionProps = {

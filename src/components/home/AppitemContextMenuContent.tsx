@@ -1,6 +1,3 @@
-import { api } from '@/lib/api-client'
-import { toastError } from '@/lib/toast'
-import { cn } from '@/lib/utils'
 import {
   IconEdit,
   IconEye,
@@ -11,18 +8,20 @@ import {
   IconRotate,
   IconSquare,
 } from '@tabler/icons-react'
-import { ContextMenuContent, ContextMenuItem } from '../ui/context-menu'
-import { store } from './store'
-
-import type { HomepageItem } from '@/lib/api'
-import type { HealthStatusType } from '@/types/health'
 import { Link } from '@tanstack/react-router'
 import type { ObjectState } from 'juststore'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import type { HomepageItem } from '@/lib/api'
+import { api } from '@/lib/api-client'
+import { toastError } from '@/lib/toast'
+import { cn } from '@/lib/utils'
+import type { HealthStatusType } from '@/types/health'
 import { setSelectedRoute } from '../routes/store'
 import { encodeRouteKey } from '../routes/utils'
+import { ContextMenuContent, ContextMenuItem } from '../ui/context-menu'
 import { Separator } from '../ui/separator'
+import { store } from './store'
 
 export default function AppItemContextMenuContent({
   state,

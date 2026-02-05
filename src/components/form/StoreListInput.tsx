@@ -1,7 +1,6 @@
-import { useCallback } from 'react'
-
-import type { JSONSchema } from '@/types/schema'
 import type { ArrayState } from 'juststore'
+import { useCallback } from 'react'
+import type { JSONSchema } from '@/types/schema'
 import { FormContainer } from './FormContainer'
 import { ListInputItem } from './ListInput'
 

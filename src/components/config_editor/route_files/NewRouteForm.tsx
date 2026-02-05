@@ -1,8 +1,8 @@
+import { IconPlus, IconRefresh } from '@tabler/icons-react'
+import { useEffect, useMemo } from 'react'
 import { Dialog } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import type { Routes } from '@/types/godoxy'
-import { IconPlus, IconRefresh } from '@tabler/icons-react'
-import { useEffect, useMemo } from 'react'
 import { configStore, routesConfigStore } from '../store'
 import RouteEditFormDialogContent from './RouteEditFormDialog'
 

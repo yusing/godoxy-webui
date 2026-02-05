@@ -1,6 +1,6 @@
+import { useMemo } from 'react'
 import { useTheme } from '@/components/ThemeProvider'
 import { cn } from '@/lib/utils'
-import { useMemo } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 
 export { AppIcon, type AppIconProps }

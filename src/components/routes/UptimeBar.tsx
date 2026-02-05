@@ -1,10 +1,10 @@
-import { store, type RouteKey } from '@/components/routes/store'
+import { isEqual } from 'juststore'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { type RouteKey, store } from '@/components/routes/store'
 import type { RouteStatus } from '@/lib/api'
 import { formatTimestamp } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { healthStatusColorsFg } from '@/types/health'
-import { isEqual } from 'juststore'
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 export default function RouteUptimeBar({
   routeKey,

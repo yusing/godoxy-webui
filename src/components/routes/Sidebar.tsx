@@ -1,28 +1,27 @@
+import { IconFilter } from '@tabler/icons-react'
+import type { FieldPath } from 'juststore'
+import { ArrowDown, ArrowUp } from 'lucide-react'
+import { Suspense, useEffect, useRef } from 'react'
 import {
+  type RouteDisplaySettings,
+  type RouteKey,
   setSelectedRoute,
   store,
   useSelectedRoute,
-  type RouteDisplaySettings,
-  type RouteKey,
 } from '@/components/routes/store'
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { RouteStatusesByAlias, RouteUptimeAggregate, UptimeAggregate } from '@/lib/api'
 import { toastError } from '@/lib/toast'
 import { cn } from '@/lib/utils'
-import { Suspense, useEffect, useRef } from 'react'
-import { Label } from '../ui/label'
-import RoutePercentageText from './PercentageText'
-import RoutesSidebarSearchBox from './SearchBox'
-import RouteUptimeBar from './UptimeBar'
-
-import { IconFilter } from '@tabler/icons-react'
-import type { FieldPath } from 'juststore'
-import { ArrowDown, ArrowUp } from 'lucide-react'
 import { AppIcon } from '../AppIcon'
 import { Kbd } from '../ui/kbd'
+import { Label } from '../ui/label'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { ScrollArea } from '../ui/scroll-area'
 import { Switch } from '../ui/switch'
+import RoutePercentageText from './PercentageText'
+import RoutesSidebarSearchBox from './SearchBox'
+import RouteUptimeBar from './UptimeBar'
 import './style.css'
 import { decodeRouteKey, encodeRouteKey } from './utils'
 

@@ -1,11 +1,11 @@
+import type { FieldPath } from 'juststore'
+import { Clock, Cpu, HardDrive, type LucideIcon, MemoryStick } from 'lucide-react'
+import { Suspense } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import type { FieldPath } from 'juststore'
-import { Clock, Cpu, HardDrive, MemoryStick, type LucideIcon } from 'lucide-react'
-import { Suspense } from 'react'
-import type { Store } from './store'
 import SystemStatsProvider from './SystemStatsProvider'
 import SystemStatValue from './SystemStatValue'
+import type { Store } from './store'
 
 export default function SystemStats() {
   // on mobile, displays as one rounded card

@@ -104,7 +104,7 @@
  */
 
 /* Common card styling for consistency */
-[class^='ds-'] {
+[class^="ds-"] {
   color: var(--ds-text-default);
   border-radius: 0.5rem;
   transition:
@@ -112,12 +112,12 @@
     transform 0.15s ease;
 }
 
-[class^='ds-']:hover {
+[class^="ds-"]:hover {
   filter: brightness(0.95);
   transform: translateY(-1px);
 }
 
-.dark [class^='ds-']:hover {
+.dark [class^="ds-"]:hover {
   filter: brightness(1.1);
 }
 

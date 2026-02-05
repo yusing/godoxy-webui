@@ -1,8 +1,8 @@
+import type { FormStore } from 'juststore'
 import { StoreFormCheckboxField } from '@/components/store/Checkbox'
 import { StoreFormInputField } from '@/components/store/Input'
 import { FieldGroup } from '@/components/ui/field'
 import type { Routes } from '@/types/godoxy'
-import type { FormStore } from 'juststore'
 
 type RouteHealthcheckSectionProps = {
   form: FormStore<Routes.Route>

@@ -1,11 +1,11 @@
+import { IconSearch } from '@tabler/icons-react'
+import { useCallback, useMemo, useState } from 'react'
+import { useAsync } from 'react-use'
 import { Badge } from '@/components/ui/badge'
 import { DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { api } from '@/lib/api-client'
-import { IconSearch } from '@tabler/icons-react'
-import { useCallback, useMemo, useState } from 'react'
-import { useAsync } from 'react-use'
 import ObjectDataList from '../ObjectDataList'
 
 export default function AppDetailsDialogContent({ alias }: { alias: string }) {

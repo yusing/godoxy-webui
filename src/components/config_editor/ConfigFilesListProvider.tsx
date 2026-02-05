@@ -1,7 +1,7 @@
+import { useEffectOnce } from 'react-use'
 import type { FileType } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import type { ConfigFiles } from '@/types/file'
-import { useEffectOnce } from 'react-use'
 import { configStore } from './store'
 
 export default function ConfigFileListProvider() {

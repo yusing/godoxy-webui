@@ -1,7 +1,7 @@
+import { IconFolder, IconGlobe, IconWifi } from '@tabler/icons-react'
 import type { Route as RouteResponse } from '@/lib/api'
 import type { Routes } from '@/types/godoxy'
 import type { Port, StreamPort } from '@/types/godoxy/types'
-import { IconFolder, IconGlobe, IconWifi } from '@tabler/icons-react'
 import { Code } from './Code'
 
 const routeSchemes = [

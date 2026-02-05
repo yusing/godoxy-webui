@@ -1,8 +1,8 @@
-import { logger } from '@/lib/logger'
 import { isEqual } from 'juststore'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useLocation } from 'react-use'
 import useWebSocket, { ReadyState } from 'react-use-websocket'
+import { logger } from '@/lib/logger'
 
 // Generic WebSocket API hook
 export type WebSocketApiOptions<TMessage, TSubscription = unknown> = {

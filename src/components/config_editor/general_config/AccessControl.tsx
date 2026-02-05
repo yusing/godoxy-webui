@@ -1,10 +1,10 @@
+import { useMemo } from 'react'
 import { StoreListInput } from '@/components/form/StoreListInput'
 import { StoreMapInput } from '@/components/form/StoreMapInput'
 import { StoreCheckboxField } from '@/components/store/Checkbox'
 import { StoreRadioField } from '@/components/store/Radio'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ACLSchema } from '@/types/godoxy'
-import { useMemo } from 'react'
 import { configStore } from '../store'
 
 const acl = configStore.configObject.acl

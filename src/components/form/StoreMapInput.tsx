@@ -1,15 +1,13 @@
-import { ComplexEntryHeader, type MapInputProps, type RecordInputProps } from './MapInput'
-
-import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
-
 import type { FieldPath, FieldValues, ObjectState } from 'juststore'
 import { Activity, useMemo } from 'react'
+import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
 import { Badge } from '../ui/badge'
 import { Separator } from '../ui/separator'
 import { FormContainer } from './FormContainer'
+import { ComplexEntryHeader, type MapInputProps, type RecordInputProps } from './MapInput'
+import { getEntryValueSchema, getKindAndEffectiveSchema, getMergedKeys } from './map-utils'
 import { StoreFieldInput } from './StoreFieldInput'
 import { StoreListInput } from './StoreListInput'
-import { getEntryValueSchema, getKindAndEffectiveSchema, getMergedKeys } from './map-utils'
 import { canAddKey, getAdditionalPropertiesSchema, getDescription, getLabel } from './utils'
 
 export {

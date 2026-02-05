@@ -1,3 +1,5 @@
+import { IconPlus, IconX } from '@tabler/icons-react'
+import React, { useMemo } from 'react'
 import { NamedListInput } from '@/components/form/NamedListInput'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -5,8 +7,6 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { type MiddlewareCompose, MiddlewareComposeSchema } from '@/types/godoxy'
 import type { MiddlewareFileRef } from '@/types/godoxy/middlewares/middlewares'
-import { IconPlus, IconX } from '@tabler/icons-react'
-import React, { useMemo } from 'react'
 import { middlewareUseToSnakeCase } from './utils'
 
 export function MiddlewareEditor({

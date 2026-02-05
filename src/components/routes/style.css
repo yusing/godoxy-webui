@@ -18,8 +18,11 @@
 
 .sidebar-item-list {
   height: calc(
-    100vh - var(--titlebar-height) - var(--sidebar-search-box-height) -
-      var(--sidebar-header-height) - var(--sidebar-keyboard-hints-height)
+    100vh -
+    var(--titlebar-height) -
+    var(--sidebar-search-box-height) -
+    var(--sidebar-header-height) -
+    var(--sidebar-keyboard-hints-height)
   );
 }
 

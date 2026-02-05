@@ -22,6 +22,7 @@ import {
   Image,
   Layers,
   Link,
+  type LucideIcon,
   Mail,
   MapPin,
   MessageSquareTextIcon,
@@ -44,7 +45,6 @@ import {
   Video,
   Wrench,
   Zap,
-  type LucideIcon,
 } from 'lucide-react'
 
 interface CategoryIconProps {

@@ -1,7 +1,7 @@
-import { store, useSelectedRoute } from '@/components/routes/store'
-import { ChartContainer, type ChartConfig } from '@/components/ui/chart'
-import type { MetricsPeriod } from '@/lib/api'
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts'
+import { store, useSelectedRoute } from '@/components/routes/store'
+import { type ChartConfig, ChartContainer } from '@/components/ui/chart'
+import type { MetricsPeriod } from '@/lib/api'
 
 const chartConfig = {
   latency: {

@@ -1,7 +1,7 @@
+import type { FormStore } from 'juststore'
 import { StoreFormCheckboxField } from '@/components/store/Checkbox'
 import { StoreFormInputField } from '@/components/store/Input'
 import type { Routes } from '@/types/godoxy'
-import type { FormStore } from 'juststore'
 
 type RouteFileServerSectionProps = {
   form: FormStore<Routes.FileServerRoute>

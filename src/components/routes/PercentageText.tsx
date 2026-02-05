@@ -1,4 +1,4 @@
-import { store, type RouteKey } from '@/components/routes/store'
+import { type RouteKey, store } from '@/components/routes/store'
 import { formatPercent } from '@/lib/format'
 
 export default function RoutePercentageText({ routeKey }: { routeKey: RouteKey }) {

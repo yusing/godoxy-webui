@@ -1,13 +1,13 @@
+import { type ReactNode, useMemo } from 'react'
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 import {
+  type ChartConfig,
   ChartContainer,
   ChartLegend,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
 } from '@/components/ui/chart'
 import type { MetricsPeriod, SystemInfoAggregateMode } from '@/lib/api'
-import { useMemo, type ReactNode } from 'react'
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 import { store } from '../store'
 
 function formatTimestampAsTime(ts: number) {

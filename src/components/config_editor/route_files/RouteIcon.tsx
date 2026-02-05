@@ -1,5 +1,5 @@
+import { IconFolder, IconGlobe, type IconProps, IconWifi } from '@tabler/icons-react'
 import type { Routes } from '@/types/godoxy'
-import { IconFolder, IconGlobe, IconWifi, type IconProps } from '@tabler/icons-react'
 
 export default function RouteIcon({
   scheme,

@@ -1,3 +1,8 @@
+import { IconCheck, IconPlus } from '@tabler/icons-react'
+import { createMixedState, useForm, useMemoryStore } from 'juststore'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { parse as parseYAML, stringify as stringifyYAML } from 'yaml'
 import { StoreCheckboxField, StoreFormCheckboxField } from '@/components/store/Checkbox'
 import { StoreFormInputField } from '@/components/store/Input'
 import { StoreFormRadioField } from '@/components/store/Radio'
@@ -17,14 +22,10 @@ import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
 import { cn } from '@/lib/utils'
 import type { Config } from '@/types/godoxy'
-import { IconCheck, IconPlus } from '@tabler/icons-react'
-import { createMixedState, useForm, useMemoryStore } from 'juststore'
-import { useState } from 'react'
-import { toast } from 'sonner'
-import { parse as parseYAML, stringify as stringifyYAML } from 'yaml'
 import Docker from '../svg/docker'
 import Linux from '../svg/linux'
 import { FieldGroup } from '../ui/field'
+
 const agentTypes = [
   {
     type: 'docker',

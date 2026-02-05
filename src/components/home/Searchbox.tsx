@@ -1,7 +1,7 @@
-import { cn } from '@/lib/utils'
 import { Search, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useMount } from 'react-use'
+import { cn } from '@/lib/utils'
 import DuckDuckGo from '../svg/duckduckgo'
 import Google from '../svg/google'
 import {

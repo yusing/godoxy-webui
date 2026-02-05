@@ -1,6 +1,6 @@
 import { IconRefresh, IconTrash } from '@tabler/icons-react'
+import type { FieldPath, FieldValues, ObjectState, State } from 'juststore'
 import { useEffect, useMemo } from 'react'
-
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
@@ -22,7 +22,6 @@ import {
   isToggleType,
   type JSONSchema,
 } from '@/types/schema'
-import type { FieldPath, FieldValues, ObjectState, State } from 'juststore'
 import { Label } from '../ui/label'
 import { stringify } from './utils'
 

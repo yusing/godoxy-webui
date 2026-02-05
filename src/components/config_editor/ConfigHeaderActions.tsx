@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, type ReactNode } from 'react'
+import { createContext, type ReactNode, useContext, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 
 type ConfigHeaderContextValue = {

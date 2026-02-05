@@ -1,6 +1,3 @@
-import type { DiskUsageStat, SystemInfo } from '@/lib/api'
-import { formatBytes, formatShortTime, formatTemperature } from '@/lib/format'
-import { cn } from '@/lib/utils'
 import type { FieldPath, FieldPathValue } from 'juststore'
 import {
   Activity,
@@ -12,6 +9,9 @@ import {
   LucideHardDrive,
 } from 'lucide-react'
 import type { ElementType } from 'react'
+import type { DiskUsageStat, SystemInfo } from '@/lib/api'
+import { formatBytes, formatShortTime, formatTemperature } from '@/lib/format'
+import { cn } from '@/lib/utils'
 import { Label } from '../ui/label'
 import { RadioGroup, RadioGroupField } from '../ui/radio-group'
 import { Skeleton } from '../ui/skeleton'

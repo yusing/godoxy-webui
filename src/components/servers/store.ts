@@ -1,3 +1,4 @@
+import { createStore } from 'juststore'
 import type {
   Agent,
   MetricsPeriod,
@@ -6,7 +7,6 @@ import type {
   SystemInfoAggregate,
   SystemInfoAggregateMode,
 } from '@/lib/api'
-import { createStore } from 'juststore'
 
 type Store = {
   temperatureUnit: 'celsius' | 'fahrenheit'

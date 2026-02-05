@@ -1,12 +1,12 @@
-import { store, type RouteKey } from '@/components/routes/store'
+import { IconPlayerPlay, IconRotate, IconSquare } from '@tabler/icons-react'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { type RouteKey, store } from '@/components/routes/store'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
-import { IconPlayerPlay, IconRotate, IconSquare } from '@tabler/icons-react'
-import { useState } from 'react'
-import { toast } from 'sonner'
 
 const containerActions = [
   {

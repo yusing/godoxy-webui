@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
-import {  useForm } from 'juststore'
+import type { CreateFormOptions } from 'juststore'
+import { useForm } from 'juststore'
 import { useCallback } from 'react'
-import type {CreateFormOptions} from 'juststore';
 import { StoreFormInputField, StoreFormPasswordField } from '@/components/store/Input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'

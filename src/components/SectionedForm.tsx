@@ -1,7 +1,7 @@
-import { cn } from '@/lib/utils'
 import { createAtom } from 'juststore'
 import type { ComponentType, ReactNode, SVGProps } from 'react'
 import { useCallback, useEffect, useId, useRef } from 'react'
+import { cn } from '@/lib/utils'
 
 export type SectionId = string
 

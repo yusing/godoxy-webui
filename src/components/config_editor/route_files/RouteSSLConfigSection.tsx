@@ -1,9 +1,9 @@
-import { StoreFormInputField } from '@/components/store/Input'
-import { FieldGroup } from '@/components/ui/field'
-import { StoreFormCheckboxField } from '@/components/store/Checkbox'
-import { StoreFormMultiSelectField } from '@/components/store/MultiSelect'
-import type { Routes } from '@/types/godoxy'
 import type { FormStore } from 'juststore'
+import { StoreFormCheckboxField } from '@/components/store/Checkbox'
+import { StoreFormInputField } from '@/components/store/Input'
+import { StoreFormMultiSelectField } from '@/components/store/MultiSelect'
+import { FieldGroup } from '@/components/ui/field'
+import type { Routes } from '@/types/godoxy'
 
 type RouteSSLConfigSectionProps = {
   form: FormStore<Routes.ReverseProxyRoute>

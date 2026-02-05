@@ -1,7 +1,7 @@
+import { useEffect, useState } from 'react'
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
 import { cn } from '@/lib/utils'
-import { useEffect, useState } from 'react'
 
 export default function VersionText({ className }: { className?: string }) {
   const [version, setVersion] = useState<string | null>(null)

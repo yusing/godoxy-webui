@@ -1,9 +1,9 @@
+import { useEffect } from 'react'
 import { useFragment } from '@/hooks/fragment'
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { Agent, SystemInfo } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
-import { useEffect } from 'react'
 import { store } from './store'
 
 export default function AllSystemInfoProvider() {
