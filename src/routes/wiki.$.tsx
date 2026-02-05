@@ -1,4 +1,4 @@
-import { extname, join, sep } from 'node:path'
+import { extname, join } from 'node:path'
 import { createFileRoute } from '@tanstack/react-router'
 
 function isSafe(pathSegs: string[]): boolean {
@@ -12,7 +12,7 @@ export const Route = createFileRoute('/wiki/$')({
         // decodeURLComponent to resolve %2e path traversal
         let pathSegs = decodeURIComponent(new URL(request.url).pathname)
           .slice('/wiki'.length)
-          .split(sep)
+          .split('/')
 
         if (!isSafe(pathSegs)) {
           return new Response('Forbidden', { status: 403 })
