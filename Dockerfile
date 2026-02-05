@@ -20,7 +20,6 @@ FROM utils-deps AS install
 RUN mkdir -p /temp/dev
 COPY package.json bun.lock /temp/dev/
 COPY juststore/package.json juststore/bun.lock /temp/dev/juststore/
-COPY juststore-shadcn/package.json juststore-shadcn/bun.lock /temp/dev/juststore-shadcn/
 WORKDIR /temp/dev
 RUN bun install --frozen-lockfile
 
@@ -47,7 +46,7 @@ FROM base AS prerelease
 WORKDIR /app
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
-RUN ln -s /app/components/ui /app/juststore-shadcn/src/components/ui
+RUN ln -s /app/src/components/ui /app/juststore-shadcn/src/components/ui
 COPY --from=schema-gen /temp/dev/src/types/godoxy/*.json ./src/types/godoxy/
 
 ENV NODE_ENV=production
