@@ -1,9 +1,13 @@
 VERSION ?= $(shell git describe --tags --abbrev=0)
-BUILD_DATE ?= $(shell date -u +'%Y%m%d-%H%M')
-
-SCHEMA_DIR := types/godoxy
+BUILD_DATE ?= $(shell date -u +'%Y%m%d-%H%M%S')
+PWD := $(shell pwd)
+SRC_DIR := src
+SCHEMA_DIR := ${SRC_DIR}/types/godoxy
 
 .PHONY: dev
+
+export PWD
+export BUILDKIT_PROGRESS=plain
 
 dev:
 	docker compose up --build --pull=never
@@ -19,6 +23,19 @@ commit-push:
 
 update-wiki:
 	cd public/wiki && git pull
+
+# emulates docker build process for wiki using git worktree (submodule)
+build-wiki:
+	[ -d ${PWD}/public/wiki ] && rm -r ${PWD}/public/wiki || true
+	git -C wiki worktree add /tmp/wiki-$(BUILD_DATE) HEAD
+	@trap 'cd ${PWD} && git -C wiki worktree remove /tmp/wiki-$(BUILD_DATE) --force' EXIT; \
+	cd /tmp/wiki-$(BUILD_DATE) && \
+	bun i -D --frozen-lockfile && \
+	sed -i "s|srcDir: 'src',|srcDir: 'src', base: '/wiki',|" .vitepress/config.mts && \
+	sed -i "s|link: '/'|link: '/../', rel: 'noopener noreferrer', target: '_self'|" .vitepress/config.mts && \
+	head -n 10 .vitepress/config.mts && \
+	bun --bun run docs:build && \
+	cp -r .vitepress/dist ${PWD}/public/wiki
 
 test-run:
 	docker compose -f test-run.compose.yml up --build --pull=never
@@ -62,5 +79,5 @@ gen-schema:
 			gen-schema-single
 
 gen-docker-compose-types:
-	[ -f types/compose-spec.json ] || curl -o types/compose-spec.json https://raw.githubusercontent.com/compose-spec/compose-spec/main/schema/compose-spec.json
-	[ -f types/compose-spec.ts ] || bunx json-schema-to-typescript types/compose-spec.json types/compose-spec.ts
+	[ -f ${SCHEMA_DIR}/types/compose-spec.json ] || curl -o ${SCHEMA_DIR}/types/compose-spec.json https://raw.githubusercontent.com/compose-spec/compose-spec/main/schema/compose-spec.json
+	[ -f ${SCHEMA_DIR}/types/compose-spec.ts ] || bunx json-schema-to-typescript ${SCHEMA_DIR}/types/compose-spec.json ${SCHEMA_DIR}/types/compose-spec.ts

@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "types": ["vite/client","vite-plugin-pwa/client"],
     "allowJs": true,
     "skipLibCheck": true,
     "useDefineForClassFields": true,
@@ -24,25 +25,13 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "incremental": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
     "paths": {
-      "@/*": ["./*"],
+      "@/*": ["./src/*"],
       "juststore": ["./juststore/src/index.ts"],
       "@/components/store/*": ["./juststore-shadcn/src/components/store/*"],
       "@/public/*": ["./public/*"]
     }
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.d.ts",
-    ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
-  ],
+  "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "wiki"]
 }
