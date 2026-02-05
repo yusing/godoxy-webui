@@ -13,13 +13,11 @@
 /prisma/db.sqlite-journal
 db.sqlite
 
-# next.js
-/.next/
-/out/
-next-env.d.ts
-
-# production
-/build
+# build output
+/.output
+/.tanstack
+/dist
+public/wiki
 
 # misc
 .DS_Store
@@ -45,7 +43,15 @@ yarn-error.log*
 # idea files
 .idea
 
-# schema
-types/godoxy/*.deref.json
+# TanStack Start
 
-app/docker-compose
+src/routeTree.gen.ts
+
+# schema
+src/types/godoxy/*.deref.json
+
+src/app/docker-compose
+
+CLAUDE.md
+.kilocode/
+.claude/
