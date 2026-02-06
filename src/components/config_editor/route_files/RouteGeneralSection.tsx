@@ -9,7 +9,7 @@ import { FieldSet } from '@/components/ui/field'
 import type { Route as RouteResponse } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import type { Routes } from '@/types/godoxy'
-import type { StreamPort } from '@/types/godoxy/types'
+import type { FileServerBindPort } from '@/types/godoxy/types'
 import * as utils from './utils'
 
 type RouteGeneralSectionProps = {
@@ -38,9 +38,14 @@ export function RouteGeneralSection({ form, details }: RouteGeneralSectionProps)
         />
       </div>
 
-      {isHTTPOrStream && (
+      {isHTTPOrStream ? (
         <HostPortFields
           form={form as FormStore<Routes.ReverseProxyRoute | Routes.StreamRoute>}
+          details={details}
+        />
+      ) : (
+        <FileServerBindAddrFields
+          form={form as FormStore<Routes.FileServerRoute>}
           details={details}
         />
       )}
@@ -64,46 +69,67 @@ function HostPortFields({
   return (
     <FieldSet className="grid grid-cols-2 gap-4">
       <StoreFormInputField
-        state={form.host}
-        title="Host"
+        state={(form as FormStore<Routes.ReverseProxyRoute>).host}
+        title="Proxy Host"
         placeholder={details?.host ?? 'localhost'}
       />
 
-      {stream && (
-        <StoreFormInputField
-          state={(form as FormStore<Routes.StreamRoute>).bind?.withDefault('0.0.0.0')}
-          title="Bind Host"
-          placeholder={details?.bind ?? '0.0.0.0'}
-          type="ip"
-        />
-      )}
-      {stream && (
-        <StoreFormInputField
-          state={(form as FormStore<Routes.StreamRoute>).port.derived({
-            from: v => (v ? utils.getListeningPort(v) : undefined),
-            to: v => `${v}:${utils.getProxyPort(form.port.value ?? 0)}` as StreamPort,
-          })}
-          title="Listen Port"
-          placeholder={details?.port.listening?.toString() ?? '53'}
-          type="number"
-          min={0}
-          max={65535}
-        />
-      )}
       <StoreFormInputField
-        state={(form as FormStore<Routes.StreamRoute>).port.derived({
-          from: v => (v ? utils.getProxyPort(v) : undefined),
-          to: v => {
-            if (!stream) {
-              return v as StreamPort
-            }
-            return `${utils.getListeningPort(form.port.value ?? 0)}:${v}` as StreamPort
-          },
+        state={form.bind}
+        title="Bind Host"
+        placeholder={details?.bind ?? '0.0.0.0'}
+        type="ip"
+      />
+      <StoreFormInputField
+        state={form.port.derived({
+          from: v => utils.getListeningPort(v),
+          to: v => utils.formatPort(v, utils.getProxyPort(form.port.value)),
+        })}
+        title="Listen Port"
+        placeholder={String(details?.port.listening || (stream ? '53' : '443'))}
+        type="number"
+        min={0}
+        max={65535}
+      />
+      <StoreFormInputField
+        state={form.port.derived({
+          from: v => utils.getProxyPort(v),
+          to: v => utils.formatPort(utils.getListeningPort(form.port.value), v),
         })}
         title="Proxy Port"
-        placeholder={details?.port.proxy?.toString() ?? '3000'}
+        placeholder={String(details?.port.proxy || (stream ? '53' : '3000'))}
         type="number"
-        min={1}
+        min={0}
+        max={65535}
+      />
+    </FieldSet>
+  )
+}
+
+function FileServerBindAddrFields({
+  form,
+  details,
+}: {
+  form: FormStore<Routes.FileServerRoute>
+  details?: RouteResponse
+}) {
+  return (
+    <FieldSet className="grid grid-cols-2 gap-4">
+      <StoreFormInputField
+        state={form.bind}
+        title="Bind Host"
+        placeholder={details?.bind ?? '0.0.0.0'}
+        type="ip"
+      />
+      <StoreFormInputField
+        state={form.port.derived({
+          from: v => utils.getListeningPort(v),
+          to: v => utils.formatPort(v, undefined) as FileServerBindPort,
+        })}
+        title="Listen Port"
+        placeholder={String(details?.port.listening || '443')}
+        type="number"
+        min={0}
         max={65535}
       />
     </FieldSet>

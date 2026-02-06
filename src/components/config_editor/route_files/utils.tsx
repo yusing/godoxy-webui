@@ -112,16 +112,30 @@ function isHTTP(scheme: string | undefined) {
   return scheme === 'http' || scheme === 'https' || scheme === 'h2c'
 }
 
-function getProxyPort(port: Port | StreamPort | number | string): string {
+function getProxyPort(port: Port | StreamPort | number | string | undefined): string | undefined {
+  if (!port) return undefined
   const s = String(port).split(':')
-  if (s.length === 2) return s[1]!
-  return s[0]!
+  if (s.length === 2) return s[1] || undefined
+  return s[0] || undefined
 }
 
-function getListeningPort(port: StreamPort | Port | number | string): string {
+function getListeningPort(
+  port: StreamPort | Port | number | string | undefined
+): string | undefined {
+  if (!port) return undefined
   const s = String(port).split(':')
-  if (s.length === 1) return '0'
-  return s[0]!
+  if (s.length === 1) return undefined
+  return s[0] || undefined
+}
+
+function formatPort(
+  listeningPort: string | undefined,
+  proxyPort: string | undefined
+): Port | StreamPort | undefined {
+  if (listeningPort && proxyPort) return `${listeningPort}:${proxyPort}` as StreamPort
+  if (listeningPort) return `${listeningPort}:` as StreamPort
+  if (proxyPort) return `:${proxyPort}` as StreamPort
+  return undefined
 }
 
 function getListeningAddress(route: Routes.Route, details?: RouteResponse): string | undefined {
@@ -180,6 +194,7 @@ export {
   getProxyAddressOrRoot,
   getProxyPort,
   getRouteType,
+  formatPort,
   isHTTP,
   isStream,
   routeSchemes,
