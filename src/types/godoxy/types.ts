@@ -115,7 +115,7 @@ export type Port = number | `${number}`
  * @minimum 0
  * @maximum 65535
  */
-export type StreamPort = Port | `${Port}:${Port}`
+export type StreamPort = Port | `${Port}:` | `:${Port}` | `${Port}:${Port}`
 
 /**
  * File server bind port

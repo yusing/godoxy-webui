@@ -180,7 +180,7 @@ export type StreamRoute = {
    */
   host?: Hostname | IPv4 | IPv6
   /* Stream port */
-  port: StreamPort | Port
+  port?: StreamPort | Port
   /** Stream bind IP */
   bind?: IPv4 | IPv6
   /** Agent */
