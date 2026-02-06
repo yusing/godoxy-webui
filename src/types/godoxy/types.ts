@@ -118,6 +118,11 @@ export type Port = number | `${number}`
 export type StreamPort = Port | `${Port}:${Port}`
 
 /**
+ * File server bind port
+ */
+export type FileServerBindPort = `${Port}:`
+
+/**
  * Email address
  * @format email
  * @type string

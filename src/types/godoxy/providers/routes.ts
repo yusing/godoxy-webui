@@ -2,7 +2,16 @@ import type { IdlewatcherConfig } from '@/lib/api'
 import type { RequestLogConfig } from '../config/access_log'
 import type { RuleDo, RuleOn } from '../config/rules'
 import type { MiddlewaresMap } from '../middlewares/middlewares'
-import type { Duration, Hostname, IPv4, IPv6, PathPattern, Port, StreamPort } from '../types'
+import type {
+  Duration,
+  FileServerBindPort,
+  Hostname,
+  IPv4,
+  IPv6,
+  PathPattern,
+  Port,
+  StreamPort,
+} from '../types'
 import type { HealthcheckConfig } from './healthcheck'
 import type { HomepageConfig } from './homepage'
 import type { LoadBalanceConfig } from './loadbalance'
@@ -69,7 +78,9 @@ export type ReverseProxyRoute = {
    *
    * @default 80
    */
-  port?: Port
+  port?: StreamPort | Port
+  /** HTTP bind IP */
+  bind?: IPv4 | IPv6
   /** Agent */
   agent?: string
   /** Healthcheck config */
@@ -124,6 +135,10 @@ export type FileServerRoute = {
    */
   alias?: string
   scheme: 'fileserver'
+  /** HTTP bind IP */
+  bind?: IPv4 | IPv6
+  /** File server bind port */
+  port?: FileServerBindPort
   /* File server root path */
   root: string
   /** SPA mode
@@ -165,8 +180,8 @@ export type StreamRoute = {
    */
   host?: Hostname | IPv4 | IPv6
   /* Stream port */
-  port: StreamPort | number
-  /** Stream bind host */
+  port: StreamPort | Port
+  /** Stream bind IP */
   bind?: IPv4 | IPv6
   /** Agent */
   agent?: string
