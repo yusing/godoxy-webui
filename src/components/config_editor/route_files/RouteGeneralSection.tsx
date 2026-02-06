@@ -69,12 +69,6 @@ function HostPortFields({
   return (
     <FieldSet className="grid grid-cols-2 gap-4">
       <StoreFormInputField
-        state={(form as FormStore<Routes.ReverseProxyRoute>).host}
-        title="Proxy Host"
-        placeholder={details?.host ?? 'localhost'}
-      />
-
-      <StoreFormInputField
         state={form.bind}
         title="Bind Host"
         placeholder={details?.bind ?? '0.0.0.0'}
@@ -90,6 +84,11 @@ function HostPortFields({
         type="number"
         min={0}
         max={65535}
+      />
+      <StoreFormInputField
+        state={(form as FormStore<Routes.ReverseProxyRoute>).host}
+        title="Proxy Host"
+        placeholder={details?.host ?? 'localhost'}
       />
       <StoreFormInputField
         state={form.port.derived({
