@@ -524,8 +524,6 @@ export interface HealthJSON {
   url: string
 }
 
-export type HealthMap = Record<string, HealthStatusString>
-
 export type HealthStatusString =
   | 'unknown'
   | 'healthy'
@@ -885,7 +883,6 @@ export interface Route {
   access_log?: RequestLoggerConfig | null
   agent: string
   alias: string
-  /** for TCP and UDP routes, bind address to listen on */
   bind?: string | null
   /** Docker only */
   container?: Container | null
@@ -1563,7 +1560,7 @@ export namespace Health {
    * @name Health
    * @summary Get routes health info
    * @request GET:/health
-   * @response `200` `HealthMap` Health info by route name
+   * @response `200` `Record<string,HealthStatusString>` Health info by route name
    * @response `403` `ErrorResponse` Forbidden
    * @response `500` `ErrorResponse` Internal Server Error
    */
@@ -1572,7 +1569,7 @@ export namespace Health {
     export type RequestQuery = {}
     export type RequestBody = never
     export type RequestHeaders = {}
-    export type ResponseBody = HealthMap
+    export type ResponseBody = Record<string, HealthStatusString>
   }
 }
 
@@ -2222,26 +2219,6 @@ export namespace Proxmox {
     export type RequestBody = never
     export type RequestHeaders = {}
     export type ResponseBody = string
-  }
-}
-
-export namespace Reload {
-  /**
-   * @description Reload config
-   * @tags v1
-   * @name Reload
-   * @summary Reload config
-   * @request POST:/reload
-   * @response `200` `SuccessResponse` OK
-   * @response `403` `ErrorResponse` Forbidden
-   * @response `500` `ErrorResponse` Internal Server Error
-   */
-  export namespace Reload {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
   }
 }
 
@@ -3130,12 +3107,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name Health
      * @summary Get routes health info
      * @request GET:/health
-     * @response `200` `HealthMap` Health info by route name
+     * @response `200` `Record<string,HealthStatusString>` Health info by route name
      * @response `403` `ErrorResponse` Forbidden
      * @response `500` `ErrorResponse` Internal Server Error
      */
     health: (params: RequestParams = {}) =>
-      this.request<HealthMap, ErrorResponse>({
+      this.request<Record<string, HealthStatusString>, ErrorResponse>({
         path: `/health`,
         method: 'GET',
         type: ContentType.Json,
@@ -3858,27 +3835,6 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
         path: `/proxmox/tail`,
         method: 'GET',
         query: query,
-        type: ContentType.Json,
-        format: 'json',
-        ...params,
-      }),
-  }
-  reload = {
-    /**
-     * @description Reload config
-     *
-     * @tags v1
-     * @name Reload
-     * @summary Reload config
-     * @request POST:/reload
-     * @response `200` `SuccessResponse` OK
-     * @response `403` `ErrorResponse` Forbidden
-     * @response `500` `ErrorResponse` Internal Server Error
-     */
-    reload: (params: RequestParams = {}) =>
-      this.request<SuccessResponse, ErrorResponse>({
-        path: `/reload`,
-        method: 'POST',
         type: ContentType.Json,
         format: 'json',
         ...params,

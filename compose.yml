@@ -29,5 +29,5 @@ services:
       - ${PWD}/.tanstack:rw,uid=1000,gid=1000
     labels:
       proxy.aliases: godoxy-dev
-      proxy.#1.rule_file: embed://webui.yml
+      proxy.#1.rule_file: embed://webui_dev.yml
       proxy.#1.healthcheck.disable: true
