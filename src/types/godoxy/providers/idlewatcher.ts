@@ -7,10 +7,12 @@ export const STOP_SIGNALS = [
   '',
   'SIGINT',
   'SIGTERM',
+  'SIGKILL',
   'SIGHUP',
   'SIGQUIT',
   'INT',
   'TERM',
+  'KILL',
   'HUP',
   'QUIT',
 ] as const
