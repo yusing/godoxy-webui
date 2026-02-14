@@ -65,7 +65,7 @@ const ObjectDataList = memo(function ObjectDataList({
     }
 
     // Check if object has only one item - if so, flatten it to key.subkey format
-    const entries = Object.values(v).filter(value => value !== undefined)
+    const entries = Object.entries(v).filter(value => value !== undefined)
     if (entries.length === 1) {
       const [subKey, subValue] = entries[0]!
       return <ObjectDataList k={`${k}.${subKey}`} v={subValue} depth={depth + 1} />
