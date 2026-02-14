@@ -43,18 +43,12 @@ export const Route = createRootRoute({
       },
       {
         rel: 'manifest',
-        href: '/manifest.webmanifest',
+        href: '/manifest.json',
       },
     ],
   }),
   component: RootLayout,
 })
-
-const clientRegisterSW = createIsomorphicFn()
-  .client(() => registerSW({ immediate: true }))
-  .server(() => undefined)
-
-clientRegisterSW()
 
 function RootLayout() {
   return (
