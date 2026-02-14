@@ -3,7 +3,7 @@ services:
   frontend:
     container_name: godoxy-frontend-next-dev
     restart: no
-    image: oven/bun:1.3.8-alpine
+    image: oven/bun:1.3.9-alpine
     env_file: .env
     user: 1000:1000
     working_dir: ${PWD:?PWD is not set, please run from make dev}
