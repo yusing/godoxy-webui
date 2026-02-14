@@ -1,5 +1,6 @@
-import { registerSW } from 'virtual:pwa-register'
-import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router'
+import { TanStackDevtools } from '@tanstack/react-devtools'
+import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router'
+import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import Titlebar from '@/components/layout/Titlebar'
 import TitlebarController from '@/components/layout/TitlebarController'
 import { ThemeProvider } from '@/components/ThemeProvider'
@@ -44,24 +45,36 @@ export const Route = createRootRoute({
       },
     ],
   }),
-  component: RootLayout,
+
+  shellComponent: RootDocument,
 })
 
-function RootLayout() {
+function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <head>
         <HeadContent />
       </head>
-      <body className="font-sans antialiased">
+      <body>
         <ThemeProvider>
           <Titlebar />
           <TitlebarController />
           <main id="main-content">
-            <Outlet />
+            {children}
             <Toaster position="top-right" richColors closeButton theme="system" />
           </main>
         </ThemeProvider>
+        <TanStackDevtools
+          config={{
+            position: 'bottom-right',
+          }}
+          plugins={[
+            {
+              name: 'Tanstack Router',
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+          ]}
+        />
         <Scripts />
       </body>
     </html>
