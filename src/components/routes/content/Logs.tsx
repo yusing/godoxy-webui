@@ -25,9 +25,6 @@ import { type RouteKey, store } from '../store'
 
 import '@xterm/xterm/css/xterm.css'
 
-import '@fontsource/cascadia-code/400.css'
-import '@fontsource/cascadia-code/700.css'
-
 import { Query } from '@/lib/query'
 import '../style.css'
 
@@ -100,7 +97,7 @@ export default function Logs({ routeKey }: { routeKey: RouteKey }) {
         disableStdin: true,
         scrollback: 5000,
         allowTransparency: true,
-        fontFamily: '"Cascadia Code", monospace',
+        fontFamily: '"Cascadia Code Variable", monospace',
         fontSize: 12,
         fontWeight: '400',
         fontWeightBold: '700',

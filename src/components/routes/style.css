@@ -1,7 +1,12 @@
+@import "@fontsource-variable/cascadia-code";
+
 :root {
   --sidebar-header-height: 40px;
   --sidebar-search-box-height: 40px;
   --sidebar-keyboard-hints-height: 40px;
+  --font-mono:
+    "Cascadia Code Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
 }
 
 .sidebar-header {

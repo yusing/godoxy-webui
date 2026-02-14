@@ -5,10 +5,7 @@ import TitlebarController from '@/components/layout/TitlebarController'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { Toaster } from '@/components/ui/sonner'
 import { siteConfig } from '@/site-config'
-import '@fontsource/geist'
-import '@fontsource/geist-mono'
 import appCss from '../styles.css?url'
-import { createClientOnlyFn, createIsomorphicFn } from '@tanstack/react-start'
 
 if (import.meta.env.DEV) {
   import('react-scan').then(({ scan }) => scan())
