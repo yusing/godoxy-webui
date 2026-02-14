@@ -58,7 +58,7 @@ export function formatDuration(dur: number, options?: { unit?: 'us' | 'ms' | 's'
 
   if (ns < 1e3) {
     // < 1 ms
-    return `${negative ? '-' : ''}${ns}us`
+    return `${negative ? '-' : ''}${Math.round(ns)}μs`
   }
   if (ns < 1e6) {
     // < 1 s
