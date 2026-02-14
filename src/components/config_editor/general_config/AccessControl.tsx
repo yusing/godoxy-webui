@@ -4,6 +4,7 @@ import { StoreMapInput } from '@/components/form/StoreMapInput'
 import { StoreCheckboxField } from '@/components/store/Checkbox'
 import { StoreRadioField } from '@/components/store/Radio'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { FieldGroup } from '@/components/ui/field'
 import { ACLSchema } from '@/types/godoxy'
 import { configStore } from '../store'
 
@@ -17,12 +18,14 @@ export default function AccessControlConfigContent() {
         <CardHeader>
           <CardTitle>Behavior</CardTitle>
         </CardHeader>
-        <CardContent flex>
-          <StoreRadioField state={acl.default.withDefault('allow')} options={['allow', 'deny']} />
-          <StoreCheckboxField
-            state={acl.allow_local.withDefault(true)}
-            title="Allow local access"
-          />
+        <CardContent>
+          <FieldGroup>
+            <StoreRadioField state={acl.default.withDefault('allow')} options={['allow', 'deny']} />
+            <StoreCheckboxField
+              state={acl.allow_local.withDefault(true)}
+              title="Allow local access"
+            />
+          </FieldGroup>
         </CardContent>
       </Card>
       <StoreMapInput
@@ -43,7 +46,7 @@ function ACLNotifyConfig() {
   )
   const schema = useMemo(() => {
     const s = structuredClone(ACLSchema.definitions.ACLConfig.properties.notify)
-    if (providerNames.length == 0) {
+    if (providerNames.length === 0) {
       s.properties.to.type = 'string'
     } else {
       // @ts-expect-error this is correct
@@ -57,10 +60,10 @@ function ACLNotifyConfig() {
       label="Notify Config"
       schema={schema}
       state={aclNotify}
-      readonly={providerNames.length == 0}
+      readonly={providerNames.length === 0}
       placeholder={{
         key: 'to',
-        value: providerNames.length == 0 ? 'No notification providers configured' : undefined,
+        value: providerNames.length === 0 ? 'No notification providers configured' : undefined,
       }}
     />
   )

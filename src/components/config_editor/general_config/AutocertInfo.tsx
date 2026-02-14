@@ -20,7 +20,7 @@ export default function AutocertInfo({
 
   useEffect(() => {
     if (!navRef.current) return
-    const shouldHide = !certInfo || certInfo.length == 0
+    const shouldHide = !certInfo || !Array.isArray(certInfo) || certInfo.length === 0
     navRef.current.style.display = shouldHide ? 'none' : 'flex'
   }, [certInfo, navRef])
 
@@ -40,14 +40,14 @@ export default function AutocertInfo({
     <CarouselContent className="transition-[height] duration-200 ease-in-out items-start">
       {certInfo.map(cert => (
         <CarouselItem key={cert.subject}>
-          <CertInfo certInfo={cert} />
+          <CertInfoItem certInfo={cert} />
         </CarouselItem>
       ))}
     </CarouselContent>
   )
 }
 
-function CertInfo({ certInfo }: { certInfo: CertInfo }) {
+function CertInfoItem({ certInfo }: { certInfo: CertInfo }) {
   return (
     <DataList>
       <DataListRow label="Subject" value={certInfo.subject} />
@@ -56,7 +56,7 @@ function CertInfo({ certInfo }: { certInfo: CertInfo }) {
       <DataListRow label="Expiry" value={formatTimestamp(certInfo.not_after)} />
       {Array.isArray(certInfo.dns_names) &&
         certInfo.dns_names.map((name, i) => (
-          <DataListRow key={`${name}-${i}`} label={`DNS name ${i + 1}`} value={name} />
+          <DataListRow key={name} label={`DNS name ${i + 1}`} value={name} />
         ))}
       {Array.isArray(certInfo.email_addresses) && certInfo.email_addresses.length > 0 && (
         <DataListRow label="Email addresses" value={certInfo.email_addresses.join(', ')} />
