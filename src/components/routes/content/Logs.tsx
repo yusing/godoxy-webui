@@ -31,6 +31,8 @@ import '../style.css'
 import { type Atom, createAtom } from 'juststore'
 import { formatLineForTerminal, resolveThemeColorsAsync } from './logs'
 
+const fontFamily = 'Cascadia Code Variable'
+
 export default function Logs({ routeKey }: { routeKey: RouteKey }) {
   const logsRef = useRef<HTMLDivElement>(null)
   const termRef = useRef<Terminal | null>(null)
@@ -97,9 +99,9 @@ export default function Logs({ routeKey }: { routeKey: RouteKey }) {
         disableStdin: true,
         scrollback: 5000,
         allowTransparency: true,
-        fontFamily: '"Cascadia Code Variable", monospace',
+        fontFamily: fontFamily,
         fontSize: 12,
-        fontWeight: '400',
+        fontWeight: '500',
         fontWeightBold: '700',
         lineHeight: 1.2,
         theme,
@@ -117,7 +119,7 @@ export default function Logs({ routeKey }: { routeKey: RouteKey }) {
       term.loadAddon(webFontsAddon)
 
       // Wait for fonts to be fully loaded before opening the terminal
-      await webFontsAddon.loadFonts(['Cascadia Code'])
+      await webFontsAddon.loadFonts([fontFamily])
       if (cancelled) return
 
       term.open(container)
@@ -138,7 +140,7 @@ export default function Logs({ routeKey }: { routeKey: RouteKey }) {
     void init()
 
     return () => cleanup()
-  }, [routeKey])
+  }, [])
 
   useEffect(() => {
     const term = termRef.current
@@ -146,7 +148,7 @@ export default function Logs({ routeKey }: { routeKey: RouteKey }) {
       term.reset()
       term.clear()
     }
-  }, [routeKey, termRef])
+  })
 
   useEffect(() => {
     const unsubscribe = maximizedAtom.subscribe(maximized => {
@@ -164,7 +166,6 @@ export default function Logs({ routeKey }: { routeKey: RouteKey }) {
         <LogProvider key={routeKey} routeKey={routeKey} termRef={termRef} />
       </Suspense>
       <LogsInner
-        key={routeKey}
         maximizedAtom={maximizedAtom}
         logsRef={logsRef}
         termRef={termRef}
@@ -193,27 +194,23 @@ function LogsInner({
   useEffect(() => {
     setScrollDirectionRef.current = next =>
       setScrollDirection(prev => (prev === next ? prev : next))
-  }, [setScrollDirectionRef, setScrollDirection])
+  }, [setScrollDirectionRef])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Enter') return
 
-      const container = containerRef.current
-      if (!container) return
-
-      const activeElement = document.activeElement
-      if (!activeElement || !container.contains(activeElement)) return
-
-      e.preventDefault()
-      e.stopPropagation()
+      // Prevent Enter from triggering fullscreen when typing in input fields
+      const target = e.target as HTMLElement
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        return
+      }
 
       maximizedAtom.set(!maximizedAtom.value)
-      container.focus()
     }
     window.addEventListener('keydown', handleKeyDown, true)
     return () => window.removeEventListener('keydown', handleKeyDown, true)
-  }, [containerRef, maximizedAtom])
+  }, [maximizedAtom])
 
   return (
     <div
@@ -222,7 +219,6 @@ function LogsInner({
       has-data-[maximized=true]:absolute has-data-[maximized=true]:px-[5vw] has-data-[maximized=true]:py-[5vh] has-data-[maximized=true]:top-0 has-data-[maximized=true]:left-0
       has-data-[maximized=true]:h-full has-data-[maximized=true]:w-full
       has-data-[maximized=true]:p-4 has-data-[maximized=true]:z-50"
-      tabIndex={0}
     >
       <Suspense>
         <LogThemeUpdater termRef={termRef} />
@@ -322,7 +318,7 @@ function LogProvider({
     if (containerId) {
       return `/docker/logs/${containerId}`
     }
-    if (proxmox && proxmox.node) {
+    if (proxmox?.node) {
       if (proxmox.files && proxmox.files.length > 0) {
         const basePath = `/proxmox/tail`
         const query = new Query()
