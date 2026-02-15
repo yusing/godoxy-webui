@@ -1,7 +1,13 @@
-import { Activity, Boxes, Cpu, Layers } from 'lucide-react'
+import {
+  IconActivity,
+  IconBox,
+  IconFileUnknown,
+  IconRoute,
+  IconShieldLock,
+} from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 import { useWebSocketApi } from '@/hooks/websocket'
-import type { Event, EventsLevel, HealthJSON, Route } from '@/lib/api'
+import type { EventsLevel, HealthJSON, Route } from '@/lib/api'
 import { formatRelTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { Badge } from '../ui/badge'
@@ -10,6 +16,49 @@ import { ScrollArea } from '../ui/scroll-area'
 import { store } from './store'
 
 export { EventsList, EventsWatcher }
+
+type PoolAction = 'added' | 'removed' | 'reloaded'
+
+type EventCommon = {
+  level: EventsLevel
+  timestamp: string
+  uuid: string
+  action: string
+}
+
+type Event = EventCommon &
+  (
+    | {
+        category: 'health'
+        action: 'service_down' | 'service_up'
+        data: HealthJSON
+      }
+    | {
+        category: 'acl_event'
+        action: 'blocked'
+        data: { ip: string; reason: string }
+      }
+    | {
+        category: 'http_event'
+        action: 'blocked'
+        data: { remote_ip: string; request_url: string; source: string; reason: string }
+      }
+    | {
+        category: 'provider_event'
+        action: string
+        data: { provider: string; type: string; actor: string }
+      }
+    | {
+        category: 'pool.proxmox_nodes'
+        action: PoolAction
+        data: { name: string; id: string }
+      }
+    | {
+        category: 'pool.http_routes' | 'pool.stream_routes' | 'pool.excluded_routes'
+        action: PoolAction
+        data: Route
+      }
+  )
 
 function EventsList() {
   const events = store.events.use() ?? []
@@ -23,7 +72,7 @@ function EventsList() {
         <ScrollArea className="h-[calc(100%-2rem)]">
           <div className="space-y-2">
             {events.map(event => (
-              <EventRow key={event.uuid} event={event} />
+              <EventRow key={event.uuid} event={event as Event} />
             ))}
           </div>
         </ScrollArea>
@@ -49,34 +98,46 @@ function levelClassname(level: EventsLevel) {
 
 function EventRow({ event }: { event: Event }) {
   const isHealthServiceDown = event.category === 'health' && event.action === 'service_down'
-  const kind =
-    event.category === 'health' ? (
-      <Badge variant="secondary" className="gap-1">
-        <Activity className="size-3.5" />
-        health
-      </Badge>
-    ) : event.category.startsWith('pool.') ? (
-      <Badge variant="secondary" className="gap-1">
-        <Layers className="size-3.5" />
-        proxy
-      </Badge>
-    ) : event.category.includes('auth') ? (
-      <Badge variant="secondary" className="gap-1">
-        <Cpu className="size-3.5" />
-        auth
-      </Badge>
-    ) : (
-      <Badge variant="secondary" className="gap-1">
-        <Boxes className="size-3.5" />
-        deploy
-      </Badge>
-    )
+
+  let icon: React.ReactNode
+  let label: string
+  switch (event.category) {
+    case 'health':
+      icon = <IconActivity className="size-3.5" />
+      label = 'health'
+      break
+    case 'pool.proxmox_nodes':
+    case 'pool.http_routes':
+    case 'pool.stream_routes':
+    case 'pool.excluded_routes':
+      icon = <IconRoute className="size-3.5" />
+      label = 'proxy'
+      break
+    case 'provider_event':
+      icon = <IconBox className="size-3.5" />
+      label = event.data.type // file / docker
+      break
+    case 'acl_event':
+      icon = <IconShieldLock className="size-3.5" />
+      label = 'acl'
+      break
+    case 'http_event':
+      icon = <IconShieldLock className="size-3.5" />
+      label = 'http'
+      break
+    default:
+      icon = <IconFileUnknown className="size-3.5" />
+      label = 'unknown'
+  }
 
   return (
     <div className="flex items-start justify-between gap-3 rounded-lg px-3 py-2 bg-card backdrop-blur">
       <div className="min-w-0 space-y-1">
         <div className="flex flex-wrap items-center gap-2">
-          {kind}
+          <Badge variant="secondary" className="gap-1 bg-info/20 text-info-foreground">
+            {icon}
+            {label}
+          </Badge>
           <RelTimeBadge
             timestamp={new Date(event.timestamp)}
             level={event.level}
@@ -133,10 +194,9 @@ function RelTimeBadge({
 function EventData({ event }: { event: Event }) {
   switch (event.category) {
     case 'pool.proxmox_nodes': {
-      const data = event.data as { name: string; id: string }
       return (
         <span>
-          {data.name} <strong>({data.id})</strong> {event.action}
+          {event.data.name} <strong>({event.data.id})</strong> {event.action}
         </span>
       )
     }
@@ -149,42 +209,73 @@ function EventData({ event }: { event: Event }) {
         'pool.excluded_routes': 'Excluded route',
       } as const
       const type = names[event.category]
-      const data = event.data as Route
       return (
         <span>
-          {type} <strong>{data.alias}</strong> {event.action}
+          {type} <strong>{event.data.alias}</strong> {event.action}
         </span>
       )
     }
-    case 'health':
-      {
-        const data = event.data as HealthJSON
-        switch (event.action) {
-          case 'service_down':
-            return (
-              <div>
-                <span>
-                  <strong>{data.name}</strong> went down
-                </span>
-                {data.detail ? (
-                  <div className="mt-0.5 text-xs text-muted-foreground wrap-break-word">
-                    {data.detail}
-                  </div>
-                ) : null}
-              </div>
-            )
-          case 'service_up':
-            return (
+    case 'provider_event': {
+      return (
+        <div className="space-y-0.5">
+          <span>
+            <strong>{event.data.actor}</strong> {event.action}
+          </span>
+          <div className="text-xs text-muted-foreground wrap-break-word">
+            Provider: {event.data.provider}
+          </div>
+        </div>
+      )
+    }
+    case 'acl_event': {
+      return (
+        <div className="space-y-0.5">
+          <span>
+            IP Blocked <strong>{event.data.ip}</strong>
+          </span>
+          <div className="text-xs text-muted-foreground wrap-break-word">{event.data.reason}</div>
+        </div>
+      )
+    }
+    case 'http_event': {
+      return (
+        <div className="space-y-0.5">
+          <span>
+            {event.data.source} blocked <strong>{event.data.remote_ip}</strong>
+          </span>
+          <div className="text-xs text-muted-foreground wrap-break-word">
+            to {event.data.request_url}
+          </div>
+          <div className="text-xs text-muted-foreground wrap-break-word">{event.data.reason}</div>
+        </div>
+      )
+    }
+    case 'health': {
+      switch (event.action) {
+        case 'service_down':
+          return (
+            <div className="space-y-0.5">
               <span>
-                <strong>{data.name}</strong> is up ({data.latency}ms)
+                <strong>{event.data.name}</strong> went down
               </span>
-            )
-        }
+              {event.data.detail ? (
+                <div className="text-xs text-muted-foreground wrap-break-word">
+                  {event.data.detail}
+                </div>
+              ) : null}
+            </div>
+          )
+        case 'service_up':
+          return (
+            <span>
+              <strong>{event.data.name}</strong> is up ({event.data.latency}ms)
+            </span>
+          )
       }
-      return <span>Unknown health action {event.action}</span>
+    }
   }
 
-  return null
+  return <span>Unknown health action {(event as EventCommon).action}</span>
 }
 
 function EventsWatcher() {
