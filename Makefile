@@ -44,7 +44,7 @@ test-run-lite:
 	docker compose -f test-run.lite.compose.yml up --build --pull=never
 
 gen-schema-single:
-	bun --bun ts-json-schema-generator --minify --no-type-check -e export --no-ref-encode -f ./tsconfig.json -o "${SCHEMA_DIR}/${OUT}" -p "${SCHEMA_DIR}/${IN}" -t ${CLASS}
+	bunx --bun ts-json-schema-generator --minify --no-type-check -e export --no-ref-encode -f ./tsconfig.json -o "${SCHEMA_DIR}/${OUT}" -p "${SCHEMA_DIR}/${IN}" -t ${CLASS}
 	# deference
 	bun --bun ${SCHEMA_DIR}/deref.ts ${SCHEMA_DIR}/${OUT}
 
