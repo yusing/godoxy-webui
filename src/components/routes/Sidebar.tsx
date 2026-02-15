@@ -68,9 +68,7 @@ function getVisibleRouteItems() {
   // Sidebar is rendered twice for responsiveness, so we need to filter out the invisible elements
   // See app/routes/page.tsx
   return Array.from(
-    document.querySelectorAll<HTMLAnchorElement>(
-      '.sidebar-item-list .route-item:not([data-filtered="true"])'
-    )
+    document.querySelectorAll<HTMLButtonElement>('.sidebar-item-list .route-item:not([hidden])')
   ).filter(isVisibleElement)
 }
 
@@ -122,7 +120,7 @@ function handleRouteKeyDown(e: KeyboardEvent) {
     }
     case 'Enter': {
       e.preventDefault()
-      const active = document.querySelector<HTMLAnchorElement>('.route-item[data-active="true"]')
+      const active = document.querySelector<HTMLButtonElement>('.route-item[data-active="true"]')
       if (!active) return
 
       const routeId = active.id.replace('route-', '')
@@ -234,38 +232,35 @@ function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: Route
   if (proxmoxOnly && !isProxmox) return null
 
   return (
-    <div className="flex flex-col">
-      <button
-        id={`route-${routeKey}`}
-        type="button"
-        onClick={() => {
-          setSelectedRoute(routeKey)
-          store.mobileDialogOpen.set(true)
-        }}
-        className={cn(
-          'route-item text-left p-3',
-          'data-[filtered=true]:hidden',
-          'data-[active=true]:border-2 data-[active=true]:border-primary',
-          'focus:outline-none focus-visible:outline-none focus-visible:ring-0', // prevents double border when focused + arrow navigation
-          'hover:bg-muted/50'
-        )}
-      >
-        <div className="flex justify-between items-center gap-4 flex-1">
-          <div className="mt-0.5 flex items-center gap-2">
-            <AppIcon alias={alias} size={18} />
-            <Label className="route-display-name">{displayName || alias}</Label>
-          </div>
-          <hideUptimebarState.Render>
-            {hideUptimebar => (
-              <Label className={cn('text-sm', hideUptimebar && 'w-[10ch] text-right')}>
-                <RoutePercentageText routeKey={routeKey} />
-              </Label>
-            )}
-          </hideUptimebarState.Render>
+    <button
+      id={`route-${routeKey}`}
+      type="button"
+      onClick={() => {
+        setSelectedRoute(routeKey)
+        store.mobileDialogOpen.set(true)
+      }}
+      className={cn(
+        'route-item w-full text-left p-3',
+        'data-[active=true]:border-2 data-[active=true]:border-primary',
+        'focus:outline-none focus-visible:outline-none focus-visible:ring-0', // prevents double border when focused + arrow navigation
+        'hover:bg-muted/50'
+      )}
+    >
+      <div className="flex justify-between items-center gap-4 flex-1">
+        <div className="mt-0.5 flex items-center gap-2">
+          <AppIcon alias={alias} size={18} />
+          <Label className="route-display-name">{displayName || alias}</Label>
         </div>
-        <RouteUptimeBar routeKey={routeKey} className="mt-2" />
-      </button>
-    </div>
+        <hideUptimebarState.Render>
+          {hideUptimebar => (
+            <Label className={cn('text-sm', hideUptimebar && 'w-[10ch] text-right')}>
+              <RoutePercentageText routeKey={routeKey} />
+            </Label>
+          )}
+        </hideUptimebarState.Render>
+      </div>
+      <RouteUptimeBar routeKey={routeKey} className="mt-2" />
+    </button>
   )
 }
 

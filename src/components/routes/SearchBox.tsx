@@ -25,7 +25,7 @@ export default function RoutesSidebarSearchBox() {
     // empty search query, show all items
     if (!searchQuery) {
       for (const item of items) {
-        item.removeAttribute('data-filtered')
+        item.hidden = false
       }
       return
     }
@@ -34,9 +34,9 @@ export default function RoutesSidebarSearchBox() {
     for (const item of items) {
       const displayName = item.querySelector('.route-display-name')?.textContent
       if (displayName?.toLowerCase().includes(searchQuery.toLowerCase())) {
-        item.removeAttribute('data-filtered')
+        item.hidden = false
       } else {
-        item.setAttribute('data-filtered', 'true')
+        item.hidden = true
       }
     }
   }, [])
