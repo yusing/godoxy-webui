@@ -26,7 +26,7 @@ import MiddlewareComposeFormContent from './middleware_compose/MiddlewareCompose
 import NewRouteFormContent from './route_files/NewRouteForm'
 import RouteListContent from './route_files/RouteList'
 
-type Section = {
+export type Section = {
   id: string
   label: string
   icon: LucideIcon
@@ -35,7 +35,7 @@ type Section = {
   diffPaths?: string[]
 }
 
-const configSections: Section[] = [
+const configSections = [
   {
     id: 'autocert',
     label: 'SSL Certificates',
@@ -105,18 +105,18 @@ const configSections: Section[] = [
   //   icon: Home,
   //   description: 'Homepage configuration',
   // },
-] as const
+] as const satisfies Section[]
 
-const middlewareSections: Section[] = [
+const middlewareSections = [
   {
     id: 'middleware-list',
     label: 'Middleware List',
     icon: SlidersHorizontal,
     Content: MiddlewareComposeFormContent,
   },
-]
+] as const satisfies Section[]
 
-const includeFileSections: Section[] = [
+const includeFileSections = [
   {
     id: 'route-list',
     label: 'Route List',
@@ -130,10 +130,10 @@ const includeFileSections: Section[] = [
     Content: NewRouteFormContent,
     preload: true,
   },
-]
+] as const satisfies Section[]
 
 export const sectionsByFileType = {
   config: { label: 'General Configurations', sections: configSections },
   middleware: { label: 'Middleware Compose', sections: middlewareSections },
   provider: { label: 'Include Files', sections: includeFileSections },
-}
+} as const

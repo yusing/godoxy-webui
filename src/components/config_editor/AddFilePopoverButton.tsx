@@ -110,6 +110,6 @@ function handleAddFile({ type, filename }: FormValues) {
 
   // if the type has changed, set the active section to the first section of the new type
   if (hasTypeChanged) {
-    configStore.activeSection.set(sectionsByFileType[type].sections[0]!.id)
+    configStore.activeSection.set(sectionsByFileType[type].sections[0].id)
   }
 }

@@ -1,8 +1,8 @@
+import { Link } from '@tanstack/react-router'
+import { BookOpenText, Code, FlaskConical, Grid3X3, Route, Server } from 'lucide-react'
 import { ModeToggle } from '@/components/ui/theme-toggle'
 import { cn } from '@/lib/utils'
 import { siteConfig } from '@/site-config'
-import { Link } from '@tanstack/react-router'
-import { BookOpenText, Code, FlaskConical, Grid3X3, Route, Server } from 'lucide-react'
 import LogoutButton from '../LogoutButton'
 import VersionText from '../VersionText'
 

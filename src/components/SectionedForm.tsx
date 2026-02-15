@@ -166,7 +166,7 @@ function useSectionTracker<T extends SectionId>(sections: SectionItem<T>[], defa
       if (candidates.length === 0) return
       const current = getEffectiveActiveSection(activeSection.value)
       const ids = candidates.map(item => item.dataset.section as T)
-      const currentIndex = ids.findIndex(id => id === current)
+      const currentIndex = current ? ids.indexOf(current) : -1
       const direction = event.deltaY > 0 ? 1 : -1
       const nextIndex = Math.min(
         Math.max((currentIndex === -1 ? 0 : currentIndex) + direction, 0),
@@ -192,7 +192,7 @@ function useSectionTracker<T extends SectionId>(sections: SectionItem<T>[], defa
       rootTarget.removeEventListener('wheel', onWheel)
       window.removeEventListener('resize', scheduleUpdate)
     }
-  }, [sections, activeSection, getEffectiveActiveSection])
+  }, [activeSection, getEffectiveActiveSection])
 
   const scrollToSection = useCallback(
     (id: T) => {

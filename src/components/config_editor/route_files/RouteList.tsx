@@ -23,7 +23,7 @@ export default function RouteList() {
   }
   const onDuplicate = (key: string) => {
     setConfig({
-      [key + '-copy']: { ...config![key] },
+      [`${key}-copy`]: { ...config?.[key] },
       ...config,
     })
   }

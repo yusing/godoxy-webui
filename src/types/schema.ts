@@ -21,7 +21,7 @@ type PrimitiveType = string | number | boolean
 type JSONSchema = {
   title?: string
   description?: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: examples are not typed
   examples?: any[]
   type?: PropertyType | PropertyType[]
   const?: PrimitiveType
@@ -92,7 +92,7 @@ function distinctSchema(schema: PropertySchema): PropertySchema {
   })
   return Object.values(distinctSchema).reduce((acc, schema) => {
     const key = schema.key!
-    delete schema['key']
+    delete schema.key
     acc[key] = schema
     return acc
   }, {} as PropertySchema)

@@ -55,6 +55,7 @@ export default function AutocertRenewDialogButton() {
                 <pre
                   key={i}
                   className="whitespace-pre-wrap text-xs font-mono font-medium"
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: ANSI escape codes are safe
                   dangerouslySetInnerHTML={{ __html: convert.toHtml(line) }}
                 />
               ))}

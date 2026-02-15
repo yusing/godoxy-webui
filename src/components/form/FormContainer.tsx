@@ -130,7 +130,7 @@ export function FormContainer({
   )
 
   const maybeCollapsible = (children: ReactNode) =>
-    collapsible ? <CollapsibleContent>{children}</CollapsibleContent> : <>{children}</>
+    collapsible ? <CollapsibleContent>{children}</CollapsibleContent> : children
 
   const result = card ? (
     <Card aria-required={required || undefined} className={cn(readonly && 'opacity-60 grayscale')}>

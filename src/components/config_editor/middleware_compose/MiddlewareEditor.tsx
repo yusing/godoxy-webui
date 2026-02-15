@@ -60,7 +60,7 @@ export function MiddlewareComposeEditor({
       <TabsList className="flex w-full flex-wrap gap-1 h-auto min-h-9 p-1">
         {keys.map((k, index) => (
           <TabsTrigger
-            key={`${index}_tab`}
+            key={k}
             value={String(index)}
             render={
               <Button
@@ -72,8 +72,8 @@ export function MiddlewareComposeEditor({
             }
           >
             <span className="truncate max-w-[120px]">{k}</span>
-            <span
-              role="button"
+            <button
+              type="button"
               aria-label={`Delete ${k}`}
               className="absolute right-1 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-destructive hover:text-destructive-foreground opacity-60 hover:opacity-100 transition-all cursor-pointer z-10 pointer-events-auto"
               onClick={e => {
@@ -94,7 +94,7 @@ export function MiddlewareComposeEditor({
               onPointerDown={e => e.stopPropagation()}
             >
               <IconX className="size-3.5" />
-            </span>
+            </button>
           </TabsTrigger>
         ))}
         <Button
@@ -117,11 +117,7 @@ export function MiddlewareComposeEditor({
         </Button>
       </TabsList>
       {Object.entries(data).map(([k, v], index) => (
-        <TabsContent
-          key={`${index}_content`}
-          value={String(index)}
-          className="mt-4 flex flex-col gap-4"
-        >
+        <TabsContent key={k} value={String(index)} className="mt-4 flex flex-col gap-4">
           <div className="flex flex-col gap-3">
             <Label>Name</Label>
             <Input

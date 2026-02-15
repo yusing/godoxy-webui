@@ -19,7 +19,6 @@ export default function ProxmoxConfigContent() {
       label="Proxmox"
       keyField="url"
       nameField="url"
-      card={false}
       schema={ConfigSchema.definitions.ProxmoxConfig}
       value={config ?? []}
       onChange={setProxmoxConfig}

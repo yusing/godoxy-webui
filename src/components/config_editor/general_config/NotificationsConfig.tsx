@@ -19,7 +19,6 @@ export default function NotificationsConfigContent() {
       label="Notifications"
       keyField="provider"
       nameField="name"
-      card={false}
       schema={ConfigSchema.definitions.Providers.properties.notification.items}
       value={config ?? []}
       onChange={setNotificationsConfig}

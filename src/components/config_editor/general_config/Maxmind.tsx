@@ -6,7 +6,6 @@ export default function MaxmindConfigContent() {
   return (
     <StoreMapInput
       label="Maxmind"
-      card={false}
       schema={MaxmindSchema.definitions.MaxmindConfig}
       state={configStore.configObject.providers.maxmind.ensureObject()}
     />

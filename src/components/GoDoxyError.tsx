@@ -14,6 +14,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from './ui/alert'
 
 const convertANSI = new Convert()
+// biome-ignore lint/suspicious/noControlCharactersInRegex: ANSI escape codes are safe
 const ansiRegex = /(\x1b\[[0-9;]*m)/g
 
 export type GoDoxyError = string | Record<string, unknown> | WithSubject | NestedError
@@ -33,7 +34,7 @@ type FlatRow = {
 
 function subjectsToLabel(subjects?: string[]): string {
   if (!subjects || subjects.length === 0) return ''
-  return subjects.join('.') + ':'
+  return `${subjects.join('.')}:`
 }
 
 // FIXME: fix this
@@ -93,7 +94,9 @@ export function flattenGoDoxyError(
   if (typeof input === 'object' && 'extras' in input && Array.isArray(input.extras)) {
     const nested = input as NestedError
     if (!nested.err) {
-      nested.extras.forEach(e => flattenGoDoxyError(e as GoDoxyError, level, rows, currentGroup))
+      nested.extras.forEach(e => {
+        flattenGoDoxyError(e as GoDoxyError, level, rows, currentGroup)
+      })
       return rows
     }
 
@@ -159,7 +162,9 @@ export function flattenGoDoxyError(
   }
 
   if (Array.isArray(input)) {
-    input.forEach(item => flattenGoDoxyError(item as GoDoxyError, level, rows, currentGroup))
+    input.forEach(item => {
+      flattenGoDoxyError(item as GoDoxyError, level, rows, currentGroup)
+    })
     return rows
   }
   if (typeof input === 'object' && input) {
@@ -292,7 +297,7 @@ function SubjectText({
           <SpanWithANSI key={idx} text={s} />
         ))}
       </span>
-      {message ? <SpanWithANSI text={' ' + message} /> : ''}
+      {message ? <SpanWithANSI text={` ${message}`} /> : ''}
     </div>
   )
 }
@@ -300,6 +305,7 @@ function SubjectText({
 function SpanWithANSI({ text }: { text?: string }) {
   if (!text) return null
   if (ansiRegex.test(text)) {
+    // biome-ignore lint/security/noDangerouslySetInnerHtml: ANSI escape codes are safe
     return <span dangerouslySetInnerHTML={{ __html: convertANSI.toHtml(text) }} />
   }
   return <span>{text}</span>

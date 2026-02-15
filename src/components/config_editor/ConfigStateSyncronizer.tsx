@@ -91,7 +91,7 @@ export default function ConfigStateSyncronizer() {
     return unsubscribe
   })
 
-  return <></>
+  return null
 }
 
 async function validate(content: string, type: ConfigFile['type']) {

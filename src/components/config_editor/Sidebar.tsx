@@ -18,7 +18,7 @@ import {
 import AddFilePopoverButton from './AddFilePopoverButton'
 import ConfigReloadButton from './ConfigReloadButton'
 import ConfigSaveButton from './ConfigSaveButton'
-import { sectionsByFileType } from './sections'
+import { type Section, sectionsByFileType } from './sections'
 import { configStore, useDiffs } from './store'
 import { fileTypeLabels } from './types'
 
@@ -120,7 +120,7 @@ function Sections() {
   // if current section is not in sections, set it to the first section
   useEffect(() => {
     if (!sections.some(section => section.id === activeSection)) {
-      configStore.activeSection.set(sections[0]!.id)
+      configStore.activeSection.set(sections[0].id)
     }
   }, [activeSection, sections])
 
@@ -147,7 +147,10 @@ function Sections() {
                     <span>{section.label}</span>
                   </div>
                   <div className="flex items-center gap-4">
-                    <UnsavedChangesIndicator isActive={isActive} diffPaths={section.diffPaths} />
+                    <UnsavedChangesIndicator
+                      isActive={isActive}
+                      diffPaths={(section as Section).diffPaths}
+                    />
                     {isActive && <IconChevronRight className="size-4 shrink-0" />}
                   </div>
                 </SidebarMenuButton>

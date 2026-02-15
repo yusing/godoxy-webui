@@ -41,9 +41,7 @@ export default function ConfigSaveButton(props: React.ComponentProps<typeof Butt
       ) : isSaved ? (
         <IconCheck className="text-green-500 animate-in fade-in-0 duration-1000" />
       ) : (
-        <>
-          <IconDeviceFloppy />
-        </>
+        <IconDeviceFloppy />
       )}
     </Button>
   )

@@ -110,8 +110,8 @@ export function ListInputItem<T extends string>({
             <SelectValue placeholder={placeholder} />
           </SelectTrigger>
           <SelectContent>
-            {schema.items.enum.map((item, index) => (
-              <SelectItem value={item} key={index}>
+            {schema.items.enum.map(item => (
+              <SelectItem value={item} key={String(item)}>
                 {item}
               </SelectItem>
             ))}
