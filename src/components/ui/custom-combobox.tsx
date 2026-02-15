@@ -47,7 +47,7 @@ export function CustomCombobox<V, Multiple extends boolean | undefined = false>(
       </BaseCombobox.Trigger>
       <BaseCombobox.Portal>
         <BaseCombobox.Positioner sideOffset={4} align="start">
-          <BaseCombobox.Popup className="rounded-md border border-border bg-popover text-popover-foreground shadow-lg shadow-gray-200 transition-[transform,scale,opacity] data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
+          <BaseCombobox.Popup className="rounded-md border border-border bg-popover text-popover-foreground shadow shadow-foreground/10 transition-[transform,scale,opacity] data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
             <div className="border-b px-3 flex items-center gap-2">
               <SearchIcon className="size-4 shrink-0 text-muted-foreground" />
               <BaseCombobox.Input
