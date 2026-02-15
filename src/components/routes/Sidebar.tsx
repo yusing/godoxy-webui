@@ -245,7 +245,8 @@ function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: Route
         className={cn(
           'route-item text-left p-3',
           'data-[filtered=true]:hidden',
-          'data-[active=true]:ring-2 data-[active=true]:ring-primary',
+          'data-[active=true]:border-2 data-[active=true]:border-primary',
+          'focus:outline-none focus-visible:outline-none focus-visible:ring-0', // prevents double border when focused + arrow navigation
           'hover:bg-muted/50'
         )}
       >
