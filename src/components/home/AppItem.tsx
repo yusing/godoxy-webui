@@ -1,14 +1,14 @@
 import { Link } from '@tanstack/react-router'
 import type { ObjectState } from 'juststore'
 import { forwardRef, useMemo } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
 import type { HomepageItem } from '@/lib/api'
 import { api } from '@/lib/api-client'
+import { formatGoDuration } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { AppIcon } from '../AppIcon'
 import { ContextMenu, ContextMenuTrigger } from '../ui/context-menu'
 import AppItemContextMenuContent from './AppitemContextMenuContent'
-import HealthBubble from './HealthBubble'
+import HealthBadge from './HealthBadge'
 import { store } from './store'
 
 type AppItemProps = {
@@ -51,23 +51,24 @@ export default function AppItem({ categoryIndex, appIndex, visibleIndex }: AppIt
 }
 
 const AppItemInner = forwardRef<
-  HTMLDivElement,
+  HTMLButtonElement,
   { state: ObjectState<HomepageItem>; visibleIndex: number }
 >(({ visibleIndex, state, ...props }, ref) => {
-  const [alias, url, widgets, hasWidgets] = state.useCompute(item => [
+  const [alias, url, widgets, hasWidgets, category] = state.useCompute(item => [
     item.alias,
     item.url,
     item.widgets,
     Array.isArray(item.widgets) && item.widgets.length > 0,
+    item.category,
   ])
 
   return (
-    <Card
+    <button
       ref={ref}
+      type="button"
       className={cn(
-        'bg-transparent app-item border-none cursor-pointer hover:shadow-md hover:scale-105 px-0 py-4 row-span-2',
-        'data-[active=true]:ring-2 data-[active=true]:ring-primary data-[active=true]:shadow-lg',
-        hasWidgets && 'row-span-3'
+        'app-item group w-full rounded-xl bg-background/55 backdrop-blur px-3 py-2 text-left transition-all duration-200 hover:-translate-y-0.5 hover:from-background/95 hover:to-background/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer',
+        'data-[active=true]:ring-2 data-[active=true]:ring-ring'
       )}
       data-index={visibleIndex}
       data-url={url}
@@ -83,47 +84,62 @@ const AppItemInner = forwardRef<
       }
       {...props}
     >
-      <CardContent className={cn(hasWidgets && 'justify-between')}>
-        <div className="flex items-center gap-4 w-full">
-          <store.Render path={`health.${alias}`}>
-            {status => <HealthBubble status={status} />}
-          </store.Render>
+      <div className="flex items-start gap-3 min-w-0">
+        <div className="shrink-0 pt-0.5">
           <state.icon.Render>
             {icon => <ThemeAwareAppIcon alias={alias} url={icon || undefined} />}
           </state.icon.Render>
-          <div className="flex-1 flex flex-col items-start truncate shrink-0">
-            <state.name.Render>
-              {name => <h3 className="font-medium text-sm">{name || alias}</h3>}
-            </state.name.Render>
-            <state.description.Render>
-              {description =>
-                description && (
-                  <p className="text-xs text-muted-foreground line-clamp-2">{description}</p>
-                )
-              }
-            </state.description.Render>
-          </div>
         </div>
 
-        {hasWidgets && (
-          <div className="w-full space-y-3 mt-3 shrink-0">
-            <div
-              className={cn(
-                'grid gap-2',
-                widgets && widgets.length <= 2 ? 'grid-cols-2' : 'grid-cols-1 sm:grid-cols-3'
-              )}
-            >
-              {widgets.map((widget, index) => (
-                <div key={index} className="text-center">
-                  <div className="text-lg font-bold text-primary">{widget.value}</div>
-                  <div className="text-xs text-muted-foreground">{widget.label}</div>
-                </div>
-              ))}
-            </div>
+        <div className="min-w-0 flex-1 space-y-0.5">
+          {/* Row 1: Name + Health */}
+          <div className="flex items-center gap-2">
+            <state.name.Render>
+              {name => <span className="truncate text-sm font-medium">{name || alias}</span>}
+            </state.name.Render>
+            <store.Render path={`health.${alias}`}>
+              {health => <HealthBadge status={health} />}
+            </store.Render>
           </div>
-        )}
-      </CardContent>
-    </Card>
+
+          {/* Row 2: Description */}
+          <state.description.Render>
+            {description =>
+              description ? (
+                <div className="truncate text-xs text-muted-foreground/90">{description}</div>
+              ) : null
+            }
+          </state.description.Render>
+
+          {/* Row 3: Category · Latency · Widgets */}
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground pt-0.5">
+            <span className="truncate max-w-[100px]">{category}</span>
+            <store.Render path={`health.${alias}`}>
+              {health =>
+                health?.latency ? (
+                  <>
+                    <span aria-hidden>·</span>
+                    <span className="tabular-nums">{formatGoDuration(health.latency)}</span>
+                  </>
+                ) : null
+              }
+            </store.Render>
+
+            {hasWidgets && (
+              <>
+                <span aria-hidden>·</span>
+                {widgets.map((widget, i) => (
+                  <span key={i} className="flex items-center gap-1">
+                    <span className="font-medium text-primary/90">{widget.value}</span>
+                    <span className="opacity-70">{widget.label}</span>
+                  </span>
+                ))}
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    </button>
   )
 })
 
@@ -131,5 +147,5 @@ AppItemInner.displayName = 'AppItem'
 
 function ThemeAwareAppIcon({ alias, url }: { alias: string; url?: string }) {
   const themeAware = store.ui.iconThemeAware.use()
-  return <AppIcon className="size-6" themeAware={themeAware} alias={alias} url={url} />
+  return <AppIcon className="size-8" themeAware={themeAware} alias={alias} url={url} />
 }

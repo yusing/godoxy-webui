@@ -1,32 +1,33 @@
 import type { FieldPath } from 'juststore'
 import { Clock, Cpu, HardDrive, type LucideIcon, MemoryStick } from 'lucide-react'
 import { Suspense } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
-import { cn } from '@/lib/utils'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import SystemStatsProvider from './SystemStatsProvider'
 import SystemStatValue from './SystemStatValue'
 import type { Store } from './store'
 
 export default function SystemStats() {
-  // on mobile, displays as one rounded card
-  // on desktop, displays as 4 cards in a grid
   return (
     <div className="grid grid-cols-4 sm:gap-4">
-      {statsProps.map((stat, index) => (
+      {statsProps.map(stat => (
         <Card
           key={stat.key}
-          shrink
-          className={cn(
-            'shadow-sm hover:shadow-md transition-shadow border-none sm:border sm:rounded-lg',
-            index === 0 && 'rounded-l-lg',
-            index === statsProps.length - 1 && 'rounded-r-lg'
-          )}
+          className="bg-background/55 backdrop-blur supports-backdrop-filter:bg-background/35"
         >
-          <CardContent className="px-4 py-0">
-            <div className="flex items-center gap-3 flex-col sm:flex-row">
-              <stat.icon className="h-4 w-4 sm:h-5 sm:w-5 text-accent-foreground" />
-              <SystemStatValue valueKey={stat.key} type={stat.type} label={stat.label} />
+          <CardHeader>
+            <div className="flex items-center justify-between gap-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                {stat.label}
+              </CardTitle>
+              <stat.icon className="size-4 text-muted-foreground" />
             </div>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <SystemStatValue
+              valueKey={stat.key}
+              descriptionKey={stat.descriptionKey}
+              type={stat.type}
+            />
           </CardContent>
         </Card>
       ))}
@@ -43,6 +44,7 @@ type StatProp = {
   type: 'text' | 'progress' | 'duration'
   color: string
   key: FieldPath<Store['systemInfo']>
+  descriptionKey?: FieldPath<Store['systemInfo']>
   format?: (value: number) => string
 }
 
@@ -67,6 +69,7 @@ const statsProps: StatProp[] = [
     type: 'progress',
     color: 'bg-chart-2',
     key: 'memoryUsage',
+    descriptionKey: 'memoryUsageDesc',
   },
   {
     label: 'Disk Usage',
@@ -74,5 +77,6 @@ const statsProps: StatProp[] = [
     type: 'progress',
     color: 'bg-chart-3',
     key: 'rootPartitionUsage',
+    descriptionKey: 'rootPartitionUsageDesc',
   },
 ] as const

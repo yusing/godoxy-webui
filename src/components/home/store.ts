@@ -1,5 +1,5 @@
 import { createStore } from 'juststore'
-import type { HealthMap, HomepageCategory } from '@/lib/api'
+import type { Event, HealthMap, HomepageCategory } from '@/lib/api'
 
 export type ItemState = {
   alias: string
@@ -32,13 +32,16 @@ export type Store = {
     sortMethod: 'clicks' | 'alphabetical' | 'custom'
     // Future settings can be added here
   }
+  events: Event[]
 }
 
 type SystemInfoSimple = {
   uptime: number
   cpuAverage: number
   rootPartitionUsage: number
+  rootPartitionUsageDesc: string
   memoryUsage: number
+  memoryUsageDesc: string
 }
 
 export const store = createStore<Store>('homepage', {
@@ -46,7 +49,9 @@ export const store = createStore<Store>('homepage', {
     uptime: 0,
     cpuAverage: 0,
     rootPartitionUsage: 0,
+    rootPartitionUsageDesc: '',
     memoryUsage: 0,
+    memoryUsageDesc: '',
   },
   homepageCategories: [],
   searchQuery: '',
@@ -66,4 +71,5 @@ export const store = createStore<Store>('homepage', {
   settings: {
     sortMethod: 'alphabetical',
   },
+  events: [],
 })

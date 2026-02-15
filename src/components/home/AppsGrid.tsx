@@ -10,6 +10,7 @@ import { useWebSocketApi } from '@/hooks/websocket'
 import type { HealthMap, HomepageCategory } from '@/lib/api'
 import AppCategory from './AppCategory'
 import ArrowNavigation from './ArrowNavigation'
+import { EventsWatcher } from './EventList'
 import Searchbox from './Searchbox'
 import SettingsPopover from './SettingsPopover'
 import { store } from './store'
@@ -54,9 +55,10 @@ export default function AppGrid() {
   }, [activeCategoryValue, categoryNames])
 
   return (
-    <div className="space-y-4">
+    <>
       <Suspense>
         <HealthWatcher />
+        <EventsWatcher />
         <HomepageItemsProvider sortMethod={sortMethod} />
       </Suspense>
       <PendingFavoritesResetter activeCategory={activeCategory} />
@@ -68,7 +70,10 @@ export default function AppGrid() {
       >
         <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 justify-between">
           <div className="flex items-center gap-2 w-full sm:w-auto">
-            <TabsList className="flex w-full sm:w-auto gap-1 p-1">
+            <TabsList
+              className="flex w-full sm:w-auto gap-1 rounded-lg border bg-background/55
+              backdrop-blur supports-backdrop-filter:bg-background/40 p-1"
+            >
               {visibleTabs?.map(category => (
                 <TabsTrigger
                   key={category}
@@ -115,7 +120,7 @@ export default function AppGrid() {
         <store.ui.showKeyboardHints.Render>
           {(show, setShow) =>
             show ? (
-              <div className="mt-2 text-xs text-muted-foreground flex flex-wrap items-center gap-3">
+              <div className="rounded-lg border bg-background/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur supports-backdrop-filter:bg-background/40 flex flex-wrap items-center gap-3">
                 <div className="flex items-center gap-1">
                   <Kbd>
                     <ArrowUp className="h-3 w-3" />
@@ -187,7 +192,7 @@ export default function AppGrid() {
           )
         })}
       </Tabs>
-    </div>
+    </>
   )
 }
 
