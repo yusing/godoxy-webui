@@ -28,8 +28,11 @@ import { decodeRouteKey, encodeRouteKey } from './utils'
 export default function RoutesSidebar({ className }: { className?: string }) {
   const sidebarRef = useRef<HTMLDivElement>(null)
   return (
-    <div ref={sidebarRef} className={cn('flex flex-col', className)}>
-      <div className="sidebar-header sticky top-0 px-3 py-3 flex items-center justify-between border-x">
+    <div
+      ref={sidebarRef}
+      className={cn('flex flex-col divide-y divide-border border-x border-b', className)}
+    >
+      <div className="sidebar-header sticky top-0 px-3 py-3 flex items-center justify-between">
         <Label className="text-sm">Routes</Label>
         <Popover>
           <PopoverTrigger aria-label="Filters">
@@ -149,7 +152,7 @@ function RoutesSidebarArrowNavigation() {
 
 function RoutesSidebarKeyboardHints() {
   return (
-    <div className="sidebar-keyboard-hints border-x border-b px-3 py-2 text-xs text-muted-foreground flex flex-wrap items-center gap-3">
+    <div className="sidebar-keyboard-hints px-3 py-2 text-xs text-muted-foreground flex flex-wrap items-center gap-3">
       <div className="flex items-center gap-1">
         <Kbd>
           <ArrowUp className="h-3 w-3" />
@@ -192,7 +195,7 @@ function RoutesSidebarItemList() {
   const keys = store.routeKeys.use() ?? []
   return (
     <ScrollArea>
-      <div className="sidebar-item-list border-b">
+      <div className="sidebar-item-list divide-y divide-border">
         {keys.map(key => {
           return <RoutesSidebarItem key={key} routeKey={key} alias={decodeRouteKey(key)} />
         })}
@@ -232,18 +235,17 @@ function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: Route
 
   return (
     <div className="flex flex-col">
-      <a
+      <button
         id={`route-${routeKey}`}
-        // href={`#${key}`}
-        target="_self"
+        type="button"
         onClick={() => {
           setSelectedRoute(routeKey)
           store.mobileDialogOpen.set(true)
         }}
         className={cn(
-          'route-item text-left p-3 transition-colors border-x border-b',
+          'route-item text-left p-3',
           'data-[filtered=true]:hidden',
-          'data-[active=true]:bg-accent data-[active=true]:border-2 data-[active=true]:border-primary',
+          'data-[active=true]:ring-2 data-[active=true]:ring-primary',
           'hover:bg-muted/50'
         )}
       >
@@ -261,7 +263,7 @@ function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: Route
           </hideUptimebarState.Render>
         </div>
         <RouteUptimeBar routeKey={routeKey} className="mt-2" />
-      </a>
+      </button>
     </div>
   )
 }

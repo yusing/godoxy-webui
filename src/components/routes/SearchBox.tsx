@@ -1,5 +1,5 @@
 import { IconSearch } from '@tabler/icons-react'
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '../ui/input-group'
 
 function isPrintableKey(key: string) {
@@ -18,7 +18,7 @@ function isEditableElement(element: Element | null) {
 export default function RoutesSidebarSearchBox() {
   const ref = useRef<HTMLInputElement>(null)
 
-  const applyFilter = (searchQuery: string) => {
+  const applyFilter = useCallback((searchQuery: string) => {
     const items = Array.from(
       document.querySelectorAll<HTMLElement>('.sidebar-item-list .route-item')
     )
@@ -39,7 +39,7 @@ export default function RoutesSidebarSearchBox() {
         item.setAttribute('data-filtered', 'true')
       }
     }
-  }
+  }, [])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -67,9 +67,10 @@ export default function RoutesSidebarSearchBox() {
 
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [])
+  }, [applyFilter])
+
   return (
-    <InputGroup className="rounded-none">
+    <InputGroup className="rounded-none border-none">
       <InputGroupAddon align="inline-start">
         <IconSearch />
       </InputGroupAddon>
