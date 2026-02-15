@@ -66,7 +66,7 @@ export default function AppGrid() {
       <Tabs
         value={activeCategory}
         onValueChange={value => setActiveCategory(value)}
-        className="w-full flex flex-col"
+        className="w-full"
       >
         <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 justify-between">
           <div className="flex items-center gap-2 w-full sm:w-auto">

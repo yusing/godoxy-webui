@@ -25,7 +25,7 @@ function PlaygroundPage() {
           </div>
         </div>
 
-        <Tabs defaultValue="rules" className="flex-1 flex flex-col overflow-hidden">
+        <Tabs defaultValue="rules" className="flex-1 overflow-hidden">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="rules">Rules</TabsTrigger>
             <TabsTrigger value="request">Mock Request</TabsTrigger>
