@@ -65,11 +65,14 @@ function CommandDialog({
 
 function CommandInput({
   className,
+  inputGroupClassName,
   ...props
-}: React.ComponentProps<typeof CommandPrimitive.Input>) {
+}: React.ComponentProps<typeof CommandPrimitive.Input> & {
+  inputGroupClassName?: string
+}) {
   return (
     <div data-slot="command-input-wrapper">
-      <InputGroup className="bg-input/30 border-input/30 h-8! rounded-t-lg rounded-b-none! shadow-none! *:data-[slot=input-group-addon]:pl-2!">
+      <InputGroup className={cn("bg-input/30 border-input/30 h-8! rounded-t-lg rounded-b-none! shadow-none! *:data-[slot=input-group-addon]:pl-2!", inputGroupClassName)}>
         <CommandPrimitive.Input
           data-slot="command-input"
           className={cn(

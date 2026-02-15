@@ -1,15 +1,9 @@
 import { IconChevronRight, IconFile } from '@tabler/icons-react'
+import { Command } from 'cmdk'
 import { useEffect, useMemo } from 'react'
 import type { FileType } from '@/lib/api'
 import { cn } from '@/lib/utils'
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '../ui/command'
+import { CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '../ui/command'
 import {
   Sidebar,
   SidebarContent,
@@ -64,8 +58,13 @@ export default function ConfigSidebar() {
             </div>
             <SidebarGroupContent className="flex-1 min-h-0">
               <Command>
-                <CommandInput placeholder="Search files..." />
-                <CommandList className="max-h-none">
+                <div className="px-2">
+                  <CommandInput
+                    inputGroupClassName="rounded-sm rounded-b-sm!"
+                    placeholder="Search files..."
+                  />
+                </div>
+                <CommandList className="max-h-none -mx-1">
                   <CommandEmpty>No files found.</CommandEmpty>
                   <FileList />
                 </CommandList>
