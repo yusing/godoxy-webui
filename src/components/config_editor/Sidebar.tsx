@@ -98,7 +98,7 @@ function FileList() {
                     filename: file.filename,
                   })
                 }
-                className={cn(selected && 'text-info-foreground')}
+                className={cn('data-selected:bg-inherit', selected && 'text-info-foreground')}
                 data-checked={selected ? 'true' : 'false'}
               >
                 <IconFile className="size-4 shrink-0" />

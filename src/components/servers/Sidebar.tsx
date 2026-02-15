@@ -46,7 +46,7 @@ export default function ServersSidebar() {
 function ServerItem({ agent }: { agent?: string }) {
   const agentKey = agent || 'GoDoxy'
   return (
-    <div className="block p-4 rounded-xl border bg-card text-card-foreground transition-all hover:bg-accent/50 hover:shadow-md">
+    <div className="block p-4 rounded-xl border bg-card text-card-foreground transition-all hover:bg-muted/50 hover:shadow-md">
       <a href={`#${agent ?? ''}`}>
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between gap-3">

@@ -1,8 +1,8 @@
 import type { FieldPath } from 'juststore'
 import { formatDuration } from '@/lib/format'
+import { cn } from '@/lib/utils'
 import { Progress } from '../ui/progress'
 import { type Store, store } from './store'
-import { cn } from '@/lib/utils'
 
 export default function SystemStatValue({
   valueKey,
@@ -13,15 +13,15 @@ export default function SystemStatValue({
   descriptionKey?: FieldPath<Store['systemInfo']>
   type: 'text' | 'progress' | 'duration'
 }) {
-  const descState = store.systemInfo[descriptionKey ?? valueKey]
+  const state = store.systemInfo[valueKey]
   return (
     <>
       <DisplayValue valueKey={valueKey} type={type} />
       <div className="flex items-center justify-start">
         <Description descriptionKey={descriptionKey} type={type} />
       </div>
-      {type === 'progress' && descState && (
-        <descState.Render>{value => <Progress value={Number(value)} />}</descState.Render>
+      {type === 'progress' && (
+        <state.Render>{value => <Progress value={Number(value)} />}</state.Render>
       )}
       {type === 'duration' && (
         <span className="text-xs text-muted-foreground">since last restart</span>

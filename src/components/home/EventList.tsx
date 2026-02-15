@@ -14,7 +14,7 @@ export { EventsList, EventsWatcher }
 function EventsList() {
   const events = store.events.use() ?? []
   return (
-    <Card className="h-full min-h-0 bg-background/50 backdrop-blur supports-backdrop-filter:bg-background/35 xl:pt-0">
+    <Card className="h-full min-h-0 backdrop-blur bg-card/50 xl:bg-inherit xl:pt-0">
       <CardHeader className="shrink-0">
         <CardTitle className="text-base">Live activity</CardTitle>
         <CardDescription>Recent events and health signals</CardDescription>

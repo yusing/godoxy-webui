@@ -11,7 +11,7 @@ export const Route = createFileRoute('/')({
 function HomePage() {
   return (
     <div className="h-screen absolute inset-0">
-      <div className="mx-auto h-full min-h-0 px-4 py-2 sm:py-4 overflow-hidden bg-linear-to-br from-primary/10 via-card/50 to-secondary/10">
+      <div className="mx-auto h-full min-h-0 px-4 py-2 sm:py-4 overflow-hidden bg-linear-to-br from-primary/10 via-background/50 to-secondary/10">
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(closest-side,oklch(var(--primary)/0.18),transparent)] opacity-40" />
         <div className="relative flex h-full min-h-0 flex-col gap-5 mt-(--titlebar-height)">
           <SystemStats />

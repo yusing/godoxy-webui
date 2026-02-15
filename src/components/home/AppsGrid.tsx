@@ -66,7 +66,7 @@ export default function AppGrid() {
       <Tabs
         value={activeCategory}
         onValueChange={value => setActiveCategory(value)}
-        className="w-full"
+        className="w-full flex flex-col"
       >
         <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 justify-between">
           <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -118,59 +118,7 @@ export default function AppGrid() {
 
         {/* Keyboard hints */}
         <store.ui.showKeyboardHints.Render>
-          {(show, setShow) =>
-            show ? (
-              <div className="rounded-lg border bg-background/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur supports-backdrop-filter:bg-background/40 flex flex-wrap items-center gap-3">
-                <div className="flex items-center gap-1">
-                  <Kbd>
-                    <ArrowUp className="h-3 w-3" />
-                  </Kbd>
-                  <Kbd>
-                    <ArrowDown className="h-3 w-3" />
-                  </Kbd>
-                  <span>Move</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Kbd>
-                    <ArrowLeft className="h-3 w-3" />
-                  </Kbd>
-                  <Kbd>
-                    <ArrowRight className="h-3 w-3" />
-                  </Kbd>
-                  <span>Move</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Kbd>Enter</Kbd>
-                  <span>Open</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Kbd>Esc</Kbd>
-                  <span>Reset</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Kbd>Alt</Kbd>
-                  <span>+</span>
-                  <Kbd>
-                    <ArrowLeft className="h-3 w-3" />
-                  </Kbd>
-                  <Kbd>
-                    <ArrowRight className="h-3 w-3" />
-                  </Kbd>
-                  <span>Switch category</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Kbd>A-Z</Kbd>
-                  <span>Search</span>
-                </div>
-                <div className="ml-auto flex items-center gap-2">
-                  <span className="hidden lg:inline">Tab is disabled on this page</span>
-                  <Button size="sm" variant="outline" onClick={() => setShow(false)}>
-                    Dismiss
-                  </Button>
-                </div>
-              </div>
-            ) : null
-          }
+          {(show, setShow) => show && <KeyboardHints onDismiss={() => setShow(false)} />}
         </store.ui.showKeyboardHints.Render>
 
         {categoryNames?.map((category, index) => {
@@ -193,6 +141,60 @@ export default function AppGrid() {
         })}
       </Tabs>
     </>
+  )
+}
+
+function KeyboardHints({ onDismiss }: { onDismiss: () => void }) {
+  return (
+    <div className="rounded-lg border bg-background/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur supports-backdrop-filter:bg-background/40 flex flex-wrap items-center gap-3">
+      <div className="flex items-center gap-1">
+        <Kbd>
+          <ArrowUp className="h-3 w-3" />
+        </Kbd>
+        <Kbd>
+          <ArrowDown className="h-3 w-3" />
+        </Kbd>
+        <span>Move</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <Kbd>
+          <ArrowLeft className="h-3 w-3" />
+        </Kbd>
+        <Kbd>
+          <ArrowRight className="h-3 w-3" />
+        </Kbd>
+        <span>Move</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <Kbd>Enter</Kbd>
+        <span>Open</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <Kbd>Esc</Kbd>
+        <span>Reset</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <Kbd>Alt</Kbd>
+        <span>+</span>
+        <Kbd>
+          <ArrowLeft className="h-3 w-3" />
+        </Kbd>
+        <Kbd>
+          <ArrowRight className="h-3 w-3" />
+        </Kbd>
+        <span>Switch category</span>
+      </div>
+      <div className="flex items-center gap-1">
+        <Kbd>A-Z</Kbd>
+        <span>Search</span>
+      </div>
+      <div className="ml-auto flex items-center gap-2">
+        <span className="hidden lg:inline">Tab is disabled on this page</span>
+        <Button size="sm" variant="outline" onClick={onDismiss}>
+          Dismiss
+        </Button>
+      </div>
+    </div>
   )
 }
 
