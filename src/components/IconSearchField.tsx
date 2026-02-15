@@ -3,6 +3,7 @@ import { useEffect, useMemo } from 'react'
 import { useAsync } from 'react-use'
 import type { IconMetaSearch } from '@/lib/api'
 import { api } from '@/lib/api-client'
+import { cn } from '@/lib/utils'
 import { AppIcon } from './AppIcon'
 import LoadingRing from './LoadingRing'
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from './ui/command'
@@ -66,7 +67,12 @@ export default function IconSearchField({ state: iconState, className }: IconSea
           )
         }}
       </state.Render>
-      <CommandList className={className}>
+      <CommandList
+        className={cn(
+          className,
+          '**:[[cmdk-list-sizer]]:grid **:[[cmdk-list-sizer]]:grid-cols-[max-content_1fr] **:[[cmdk-list-sizer]]:items-center **:[[cmdk-list-sizer]]:gap-3 **:[[cmdk-list-sizer]]:px-3 **:[[cmdk-list-sizer]]:py-2'
+        )}
+      >
         <IconItems state={state} iconState={iconState} />
       </CommandList>
     </Command>
@@ -115,34 +121,42 @@ function IconItems({
         <CommandItem
           key={`${icon.Source}:${icon.Ref}`}
           value={`${icon.Source} ${icon.Ref}`}
-          className="flex items-center"
+          className="contents items-center [&>svg:last-child]:hidden"
         >
-          <span className="text-xs text-muted-foreground shrink-0">{icon.Source}</span>
-          <button
-            onClick={() => {
-              state.set({
-                searchValue: icon.Ref,
-                currentIcon: icon,
-                variant: null,
-              })
-              iconState.set(iconURL(icon))
-            }}
-            className="text-left"
-          >
-            {icon.Ref}
-          </button>
-          <IconVariantIconButton icon={icon} variant={null} state={state} iconState={iconState} />
-          {icon.Light && (
-            <IconVariantIconButton
-              icon={icon}
-              variant="light"
-              state={state}
-              iconState={iconState}
-            />
-          )}
-          {icon.Dark && (
-            <IconVariantIconButton icon={icon} variant="dark" state={state} iconState={iconState} />
-          )}
+          <span className="text-xs text-muted-foreground shrink-0 self-center">{icon.Source}</span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                state.set({
+                  searchValue: icon.Ref,
+                  currentIcon: icon,
+                  variant: null,
+                })
+                iconState.set(iconURL(icon))
+              }}
+              className="text-left"
+            >
+              {icon.Ref}
+            </button>
+            <IconVariantIconButton icon={icon} variant={null} state={state} iconState={iconState} />
+            {icon.Light && (
+              <IconVariantIconButton
+                icon={icon}
+                variant="light"
+                state={state}
+                iconState={iconState}
+              />
+            )}
+            {icon.Dark && (
+              <IconVariantIconButton
+                icon={icon}
+                variant="dark"
+                state={state}
+                iconState={iconState}
+              />
+            )}
+          </div>
         </CommandItem>
       ))}
     </>
