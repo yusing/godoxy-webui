@@ -8,8 +8,6 @@ import { nitro } from 'nitro/vite'
 import { defineConfig } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
-const isDemoSite = process.env.DEMO_SITE === 'true'
-
 const config = defineConfig({
   server: {
     allowedHosts: true,
@@ -17,15 +15,9 @@ const config = defineConfig({
   plugins: [
     devtools(),
     nitro({
-      preset: isDemoSite ? 'cloudflare_pages' : 'bun',
+      preset: 'bun',
       minify: true,
       sourcemap: false,
-      cloudflare: isDemoSite
-        ? {
-            deployConfig: true,
-            nodeCompat: true,
-          }
-        : undefined,
     }),
     // this is the plugin that enables path aliases
     tsconfigPaths(),

@@ -6,16 +6,25 @@ import { defineConfig } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { nitro } from 'nitro/vite'
 
+const isDemoSite = process.env.DEMO_SITE === 'true'
+
 export default defineConfig({
   plugins: [
     nitro({
       minify: true,
       sourcemap: false,
       serverDir: false,
+      preset: isDemoSite ? 'cloudflare_pages' : undefined,
+      cloudflare: isDemoSite
+        ? {
+            deployConfig: true,
+            nodeCompat: true,
+          }
+        : undefined,
     }),
     tsconfigPaths(),
     tailwindcss(),
-    tanstackStart({
+    tanstackStart(isDemoSite ? undefined : {
       prerender: {
         enabled: true,
         autoSubfolderIndex: true,
