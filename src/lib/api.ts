@@ -11,123 +11,123 @@
  */
 
 export interface AccesslogFieldConfig {
-  config: Record<string, AccesslogFieldMode>
-  default: 'keep' | 'drop' | 'redact'
+  config: Record<string, AccesslogFieldMode>;
+  default: "keep" | "drop" | "redact";
 }
 
-export type AccesslogFieldMode = 'keep' | 'drop' | 'redact'
+export type AccesslogFieldMode = "keep" | "drop" | "redact";
 
 export interface AccesslogFields {
-  cookies: AccesslogFieldConfig
-  headers: AccesslogFieldConfig
-  query: AccesslogFieldConfig
+  cookies: AccesslogFieldConfig;
+  headers: AccesslogFieldConfig;
+  query: AccesslogFieldConfig;
 }
 
 export interface AccesslogFilters {
-  cidr: LogFilterCIDR
+  cidr: LogFilterCIDR;
   /** header exists or header == value */
-  headers: LogFilterHTTPHeader
-  host: LogFilterHost
-  method: LogFilterHTTPMethod
-  status_codes: LogFilterStatusCodeRange
+  headers: LogFilterHTTPHeader;
+  host: LogFilterHost;
+  method: LogFilterHTTPMethod;
+  status_codes: LogFilterStatusCodeRange;
 }
 
 export interface Agent {
-  addr: string
-  name: string
-  runtime: AgentContainerRuntime
-  supports_tcp_stream: boolean
-  supports_udp_stream: boolean
-  version: string
+  addr: string;
+  name: string;
+  runtime: AgentContainerRuntime;
+  supports_tcp_stream: boolean;
+  supports_udp_stream: boolean;
+  version: string;
 }
 
-export type AgentContainerRuntime = 'docker' | 'podman'
+export type AgentContainerRuntime = "docker" | "podman";
 
 export interface AgentpoolAgent {
-  addr: string
-  name: string
-  runtime: AgentContainerRuntime
-  supports_tcp_stream: boolean
-  supports_udp_stream: boolean
-  version: string
+  addr: string;
+  name: string;
+  runtime: AgentContainerRuntime;
+  supports_tcp_stream: boolean;
+  supports_udp_stream: boolean;
+  version: string;
 }
 
 export interface AuthUserPassAuthCallbackRequest {
-  password: string
-  username: string
+  password: string;
+  username: string;
 }
 
 export interface CIDR {
   /** network number */
-  ip: number[]
+  ip: number[];
   /** network mask */
-  mask: number[]
+  mask: number[];
 }
 
 export interface CertInfo {
-  dns_names: string[]
-  email_addresses: string[]
-  issuer: string
-  not_after: number
-  not_before: number
-  subject: string
+  dns_names: string[];
+  email_addresses: string[];
+  issuer: string;
+  not_after: number;
+  not_before: number;
+  subject: string;
 }
 
 export interface Container {
-  agent: AgentpoolAgent
-  aliases: string[]
-  container_id: string
-  container_name: string
-  docker_cfg: DockerProviderConfig
-  errors: string
-  idlewatcher_config: IdlewatcherConfig
-  image: ContainerImage
-  is_excluded: boolean
-  is_explicit: boolean
-  is_host_network_mode: boolean
+  agent: AgentpoolAgent;
+  aliases: string[];
+  container_id: string;
+  container_name: string;
+  docker_cfg: DockerProviderConfig;
+  errors: string;
+  idlewatcher_config: IdlewatcherConfig;
+  image: ContainerImage;
+  is_excluded: boolean;
+  is_explicit: boolean;
+  is_host_network_mode: boolean;
   /** for displaying in UI */
-  labels: Record<string, string>
+  labels: Record<string, string>;
   /** source:destination */
-  mounts: Record<string, string>
-  network: string
-  private_hostname: string
+  mounts: Record<string, string>;
+  network: string;
+  private_hostname: string;
   /** privatePort:types.Port */
-  private_ports: TypesPortMapping
-  public_hostname: string
+  private_ports: TypesPortMapping;
+  public_hostname: string;
   /** non-zero publicPort:types.Port */
-  public_ports: TypesPortMapping
-  running: boolean
-  state: ContainerContainerState
+  public_ports: TypesPortMapping;
+  running: boolean;
+  state: ContainerContainerState;
 }
 
 export interface ContainerBlkioStatEntry {
-  major: number
-  minor: number
-  op: string
-  value: number
+  major: number;
+  minor: number;
+  op: string;
+  value: number;
 }
 
 export interface ContainerBlkioStats {
-  io_merged_recursive: ContainerBlkioStatEntry[]
-  io_queue_recursive: ContainerBlkioStatEntry[]
+  io_merged_recursive: ContainerBlkioStatEntry[];
+  io_queue_recursive: ContainerBlkioStatEntry[];
   /** number of bytes transferred to and from the block device */
-  io_service_bytes_recursive: ContainerBlkioStatEntry[]
-  io_service_time_recursive: ContainerBlkioStatEntry[]
-  io_serviced_recursive: ContainerBlkioStatEntry[]
-  io_time_recursive: ContainerBlkioStatEntry[]
-  io_wait_time_recursive: ContainerBlkioStatEntry[]
-  sectors_recursive: ContainerBlkioStatEntry[]
+  io_service_bytes_recursive: ContainerBlkioStatEntry[];
+  io_service_time_recursive: ContainerBlkioStatEntry[];
+  io_serviced_recursive: ContainerBlkioStatEntry[];
+  io_time_recursive: ContainerBlkioStatEntry[];
+  io_wait_time_recursive: ContainerBlkioStatEntry[];
+  sectors_recursive: ContainerBlkioStatEntry[];
 }
 
 export interface ContainerCPUStats {
   /** CPU Usage. Linux and Windows. */
-  cpu_usage: ContainerCPUUsage
+  cpu_usage: ContainerCPUUsage;
   /** Online CPUs. Linux only. */
-  online_cpus: number
+  online_cpus: number;
   /** System Usage. Linux only. */
-  system_cpu_usage: number
+  system_cpu_usage: number;
   /** Throttling Data. Linux only. */
-  throttling_data: ContainerThrottlingData
+  throttling_data: ContainerThrottlingData;
 }
 
 export interface ContainerCPUUsage {
@@ -135,146 +135,146 @@ export interface ContainerCPUUsage {
    * Total CPU time consumed per core (Linux). Not used on Windows.
    * Units: nanoseconds.
    */
-  percpu_usage: number[]
+  percpu_usage: number[];
   /**
    * Total CPU time consumed.
    * Units: nanoseconds (Linux)
    * Units: 100's of nanoseconds (Windows)
    */
-  total_usage: number
+  total_usage: number;
   /**
    * Time spent by tasks of the cgroup in kernel mode (Linux).
    * Time spent by all container processes in kernel mode (Windows).
    * Units: nanoseconds (Linux).
    * Units: 100's of nanoseconds (Windows). Not populated for Hyper-V Containers.
    */
-  usage_in_kernelmode: number
+  usage_in_kernelmode: number;
   /**
    * Time spent by tasks of the cgroup in user mode (Linux).
    * Time spent by all container processes in user mode (Windows).
    * Units: nanoseconds (Linux).
    * Units: 100's of nanoseconds (Windows). Not populated for Hyper-V Containers
    */
-  usage_in_usermode: number
+  usage_in_usermode: number;
 }
 
 export type ContainerContainerState =
-  | 'created'
-  | 'running'
-  | 'paused'
-  | 'restarting'
-  | 'removing'
-  | 'exited'
-  | 'dead'
+  | "created"
+  | "running"
+  | "paused"
+  | "restarting"
+  | "removing"
+  | "exited"
+  | "dead";
 
 export interface ContainerImage {
-  sha256: string
-  author: string
-  name: string
-  tag: string
-  version: string
+  sha256: string;
+  author: string;
+  name: string;
+  tag: string;
+  version: string;
 }
 
 export interface ContainerMemoryStats {
   /** committed bytes */
-  commitbytes: number
+  commitbytes: number;
   /** peak committed bytes */
-  commitpeakbytes: number
+  commitpeakbytes: number;
   /** number of times memory usage hits limits. */
-  failcnt: number
-  limit: number
+  failcnt: number;
+  limit: number;
   /** maximum usage ever recorded. */
-  max_usage: number
+  max_usage: number;
   /** private working set */
-  privateworkingset: number
+  privateworkingset: number;
   /**
    * TODO(vishh): Export these as stronger types.
    * all the stats exported via memory.stat.
    */
-  stats: Record<string, number>
+  stats: Record<string, number>;
   /** current res_counter usage for memory */
-  usage: number
+  usage: number;
 }
 
 export interface ContainerNetworkStats {
   /** Endpoint ID. Not used on Linux. */
-  endpoint_id: string
+  endpoint_id: string;
   /** Instance ID. Not used on Linux. */
-  instance_id: string
+  instance_id: string;
   /** Bytes received. Windows and Linux. */
-  rx_bytes: number
+  rx_bytes: number;
   /** Incoming packets dropped. Windows and Linux. */
-  rx_dropped: number
+  rx_dropped: number;
   /**
    * Received errors. Not used on Windows. Note that we don't `omitempty` this
    * field as it is expected in the >=v1.21 API stats structure.
    */
-  rx_errors: number
+  rx_errors: number;
   /** Packets received. Windows and Linux. */
-  rx_packets: number
+  rx_packets: number;
   /** Bytes sent. Windows and Linux. */
-  tx_bytes: number
+  tx_bytes: number;
   /** Outgoing packets dropped. Windows and Linux. */
-  tx_dropped: number
+  tx_dropped: number;
   /**
    * Sent errors. Not used on Windows. Note that we don't `omitempty` this
    * field as it is expected in the >=v1.21 API stats structure.
    */
-  tx_errors: number
+  tx_errors: number;
   /** Packets sent. Windows and Linux. */
-  tx_packets: number
+  tx_packets: number;
 }
 
 export interface ContainerPidsStats {
   /** Current is the number of pids in the cgroup */
-  current: number
+  current: number;
   /**
    * Limit is the hard limit on the number of pids in the cgroup.
    * A "Limit" of 0 means that there is no limit.
    */
-  limit: number
+  limit: number;
 }
 
 export interface ContainerPortSummary {
   /** Host IP address that the container's port is mapped to */
-  IP: NetipAddr
+  IP: NetipAddr;
   /**
    * Port on the container
    * Required: true
    */
-  PrivatePort: number
+  PrivatePort: number;
   /** Port exposed on the host */
-  PublicPort: number
+  PublicPort: number;
   /**
    * type
    * Required: true
    * Enum: ["tcp","udp","sctp"]
    */
-  Type: string
+  Type: string;
 }
 
 export interface ContainerResponse {
-  id: string
-  image: string
-  name: string
-  server: string
-  state?: ContainerState | null
+  id: string;
+  image: string;
+  name: string;
+  server: string;
+  state?: ContainerState | null;
 }
 
 export type ContainerState =
-  | 'created'
-  | 'running'
-  | 'paused'
-  | 'restarting'
-  | 'removing'
-  | 'exited'
-  | 'dead'
+  | "created"
+  | "running"
+  | "paused"
+  | "restarting"
+  | "removing"
+  | "exited"
+  | "dead";
 
 export interface ContainerStats {
-  paused: number
-  running: number
-  stopped: number
-  total: number
+  paused: number;
+  running: number;
+  stopped: number;
+  total: number;
 }
 
 export interface ContainerStatsResponse {
@@ -289,80 +289,80 @@ export interface ContainerStatsResponse {
    *
    * This type is only populated on Linux and omitted for Windows containers.
    */
-  blkio_stats: ContainerBlkioStats
+  blkio_stats: ContainerBlkioStats;
   /** CPUStats contains CPU related info of the container. */
-  cpu_stats: ContainerCPUStats
+  cpu_stats: ContainerCPUStats;
   /** ID is the ID of the container for which the stats were collected. */
-  id: string
+  id: string;
   /**
    * MemoryStats aggregates all memory stats since container inception on Linux.
    * Windows returns stats for commit and private working set only.
    */
-  memory_stats: ContainerMemoryStats
+  memory_stats: ContainerMemoryStats;
   /** Name is the name of the container for which the stats were collected. */
-  name: string
+  name: string;
   /**
    * Networks contains Nntwork statistics for the container per interface.
    *
    * This field is omitted if the container has no networking enabled.
    */
-  networks: Record<string, ContainerNetworkStats>
+  networks: Record<string, ContainerNetworkStats>;
   /**
    * NumProcs is the number of processors on the system.
    *
    * This field is Windows-specific and always zero for Linux containers.
    */
-  num_procs: number
+  num_procs: number;
   /**
    * OSType is the OS of the container ("linux" or "windows") to allow
    * platform-specific handling of stats.
    */
-  os_type: string
+  os_type: string;
   /**
    * PidsStats contains Linux-specific stats of a container's process-IDs (PIDs).
    *
    * This field is Linux-specific and omitted for Windows containers.
    */
-  pids_stats: ContainerPidsStats
+  pids_stats: ContainerPidsStats;
   /** PreCPUStats contains the CPUStats of the previous sample. */
-  precpu_stats: ContainerCPUStats
+  precpu_stats: ContainerCPUStats;
   /**
    * PreRead is the date and time at which this first sample was collected.
    * This field is not propagated if the "one-shot" option is set. If the
    * "one-shot" option is set, this field may be omitted, empty, or set
    * to a default date (`0001-01-01T00:00:00Z`).
    */
-  preread: string
+  preread: string;
   /** Read is the date and time at which this sample was collected. */
-  read: string
+  read: string;
   /**
    * StorageStats is the disk I/O stats for read/write on Windows.
    *
    * This type is Windows-specific and omitted for Linux containers.
    */
-  storage_stats: ContainerStorageStats
+  storage_stats: ContainerStorageStats;
 }
 
-export type ContainerStopMethod = 'pause' | 'stop' | 'kill'
+export type ContainerStopMethod = "pause" | "stop" | "kill";
 
 export interface ContainerStorageStats {
-  read_count_normalized: number
-  read_size_bytes: number
-  write_count_normalized: number
-  write_size_bytes: number
+  read_count_normalized: number;
+  read_size_bytes: number;
+  write_count_normalized: number;
+  write_size_bytes: number;
 }
 
 export interface ContainerThrottlingData {
   /** Number of periods with throttling active */
-  periods: number
+  periods: number;
   /** Number of periods when the container hits its throttling limit. */
-  throttled_periods: number
+  throttled_periods: number;
   /** Aggregate time the container was throttled for in nanoseconds. */
-  throttled_time: number
+  throttled_time: number;
 }
 
 export interface DiskIOCountersStat {
-  iops: number
+  iops: number;
   /**
    * ReadCount        uint64 `json:"readCount"`
    * MergedReadCount  uint64 `json:"mergedReadCount"`
@@ -376,47 +376,47 @@ export interface DiskIOCountersStat {
    * IoTime           uint64 `json:"ioTime"`
    * WeightedIO       uint64 `json:"weightedIO"`
    */
-  name: string
+  name: string;
   /**
    * SerialNumber     string `json:"serialNumber"`
    * Label            string `json:"label"`
    */
-  read_bytes: number
-  read_count: number
-  read_speed: number
-  write_bytes: number
-  write_count: number
-  write_speed: number
+  read_bytes: number;
+  read_count: number;
+  read_speed: number;
+  write_bytes: number;
+  write_count: number;
+  write_speed: number;
 }
 
 export interface DiskUsageStat {
-  free: number
-  fstype: string
-  path: string
-  total: number
-  used: number
-  used_percent: number
+  free: number;
+  fstype: string;
+  path: string;
+  total: number;
+  used: number;
+  used_percent: number;
 }
 
 export interface DockerProviderConfig {
-  tls: DockerTLSConfig
-  url: string
+  tls: DockerTLSConfig;
+  url: string;
 }
 
 export interface DockerTLSConfig {
-  ca_file: string
-  cert_file?: string
-  key_file?: string
+  ca_file: string;
+  cert_file?: string;
+  key_file?: string;
 }
 
 export interface DockerapiRestartRequest {
-  id: string
+  id: string;
   /**
    * Signal (optional) is the signal to send to the container to (gracefully)
    * stop it before forcibly terminating the container with SIGKILL after the
    * timeout expires. If no value is set, the default (SIGTERM) is used.
    */
-  signal?: string
+  signal?: string;
   /**
    * Timeout (optional) is the timeout (in seconds) to wait for the container
    * to stop gracefully before forcibly terminating it with SIGKILL.
@@ -427,23 +427,23 @@ export interface DockerapiRestartRequest {
    *   immediately proceeds to forcibly terminating the container.
    * - Other positive values are used as timeout (in seconds).
    */
-  timeout?: number
+  timeout?: number;
 }
 
 export interface DockerapiStartRequest {
-  checkpointDir?: string
-  checkpointID?: string
-  id: string
+  checkpointDir?: string;
+  checkpointID?: string;
+  id: string;
 }
 
 export interface DockerapiStopRequest {
-  id: string
+  id: string;
   /**
    * Signal (optional) is the signal to send to the container to (gracefully)
    * stop it before forcibly terminating the container with SIGKILL after the
    * timeout expires. If no value is set, the default (SIGTERM) is used.
    */
-  signal?: string
+  signal?: string;
   /**
    * Timeout (optional) is the timeout (in seconds) to wait for the container
    * to stop gracefully before forcibly terminating it with SIGKILL.
@@ -454,262 +454,279 @@ export interface DockerapiStopRequest {
    *   immediately proceeds to forcibly terminating the container.
    * - Other positive values are used as timeout (in seconds).
    */
-  timeout?: number
+  timeout?: number;
 }
 
 export interface ErrorResponse {
-  error?: string | null
-  message: string
+  error?: string | null;
+  message: string;
 }
 
-export type FileType = 'config' | 'provider' | 'middleware'
+export interface Event {
+  action: string;
+  category: string;
+  data: any;
+  level: EventsLevel;
+  timestamp: string;
+  uuid: string;
+}
+
+export type EventsLevel = "debug" | "info" | "warn" | "error";
+
+export type FileType = "config" | "provider" | "middleware";
 
 export interface FinalRequest {
-  body: string
-  headers: Record<string, string[]>
-  host: string
-  method: string
-  path: string
-  query: Record<string, string[]>
+  body: string;
+  headers: Record<string, string[]>;
+  host: string;
+  method: string;
+  path: string;
+  query: Record<string, string[]>;
 }
 
 export interface FinalResponse {
-  body: string
-  headers: Record<string, string[]>
-  statusCode: number
+  body: string;
+  headers: Record<string, string[]>;
+  statusCode: number;
 }
 
 export interface HTTPHeader {
-  key: string
-  value: string
+  key: string;
+  value: string;
 }
 
 export interface HealthCheckConfig {
-  disable: boolean
-  interval: number
-  path: string
+  disable: boolean;
+  interval: number;
+  path: string;
   /** <0: immediate, 0: default, >0: threshold */
-  retries: number
-  timeout: number
-  use_get: boolean
+  retries: number;
+  timeout: number;
+  use_get: boolean;
 }
 
 export interface HealthExtra {
-  config: LoadBalancerConfig
-  pool: Record<string, any>
+  config: LoadBalancerConfig;
+  pool: Record<string, any>;
 }
 
 export interface HealthInfoWithoutDetail {
-  /** latency in microseconds */
-  latency: number
-  status: 'healthy' | 'unhealthy' | 'napping' | 'starting' | 'error' | 'unknown'
-  /** uptime in milliseconds */
-  uptime: number
+  latency: number;
+  status:
+    | "healthy"
+    | "unhealthy"
+    | "napping"
+    | "starting"
+    | "error"
+    | "unknown";
+  uptime: number;
 }
 
 export interface HealthJSON {
-  config: HealthCheckConfig
-  detail: string
-  extra?: HealthExtra | null
+  config: HealthCheckConfig;
+  detail: string;
+  extra?: HealthExtra | null;
   /** unix timestamp in seconds */
-  lastSeen: number
+  lastSeen: number;
   /** latency in milliseconds */
-  latency: number
-  name: string
+  latency: number;
+  name: string;
   /** unix timestamp in seconds */
-  started: number
-  status: HealthStatusString
+  started: number;
+  status: HealthStatusString;
   /** uptime in seconds */
-  uptime: number
-  url: string
+  uptime: number;
+  url: string;
 }
 
+export type HealthMap = Record<string, HealthInfoWithoutDetail>;
+
 export type HealthStatusString =
-  | 'unknown'
-  | 'healthy'
-  | 'napping'
-  | 'starting'
-  | 'unhealthy'
-  | 'error'
+  | "unknown"
+  | "healthy"
+  | "napping"
+  | "starting"
+  | "unhealthy"
+  | "error";
 
 export interface HomepageCategory {
-  items: HomepageItem[]
-  name: string
+  items: HomepageItem[];
+  name: string;
 }
 
 export interface HomepageItem {
-  alias: string
+  alias: string;
   /** sort order in all */
-  all_sort_order: number
-  category: string
-  clicks: number
-  container_id?: string | null
-  description: string
+  all_sort_order: number;
+  category: string;
+  clicks: number;
+  container_id?: string | null;
+  description: string;
   /** sort order in favorite */
-  fav_sort_order: number
-  favorite: boolean
-  icon: string
+  fav_sort_order: number;
+  favorite: boolean;
+  icon: string;
   /** display name */
-  name: string
-  origin_url: string
-  provider: string
-  show: boolean
+  name: string;
+  origin_url: string;
+  provider: string;
+  show: boolean;
   /** sort order in category */
-  sort_order: number
-  url: string
-  widget_config?: WidgetsConfig | null
-  widgets: HomepageItemWidget[]
+  sort_order: number;
+  url: string;
+  widget_config?: WidgetsConfig | null;
+  widgets: HomepageItemWidget[];
 }
 
 export interface HomepageItemConfig {
-  category: string
-  description: string
-  favorite: boolean
-  icon: string
+  category: string;
+  description: string;
+  favorite: boolean;
+  icon: string;
   /** display name */
-  name: string
-  show: boolean
-  url: string
-  widget_config?: WidgetsConfig | null
+  name: string;
+  show: boolean;
+  url: string;
+  widget_config?: WidgetsConfig | null;
 }
 
 export interface HomepageItemWidget {
-  label: string
-  value: string
+  label: string;
+  value: string;
 }
 
 export interface HomepageOverrideCategoryOrderParams {
-  value: number
-  which: string
+  value: number;
+  which: string;
 }
 
 export interface HomepageOverrideItemAllSortOrderParams {
-  value: number
-  which: string
+  value: number;
+  which: string;
 }
 
 export interface HomepageOverrideItemFavSortOrderParams {
-  value: number
-  which: string
+  value: number;
+  which: string;
 }
 
 export interface HomepageOverrideItemFavoriteParams {
-  value: boolean
-  which: string[]
+  value: boolean;
+  which: string[];
 }
 
 export interface HomepageOverrideItemParams {
-  value: HomepageItemConfig
-  which: string
+  value: HomepageItemConfig;
+  which: string;
 }
 
 export interface HomepageOverrideItemSortOrderParams {
-  value: number
-  which: string
+  value: number;
+  which: string;
 }
 
 export interface HomepageOverrideItemVisibleParams {
-  value: boolean
-  which: string[]
+  value: boolean;
+  which: string[];
 }
 
 export interface HomepageOverrideItemsBatchParams {
-  value: Record<string, HomepageItemConfig>
+  value: Record<string, HomepageItemConfig>;
 }
 
 export interface IconFetchResult {
-  icon: number[]
-  statusCode: number
+  icon: number[];
+  statusCode: number;
 }
 
 export interface IconMetaSearch {
-  Dark: boolean
-  Light: boolean
-  PNG: boolean
-  Ref: string
-  SVG: boolean
-  Source: IconsSource
-  WebP: boolean
+  Dark: boolean;
+  Light: boolean;
+  PNG: boolean;
+  Ref: string;
+  SVG: boolean;
+  Source: IconsSource;
+  WebP: boolean;
 }
 
-export type IconsSource = 'https://' | '@target' | '@walkxcode' | '@selfhst'
+export type IconsSource = "https://" | "@target" | "@walkxcode" | "@selfhst";
 
 export interface IdlewatcherConfig {
-  depends_on: string[]
-  docker: IdlewatcherDockerConfig
+  depends_on: string[];
+  docker: IdlewatcherDockerConfig;
   /**
    * 0: no idle watcher.
    * Positive: idle watcher with idle timeout.
    * Negative: idle watcher as a dependency.
    */
-  idle_timeout: TimeDuration
-  no_loading_page: boolean
-  proxmox: IdlewatcherProxmoxNodeConfig
+  idle_timeout: TimeDuration;
+  no_loading_page: boolean;
+  proxmox: IdlewatcherProxmoxNodeConfig;
   /** Optional path that must be hit to start container */
-  start_endpoint: string
-  stop_method: ContainerStopMethod
-  stop_signal: string
-  stop_timeout: TimeDuration
-  wake_timeout: TimeDuration
+  start_endpoint: string;
+  stop_method: ContainerStopMethod;
+  stop_signal: string;
+  stop_timeout: TimeDuration;
+  wake_timeout: TimeDuration;
 }
 
 export interface IdlewatcherDockerConfig {
-  container_id: string
-  container_name: string
-  docker_cfg: DockerProviderConfig
+  container_id: string;
+  container_name: string;
+  docker_cfg: DockerProviderConfig;
 }
 
 export interface IdlewatcherProxmoxNodeConfig {
-  node: string
-  vmid: number
+  node: string;
+  vmid: number;
 }
 
 export interface ListFilesResponse {
-  config: string[]
-  middleware: string[]
-  provider: string[]
+  config: string[];
+  middleware: string[];
+  provider: string[];
 }
 
 export interface LoadBalancerConfig {
-  link: string
-  mode: LoadBalancerMode
-  options: Record<string, any>
-  sticky: boolean
-  sticky_max_age: TimeDuration
-  weight: number
+  link: string;
+  mode: LoadBalancerMode;
+  options: Record<string, any>;
+  sticky: boolean;
+  sticky_max_age: TimeDuration;
+  weight: number;
 }
 
-export type LoadBalancerMode = '' | 'roundrobin' | 'leastconn' | 'iphash'
+export type LoadBalancerMode = "" | "roundrobin" | "leastconn" | "iphash";
 
 export interface LogFilterCIDR {
-  negative: boolean
-  values: CIDR[]
+  negative: boolean;
+  values: CIDR[];
 }
 
 export interface LogFilterHTTPHeader {
-  negative: boolean
-  values: HTTPHeader[]
+  negative: boolean;
+  values: HTTPHeader[];
 }
 
 export interface LogFilterHTTPMethod {
-  negative: boolean
-  values: string[]
+  negative: boolean;
+  values: string[];
 }
 
 export interface LogFilterHost {
-  negative: boolean
-  values: string[]
+  negative: boolean;
+  values: string[];
 }
 
 export interface LogFilterStatusCodeRange {
-  negative: boolean
-  values: StatusCodeRange[]
+  negative: boolean;
+  values: StatusCodeRange[];
 }
 
 export interface LogRetention {
-  days: number
-  keep_size: number
-  last: number
+  days: number;
+  keep_size: number;
+  last: number;
 }
 
 export interface MemVirtualMemoryStat {
@@ -718,325 +735,327 @@ export interface MemVirtualMemoryStat {
    *
    * This value is computed from the kernel specific values.
    */
-  available: number
+  available: number;
   /** Total amount of RAM on this system */
-  total: number
+  total: number;
   /**
    * RAM used by programs
    *
    * This value is computed from the kernel specific values.
    */
-  used: number
+  used: number;
   /**
    * Percentage of RAM used by programs
    *
    * This value is computed from the kernel specific values.
    */
-  used_percent: number
+  used_percent: number;
 }
 
-export type MetricsPeriod = '5m' | '15m' | '1h' | '1d' | '1mo'
+export type MetricsPeriod = "5m" | "15m" | "1h" | "1d" | "1mo";
 
 export interface MockCookie {
-  name: string
-  value: string
+  name: string;
+  value: string;
 }
 
 export interface MockRequest {
-  body: string
-  cookies: MockCookie[]
-  headers: Record<string, string[]>
-  host: string
-  method: string
-  path: string
-  query: Record<string, string[]>
-  remoteIP: string
+  body: string;
+  cookies: MockCookie[];
+  headers: Record<string, string[]>;
+  host: string;
+  method: string;
+  path: string;
+  query: Record<string, string[]>;
+  remoteIP: string;
 }
 
 export interface MockResponse {
-  body: string
-  headers: Record<string, string[]>
-  statusCode: number
+  body: string;
+  headers: Record<string, string[]>;
+  statusCode: number;
 }
 
 export interface NetIOCountersStat {
   /** number of bytes received */
-  bytes_recv: number
+  bytes_recv: number;
   /** Name      string `json:"name"`       // interface name */
-  bytes_sent: number
+  bytes_sent: number;
   /** godoxy */
-  download_speed: number
+  download_speed: number;
   /** godoxy */
-  upload_speed: number
+  upload_speed: number;
 }
 
-export type NetipAddr = string
+export type NetipAddr = string;
 
 export interface NewAgentRequest {
   /** @default "docker" */
-  container_runtime?: 'docker' | 'podman'
-  host: string
-  name: string
-  nightly?: boolean
+  container_runtime?: "docker" | "podman";
+  host: string;
+  name: string;
+  nightly?: boolean;
   /**
    * @min 1
    * @max 65535
    */
-  port: number
-  type: 'docker' | 'system'
+  port: number;
+  type: "docker" | "system";
 }
 
 export interface NewAgentResponse {
-  ca: PEMPairResponse
-  client: PEMPairResponse
-  compose: string
+  ca: PEMPairResponse;
+  client: PEMPairResponse;
+  compose: string;
 }
 
 export interface PEMPairResponse {
   /** @format base64 */
-  cert: string
+  cert: string;
   /** @format base64 */
-  key: string
+  key: string;
 }
 
 export interface ParsedRule {
-  do: string
-  isResponseRule: boolean
-  name: string
-  on: string
-  validationError: any
+  do: string;
+  isResponseRule: boolean;
+  name: string;
+  on: string;
+  /** we need the structured error, not the plain string */
+  validationError: any;
 }
 
 export interface PlaygroundRequest {
-  mockRequest?: MockRequest
-  mockResponse?: MockResponse
-  rules: RouteApiRawRule[]
+  mockRequest?: MockRequest;
+  mockResponse?: MockResponse;
+  rules: RouteApiRawRule[];
 }
 
 export interface PlaygroundResponse {
-  executionError: any
-  finalRequest: FinalRequest
-  finalResponse: FinalResponse
-  matchedRules: string[]
-  parsedRules: ParsedRule[]
-  upstreamCalled: boolean
+  /** we need the structured error, not the plain string */
+  executionError: any;
+  finalRequest: FinalRequest;
+  finalResponse: FinalResponse;
+  matchedRules: string[];
+  parsedRules: ParsedRule[];
+  upstreamCalled: boolean;
 }
 
 export interface Port {
-  listening: number
-  proxy: number
+  listening: number;
+  proxy: number;
 }
 
 export interface ProviderStats {
-  reverse_proxies: RouteStats
-  streams: RouteStats
-  total: number
-  type: ProviderType
+  reverse_proxies: RouteStats;
+  streams: RouteStats;
+  total: number;
+  type: ProviderType;
 }
 
-export type ProviderType = 'docker' | 'file' | 'agent'
+export type ProviderType = "docker" | "file" | "agent";
 
 export interface ProxmoxNodeConfig {
-  files: string[]
-  node: string
-  services: string[]
+  files: string[];
+  node: string;
+  services: string[];
   /** unset: auto discover; explicit 0: node-level route; >0: lxc/qemu resource route */
-  vmid: number
-  vmname: string
+  vmid: number;
+  vmname: string;
 }
 
 export interface ProxmoxNodeStats {
-  load_avg_15m: string
-  load_avg_1m: string
-  load_avg_5m: string
-  cpu_model: string
-  cpu_usage: string
-  kernel_version: string
-  mem_pct: string
-  mem_total: string
-  mem_usage: string
-  pve_version: string
-  rootfs_pct: string
-  rootfs_total: string
-  rootfs_usage: string
-  uptime: string
+  load_avg_15m: string;
+  load_avg_1m: string;
+  load_avg_5m: string;
+  cpu_model: string;
+  cpu_usage: string;
+  kernel_version: string;
+  mem_pct: string;
+  mem_total: string;
+  mem_usage: string;
+  pve_version: string;
+  rootfs_pct: string;
+  rootfs_total: string;
+  rootfs_usage: string;
+  uptime: string;
 }
 
 export interface ProxyStats {
-  providers: Record<string, ProviderStats>
-  reverse_proxies: RouteStats
-  streams: RouteStats
-  total: number
+  providers: Record<string, ProviderStats>;
+  reverse_proxies: RouteStats;
+  streams: RouteStats;
+  total: number;
 }
 
 export interface RequestLoggerConfig {
-  fields: AccesslogFields
-  filters: AccesslogFilters
-  format: 'common' | 'combined' | 'json'
-  path: string
-  retention: LogRetention
-  rotate_interval: number
-  stdout: boolean
+  fields: AccesslogFields;
+  filters: AccesslogFilters;
+  format: "common" | "combined" | "json";
+  path: string;
+  retention: LogRetention;
+  rotate_interval: number;
+  stdout: boolean;
 }
 
 export interface Route {
-  access_log?: RequestLoggerConfig | null
-  agent: string
-  alias: string
-  bind?: string | null
+  access_log?: RequestLoggerConfig | null;
+  agent: string;
+  alias: string;
+  bind?: string | null;
   /** Docker only */
-  container?: Container | null
-  disable_compression: boolean
-  excluded?: boolean | null
-  excluded_reason?: string | null
+  container?: Container | null;
+  disable_compression: boolean;
+  excluded?: boolean | null;
+  excluded_reason?: string | null;
   /** for swagger */
-  health: HealthJSON
+  health: HealthJSON;
   /** null on load-balancer routes */
-  healthcheck?: HealthCheckConfig | null
-  homepage: HomepageItemConfig
-  host: string
-  idlewatcher?: IdlewatcherConfig | null
+  healthcheck?: HealthCheckConfig | null;
+  homepage: HomepageItemConfig;
+  host: string;
+  idlewatcher?: IdlewatcherConfig | null;
   /** Index file to serve for single-page app mode */
-  index: string
-  load_balance?: LoadBalancerConfig | null
+  index: string;
+  load_balance?: LoadBalancerConfig | null;
   /** private fields */
-  lurl?: string | null
-  middlewares?: Record<string, TypesLabelMap>
-  no_tls_verify: boolean
-  path_patterns?: string[] | null
-  port: Port
+  lurl?: string | null;
+  middlewares?: Record<string, TypesLabelMap>;
+  no_tls_verify: boolean;
+  path_patterns?: string[] | null;
+  port: Port;
   /** for backward compatibility */
-  provider?: string | null
-  proxmox?: ProxmoxNodeConfig | null
-  purl: string
-  response_header_timeout: number
-  root: string
-  rule_file?: string | null
-  rules?: RulesRule[] | null
-  scheme: 'http' | 'https' | 'h2c' | 'tcp' | 'udp' | 'fileserver'
+  provider?: string | null;
+  proxmox?: ProxmoxNodeConfig | null;
+  purl: string;
+  response_header_timeout: number;
+  root: string;
+  rule_file?: string | null;
+  rules?: RulesRule[] | null;
+  scheme: "http" | "https" | "h2c" | "tcp" | "udp" | "fileserver";
   /** Single-page app mode: serves index for non-existent paths */
-  spa: boolean
+  spa: boolean;
   /** Path to client certificate */
-  ssl_certificate: string
+  ssl_certificate: string;
   /** Path to client certificate key */
-  ssl_certificate_key: string
+  ssl_certificate_key: string;
   /** Allowed TLS protocols */
-  ssl_protocols: string[]
+  ssl_protocols: string[];
   /** SSL/TLS proxy options (nginx-like) */
-  ssl_server_name: string
+  ssl_server_name: string;
   /** Path to trusted CA certificates */
-  ssl_trusted_certificate: string
+  ssl_trusted_certificate: string;
 }
 
 export interface RouteApiRawRule {
-  do: string
-  name: string
-  on: string
+  do: string;
+  name: string;
+  on: string;
 }
 
-export type RouteApiRoutesByProvider = Record<string, Route[]>
+export type RouteApiRoutesByProvider = Record<string, Route[]>;
 
 export interface RouteProvider {
-  full_name: string
-  short_name: string
+  full_name: string;
+  short_name: string;
 }
 
 export interface RouteStats {
-  error: number
-  healthy: number
-  napping: number
-  total: number
-  unhealthy: number
-  unknown: number
+  error: number;
+  healthy: number;
+  napping: number;
+  total: number;
+  unhealthy: number;
+  unknown: number;
 }
 
 export interface RouteStatus {
-  latency: number
-  status: 'healthy' | 'unhealthy' | 'unknown' | 'napping' | 'starting'
-  timestamp: number
+  latency: number;
+  status: "healthy" | "unhealthy" | "unknown" | "napping" | "starting";
+  timestamp: number;
 }
 
 export interface RouteStatusesByAlias {
-  statuses: Record<string, HealthInfoWithoutDetail>
-  timestamp: number
+  statuses: Record<string, HealthInfoWithoutDetail>;
+  timestamp: number;
 }
 
 export interface RouteUptimeAggregate {
-  alias: string
-  avg_latency: number
-  current_status: 'healthy' | 'unhealthy' | 'unknown' | 'napping' | 'starting'
-  downtime: number
-  idle: number
-  statuses: RouteStatus[]
-  uptime: number
+  alias: string;
+  avg_latency: number;
+  current_status: "healthy" | "unhealthy" | "unknown" | "napping" | "starting";
+  downtime: number;
+  idle: number;
+  statuses: RouteStatus[];
+  uptime: number;
 }
 
 export interface RulesRule {
-  do: string
-  name: string
-  on: string
+  do: string;
+  name: string;
+  on: string;
 }
 
 export interface SensorsTemperatureStat {
-  critical: number
-  high: number
-  name: string
-  temperature: number
+  critical: number;
+  high: number;
+  name: string;
+  temperature: number;
 }
 
 export interface ServerInfo {
-  containers: ContainerStats
-  images: number
-  memory: string
-  n_cpu: number
-  name: string
-  version: string
+  containers: ContainerStats;
+  images: number;
+  memory: string;
+  n_cpu: number;
+  name: string;
+  version: string;
 }
 
 export interface StatsResponse {
-  proxies: ProxyStats
-  uptime: number
+  proxies: ProxyStats;
+  uptime: number;
 }
 
 export interface StatusCodeRange {
-  end: number
-  start: number
+  end: number;
+  start: number;
 }
 
 export interface SuccessResponse {
-  details?: Record<string, any>
-  message: string
+  details?: Record<string, any>;
+  message: string;
 }
 
 export interface SystemInfo {
-  cpu_average: number
+  cpu_average: number;
   /** disk usage by partition */
-  disks: Record<string, DiskUsageStat>
+  disks: Record<string, DiskUsageStat>;
   /** disk IO by device */
-  disks_io: Record<string, DiskIOCountersStat>
-  memory: MemVirtualMemoryStat
-  network: NetIOCountersStat
+  disks_io: Record<string, DiskIOCountersStat>;
+  memory: MemVirtualMemoryStat;
+  network: NetIOCountersStat;
   /** sensor temperature by key */
-  sensors: SensorsTemperatureStat[]
-  timestamp: number
+  sensors: SensorsTemperatureStat[];
+  timestamp: number;
 }
 
 export interface SystemInfoAggregate {
-  data: Record<string, any>[]
-  total: number
+  data: Record<string, any>[];
+  total: number;
 }
 
 export type SystemInfoAggregateMode =
-  | 'cpu_average'
-  | 'memory_usage'
-  | 'memory_usage_percent'
-  | 'disks_read_speed'
-  | 'disks_write_speed'
-  | 'disks_iops'
-  | 'disk_usage'
-  | 'network_speed'
-  | 'network_transfer'
-  | 'sensor_temperature'
+  | "cpu_average"
+  | "memory_usage"
+  | "memory_usage_percent"
+  | "disks_read_speed"
+  | "disks_write_speed"
+  | "disks_iops"
+  | "disk_usage"
+  | "network_speed"
+  | "network_transfer"
+  | "sensor_temperature";
 
 /** @format int64 */
 export type TimeDuration =
@@ -1047,27 +1066,27 @@ export type TimeDuration =
   | 1000000
   | 1000000000
   | 60000000000
-  | 3600000000000
+  | 3600000000000;
 
-export type TypesLabelMap = Record<string, any>
+export type TypesLabelMap = Record<string, any>;
 
-export type TypesPortMapping = Record<string, ContainerPortSummary>
+export type TypesPortMapping = Record<string, ContainerPortSummary>;
 
 export interface UptimeAggregate {
-  data: RouteUptimeAggregate[]
-  total: number
+  data: RouteUptimeAggregate[];
+  total: number;
 }
 
 export interface VerifyNewAgentRequest {
-  ca: PEMPairResponse
-  client: PEMPairResponse
-  container_runtime: AgentContainerRuntime
-  host: string
+  ca: PEMPairResponse;
+  client: PEMPairResponse;
+  container_runtime: AgentContainerRuntime;
+  host: string;
 }
 
 export interface WidgetsConfig {
-  config: any
-  provider: string
+  config: any;
+  provider: string;
 }
 
 export namespace Agent {
@@ -1084,11 +1103,11 @@ export namespace Agent {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Create {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = NewAgentRequest
-    export type RequestHeaders = {}
-    export type ResponseBody = NewAgentResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = NewAgentRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = NewAgentResponse;
   }
 
   /**
@@ -1101,11 +1120,11 @@ export namespace Agent {
    * @response `403` `ErrorResponse` Forbidden
    */
   export namespace List {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = Agent[]
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Agent[];
   }
 
   /**
@@ -1120,11 +1139,11 @@ export namespace Agent {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Verify {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = VerifyNewAgentRequest
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = VerifyNewAgentRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 }
 
@@ -1141,11 +1160,11 @@ export namespace Auth {
    * @response `500` `string` Internal server error
    */
   export namespace Callback {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = AuthUserPassAuthCallbackRequest
-    export type RequestHeaders = {}
-    export type ResponseBody = string
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = AuthUserPassAuthCallbackRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = string;
   }
 
   /**
@@ -1158,11 +1177,11 @@ export namespace Auth {
    * @response `302` `string` Redirects to login page or IdP
    */
   export namespace Check {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = string
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = string;
   }
 
   /**
@@ -1175,11 +1194,11 @@ export namespace Auth {
    * @response `429` `string` Too Many Requests
    */
   export namespace Login {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = any
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = any;
   }
 
   /**
@@ -1191,11 +1210,11 @@ export namespace Auth {
    * @response `302` `string` Redirects to home page
    */
   export namespace Logout {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = any
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = any;
   }
 
   /**
@@ -1209,11 +1228,11 @@ export namespace Auth {
    * @response `302` `string` Redirects to home page
    */
   export namespace Logout2 {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = any
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = any;
   }
 }
 
@@ -1230,11 +1249,11 @@ export namespace Cert {
    * @response `500` `ErrorResponse` Internal server error
    */
   export namespace Info {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = CertInfo[]
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = CertInfo[];
   }
 
   /**
@@ -1248,11 +1267,11 @@ export namespace Cert {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Renew {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 }
 
@@ -1272,12 +1291,12 @@ export namespace Docker {
   export namespace Container {
     export type RequestParams = {
       /** Container ID */
-      id: string
-    }
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = ContainerResponse
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ContainerResponse;
   }
 
   /**
@@ -1291,11 +1310,11 @@ export namespace Docker {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Containers {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = ContainerResponse[]
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ContainerResponse[];
   }
 
   /**
@@ -1309,11 +1328,11 @@ export namespace Docker {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Info {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = ServerInfo
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ServerInfo;
   }
 
   /**
@@ -1331,25 +1350,25 @@ export namespace Docker {
   export namespace Logs {
     export type RequestParams = {
       /** container id */
-      id: string
-    }
+      id: string;
+    };
     export type RequestQuery = {
       /** from timestamp */
-      from?: string
+      from?: string;
       /** levels */
-      levels?: string
+      levels?: string;
       /** limit */
-      limit?: number
+      limit?: number;
       /** show stderr */
-      stderr?: boolean
+      stderr?: boolean;
       /** show stdout */
-      stdout?: boolean
+      stdout?: boolean;
       /** to timestamp */
-      to?: string
-    }
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = void
+      to?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = void;
   }
 
   /**
@@ -1365,11 +1384,11 @@ export namespace Docker {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Restart {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = DockerapiRestartRequest
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = DockerapiRestartRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 
   /**
@@ -1385,11 +1404,11 @@ export namespace Docker {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Start {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = DockerapiStartRequest
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = DockerapiStartRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 
   /**
@@ -1407,12 +1426,12 @@ export namespace Docker {
   export namespace Stats {
     export type RequestParams = {
       /** Container ID or route alias */
-      id: string
-    }
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = ContainerStatsResponse
+      id: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ContainerStatsResponse;
   }
 
   /**
@@ -1428,11 +1447,31 @@ export namespace Docker {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Stop {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = DockerapiStopRequest
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = DockerapiStopRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
+  }
+}
+
+export namespace Events {
+  /**
+   * No description
+   * @tags v1
+   * @name Events
+   * @summary Get events history
+   * @request GET:/events
+   * @response `200` `(Event)[]` OK
+   * @response `403` `ErrorResponse` Forbidden: unauthorized
+   * @response `500` `ErrorResponse` Internal Server Error: internal error
+   */
+  export namespace Events {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Event[];
   }
 }
 
@@ -1450,16 +1489,16 @@ export namespace Favicon {
    * @response `500` `ErrorResponse` Internal Server Error: internal error
    */
   export namespace Favicon {
-    export type RequestParams = {}
+    export type RequestParams = {};
     export type RequestQuery = {
       /** Alias of the route */
-      alias?: string
+      alias?: string;
       /** URL of the route */
-      url?: string
-    }
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = IconFetchResult[]
+      url?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = IconFetchResult[];
   }
 }
 
@@ -1476,15 +1515,15 @@ export namespace File {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Get {
-    export type RequestParams = {}
+    export type RequestParams = {};
     export type RequestQuery = {
       /** @format filename */
-      filename: string
-      type: 'config' | 'provider' | 'middleware'
-    }
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = string
+      filename: string;
+      type: "config" | "provider" | "middleware";
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = string;
   }
 
   /**
@@ -1499,16 +1538,16 @@ export namespace File {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Set {
-    export type RequestParams = {}
+    export type RequestParams = {};
     export type RequestQuery = {
       /** Filename */
-      filename: string
+      filename: string;
       /** Type */
-      type: 'config' | 'provider' | 'middleware'
-    }
-    export type RequestBody = string
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+      type: "config" | "provider" | "middleware";
+    };
+    export type RequestBody = string;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 
   /**
@@ -1522,11 +1561,11 @@ export namespace File {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace List {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = ListFilesResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ListFilesResponse;
   }
 
   /**
@@ -1542,14 +1581,14 @@ export namespace File {
    * @response `500` `ErrorResponse` Internal server error
    */
   export namespace Validate {
-    export type RequestParams = {}
+    export type RequestParams = {};
     export type RequestQuery = {
       /** Type */
-      type: 'config' | 'provider' | 'middleware'
-    }
-    export type RequestBody = string
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+      type: "config" | "provider" | "middleware";
+    };
+    export type RequestBody = string;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 }
 
@@ -1560,16 +1599,16 @@ export namespace Health {
    * @name Health
    * @summary Get routes health info
    * @request GET:/health
-   * @response `200` `Record<string,HealthStatusString>` Health info by route name
+   * @response `200` `HealthMap` Health info by route name
    * @response `403` `ErrorResponse` Forbidden
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Health {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = Record<string, HealthStatusString>
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = HealthMap;
   }
 }
 
@@ -1582,13 +1621,14 @@ export namespace Homepage {
    * @request GET:/homepage/categories
    * @response `200` `(string)[]` OK
    * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Categories {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = string[]
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = string[];
   }
 
   /**
@@ -1602,13 +1642,13 @@ export namespace Homepage {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace ItemClick {
-    export type RequestParams = {}
+    export type RequestParams = {};
     export type RequestQuery = {
-      which: string
-    }
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+      which: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 
   /**
@@ -1620,25 +1660,26 @@ export namespace Homepage {
    * @response `200` `(HomepageCategory)[]` OK
    * @response `400` `ErrorResponse` Bad Request
    * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Items {
-    export type RequestParams = {}
+    export type RequestParams = {};
     export type RequestQuery = {
       /** Category filter */
-      category?: string
+      category?: string;
       /** Provider filter */
-      provider?: string
+      provider?: string;
       /** Search query */
-      search?: string
+      search?: string;
       /**
        * Sort method
        * @default "alphabetical"
        */
-      sort_method?: 'clicks' | 'alphabetical' | 'custom'
-    }
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = HomepageCategory[]
+      sort_method?: "clicks" | "alphabetical" | "custom";
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = HomepageCategory[];
   }
 
   /**
@@ -1652,11 +1693,11 @@ export namespace Homepage {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace SetCategoryOrder {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = HomepageOverrideCategoryOrderParams
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = HomepageOverrideCategoryOrderParams;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 
   /**
@@ -1670,11 +1711,11 @@ export namespace Homepage {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace SetItem {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = HomepageOverrideItemParams
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = HomepageOverrideItemParams;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 
   /**
@@ -1688,11 +1729,11 @@ export namespace Homepage {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace SetItemAllSortOrder {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = HomepageOverrideItemAllSortOrderParams
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = HomepageOverrideItemAllSortOrderParams;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 
   /**
@@ -1706,11 +1747,11 @@ export namespace Homepage {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace SetItemFavSortOrder {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = HomepageOverrideItemFavSortOrderParams
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = HomepageOverrideItemFavSortOrderParams;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 
   /**
@@ -1724,11 +1765,11 @@ export namespace Homepage {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace SetItemFavorite {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = HomepageOverrideItemFavoriteParams
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = HomepageOverrideItemFavoriteParams;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 
   /**
@@ -1742,11 +1783,11 @@ export namespace Homepage {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace SetItemSortOrder {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = HomepageOverrideItemSortOrderParams
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = HomepageOverrideItemSortOrderParams;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 
   /**
@@ -1760,11 +1801,11 @@ export namespace Homepage {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace SetItemVisible {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = HomepageOverrideItemVisibleParams
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = HomepageOverrideItemVisibleParams;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 
   /**
@@ -1778,11 +1819,11 @@ export namespace Homepage {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace SetItemsBatch {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = HomepageOverrideItemsBatchParams
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = HomepageOverrideItemsBatchParams;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 }
 
@@ -1798,16 +1839,16 @@ export namespace Icons {
    * @response `403` `ErrorResponse` Forbidden
    */
   export namespace Icons {
-    export type RequestParams = {}
+    export type RequestParams = {};
     export type RequestQuery = {
       /** Keyword */
-      keyword?: string
+      keyword?: string;
       /** Limit */
-      limit?: number
-    }
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = IconMetaSearch[]
+      limit?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = IconMetaSearch[];
   }
 }
 
@@ -1824,26 +1865,26 @@ export namespace Metrics {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace AllSystemInfo {
-    export type RequestParams = {}
+    export type RequestParams = {};
     export type RequestQuery = {
       aggregate?:
-        | 'cpu_average'
-        | 'memory_usage'
-        | 'memory_usage_percent'
-        | 'disks_read_speed'
-        | 'disks_write_speed'
-        | 'disks_iops'
-        | 'disk_usage'
-        | 'network_speed'
-        | 'network_transfer'
-        | 'sensor_temperature'
+        | "cpu_average"
+        | "memory_usage"
+        | "memory_usage_percent"
+        | "disks_read_speed"
+        | "disks_write_speed"
+        | "disks_iops"
+        | "disk_usage"
+        | "network_speed"
+        | "network_transfer"
+        | "sensor_temperature";
       /** @format duration */
-      interval?: string
-      period?: '5m' | '15m' | '1h' | '1d' | '1mo'
-    }
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = Record<string, SystemInfoAggregate>
+      interval?: string;
+      period?: "5m" | "15m" | "1h" | "1d" | "1mo";
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Record<string, SystemInfoAggregate>;
   }
 
   /**
@@ -1859,26 +1900,26 @@ export namespace Metrics {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace SystemInfo {
-    export type RequestParams = {}
+    export type RequestParams = {};
     export type RequestQuery = {
-      agentAddr?: string
-      agentName?: string
+      agentAddr?: string;
+      agentName?: string;
       aggregate?:
-        | 'cpu_average'
-        | 'memory_usage'
-        | 'memory_usage_percent'
-        | 'disks_read_speed'
-        | 'disks_write_speed'
-        | 'disks_iops'
-        | 'disk_usage'
-        | 'network_speed'
-        | 'network_transfer'
-        | 'sensor_temperature'
-      period?: '5m' | '15m' | '1h' | '1d' | '1mo'
-    }
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = SystemInfoAggregate
+        | "cpu_average"
+        | "memory_usage"
+        | "memory_usage_percent"
+        | "disks_read_speed"
+        | "disks_write_speed"
+        | "disks_iops"
+        | "disk_usage"
+        | "network_speed"
+        | "network_transfer"
+        | "sensor_temperature";
+      period?: "5m" | "15m" | "1h" | "1d" | "1mo";
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SystemInfoAggregate;
   }
 
   /**
@@ -1894,26 +1935,26 @@ export namespace Metrics {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Uptime {
-    export type RequestParams = {}
+    export type RequestParams = {};
     export type RequestQuery = {
       /** @example "1m" */
-      interval?: '5m' | '15m' | '1h' | '1d' | '1mo'
+      interval?: "5m" | "15m" | "1h" | "1d" | "1mo";
       /** @example "" */
-      keyword?: string
+      keyword?: string;
       /**
        * @default 0
        * @example 10
        */
-      limit?: number
+      limit?: number;
       /**
        * @default 0
        * @example 10
        */
-      offset?: number
-    }
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = UptimeAggregate
+      offset?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = UptimeAggregate;
   }
 }
 
@@ -1931,7 +1972,7 @@ export namespace Proxmox {
    * @response `500` `ErrorResponse` Internal server error
    */
   export namespace Journalctl {
-    export type RequestParams = {}
+    export type RequestParams = {};
     export type RequestQuery = {
       /**
        * Limit output lines (1-1000)
@@ -1939,17 +1980,17 @@ export namespace Proxmox {
        * @max 1000
        * @default 100
        */
-      limit?: number
+      limit?: number;
       /** Node name */
-      node: string
+      node: string;
       /** Service names */
-      service?: string[]
+      service?: string[];
       /** Container VMID (optional - if not provided, streams node journalctl) */
-      vmid?: number
-    }
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = string
+      vmid?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = string;
   }
 
   /**
@@ -1969,8 +2010,8 @@ export namespace Proxmox {
   export namespace Journalctl2 {
     export type RequestParams = {
       /** Node name */
-      node: string
-    }
+      node: string;
+    };
     export type RequestQuery = {
       /**
        * Limit output lines (1-1000)
@@ -1978,17 +2019,17 @@ export namespace Proxmox {
        * @max 1000
        * @default 100
        */
-      limit?: number
+      limit?: number;
       /** Node name */
-      node: string
+      node: string;
       /** Service names */
-      service?: string[]
+      service?: string[];
       /** Container VMID (optional - if not provided, streams node journalctl) */
-      vmid?: number
-    }
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = string
+      vmid?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = string;
   }
 
   /**
@@ -2008,10 +2049,10 @@ export namespace Proxmox {
   export namespace Journalctl3 {
     export type RequestParams = {
       /** Node name */
-      node: string
+      node: string;
       /** Container VMID (optional - if not provided, streams node journalctl) */
-      vmid?: number
-    }
+      vmid?: number;
+    };
     export type RequestQuery = {
       /**
        * Limit output lines (1-1000)
@@ -2019,17 +2060,17 @@ export namespace Proxmox {
        * @max 1000
        * @default 100
        */
-      limit?: number
+      limit?: number;
       /** Node name */
-      node: string
+      node: string;
       /** Service names */
-      service?: string[]
+      service?: string[];
       /** Container VMID (optional - if not provided, streams node journalctl) */
-      vmid?: number
-    }
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = string
+      vmid?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = string;
   }
 
   /**
@@ -2049,12 +2090,12 @@ export namespace Proxmox {
   export namespace Journalctl4 {
     export type RequestParams = {
       /** Node name */
-      node: string
+      node: string;
       /** Service names */
-      service?: string[]
+      service?: string[];
       /** Container VMID (optional - if not provided, streams node journalctl) */
-      vmid?: number
-    }
+      vmid?: number;
+    };
     export type RequestQuery = {
       /**
        * Limit output lines (1-1000)
@@ -2062,17 +2103,17 @@ export namespace Proxmox {
        * @max 1000
        * @default 100
        */
-      limit?: number
+      limit?: number;
       /** Node name */
-      node: string
+      node: string;
       /** Service names */
-      service?: string[]
+      service?: string[];
       /** Container VMID (optional - if not provided, streams node journalctl) */
-      vmid?: number
-    }
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = string
+      vmid?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = string;
   }
 
   /**
@@ -2088,13 +2129,13 @@ export namespace Proxmox {
    */
   export namespace LxcRestart {
     export type RequestParams = {
-      node: string
-      vmid: number
-    }
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+      node: string;
+      vmid: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 
   /**
@@ -2110,13 +2151,13 @@ export namespace Proxmox {
    */
   export namespace LxcStart {
     export type RequestParams = {
-      node: string
-      vmid: number
-    }
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+      node: string;
+      vmid: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 
   /**
@@ -2132,13 +2173,13 @@ export namespace Proxmox {
    */
   export namespace LxcStop {
     export type RequestParams = {
-      node: string
-      vmid: number
-    }
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+      node: string;
+      vmid: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 
   /**
@@ -2156,12 +2197,12 @@ export namespace Proxmox {
   export namespace NodeStats {
     export type RequestParams = {
       /** Node name */
-      node: string
-    }
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = ProxmoxNodeStats
+      node: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ProxmoxNodeStats;
   }
 
   /**
@@ -2178,13 +2219,13 @@ export namespace Proxmox {
    */
   export namespace VmStats {
     export type RequestParams = {
-      node: string
-      vmid: number
-    }
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = string
+      node: string;
+      vmid: number;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = string;
   }
 
   /**
@@ -2200,25 +2241,25 @@ export namespace Proxmox {
    * @response `500` `ErrorResponse` Internal server error
    */
   export namespace Tail {
-    export type RequestParams = {}
+    export type RequestParams = {};
     export type RequestQuery = {
       /** File paths */
-      file: string[]
+      file: string[];
       /**
        * Limit output lines (1-1000)
        * @min 1
        * @max 1000
        * @default 100
        */
-      limit?: number
+      limit?: number;
       /** Node name */
-      node: string
+      node: string;
       /** Container VMID (optional - if not provided, streams node journalctl) */
-      vmid?: number
-    }
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = string
+      vmid?: number;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = string;
   }
 }
 
@@ -2234,11 +2275,11 @@ export namespace Route {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace ByProvider {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = RouteApiRoutesByProvider
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = RouteApiRoutesByProvider;
   }
 
   /**
@@ -2251,14 +2292,14 @@ export namespace Route {
    * @response `403` `ErrorResponse` Forbidden
    */
   export namespace Routes {
-    export type RequestParams = {}
+    export type RequestParams = {};
     export type RequestQuery = {
       /** Provider */
-      provider?: string
-    }
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = Route[]
+      provider?: string;
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Route[];
   }
 
   /**
@@ -2272,11 +2313,11 @@ export namespace Route {
    * @response `403` `ErrorResponse` Forbidden
    */
   export namespace Playground {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = PlaygroundRequest
-    export type RequestHeaders = {}
-    export type ResponseBody = PlaygroundResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = PlaygroundRequest;
+    export type RequestHeaders = {};
+    export type ResponseBody = PlaygroundResponse;
   }
 
   /**
@@ -2290,11 +2331,11 @@ export namespace Route {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Providers {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = RouteProvider[]
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = RouteProvider[];
   }
 
   /**
@@ -2310,11 +2351,11 @@ export namespace Route {
    * @response `500` `ErrorResponse` Internal server error
    */
   export namespace Validate {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = Route
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = Route;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 
   /**
@@ -2332,11 +2373,11 @@ export namespace Route {
    * @response `500` `ErrorResponse` Internal server error
    */
   export namespace Validate2 {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = Route
-    export type RequestHeaders = {}
-    export type ResponseBody = SuccessResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = Route;
+    export type RequestHeaders = {};
+    export type ResponseBody = SuccessResponse;
   }
 
   /**
@@ -2353,12 +2394,12 @@ export namespace Route {
   export namespace Route {
     export type RequestParams = {
       /** Route name */
-      which: string
-    }
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = Route
+      which: string;
+    };
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = Route;
   }
 }
 
@@ -2374,11 +2415,11 @@ export namespace Stats {
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Stats {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = StatsResponse
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = StatsResponse;
   }
 }
 
@@ -2392,11 +2433,11 @@ export namespace Version {
    * @response `200` `string` version
    */
   export namespace Version {
-    export type RequestParams = {}
-    export type RequestQuery = {}
-    export type RequestBody = never
-    export type RequestHeaders = {}
-    export type ResponseBody = string
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = string;
   }
 }
 
@@ -2406,56 +2447,55 @@ import type {
   AxiosResponse,
   HeadersDefaults,
   ResponseType,
-} from 'axios'
-import axios from 'axios'
+} from "axios";
+import axios from "axios";
 
-export type QueryParamsType = Record<string | number, any>
+export type QueryParamsType = Record<string | number, any>;
 
-export interface FullRequestParams extends Omit<
-  AxiosRequestConfig,
-  'data' | 'params' | 'url' | 'responseType'
-> {
+export interface FullRequestParams
+  extends Omit<AxiosRequestConfig, "data" | "params" | "url" | "responseType"> {
   /** set parameter to `true` for call `securityWorker` for this request */
-  secure?: boolean
+  secure?: boolean;
   /** request path */
-  path: string
+  path: string;
   /** content type of request body */
-  type?: ContentType
+  type?: ContentType;
   /** query params */
-  query?: QueryParamsType
+  query?: QueryParamsType;
   /** format of response (i.e. response.json() -> format: "json") */
-  format?: ResponseType
+  format?: ResponseType;
   /** request body */
-  body?: unknown
+  body?: unknown;
 }
 
-export type RequestParams = Omit<FullRequestParams, 'body' | 'method' | 'query' | 'path'>
+export type RequestParams = Omit<
+  FullRequestParams,
+  "body" | "method" | "query" | "path"
+>;
 
-export interface ApiConfig<SecurityDataType = unknown> extends Omit<
-  AxiosRequestConfig,
-  'data' | 'cancelToken'
-> {
+export interface ApiConfig<SecurityDataType = unknown>
+  extends Omit<AxiosRequestConfig, "data" | "cancelToken"> {
   securityWorker?: (
-    securityData: SecurityDataType | null
-  ) => Promise<AxiosRequestConfig | void> | AxiosRequestConfig | void
-  secure?: boolean
-  format?: ResponseType
+    securityData: SecurityDataType | null,
+  ) => Promise<AxiosRequestConfig | void> | AxiosRequestConfig | void;
+  secure?: boolean;
+  format?: ResponseType;
 }
 
 export enum ContentType {
-  Json = 'application/json',
-  JsonApi = 'application/vnd.api+json',
-  FormData = 'multipart/form-data',
-  UrlEncoded = 'application/x-www-form-urlencoded',
-  Text = 'text/plain',
+  Json = "application/json",
+  JsonApi = "application/vnd.api+json",
+  FormData = "multipart/form-data",
+  UrlEncoded = "application/x-www-form-urlencoded",
+  Text = "text/plain",
 }
 
 export class HttpClient<SecurityDataType = unknown> {
-  public instance: AxiosInstance
-  private securityData: SecurityDataType | null = null
-  private securityWorker?: ApiConfig<SecurityDataType>['securityWorker']
-  private secure?: boolean
-  private format?: ResponseType
+  public instance: AxiosInstance;
+  private securityData: SecurityDataType | null = null;
+  private securityWorker?: ApiConfig<SecurityDataType>["securityWorker"];
+  private secure?: boolean;
+  private format?: ResponseType;
 
   constructor({
     securityWorker,
@@ -2465,22 +2505,22 @@ export class HttpClient<SecurityDataType = unknown> {
   }: ApiConfig<SecurityDataType> = {}) {
     this.instance = axios.create({
       ...axiosConfig,
-      baseURL: axiosConfig.baseURL || '/api/v1',
-    })
-    this.secure = secure
-    this.format = format
-    this.securityWorker = securityWorker
+      baseURL: axiosConfig.baseURL || "/api/v1",
+    });
+    this.secure = secure;
+    this.format = format;
+    this.securityWorker = securityWorker;
   }
 
   public setSecurityData = (data: SecurityDataType | null) => {
-    this.securityData = data
-  }
+    this.securityData = data;
+  };
 
   protected mergeRequestParams(
     params1: AxiosRequestConfig,
-    params2?: AxiosRequestConfig
+    params2?: AxiosRequestConfig,
   ): AxiosRequestConfig {
-    const method = params1.method || (params2 && params2.method)
+    const method = params1.method || (params2 && params2.method);
 
     return {
       ...this.instance.defaults,
@@ -2488,37 +2528,43 @@ export class HttpClient<SecurityDataType = unknown> {
       ...(params2 || {}),
       headers: {
         ...((method &&
-          this.instance.defaults.headers[method.toLowerCase() as keyof HeadersDefaults]) ||
+          this.instance.defaults.headers[
+            method.toLowerCase() as keyof HeadersDefaults
+          ]) ||
           {}),
         ...(params1.headers || {}),
         ...((params2 && params2.headers) || {}),
       },
-    }
+    };
   }
 
   protected stringifyFormItem(formItem: unknown) {
-    if (typeof formItem === 'object' && formItem !== null) {
-      return JSON.stringify(formItem)
+    if (typeof formItem === "object" && formItem !== null) {
+      return JSON.stringify(formItem);
     } else {
-      return `${formItem}`
+      return `${formItem}`;
     }
   }
 
   protected createFormData(input: Record<string, unknown>): FormData {
     if (input instanceof FormData) {
-      return input
+      return input;
     }
     return Object.keys(input || {}).reduce((formData, key) => {
-      const property = input[key]
-      const propertyContent: any[] = property instanceof Array ? property : [property]
+      const property = input[key];
+      const propertyContent: any[] =
+        property instanceof Array ? property : [property];
 
       for (const formItem of propertyContent) {
-        const isFileType = formItem instanceof Blob || formItem instanceof File
-        formData.append(key, isFileType ? formItem : this.stringifyFormItem(formItem))
+        const isFileType = formItem instanceof Blob || formItem instanceof File;
+        formData.append(
+          key,
+          isFileType ? formItem : this.stringifyFormItem(formItem),
+        );
       }
 
-      return formData
-    }, new FormData())
+      return formData;
+    }, new FormData());
   }
 
   public request = async <T = any, _E = any>({
@@ -2531,33 +2577,43 @@ export class HttpClient<SecurityDataType = unknown> {
     ...params
   }: FullRequestParams): Promise<AxiosResponse<T>> => {
     const secureParams =
-      ((typeof secure === 'boolean' ? secure : this.secure) &&
+      ((typeof secure === "boolean" ? secure : this.secure) &&
         this.securityWorker &&
         (await this.securityWorker(this.securityData))) ||
-      {}
-    const requestParams = this.mergeRequestParams(params, secureParams)
-    const responseFormat = format || this.format || undefined
+      {};
+    const requestParams = this.mergeRequestParams(params, secureParams);
+    const responseFormat = format || this.format || undefined;
 
-    if (type === ContentType.FormData && body && body !== null && typeof body === 'object') {
-      body = this.createFormData(body as Record<string, unknown>)
+    if (
+      type === ContentType.FormData &&
+      body &&
+      body !== null &&
+      typeof body === "object"
+    ) {
+      body = this.createFormData(body as Record<string, unknown>);
     }
 
-    if (type === ContentType.Text && body && body !== null && typeof body !== 'string') {
-      body = JSON.stringify(body)
+    if (
+      type === ContentType.Text &&
+      body &&
+      body !== null &&
+      typeof body !== "string"
+    ) {
+      body = JSON.stringify(body);
     }
 
     return this.instance.request({
       ...requestParams,
       headers: {
         ...(requestParams.headers || {}),
-        ...(type ? { 'Content-Type': type } : {}),
+        ...(type ? { "Content-Type": type } : {}),
       },
       params: query,
       responseType: responseFormat,
       data: body,
       url: path,
-    })
-  }
+    });
+  };
 }
 
 /**
@@ -2571,7 +2627,9 @@ export class HttpClient<SecurityDataType = unknown> {
  *
  * GoDoxy API
  */
-export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDataType> {
+export class Api<
+  SecurityDataType extends unknown,
+> extends HttpClient<SecurityDataType> {
   agent = {
     /**
      * @description Create a new agent and return the docker compose file, encrypted CA and client PEMs The returned PEMs are encrypted with a random key and will be used for verification when adding a new agent
@@ -2589,10 +2647,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     create: (request: NewAgentRequest, params: RequestParams = {}) =>
       this.request<NewAgentResponse, ErrorResponse>({
         path: `/agent/create`,
-        method: 'POST',
+        method: "POST",
         body: request,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -2609,9 +2667,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     list: (params: RequestParams = {}) =>
       this.request<Agent[], ErrorResponse>({
         path: `/agent/list`,
-        method: 'GET',
+        method: "GET",
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -2630,13 +2688,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     verify: (request: VerifyNewAgentRequest, params: RequestParams = {}) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/agent/verify`,
-        method: 'POST',
+        method: "POST",
         body: request,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
-  }
+  };
   auth = {
     /**
      * @description Handles the callback from the provider after successful authentication
@@ -2650,10 +2708,13 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @response `400` `string` Userpass: invalid request / credentials
      * @response `500` `string` Internal server error
      */
-    callback: (body: AuthUserPassAuthCallbackRequest, params: RequestParams = {}) =>
+    callback: (
+      body: AuthUserPassAuthCallbackRequest,
+      params: RequestParams = {},
+    ) =>
       this.request<string, string>({
         path: `/auth/callback`,
-        method: 'POST',
+        method: "POST",
         body: body,
         type: ContentType.Json,
         ...params,
@@ -2672,7 +2733,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     check: (params: RequestParams = {}) =>
       this.request<string, string>({
         path: `/auth/check`,
-        method: 'HEAD',
+        method: "HEAD",
         ...params,
       }),
 
@@ -2689,7 +2750,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     login: (params: RequestParams = {}) =>
       this.request<any, string>({
         path: `/auth/login`,
-        method: 'POST',
+        method: "POST",
         ...params,
       }),
 
@@ -2705,7 +2766,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     logout: (params: RequestParams = {}) =>
       this.request<any, string>({
         path: `/auth/logout`,
-        method: 'GET',
+        method: "GET",
         ...params,
       }),
 
@@ -2723,10 +2784,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     logout2: (params: RequestParams = {}) =>
       this.request<any, string>({
         path: `/auth/logout`,
-        method: 'POST',
+        method: "POST",
         ...params,
       }),
-  }
+  };
   cert = {
     /**
      * @description Get cert info
@@ -2743,8 +2804,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     info: (params: RequestParams = {}) =>
       this.request<CertInfo[], ErrorResponse>({
         path: `/cert/info`,
-        method: 'GET',
-        format: 'json',
+        method: "GET",
+        format: "json",
         ...params,
       }),
 
@@ -2762,10 +2823,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     renew: (params: RequestParams = {}) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/cert/renew`,
-        method: 'GET',
+        method: "GET",
         ...params,
       }),
-  }
+  };
   docker = {
     /**
      * @description Get container by container id
@@ -2783,8 +2844,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     container: (id: string, params: RequestParams = {}) =>
       this.request<ContainerResponse, ErrorResponse>({
         path: `/docker/container/${id}`,
-        method: 'GET',
-        format: 'json',
+        method: "GET",
+        format: "json",
         ...params,
       }),
 
@@ -2802,8 +2863,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     containers: (params: RequestParams = {}) =>
       this.request<ContainerResponse[], ErrorResponse>({
         path: `/docker/containers`,
-        method: 'GET',
-        format: 'json',
+        method: "GET",
+        format: "json",
         ...params,
       }),
 
@@ -2821,8 +2882,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     info: (params: RequestParams = {}) =>
       this.request<ServerInfo, ErrorResponse>({
         path: `/docker/info`,
-        method: 'GET',
-        format: 'json',
+        method: "GET",
+        format: "json",
         ...params,
       }),
 
@@ -2843,23 +2904,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
       id: string,
       query?: {
         /** from timestamp */
-        from?: string
+        from?: string;
         /** levels */
-        levels?: string
+        levels?: string;
         /** limit */
-        limit?: number
+        limit?: number;
         /** show stderr */
-        stderr?: boolean
+        stderr?: boolean;
         /** show stdout */
-        stdout?: boolean
+        stdout?: boolean;
         /** to timestamp */
-        to?: string
+        to?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<void, ErrorResponse>({
         path: `/docker/logs/${id}`,
-        method: 'GET',
+        method: "GET",
         query: query,
         type: ContentType.Json,
         ...params,
@@ -2881,10 +2942,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     restart: (request: DockerapiRestartRequest, params: RequestParams = {}) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/docker/restart`,
-        method: 'POST',
+        method: "POST",
         body: request,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -2904,10 +2965,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     start: (request: DockerapiStartRequest, params: RequestParams = {}) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/docker/start`,
-        method: 'POST',
+        method: "POST",
         body: request,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -2927,8 +2988,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     stats: (id: string, params: RequestParams = {}) =>
       this.request<ContainerStatsResponse, ErrorResponse>({
         path: `/docker/stats/${id}`,
-        method: 'GET',
-        format: 'json',
+        method: "GET",
+        format: "json",
         ...params,
       }),
 
@@ -2948,13 +3009,34 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     stop: (request: DockerapiStopRequest, params: RequestParams = {}) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/docker/stop`,
-        method: 'POST',
+        method: "POST",
         body: request,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
-  }
+  };
+  events = {
+    /**
+     * No description
+     *
+     * @tags v1
+     * @name Events
+     * @summary Get events history
+     * @request GET:/events
+     * @response `200` `(Event)[]` OK
+     * @response `403` `ErrorResponse` Forbidden: unauthorized
+     * @response `500` `ErrorResponse` Internal Server Error: internal error
+     */
+    events: (params: RequestParams = {}) =>
+      this.request<Event[], ErrorResponse>({
+        path: `/events`,
+        method: "GET",
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+  };
   favicon = {
     /**
      * @description Get favicon
@@ -2972,21 +3054,21 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     favicon: (
       query?: {
         /** Alias of the route */
-        alias?: string
+        alias?: string;
         /** URL of the route */
-        url?: string
+        url?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<IconFetchResult[], ErrorResponse>({
         path: `/favicon`,
-        method: 'GET',
+        method: "GET",
         query: query,
         type: ContentType.Json,
-        format: 'blob',
+        format: "blob",
         ...params,
       }),
-  }
+  };
   file = {
     /**
      * @description Get file content
@@ -3003,17 +3085,17 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     get: (
       query: {
         /** @format filename */
-        filename: string
-        type: 'config' | 'provider' | 'middleware'
+        filename: string;
+        type: "config" | "provider" | "middleware";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<string, ErrorResponse>({
         path: `/file/content`,
-        method: 'GET',
+        method: "GET",
         query: query,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3032,20 +3114,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     set: (
       query: {
         /** Filename */
-        filename: string
+        filename: string;
         /** Type */
-        type: 'config' | 'provider' | 'middleware'
+        type: "config" | "provider" | "middleware";
       },
       file: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/file/content`,
-        method: 'PUT',
+        method: "PUT",
         query: query,
         body: file,
         type: ContentType.Text,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3063,9 +3145,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     list: (params: RequestParams = {}) =>
       this.request<ListFilesResponse, ErrorResponse>({
         path: `/file/list`,
-        method: 'GET',
+        method: "GET",
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3085,20 +3167,20 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     validate: (
       query: {
         /** Type */
-        type: 'config' | 'provider' | 'middleware'
+        type: "config" | "provider" | "middleware";
       },
       file: string,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/file/validate`,
-        method: 'POST',
+        method: "POST",
         query: query,
         body: file,
-        format: 'json',
+        format: "json",
         ...params,
       }),
-  }
+  };
   health = {
     /**
      * @description Get health info by route name
@@ -3107,19 +3189,19 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @name Health
      * @summary Get routes health info
      * @request GET:/health
-     * @response `200` `Record<string,HealthStatusString>` Health info by route name
+     * @response `200` `HealthMap` Health info by route name
      * @response `403` `ErrorResponse` Forbidden
      * @response `500` `ErrorResponse` Internal Server Error
      */
     health: (params: RequestParams = {}) =>
-      this.request<Record<string, HealthStatusString>, ErrorResponse>({
+      this.request<HealthMap, ErrorResponse>({
         path: `/health`,
-        method: 'GET',
+        method: "GET",
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
-  }
+  };
   homepage = {
     /**
      * @description List homepage categories
@@ -3130,13 +3212,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @request GET:/homepage/categories
      * @response `200` `(string)[]` OK
      * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
      */
     categories: (params: RequestParams = {}) =>
       this.request<string[], ErrorResponse>({
         path: `/homepage/categories`,
-        method: 'GET',
+        method: "GET",
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3153,16 +3236,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     itemClick: (
       query: {
-        which: string
+        which: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/homepage/item_click`,
-        method: 'POST',
+        method: "POST",
         query: query,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3176,29 +3259,30 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @response `200` `(HomepageCategory)[]` OK
      * @response `400` `ErrorResponse` Bad Request
      * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
      */
     items: (
       query?: {
         /** Category filter */
-        category?: string
+        category?: string;
         /** Provider filter */
-        provider?: string
+        provider?: string;
         /** Search query */
-        search?: string
+        search?: string;
         /**
          * Sort method
          * @default "alphabetical"
          */
-        sort_method?: 'clicks' | 'alphabetical' | 'custom'
+        sort_method?: "clicks" | "alphabetical" | "custom";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<HomepageCategory[], ErrorResponse>({
         path: `/homepage/items`,
-        method: 'GET',
+        method: "GET",
         query: query,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3213,13 +3297,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @response `400` `ErrorResponse` Bad Request
      * @response `500` `ErrorResponse` Internal Server Error
      */
-    setCategoryOrder: (request: HomepageOverrideCategoryOrderParams, params: RequestParams = {}) =>
+    setCategoryOrder: (
+      request: HomepageOverrideCategoryOrderParams,
+      params: RequestParams = {},
+    ) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/homepage/set/category_order`,
-        method: 'POST',
+        method: "POST",
         body: request,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3234,13 +3321,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @response `400` `ErrorResponse` Bad Request
      * @response `500` `ErrorResponse` Internal Server Error
      */
-    setItem: (request: HomepageOverrideItemParams, params: RequestParams = {}) =>
+    setItem: (
+      request: HomepageOverrideItemParams,
+      params: RequestParams = {},
+    ) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/homepage/set/item`,
-        method: 'POST',
+        method: "POST",
         body: request,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3257,14 +3347,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     setItemAllSortOrder: (
       request: HomepageOverrideItemAllSortOrderParams,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/homepage/set/item_all_sort_order`,
-        method: 'POST',
+        method: "POST",
         body: request,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3281,14 +3371,14 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     setItemFavSortOrder: (
       request: HomepageOverrideItemFavSortOrderParams,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/homepage/set/item_fav_sort_order`,
-        method: 'POST',
+        method: "POST",
         body: request,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3303,13 +3393,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @response `400` `ErrorResponse` Bad Request
      * @response `500` `ErrorResponse` Internal Server Error
      */
-    setItemFavorite: (request: HomepageOverrideItemFavoriteParams, params: RequestParams = {}) =>
+    setItemFavorite: (
+      request: HomepageOverrideItemFavoriteParams,
+      params: RequestParams = {},
+    ) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/homepage/set/item_favorite`,
-        method: 'POST',
+        method: "POST",
         body: request,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3324,13 +3417,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @response `400` `ErrorResponse` Bad Request
      * @response `500` `ErrorResponse` Internal Server Error
      */
-    setItemSortOrder: (request: HomepageOverrideItemSortOrderParams, params: RequestParams = {}) =>
+    setItemSortOrder: (
+      request: HomepageOverrideItemSortOrderParams,
+      params: RequestParams = {},
+    ) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/homepage/set/item_sort_order`,
-        method: 'POST',
+        method: "POST",
         body: request,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3345,13 +3441,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @response `400` `ErrorResponse` Bad Request
      * @response `500` `ErrorResponse` Internal Server Error
      */
-    setItemVisible: (request: HomepageOverrideItemVisibleParams, params: RequestParams = {}) =>
+    setItemVisible: (
+      request: HomepageOverrideItemVisibleParams,
+      params: RequestParams = {},
+    ) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/homepage/set/item_visible`,
-        method: 'POST',
+        method: "POST",
         body: request,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3366,16 +3465,19 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      * @response `400` `ErrorResponse` Bad Request
      * @response `500` `ErrorResponse` Internal Server Error
      */
-    setItemsBatch: (request: HomepageOverrideItemsBatchParams, params: RequestParams = {}) =>
+    setItemsBatch: (
+      request: HomepageOverrideItemsBatchParams,
+      params: RequestParams = {},
+    ) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/homepage/set/items_batch`,
-        method: 'POST',
+        method: "POST",
         body: request,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
-  }
+  };
   icons = {
     /**
      * @description List icons
@@ -3391,21 +3493,21 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     icons: (
       query?: {
         /** Keyword */
-        keyword?: string
+        keyword?: string;
         /** Limit */
-        limit?: number
+        limit?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<IconMetaSearch[], ErrorResponse>({
         path: `/icons`,
-        method: 'GET',
+        method: "GET",
         query: query,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
-  }
+  };
   metrics = {
     /**
      * @description Get system info
@@ -3422,27 +3524,27 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     allSystemInfo: (
       query?: {
         aggregate?:
-          | 'cpu_average'
-          | 'memory_usage'
-          | 'memory_usage_percent'
-          | 'disks_read_speed'
-          | 'disks_write_speed'
-          | 'disks_iops'
-          | 'disk_usage'
-          | 'network_speed'
-          | 'network_transfer'
-          | 'sensor_temperature'
+          | "cpu_average"
+          | "memory_usage"
+          | "memory_usage_percent"
+          | "disks_read_speed"
+          | "disks_write_speed"
+          | "disks_iops"
+          | "disk_usage"
+          | "network_speed"
+          | "network_transfer"
+          | "sensor_temperature";
         /** @format duration */
-        interval?: string
-        period?: '5m' | '15m' | '1h' | '1d' | '1mo'
+        interval?: string;
+        period?: "5m" | "15m" | "1h" | "1d" | "1mo";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<Record<string, SystemInfoAggregate>, ErrorResponse>({
         path: `/metrics/all_system_info`,
-        method: 'GET',
+        method: "GET",
         query: query,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3461,28 +3563,28 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
      */
     systemInfo: (
       query?: {
-        agentAddr?: string
-        agentName?: string
+        agentAddr?: string;
+        agentName?: string;
         aggregate?:
-          | 'cpu_average'
-          | 'memory_usage'
-          | 'memory_usage_percent'
-          | 'disks_read_speed'
-          | 'disks_write_speed'
-          | 'disks_iops'
-          | 'disk_usage'
-          | 'network_speed'
-          | 'network_transfer'
-          | 'sensor_temperature'
-        period?: '5m' | '15m' | '1h' | '1d' | '1mo'
+          | "cpu_average"
+          | "memory_usage"
+          | "memory_usage_percent"
+          | "disks_read_speed"
+          | "disks_write_speed"
+          | "disks_iops"
+          | "disk_usage"
+          | "network_speed"
+          | "network_transfer"
+          | "sensor_temperature";
+        period?: "5m" | "15m" | "1h" | "1d" | "1mo";
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<SystemInfoAggregate, ErrorResponse>({
         path: `/metrics/system_info`,
-        method: 'GET',
+        method: "GET",
         query: query,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3502,30 +3604,30 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     uptime: (
       query?: {
         /** @example "1m" */
-        interval?: '5m' | '15m' | '1h' | '1d' | '1mo'
+        interval?: "5m" | "15m" | "1h" | "1d" | "1mo";
         /** @example "" */
-        keyword?: string
+        keyword?: string;
         /**
          * @default 0
          * @example 10
          */
-        limit?: number
+        limit?: number;
         /**
          * @default 0
          * @example 10
          */
-        offset?: number
+        offset?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<UptimeAggregate, ErrorResponse>({
         path: `/metrics/uptime`,
-        method: 'GET',
+        method: "GET",
         query: query,
-        format: 'json',
+        format: "json",
         ...params,
       }),
-  }
+  };
   proxmox = {
     /**
      * @description Get journalctl output for node or LXC container. If vmid is not provided, streams node journalctl.
@@ -3548,22 +3650,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          * @max 1000
          * @default 100
          */
-        limit?: number
+        limit?: number;
         /** Node name */
-        node: string
+        node: string;
         /** Service names */
-        service?: string[]
+        service?: string[];
         /** Container VMID (optional - if not provided, streams node journalctl) */
-        vmid?: number
+        vmid?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<string, ErrorResponse>({
         path: `/proxmox/journalctl`,
-        method: 'GET',
+        method: "GET",
         query: query,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3591,22 +3693,22 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          * @max 1000
          * @default 100
          */
-        limit?: number
+        limit?: number;
         /** Node name */
-        node: string
+        node: string;
         /** Service names */
-        service?: string[]
+        service?: string[];
         /** Container VMID (optional - if not provided, streams node journalctl) */
-        vmid?: number
+        vmid?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<string, ErrorResponse>({
         path: `/proxmox/journalctl/${node}`,
-        method: 'GET',
+        method: "GET",
         query: query,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3634,23 +3736,23 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          * @max 1000
          * @default 100
          */
-        limit?: number
+        limit?: number;
         /** Node name */
-        node: string
+        node: string;
         /** Service names */
-        service?: string[]
+        service?: string[];
         /** Container VMID (optional - if not provided, streams node journalctl) */
-        vmid?: number
+        vmid?: number;
       },
       vmid?: number,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<string, ErrorResponse>({
         path: `/proxmox/journalctl/${node}/${vmid}`,
-        method: 'GET',
+        method: "GET",
         query: query,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3678,24 +3780,24 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
          * @max 1000
          * @default 100
          */
-        limit?: number
+        limit?: number;
         /** Node name */
-        node: string
+        node: string;
         /** Service names */
-        service?: string[]
+        service?: string[];
         /** Container VMID (optional - if not provided, streams node journalctl) */
-        vmid?: number
+        vmid?: number;
       },
       service?: string[],
       vmid?: number,
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<string, ErrorResponse>({
         path: `/proxmox/journalctl/${node}/${vmid}/${service}`,
-        method: 'GET',
+        method: "GET",
         query: query,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3714,8 +3816,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     lxcRestart: (node: string, vmid: number, params: RequestParams = {}) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/proxmox/lxc/${node}/${vmid}/restart`,
-        method: 'POST',
-        format: 'json',
+        method: "POST",
+        format: "json",
         ...params,
       }),
 
@@ -3734,8 +3836,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     lxcStart: (node: string, vmid: number, params: RequestParams = {}) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/proxmox/lxc/${node}/${vmid}/start`,
-        method: 'POST',
-        format: 'json',
+        method: "POST",
+        format: "json",
         ...params,
       }),
 
@@ -3754,8 +3856,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     lxcStop: (node: string, vmid: number, params: RequestParams = {}) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/proxmox/lxc/${node}/${vmid}/stop`,
-        method: 'POST',
-        format: 'json',
+        method: "POST",
+        format: "json",
         ...params,
       }),
 
@@ -3775,8 +3877,8 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     nodeStats: (node: string, params: RequestParams = {}) =>
       this.request<ProxmoxNodeStats, ErrorResponse>({
         path: `/proxmox/stats/${node}`,
-        method: 'GET',
-        format: 'json',
+        method: "GET",
+        format: "json",
         ...params,
       }),
 
@@ -3796,7 +3898,7 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     vmStats: (node: string, vmid: number, params: RequestParams = {}) =>
       this.request<string, ErrorResponse>({
         path: `/proxmox/stats/${node}/${vmid}`,
-        method: 'GET',
+        method: "GET",
         ...params,
       }),
 
@@ -3816,30 +3918,30 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     tail: (
       query: {
         /** File paths */
-        file: string[]
+        file: string[];
         /**
          * Limit output lines (1-1000)
          * @min 1
          * @max 1000
          * @default 100
          */
-        limit?: number
+        limit?: number;
         /** Node name */
-        node: string
+        node: string;
         /** Container VMID (optional - if not provided, streams node journalctl) */
-        vmid?: number
+        vmid?: number;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<string, ErrorResponse>({
         path: `/proxmox/tail`,
-        method: 'GET',
+        method: "GET",
         query: query,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
-  }
+  };
   route = {
     /**
      * @description List routes by provider
@@ -3855,9 +3957,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     byProvider: (params: RequestParams = {}) =>
       this.request<RouteApiRoutesByProvider, ErrorResponse>({
         path: `/route/by_provider`,
-        method: 'GET',
+        method: "GET",
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3874,16 +3976,16 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     routes: (
       query?: {
         /** Provider */
-        provider?: string
+        provider?: string;
       },
-      params: RequestParams = {}
+      params: RequestParams = {},
     ) =>
       this.request<Route[], ErrorResponse>({
         path: `/route/list`,
-        method: 'GET',
+        method: "GET",
         query: query,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3901,10 +4003,10 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     playground: (request: PlaygroundRequest, params: RequestParams = {}) =>
       this.request<PlaygroundResponse, ErrorResponse>({
         path: `/route/playground`,
-        method: 'POST',
+        method: "POST",
         body: request,
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3922,9 +4024,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     providers: (params: RequestParams = {}) =>
       this.request<RouteProvider[], ErrorResponse>({
         path: `/route/providers`,
-        method: 'GET',
+        method: "GET",
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3944,9 +4046,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     validate: (route: Route, params: RequestParams = {}) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/route/validate`,
-        method: 'GET',
+        method: "GET",
         body: route,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3968,9 +4070,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     validate2: (route: Route, params: RequestParams = {}) =>
       this.request<SuccessResponse, ErrorResponse>({
         path: `/route/validate`,
-        method: 'POST',
+        method: "POST",
         body: route,
-        format: 'json',
+        format: "json",
         ...params,
       }),
 
@@ -3989,12 +4091,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     route: (which: string, params: RequestParams = {}) =>
       this.request<Route, ErrorResponse>({
         path: `/route/${which}`,
-        method: 'GET',
+        method: "GET",
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
-  }
+  };
   stats = {
     /**
      * @description Get stats
@@ -4010,12 +4112,12 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     stats: (params: RequestParams = {}) =>
       this.request<StatsResponse, ErrorResponse>({
         path: `/stats`,
-        method: 'GET',
+        method: "GET",
         type: ContentType.Json,
-        format: 'json',
+        format: "json",
         ...params,
       }),
-  }
+  };
   version = {
     /**
      * @description Get the version of the GoDoxy
@@ -4029,9 +4131,9 @@ export class Api<SecurityDataType extends unknown> extends HttpClient<SecurityDa
     version: (params: RequestParams = {}) =>
       this.request<string, any>({
         path: `/version`,
-        method: 'GET',
+        method: "GET",
         type: ContentType.Json,
         ...params,
       }),
-  }
+  };
 }
