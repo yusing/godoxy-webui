@@ -1,15 +1,15 @@
-import { cn } from '@/lib/utils'
 import type { HealthInfoWithoutDetail } from '@/lib/api'
+import { cn } from '@/lib/utils'
 
 export default function HealthBadge({
   status,
   compact,
 }: {
-  status: HealthInfoWithoutDetail | undefined
+  status: HealthInfoWithoutDetail['status'] | undefined
   compact?: boolean
 }) {
   // Extract status string, default to 'unknown'
-  const s = status?.status ?? 'unknown'
+  const s = status ?? 'unknown'
 
   let label = 'Unknown'
   let className = 'bg-muted text-muted-foreground'

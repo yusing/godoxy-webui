@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import type { ObjectState } from 'juststore'
+import type { ObjectState, ValueState } from 'juststore'
 import { forwardRef, useMemo } from 'react'
 import type { HomepageItem } from '@/lib/api'
 import { api } from '@/lib/api-client'
@@ -97,8 +97,8 @@ const AppItemInner = forwardRef<
             <state.name.Render>
               {name => <span className="truncate text-sm font-medium">{name || alias}</span>}
             </state.name.Render>
-            <store.Render path={`health.${alias}`}>
-              {health => <HealthBadge status={health} />}
+            <store.Render path={`health.${alias}.status`}>
+              {status => <HealthBadge status={status} />}
             </store.Render>
           </div>
 
@@ -114,16 +114,8 @@ const AppItemInner = forwardRef<
           {/* Row 3: Category · Latency · Widgets */}
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground pt-0.5">
             <span className="truncate max-w-[100px]">{category}</span>
-            <store.Render path={`health.${alias}`}>
-              {health =>
-                health?.latency ? (
-                  <>
-                    <span aria-hidden>·</span>
-                    <span className="tabular-nums">{formatGoDuration(health.latency)}</span>
-                  </>
-                ) : null
-              }
-            </store.Render>
+            <span aria-hidden>·</span>
+            <LatencyText latency={store.state(`health.${alias}.latency`)} />
 
             {hasWidgets && (
               <>
@@ -144,6 +136,11 @@ const AppItemInner = forwardRef<
 })
 
 AppItemInner.displayName = 'AppItem'
+
+function LatencyText({ latency }: { latency: ValueState<number> }) {
+  const formatted = latency.useCompute(value => formatGoDuration(value))
+  return <span className="tabular-nums">{formatted}</span>
+}
 
 function ThemeAwareAppIcon({ alias, url }: { alias: string; url?: string }) {
   const themeAware = store.ui.iconThemeAware.use()
