@@ -24,16 +24,27 @@ function formatTimestampAsDate(ts: number) {
 }
 
 const colorMap: Record<string, string> = {
-  download: 'var(--chart-1)',
-  upload: 'var(--chart-5)',
+  download: 'var(--chart-3)',
+  upload: 'var(--chart-4)',
   cpu_average: 'var(--chart-2)',
-  memory_usage: 'var(--chart-4)',
+  memory_usage: 'var(--chart-1)',
+}
+
+function hashKey(s: string) {
+  let h = 0
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0
+  return h
 }
 
 function color(key: string) {
   if (!colorMap[key]) {
-    const idx = (Object.keys(colorMap).length % 5) + 1
-    colorMap[key] = `var(--chart-${idx})`
+    const n = hashKey(key)
+    const L = 0.45 + (n % 35) / 100
+    const C = 0.12 + (Math.floor(n / 37) % 12) / 100
+    const H = n % 360
+    const mix = `oklch(${L} ${C} ${H})`
+    const idx = (n % 5) + 1
+    colorMap[key] = `color-mix(in oklch, var(--chart-${idx}) 75%, ${mix})`
   }
   return colorMap[key]
 }
@@ -72,9 +83,9 @@ export default function MetricChart({
   const hasData = agg && agg.length > 0
 
   return (
-    <div className="rounded-lg border bg-card p-6 shadow-sm">
-      <div className="mb-6">
-        <h3 className="text-lg font-medium">{label}</h3>
+    <div className="rounded-2xl border border-border/60 bg-card dark:bg-[color-mix(in_oklab,var(--card)_65%,black)] p-4">
+      <div className="mb-4">
+        <h3 className="text-base font-medium">{label}</h3>
         <p className="text-sm text-muted-foreground">{description}</p>
       </div>
       {!hasData ? (
@@ -106,7 +117,7 @@ function ChartInner({
     return Object.fromEntries(entries)
   }, [keys])
 
-  const maxHeight = `${280 + keys.length * 10}px`
+  const maxHeight = `${260 + keys.length * 8}px`
 
   const period = store.metricsPeriod.use()
   const formatter = useMemo(
@@ -119,7 +130,7 @@ function ChartInner({
   return (
     <ChartContainer className="w-full" style={{ maxHeight }} config={chartConfig}>
       <AreaChart accessibilityLayer data={data}>
-        <CartesianGrid vertical={false} />
+        <CartesianGrid vertical={false} strokeDasharray="4 6" />
         <ChartTooltip
           cursor={false}
           content={

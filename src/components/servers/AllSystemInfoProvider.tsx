@@ -11,6 +11,9 @@ export default function AllSystemInfoProvider() {
 
   useWebSocketApi<Record<string, SystemInfo>>({
     endpoint: '/metrics/all_system_info',
+    query: {
+      interval: '3s',
+    },
     onMessage: data => {
       // server sends one agent at a time, so we need to set each one individually
       for (const agent in data) {

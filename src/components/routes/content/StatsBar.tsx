@@ -2,7 +2,7 @@ import { type RouteKey, store } from '@/components/routes/store'
 import { formatBytes } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { parseProxmoxStatsLine } from './proxmox_stats'
-import './stats_bar.css'
+import '@/stats_bar.css'
 
 type StatsCellConfig = {
   label: string

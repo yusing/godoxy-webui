@@ -9,94 +9,94 @@
   /* Base/Background */
   --ds-base-bg: #f8fafc;
 
-  /* Status Colors - Soft greens/reds */
-  --ds-status-bg: #e2e8f0;
+  /* Status Colors - denser chips with strong contrast */
+  --ds-status-bg: #dbe4ff;
   --ds-status-stopped-bg: #fecaca;
-  --ds-running-bg: #bbf7d0;
+  --ds-running-bg: #dcfce7;
   --ds-running-no-bg: #fecaca;
 
-  /* CPU - Soft blue */
-  --ds-cpu-bg: #dbeafe;
+  /* CPU - vivid blue */
+  --ds-cpu-bg: #bfdbfe;
 
-  /* Memory - Soft purple */
-  --ds-mem-usage-bg: #ede9fe;
-  --ds-mem-percent-bg: #e9d5ff;
+  /* Memory - richer violet */
+  --ds-mem-usage-bg: #ddd6fe;
+  --ds-mem-percent-bg: #ddd6fe;
 
-  /* Network - Soft cyan */
-  --ds-net-bg: #cffafe;
+  /* Network - teal/emerald family */
+  --ds-net-bg: #ccfbf1;
 
-  /* Block I/O - Soft amber */
-  --ds-block-bg: #fef3c7;
+  /* Block I/O - warm amber */
+  --ds-block-bg: #fde68a;
 
-  /* Filesystem - Soft emerald */
-  --ds-rootfs-bg: #d1fae5;
-  --ds-rootfs-percent-bg: #a7f3d0;
+  /* Filesystem - emerald */
+  --ds-rootfs-bg: #86efac;
+  --ds-rootfs-percent-bg: #6ee7b7;
 
-  /* System Info - Soft slate tones */
-  --ds-pve-bg: #e2e8f0;
-  --ds-kernel-bg: #f1f5f9;
-  --ds-cpu-model-bg: #dbeafe;
-  --ds-load-bg: #e0f2fe;
-  --ds-uptime-bg: #ccfbf1;
+  /* System Info - cool slate/blue-green range */
+  --ds-pve-bg: #c7d2fe;
+  --ds-kernel-bg: #e2e8f0;
+  --ds-cpu-model-bg: #bfdbfe;
+  --ds-load-bg: #bae6fd;
+  --ds-uptime-bg: #99f6e4;
 
   /* Text colors for light mode */
-  --ds-text-default: #1e293b;
-  --ds-text-muted: #64748b;
-  --ds-text-cpu: #1d4ed8;
-  --ds-text-mem: #6d28d9;
+  --ds-text-default: #1f2937;
+  --ds-text-muted: #475569;
+  --ds-text-cpu: #1e3a8a;
+  --ds-text-mem: #5b21b6;
   --ds-text-net: #0e7490;
-  --ds-text-block: #b45309;
-  --ds-text-rootfs: #047857;
-  --ds-text-status-stopped: #b91c1c;
-  --ds-text-running: #047857;
-  --ds-text-running-no: #b91c1c;
+  --ds-text-block: #92400e;
+  --ds-text-rootfs: #065f46;
+  --ds-text-status-stopped: #991b1b;
+  --ds-text-running: #15803d;
+  --ds-text-running-no: #991b1b;
 }
 
 .dark {
   /* Base/Background - Deeper dark for dark mode */
   --ds-base-bg: #0f0f1a;
 
-  /* Status Colors - Slightly muted but still vibrant */
-  --ds-status-bg: #1e293b;
-  --ds-status-stopped-bg: #b91c1c;
-  --ds-running-bg: #047857;
-  --ds-running-no-bg: #dc2626;
+  /* Status Colors - opaque, high-contrast chips */
+  --ds-status-bg: #2c3653;
+  --ds-status-stopped-bg: #7f1d1d;
+  --ds-running-bg: #14532d;
+  --ds-running-no-bg: #7f1d1d;
 
-  /* CPU - Deep vibrant blue */
-  --ds-cpu-bg: #1d4ed8;
+  /* CPU - deep blue */
+  --ds-cpu-bg: #1e3a8a;
 
-  /* Memory - Rich deep purple */
-  --ds-mem-usage-bg: #6d28d9;
-  --ds-mem-percent-bg: #7c3aed;
+  /* Memory - deep violet */
+  --ds-mem-usage-bg: #4c1d95;
+  --ds-mem-percent-bg: #5b21b6;
 
-  /* Network - Deep cyan */
-  --ds-net-bg: #0e7490;
+  /* Network - dark teal */
+  --ds-net-bg: #0f766e;
 
-  /* Block I/O - Deep amber */
-  --ds-block-bg: #b45309;
+  /* Block I/O - dark amber */
+  --ds-block-bg: #78350f;
 
-  /* Filesystem - Deep emerald */
-  --ds-rootfs-bg: #047857;
-  --ds-rootfs-percent-bg: #059669;
+  /* Filesystem - dark emerald */
+  --ds-rootfs-bg: #14532d;
+  --ds-rootfs-percent-bg: #166534;
 
-  /* System Info - Deeper slate tones */
-  --ds-pve-bg: #1e293b;
+  /* System Info - darker slate/blue-green tones */
+  --ds-pve-bg: #273449;
   --ds-kernel-bg: #334155;
-  --ds-cpu-model-bg: #172554;
-  --ds-load-bg: #075985;
+  --ds-cpu-model-bg: #1e3a8a;
+  --ds-load-bg: #0f766e;
   --ds-uptime-bg: #115e59;
 
-  /* Text colors for dark mode - all white/light */
-  --ds-text-default: #f8fafc;
+  /* Text colors for dark mode - brighter category accents */
+  --ds-text-default: #e2e8f0;
   --ds-text-muted: #cbd5e1;
-  --ds-text-cpu: #ffffff;
-  --ds-text-mem: #ffffff;
-  --ds-text-net: #ffffff;
-  --ds-text-block: #ffffff;
-  --ds-text-rootfs: #ffffff;
-  --ds-text-status-stopped: #ffffff;
-  --ds-text-running: #ffffff;
-  --ds-text-running-no: #ffffff;
+  --ds-text-cpu: #93c5fd;
+  --ds-text-mem: #c4b5fd;
+  --ds-text-net: #67e8f9;
+  --ds-text-block: #fcd34d;
+  --ds-text-rootfs: #86efac;
+  --ds-text-status-stopped: #fecaca;
+  --ds-text-running: #86efac;
+  --ds-text-running-no: #fecaca;
 }
 
 /*

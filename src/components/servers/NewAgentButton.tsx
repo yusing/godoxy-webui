@@ -56,7 +56,7 @@ async function addAgentToConfig(host: string, port: number) {
 
 const minWidth = 'min-w-[120px]'
 
-export function AddAgentDialogButton() {
+export function AddAgentDialogButton({ className }: { className?: string }) {
   const [open, setOpen] = useState(false)
 
   const form = useForm<NewAgentRequest>({
@@ -128,7 +128,7 @@ export function AddAgentDialogButton() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button variant={'outline'} size="sm" />}>
+      <DialogTrigger render={<Button variant={'outline'} size="sm" className={className} />}>
         <IconPlus />
         Add agent
       </DialogTrigger>
