@@ -3095,7 +3095,6 @@ export class Api<
         method: "GET",
         query: query,
         type: ContentType.Json,
-        format: "json",
         ...params,
       }),
 

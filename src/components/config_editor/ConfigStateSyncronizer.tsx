@@ -12,10 +12,15 @@ import { configStore } from './store'
 export default function ConfigStateSyncronizer() {
   useMount(() => {
     api.file
-      .get({
-        type: configStore.activeFile.type.value ?? 'config',
-        filename: configStore.activeFile.filename.value ?? 'config.yml',
-      })
+      .get(
+        {
+          type: configStore.activeFile.type.value ?? 'config',
+          filename: configStore.activeFile.filename.value ?? 'config.yml',
+        },
+        {
+          format: 'text',
+        }
+      )
       .then(r => {
         configStore.content.set(r.data)
         configStore.originalConfig.set(parseYAML(r.data) as Config.Config)
@@ -56,6 +61,7 @@ export default function ConfigStateSyncronizer() {
           return
         }
       } catch {
+        configStore.content.reset()
         configStore.validateError.set('invalid yaml')
         return
       }
@@ -71,7 +77,8 @@ export default function ConfigStateSyncronizer() {
   // when content changes, set the rootObject and validate
   useEffect(() => {
     const unsubscribe = configStore.content.subscribe(content => {
-      if (!content) {
+      if (!content || typeof content !== 'string') {
+        configStore.content.reset()
         configStore.configObject.reset()
         configStore.originalConfig.reset()
         configStore.validateError.reset()
@@ -85,6 +92,7 @@ export default function ConfigStateSyncronizer() {
           configStore.validateError.set(err as GoDoxyError)
         )
       } catch {
+        configStore.content.reset()
         configStore.validateError.set('invalid yaml')
       }
     })
