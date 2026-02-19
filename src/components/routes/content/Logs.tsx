@@ -8,28 +8,17 @@ import { FitAddon } from '@xterm/addon-fit'
 import { WebFontsAddon } from '@xterm/addon-web-fonts'
 import { WebLinksAddon } from '@xterm/addon-web-links'
 import { Terminal } from '@xterm/xterm'
-import {
-  Suspense,
-  useCallback,
-  useEffect,
-  useId,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { Suspense, useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useTheme } from '@/components/ThemeProvider'
 import { Button } from '@/components/ui/button'
-import { useWebSocketApi } from '@/hooks/websocket'
-import { type RouteKey, store } from '../store'
+import type { RouteKey } from '../store'
 
 import '@xterm/xterm/css/xterm.css'
 
-import { Query } from '@/lib/query'
-import '../style.css'
-
 import { type Atom, createAtom } from 'juststore'
-import { formatLineForTerminal, resolveThemeColorsAsync } from './logs'
+import LogProvider from './LogProvider'
+import { resolveForegroundColorAsync } from './logs'
 
 const fontFamily = 'Cascadia Code Variable'
 
@@ -91,7 +80,7 @@ export default function Logs({ routeKey }: { routeKey: RouteKey }) {
       // We must compute the actual color value at runtime.
       // Use async resolution to ensure CSS variables are ready.
 
-      const theme = await resolveThemeColorsAsync()
+      const foreground = await resolveForegroundColorAsync()
       if (cancelled) return
 
       const term = new Terminal({
@@ -104,7 +93,10 @@ export default function Logs({ routeKey }: { routeKey: RouteKey }) {
         fontWeight: '500',
         fontWeightBold: '700',
         lineHeight: 1.2,
-        theme,
+        theme: {
+          background: '#00000000',
+          foreground,
+        },
       })
 
       const fitAddon = new FitAddon()
@@ -188,13 +180,38 @@ function LogsInner({
 }) {
   'use memo'
 
-  const containerRef = useRef<HTMLDivElement>(null)
+  const inlineHostRef = useRef<HTMLDivElement>(null)
+  const portalNodeRef = useRef<HTMLDivElement | null>(
+    typeof document === 'undefined' ? null : document.createElement('div')
+  )
   const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('down')
+  const [maximized, setMaximized] = useState(maximizedAtom.value)
 
   useEffect(() => {
     setScrollDirectionRef.current = next =>
       setScrollDirection(prev => (prev === next ? prev : next))
   }, [setScrollDirectionRef])
+
+  useEffect(() => {
+    const unsubscribe = maximizedAtom.subscribe(setMaximized)
+    return unsubscribe
+  }, [maximizedAtom])
+
+  useLayoutEffect(() => {
+    const portalNode = portalNodeRef.current
+    if (!portalNode) return
+
+    const host = maximized ? document.body : inlineHostRef.current
+    if (!host) return
+
+    host.appendChild(portalNode)
+
+    return () => {
+      if (portalNode.parentNode === host) {
+        host.removeChild(portalNode)
+      }
+    }
+  }, [maximized])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -212,43 +229,37 @@ function LogsInner({
     return () => window.removeEventListener('keydown', handleKeyDown, true)
   }, [maximizedAtom])
 
-  return (
+  const content = (
     <div
-      ref={containerRef}
-      className="relative
-      has-data-[maximized=true]:absolute has-data-[maximized=true]:px-[5vw] has-data-[maximized=true]:py-[5vh] has-data-[maximized=true]:top-0 has-data-[maximized=true]:left-0
-      has-data-[maximized=true]:h-full has-data-[maximized=true]:w-full
-      has-data-[maximized=true]:p-4 has-data-[maximized=true]:z-50"
+      data-maximized={maximized ? 'true' : undefined}
+      className={
+        maximized
+          ? 'fixed inset-0 z-50 h-screen w-screen px-[5vw] py-[5vh] bg-background/20 backdrop-blur-sm'
+          : 'relative h-full w-full'
+      }
     >
       <Suspense>
         <LogThemeUpdater termRef={termRef} />
       </Suspense>
       <div
-        className="overflow-hidden rounded-md border bg-muted/30 tracking-normal p-2 h-[45vh] has-data-[maximized=true]:h-full relative"
-        style={{
-          backgroundColor: 'var(--xterm-background)',
-        }}
+        className={`routes-logs-shell overflow-hidden rounded-xl tracking-normal p-2 relative ${maximized ? 'h-full' : 'h-[45vh]'}`}
       >
-        <div ref={logsRef} className="h-full w-full" />
-        <div className="absolute top-4 right-4">
-          <maximizedAtom.Render>
-            {(maximized, setExpanded) => (
-              <Button
-                size="icon"
-                variant="ghost"
-                className="bg-background/80 hover:bg-background"
-                aria-label={maximized ? 'Minimize logs' : 'Maximize logs'}
-                onClick={() => setExpanded(!maximized)}
-              >
-                {maximized ? <IconArrowsMinimize /> : <IconArrowsMaximize />}
-              </Button>
-            )}
-          </maximizedAtom.Render>
-        </div>
-        <div className="absolute bottom-4 right-4">
+        <div ref={logsRef} className="routes-logs-terminal h-full w-full" />
+        <div className="absolute top-4 right-6">
           <Button
             size="icon"
-            className="bg-teal-500/80 text-white"
+            variant="ghost"
+            className="routes-logs-action"
+            aria-label={maximized ? 'Minimize logs' : 'Maximize logs'}
+            onClick={() => maximizedAtom.set(!maximized)}
+          >
+            {maximized ? <IconArrowsMinimize /> : <IconArrowsMaximize />}
+          </Button>
+        </div>
+        <div className="absolute bottom-4 right-6">
+          <Button
+            size="icon"
+            className="routes-logs-scroll-button"
             aria-label={scrollDirection === 'up' ? 'Scroll to top' : 'Scroll to bottom'}
             onClick={() => {
               const term = termRef.current
@@ -265,6 +276,12 @@ function LogsInner({
           </Button>
         </div>
       </div>
+    </div>
+  )
+
+  return (
+    <div ref={inlineHostRef} className="relative h-full w-full">
+      {portalNodeRef.current ? createPortal(content, portalNodeRef.current) : content}
     </div>
   )
 }
@@ -287,9 +304,12 @@ function LogThemeUpdater({ termRef }: { termRef: React.RefObject<Terminal | null
     let cancelled = false
 
     const updateTheme = async () => {
-      const colors = await resolveThemeColorsAsync()
+      const foreground = await resolveForegroundColorAsync()
       if (cancelled || termRef.current !== term) return
-      term.options.theme = colors
+      term.options.theme = {
+        foreground,
+        background: '#00000000',
+      }
     }
 
     updateTheme()
@@ -298,154 +318,6 @@ function LogThemeUpdater({ termRef }: { termRef: React.RefObject<Terminal | null
       cancelled = true
     }
   }, [resolvedTheme, termRef])
-
-  return null
-}
-
-function LogProvider({
-  routeKey,
-  termRef,
-}: {
-  routeKey: RouteKey
-  termRef: React.RefObject<Terminal | null>
-}) {
-  const proxmox = store.routeDetails[routeKey]?.proxmox.use()
-  const containerId = store.routeDetails[routeKey]?.container.useCompute(
-    container => container?.container_id
-  )
-
-  const endpoint = useMemo(() => {
-    if (containerId) {
-      return `/docker/logs/${containerId}`
-    }
-    if (proxmox?.node) {
-      if (proxmox.files && proxmox.files.length > 0) {
-        const basePath = `/proxmox/tail`
-        const query = new Query()
-        query.add('node', proxmox.node)
-        query.addAll('file', proxmox.files)
-        if (proxmox.vmid) {
-          query.add('vmid', proxmox.vmid.toString())
-        }
-        return `${basePath}?${query.toString()}`
-      }
-      const basePath = `/proxmox/journalctl`
-      const query = new Query()
-      query.add('node', proxmox.node)
-      if (proxmox.vmid) {
-        query.add('vmid', proxmox.vmid.toString())
-      }
-      if (proxmox.services && proxmox.services.length > 0) {
-        query.addAll('service', proxmox.services)
-      }
-      return `${basePath}?${query.toString()}`
-    }
-    return ''
-  }, [containerId, proxmox])
-
-  const containerIdRef = useRef(containerId)
-
-  const pendingLinesRef = useRef<string[]>([])
-  const flushTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
-
-  const flush = useCallback(() => {
-    if (flushTimeoutRef.current) {
-      clearTimeout(flushTimeoutRef.current)
-      flushTimeoutRef.current = null
-    }
-
-    if (pendingLinesRef.current.length === 0) {
-      return
-    }
-
-    const term = termRef.current
-    if (!term) return
-
-    const batch = pendingLinesRef.current
-    pendingLinesRef.current = []
-
-    const isDocker = Boolean(containerId)
-    for (const line of batch) {
-      term.writeln(formatLineForTerminal(line, isDocker ? 'docker' : 'proxmox'))
-    }
-
-    if (store.logsAutoScroll.value) {
-      term.scrollToBottom()
-    }
-  }, [termRef, containerId])
-
-  const scheduleFlush = useCallback(() => {
-    // Aggregate multiple websocket messages into a single terminal write.
-    // Throttle interval is intentionally small to keep UI responsive.
-    const throttleMs = 75
-    if (flushTimeoutRef.current) return
-    flushTimeoutRef.current = setTimeout(flush, throttleMs)
-  }, [flush])
-
-  const enqueue = useCallback(
-    (data: string) => {
-      if (proxmox) {
-        // journalctl
-        for (let line of data.split('\n')) {
-          line = line.trimEnd()
-          if (!line) {
-            continue
-          }
-          pendingLinesRef.current.push(line)
-        }
-      } else {
-        pendingLinesRef.current.push(data.replace(/[\r\n]+$/g, ''))
-      }
-      scheduleFlush()
-    },
-    [scheduleFlush, proxmox]
-  )
-
-  useLayoutEffect(() => {
-    containerIdRef.current = containerId
-    pendingLinesRef.current = []
-    if (flushTimeoutRef.current) {
-      clearTimeout(flushTimeoutRef.current)
-      flushTimeoutRef.current = null
-    }
-  }, [containerId])
-
-  useEffect(() => {
-    return () => {
-      if (flushTimeoutRef.current) {
-        clearTimeout(flushTimeoutRef.current)
-        flushTimeoutRef.current = null
-      }
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!endpoint) {
-      const term = termRef.current
-      if (term) {
-        term.writeln(
-          formatLineForTerminal(`${new Date().toISOString()} No logs available`, 'docker')
-        )
-      }
-    }
-  }, [endpoint, termRef])
-
-  useWebSocketApi<string>({
-    endpoint,
-    json: false,
-    query: {
-      limit: 100,
-    },
-    shouldConnect: !!endpoint,
-    onMessage: data => {
-      if (containerIdRef.current !== containerId) return
-      enqueue(data)
-    },
-    onError: error => {
-      if (containerIdRef.current !== containerId) return
-      enqueue(`${new Date().toISOString()} ${error}`)
-    },
-  })
 
   return null
 }

@@ -9,6 +9,14 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import Code from '@/components/ui/code'
 import { DataList, DataListRow } from '@/components/ui/data-list'
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty'
 import { Kbd } from '@/components/ui/kbd'
 import { Label } from '@/components/ui/label'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -48,11 +56,21 @@ export default function RouteDetails() {
   }, [routeKey, routeDetails])
 
   if (!activeRoute) {
-    return <div className="p-4 text-muted-foreground">Select a route to view details.</div>
+    return (
+      <InlineEmpty
+        title="No route selected"
+        description="Pick a route from the sidebar to view details, logs, and metrics."
+      />
+    )
   }
 
   if (!routeDetails) {
-    return <div className="p-4 text-muted-foreground">No route details available.</div>
+    return (
+      <InlineEmpty
+        title="No route details available"
+        description="Live route metadata has not arrived yet. The panel will update automatically."
+      />
+    )
   }
 
   // load balancer routes do not have healthcheck
@@ -66,7 +84,7 @@ export default function RouteDetails() {
   }
 
   return (
-    <div className="space-y-2 w-full">
+    <div className="space-y-4 w-full">
       {showLogs && (
         <Card size="sm" className="px-2">
           <CardHeader>
@@ -96,8 +114,8 @@ export default function RouteDetails() {
         </Card>
       )}
       {/* Basic Information */}
-      <div className="space-y-2 md:space-y-0 md:grid md:grid-cols-3 md:divide-x w-full">
-        <Card size="sm" className="md:rounded-r-none px-2">
+      <div className="space-y-2 md:space-y-0 md:grid md:grid-cols-3 md:gap-3 w-full">
+        <Card size="sm" className="px-2">
           <CardHeader>
             <CardTitle>Basic Information</CardTitle>
           </CardHeader>
@@ -121,7 +139,7 @@ export default function RouteDetails() {
             </DataList>
           </CardContent>
         </Card>
-        <Card size="sm" className="md:col-span-2 md:rounded-l-none px-2">
+        <Card size="sm" className="md:col-span-2 px-2">
           <CardHeader>
             <CardTitle>Response Time</CardTitle>
           </CardHeader>
@@ -143,8 +161,8 @@ export default function RouteDetails() {
         </CardContent>
       </Card> */}
       {/* Status & Configuration */}
-      <div className="space-y-2 md:space-y-0 md:grid md:grid-cols-2 md:divide-x w-full">
-        <Card size="sm" className="md:rounded-r-none px-2">
+      <div className="space-y-2 md:space-y-0 md:grid md:grid-cols-2 md:gap-3 w-full">
+        <Card size="sm" className="px-2">
           <CardHeader>
             <CardTitle>Status</CardTitle>
           </CardHeader>
@@ -177,7 +195,7 @@ export default function RouteDetails() {
             </DataList>
           </CardContent>
         </Card>
-        <Card size="sm" className="md:rounded-l-none px-2">
+        <Card size="sm" className="px-2">
           <CardHeader>
             <CardTitle>Configuration</CardTitle>
           </CardHeader>
@@ -206,11 +224,11 @@ export default function RouteDetails() {
       {/* Health Check & Homepage Configuration */}
       <div
         className={cn(
-          'space-y-2 md:space-y-0 md:grid md:grid-cols-2 md:divide-x w-full',
+          'space-y-2 md:space-y-0 md:grid md:grid-cols-2 md:gap-3 w-full',
           !showHomepageConfiguration && 'md:grid-cols-1'
         )}
       >
-        <Card size="sm" className="md:rounded-r-none px-2">
+        <Card size="sm" className="px-2">
           <CardHeader>
             <CardTitle>Health Check</CardTitle>
           </CardHeader>
@@ -238,7 +256,7 @@ export default function RouteDetails() {
           </CardContent>
         </Card>
         {showHomepageConfiguration && (
-          <Card size="sm" className="md:rounded-l-none px-2">
+          <Card size="sm" className="px-2">
             <CardHeader>
               <CardTitle>Homepage Configuration</CardTitle>
             </CardHeader>
@@ -339,7 +357,10 @@ export default function RouteDetails() {
             <CardContent>
               <DataList
                 fallback={
-                  <div className="text-sm text-muted-foreground mt-1">No public ports exposed</div>
+                  <InlineEmpty
+                    title="No public ports"
+                    description="This container has no exposed public ports."
+                  />
                 }
               >
                 {Object.entries(routeDetails.container.public_ports || {}).map(([key, port]) => (
@@ -367,7 +388,10 @@ export default function RouteDetails() {
                   ))}
                 </DataList>
               ) : (
-                <div className="text-sm text-muted-foreground mt-1">No labels</div>
+                <InlineEmpty
+                  title="No labels"
+                  description="This container does not expose labels."
+                />
               )}
             </CardContent>
           </Card>
@@ -380,7 +404,12 @@ export default function RouteDetails() {
             </CardHeader>
             <CardContent>
               <DataList
-                fallback={<div className="text-sm text-muted-foreground mt-1">No mounts</div>}
+                fallback={
+                  <InlineEmpty
+                    title="No mounts"
+                    description="No filesystem mount bindings are reported for this container."
+                  />
+                }
               >
                 {Object.entries(routeDetails.container?.mounts ?? {}).map(
                   ([source, destination]) => (
@@ -506,4 +535,19 @@ function formatIdlewatcher(idlewatcher: IdlewatcherConfig) {
 
 function Title({ children }: { children: React.ReactNode }) {
   return <Label className="text-muted-foreground">{children}</Label>
+}
+
+function InlineEmpty({ title, description }: { title: string; description: string }) {
+  return (
+    <Empty className="sm:col-span-3 border-border/40 bg-muted/10 py-4">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <IconInfoCircle className="size-4" />
+        </EmptyMedia>
+        <EmptyTitle>{title}</EmptyTitle>
+        <EmptyDescription>{description}</EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent />
+    </Empty>
+  )
 }

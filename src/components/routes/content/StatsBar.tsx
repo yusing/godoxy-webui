@@ -17,6 +17,39 @@ type StatsBarProps = {
   splitAfter?: number
 }
 
+const statsCellBackgroundVarByClass: Record<string, string> = {
+  'ds-status': '--ds-status-bg',
+  'ds-status-stopped': '--ds-status-stopped-bg',
+  'ds-running': '--ds-running-bg',
+  'ds-running-no': '--ds-running-no-bg',
+  'ds-cpu': '--ds-cpu-bg',
+  'ds-mem-usage': '--ds-mem-usage-bg',
+  'ds-mem-percent': '--ds-mem-percent-bg',
+  'ds-net': '--ds-net-bg',
+  'ds-block': '--ds-block-bg',
+  'ds-rootfs': '--ds-rootfs-bg',
+  'ds-rootfs-percent': '--ds-rootfs-percent-bg',
+  'ds-pve': '--ds-pve-bg',
+  'ds-kernel': '--ds-kernel-bg',
+  'ds-cpu-model': '--ds-cpu-model-bg',
+  'ds-load': '--ds-load-bg',
+  'ds-uptime': '--ds-uptime-bg',
+}
+
+function getTranslucentCellStyle(cell: StatsCellConfig) {
+  const bgVar = statsCellBackgroundVarByClass[cell.className]
+  const backgroundColor = bgVar
+    ? `color-mix(in oklab, var(${bgVar}) 10%, transparent)`
+    : 'color-mix(in oklab, var(--card) 32%, transparent)'
+
+  return {
+    minWidth: cell.minWidth,
+    backgroundColor,
+    backdropFilter: 'blur(8px) saturate(120%)',
+    WebkitBackdropFilter: 'blur(8px) saturate(120%)',
+  } as const
+}
+
 function formatPercent(value?: number | null) {
   if (value === undefined || value === null || Number.isNaN(value)) return '—'
   const clamped = Math.max(0, Math.min(100, value))
@@ -26,10 +59,10 @@ function formatPercent(value?: number | null) {
 function StatsCell({ cell }: { cell: StatsCellConfig }) {
   return (
     <div
-      style={cell.minWidth ? { minWidth: cell.minWidth } : undefined}
+      style={getTranslucentCellStyle(cell)}
       data-slot="stats-cell"
       className={cn(
-        'flex flex-col gap-0.5 rounded-md px-2 py-1',
+        'flex flex-col gap-0.5 rounded-lg border border-white/10 px-2 py-1.5 shadow-sm',
         'text-[10px] text-muted-foreground',
         cell.className
       )}
@@ -44,7 +77,7 @@ function StatsCell({ cell }: { cell: StatsCellConfig }) {
 
 function StatsRow({ cells }: { cells: StatsCellConfig[] }) {
   return (
-    <div className="flex flex-wrap items-stretch gap-1">
+    <div className="flex flex-wrap items-stretch gap-2">
       {cells.map(cell => (
         <StatsCell key={cell.label} cell={cell} />
       ))}
@@ -59,7 +92,7 @@ export function StatsBar({ cells, isVisible, splitAfter }: StatsBarProps) {
   const line2 = splitAfter ? cells.slice(splitAfter) : []
 
   return (
-    <div className="contents">
+    <div className="space-y-2">
       <StatsRow cells={line1} />
       {line2.length > 0 && <StatsRow cells={line2} />}
     </div>

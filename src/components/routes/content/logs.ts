@@ -3,25 +3,24 @@ export {
   extractLeadingTimestamp,
   formatLineForTerminal,
   parseJournalctlTimestamp,
-  resolveThemeColors,
-  resolveThemeColorsAsync,
+  resolveForegroundColor,
+  resolveForegroundColorAsync,
 }
 
-function resolveThemeColors(): { background: string; foreground: string } {
+function resolveForegroundColor(): string {
   const root = document.documentElement
   const style = getComputedStyle(root)
   // Use CSS variables or fall back to Tailwind's muted foreground/background
   const foreground = style.getPropertyValue('--xterm-foreground').trim() || '#e2e8f0'
-  const background = style.getPropertyValue('--xterm-background').trim() || '#0f172a'
-  return { background, foreground }
+  return foreground
 }
 
 const nextFrame = () => new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
 
-async function resolveThemeColorsAsync(): Promise<{ background: string; foreground: string }> {
+async function resolveForegroundColorAsync(): Promise<string> {
   await nextFrame()
   await nextFrame()
-  return resolveThemeColors()
+  return resolveForegroundColor()
 }
 
 const timePart =
@@ -460,6 +459,39 @@ function colorizeLogLevel(line: string): string {
   for (const { regex, color } of logLevelPatterns) {
     result = result.replace(regex, `${color}$&${ansi.reset}`)
   }
+
+  // System log style highlighting (journalctl/syslog-like lines)
+  result = colorizeSystemLogTokens(result)
+
+  return result
+}
+
+function colorizeSystemLogTokens(line: string): string {
+  let result = line
+
+  // First token (usually host/service name)
+  result = result.replace(
+    /^([a-zA-Z0-9][a-zA-Z0-9_.-]*)(\s+)/,
+    `${ansi.brightCyan}$1${ansi.reset}$2`
+  )
+
+  // Common process blocks
+  result = result.replace(
+    /\b(systemd(?:\[\d+\])?|CRON\[\d+\]|pam_unix\([^)]+\)|sshd\[\d+\]|dockerd?\[\d+\])\b/g,
+    `${ansi.brightYellow}$&${ansi.reset}`
+  )
+
+  // Error-like words
+  result = result.replace(
+    /\b(error|failed|timeout|timed out|denied|panic)\b/gi,
+    `${ansi.brightRed}$&${ansi.reset}`
+  )
+
+  // Success-like words
+  result = result.replace(
+    /\b(started|opened|closed|running|finished|successfully|deactivated)\b/gi,
+    `${ansi.brightGreen}$&${ansi.reset}`
+  )
 
   return result
 }

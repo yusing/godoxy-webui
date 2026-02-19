@@ -1,37 +1,38 @@
-import { IconPlayerPlay, IconRotate, IconSquare } from '@tabler/icons-react'
+import { IconLoader2, IconPlayerPlay, IconRotate, IconSquare } from '@tabler/icons-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { type RouteKey, store } from '@/components/routes/store'
 import { Button } from '@/components/ui/button'
-import { ButtonGroup } from '@/components/ui/button-group'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
+import { cn } from '@/lib/utils'
 
 const containerActions = [
   {
     label: 'Start',
     Icon: IconPlayerPlay,
-    variant: 'default' as const,
-    className: 'bg-info hover:bg-info/80 text-info-foreground',
+    tone: 'start',
     enableIfDocker: (running: boolean) => !running,
     enableIfProxmox: (status: string) => status !== 'running',
   },
   {
     label: 'Stop',
     Icon: IconSquare,
-    variant: 'destructive' as const,
+    tone: 'stop',
     enableIfDocker: (running: boolean) => running,
     enableIfProxmox: (status: string) => status === 'running',
   },
   {
     label: 'Restart',
     Icon: IconRotate,
-    variant: 'secondary' as const,
+    tone: 'restart',
     enableIfDocker: (running: boolean) => running,
     enableIfProxmox: (status: string) => status === 'running',
   },
-]
+] as const
+
+type ContainerAction = (typeof containerActions)[number]
 
 export default function ContainerControls({ routeKey }: { routeKey: RouteKey }) {
   const containerId = store.routeDetails[routeKey]?.useCompute(
@@ -49,7 +50,7 @@ export default function ContainerControls({ routeKey }: { routeKey: RouteKey }) 
     return null
   }
 
-  const handleAction = async (action: (typeof containerActions)[number]) => {
+  const handleAction = async (action: ContainerAction) => {
     if (isLoading) return
 
     setIsLoading(action.label)
@@ -98,7 +99,7 @@ export default function ContainerControls({ routeKey }: { routeKey: RouteKey }) 
     }
   }
 
-  const isActionEnabled = (action: (typeof containerActions)[number]) => {
+  const isActionEnabled = (action: ContainerAction) => {
     if (isLoading !== null) return false
 
     if (isDocker) {
@@ -110,25 +111,46 @@ export default function ContainerControls({ routeKey }: { routeKey: RouteKey }) 
     return false
   }
 
+  const actionToneClass = (label: ContainerAction['label']) => {
+    switch (label) {
+      case 'Start':
+        return 'text-emerald-500 hover:bg-emerald-500/10'
+      case 'Stop':
+        return 'text-rose-500 hover:bg-rose-500/10'
+      default:
+        return 'text-amber-500 hover:bg-amber-500/10'
+    }
+  }
+
   return (
-    <ButtonGroup orientation="horizontal">
+    <div className="flex items-center gap-2">
       {containerActions.map(action => (
         <Button
           key={action.label}
-          variant={action.variant}
-          size="sm"
+          variant="ghost"
+          size="icon-sm"
           disabled={!isActionEnabled(action)}
-          isLoading={isLoading === action.label}
-          data-slot="button"
           onClick={() => handleAction(action)}
-          className={action.className}
+          className={cn(
+            'border-0 bg-transparent p-0 shadow-none hover:bg-transparent disabled:opacity-80',
+            actionToneClass(action.label),
+            !isActionEnabled(action) && 'opacity-40'
+          )}
         >
           <Tooltip>
-            <TooltipTrigger render={() => <action.Icon className="size-3 text-inherit" />} />
+            <TooltipTrigger
+              render={() =>
+                isLoading === action.label ? (
+                  <IconLoader2 className="size-4 animate-spin text-inherit" />
+                ) : (
+                  <action.Icon className="size-4 text-inherit" />
+                )
+              }
+            />
             <TooltipContent>{action.label}</TooltipContent>
           </Tooltip>
         </Button>
       ))}
-    </ButtonGroup>
+    </div>
   )
 }

@@ -1,16 +1,24 @@
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { useIsMobile } from '@/hooks/use-mobile'
 import type { Container, ContainerImage, ProxmoxNodeConfig } from '@/lib/api'
 import { type RouteKey, store } from '../store'
 
-function formatContainerName(container?: Container, proxmox?: ProxmoxNodeConfig): string {
+function formatContainerName(container?: Container, proxmox?: ProxmoxNodeConfig): React.ReactNode {
   if (container) {
     return container.container_name
   }
   if (proxmox) {
     if (proxmox.vmid) {
-      return `${proxmox.vmname} (${proxmox.vmid}) from ${proxmox.node}`
+      return (
+        <>
+          <span>
+            {proxmox.vmname} ({proxmox.vmid})
+          </span>
+          <span>from {proxmox.node}</span>
+        </>
+      )
     } else {
       return `Node ${proxmox.node}`
     }
@@ -24,6 +32,7 @@ export default function LogsHeader({ routeKey }: { routeKey: RouteKey }) {
   const proxmoxStatus = store.proxmoxStats[routeKey]?.useCompute(line =>
     line ? (line.slice(0, line.indexOf('|')) as 'stopped' | 'running' | 'suspended') : undefined
   )
+  const isMobile = useIsMobile()
 
   if (!container && !proxmox) {
     return null
@@ -31,7 +40,7 @@ export default function LogsHeader({ routeKey }: { routeKey: RouteKey }) {
 
   return (
     <div className="flex items-center gap-2">
-      <Label>{formatContainerName(container, proxmox)}</Label>
+      <Label className="flex-col items-start">{formatContainerName(container, proxmox)}</Label>
       <Badge variant={'secondary'}>
         {container
           ? formatContainerImage(container.image)
@@ -39,13 +48,15 @@ export default function LogsHeader({ routeKey }: { routeKey: RouteKey }) {
             ? proxmox.files.join(',')
             : proxmox?.services
               ? proxmox.services.join(',')
-              : 'Services or files not set'}
+              : !isMobile
+                ? 'Services or files not set'
+                : null}
       </Badge>
       <div
         className={`w-2 h-2 rounded-full bg-${containerStatusColors[container?.state ?? proxmoxStatus ?? 'stopped']}-400`}
       />
-      <div className="flex-1" />
-      <div className="flex gap-2 ml-4">
+      <div className="md:flex-1" />
+      <div className="flex items-center gap-2 ml-4">
         <AutoScrollSwitch />
         <Label>Auto scroll</Label>
       </div>

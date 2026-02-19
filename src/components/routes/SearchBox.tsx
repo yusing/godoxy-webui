@@ -70,23 +70,25 @@ export default function RoutesSidebarSearchBox() {
   }, [applyFilter])
 
   return (
-    <InputGroup className="rounded-none border-none">
-      <InputGroupAddon align="inline-start">
-        <IconSearch />
-      </InputGroupAddon>
-      <InputGroupInput
-        className="sidebar-search-box w-full"
-        placeholder="Search routes"
-        ref={ref}
-        onChange={e => {
-          if (!ref.current) return
+    <div className="routes-sidebar-search-row px-1 py-1.5">
+      <InputGroup>
+        <InputGroupAddon align="inline-start">
+          <IconSearch className="text-muted-foreground" />
+        </InputGroupAddon>
+        <InputGroupInput
+          className="w-full"
+          placeholder="Search routes"
+          ref={ref}
+          onChange={e => {
+            if (!ref.current) return
 
-          const searchQuery = e.target.value
-          ref.current.value = searchQuery
+            const searchQuery = e.target.value
+            ref.current.value = searchQuery
 
-          applyFilter(searchQuery)
-        }}
-      />
-    </InputGroup>
+            applyFilter(searchQuery)
+          }}
+        />
+      </InputGroup>
+    </div>
   )
 }

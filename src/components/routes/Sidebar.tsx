@@ -1,7 +1,7 @@
 import { IconFilter } from '@tabler/icons-react'
 import type { FieldPath } from 'juststore'
 import { ArrowDown, ArrowUp } from 'lucide-react'
-import { Suspense, useEffect, useRef } from 'react'
+import { Suspense, useEffect } from 'react'
 import {
   type RouteDisplaySettings,
   type RouteKey,
@@ -22,21 +22,23 @@ import { Switch } from '../ui/switch'
 import RoutePercentageText from './PercentageText'
 import RoutesSidebarSearchBox from './SearchBox'
 import RouteUptimeBar from './UptimeBar'
-import './style.css'
 import { decodeRouteKey, encodeRouteKey } from './utils'
 
 export default function RoutesSidebar({ className }: { className?: string }) {
-  const sidebarRef = useRef<HTMLDivElement>(null)
   return (
     <div
-      ref={sidebarRef}
-      className={cn('flex flex-col divide-y divide-border border-x border-b', className)}
+      className={cn(
+        'routes-sidebar flex h-full min-h-0 flex-col overflow-hidden rounded-2xl',
+        className
+      )}
     >
-      <div className="sidebar-header sticky top-0 px-3 py-3 flex items-center justify-between">
-        <Label className="text-sm">Routes</Label>
+      <div className="routes-sidebar-header sidebar-header sticky top-0 z-10 px-3 py-3 flex items-center justify-between">
+        <Label className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
+          Routes
+        </Label>
         <Popover>
           <PopoverTrigger aria-label="Filters">
-            <IconFilter className="size-4" />
+            <IconFilter className="size-4 text-muted-foreground hover:text-foreground transition-colors" />
           </PopoverTrigger>
           <PopoverContent className="flex flex-col gap-2">
             <Setting field="dockerOnly" label="Docker only" />
@@ -51,7 +53,7 @@ export default function RoutesSidebar({ className }: { className?: string }) {
       <RoutesSidebarKeyboardHints />
       <RoutesSidebarItemList />
       <Suspense>
-        <RoutesUptimeProvider sidebarRef={sidebarRef} />
+        <RoutesUptimeProvider />
       </Suspense>
       <SelectedRouteResetter />
       {/* <ScrollIntoSelectedRoute /> */}
@@ -150,7 +152,7 @@ function RoutesSidebarArrowNavigation() {
 
 function RoutesSidebarKeyboardHints() {
   return (
-    <div className="sidebar-keyboard-hints px-3 py-2 text-xs text-muted-foreground flex flex-wrap items-center gap-3">
+    <div className="routes-sidebar-hints sidebar-keyboard-hints px-3 py-2 text-xs text-muted-foreground flex flex-wrap items-center gap-3">
       <div className="flex items-center gap-1">
         <Kbd>
           <ArrowUp className="h-3 w-3" />
@@ -192,8 +194,8 @@ function Setting({ field, label }: { field: FieldPath<RouteDisplaySettings>; lab
 function RoutesSidebarItemList() {
   const keys = store.routeKeys.use() ?? []
   return (
-    <ScrollArea>
-      <div className="sidebar-item-list divide-y divide-border">
+    <ScrollArea className="min-h-0 flex-1">
+      <div className="sidebar-item-list space-y-2 px-2 py-2">
         {keys.map(key => {
           return <RoutesSidebarItem key={key} routeKey={key} alias={decodeRouteKey(key)} />
         })}
@@ -240,10 +242,10 @@ function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: Route
         store.mobileDialogOpen.set(true)
       }}
       className={cn(
-        'route-item w-full text-left p-3',
-        'data-[active=true]:border-2 data-[active=true]:border-primary',
+        'route-item w-full text-left p-3 rounded-xl border border-border/40',
+        'data-[active=true]:border-primary/70 data-[active=true]:bg-primary/10',
         'focus:outline-none focus-visible:outline-none focus-visible:ring-0', // prevents double border when focused + arrow navigation
-        'hover:bg-muted/50'
+        'hover:bg-muted/50 transition-colors'
       )}
     >
       <div className="flex justify-between items-center gap-4 flex-1">
@@ -253,7 +255,12 @@ function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: Route
         </div>
         <hideUptimebarState.Render>
           {hideUptimebar => (
-            <Label className={cn('text-sm', hideUptimebar && 'w-[10ch] text-right')}>
+            <Label
+              className={cn(
+                'text-sm font-mono-geist tabular-nums',
+                hideUptimebar && 'w-[10ch] text-right'
+              )}
+            >
               <RoutePercentageText routeKey={routeKey} />
             </Label>
           )}
@@ -264,19 +271,12 @@ function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: Route
   )
 }
 
-function RoutesUptimeProvider({
-  sidebarRef,
-}: {
-  sidebarRef: React.RefObject<HTMLDivElement | null>
-}) {
+function RoutesUptimeProvider() {
   useWebSocketApi<RouteStatusesByAlias>({
     endpoint: '/metrics/uptime',
     onMessage: uptime => {
       const keys = Object.keys(uptime.statuses ?? {}).map(k => encodeRouteKey(k))
       store.set('routeKeys', keys.toSorted())
-
-      const maxLength = Math.max(...keys.map(k => k.length))
-      if (sidebarRef.current) sidebarRef.current.style.width = `${maxLength + 8}ch`
     },
     onError: toastError,
   })

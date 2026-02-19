@@ -1,42 +1,147 @@
 @import "@fontsource-variable/cascadia-code";
+@import "@fontsource-variable/geist-mono";
 
 :root {
   --sidebar-header-height: 40px;
   --sidebar-search-box-height: 40px;
   --sidebar-keyboard-hints-height: 40px;
   --font-mono:
-    "Cascadia Code Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
+    "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+  --xterm-background: transparent;
+  --xterm-foreground: #24292f;
+}
+
+.dark {
+  --xterm-foreground: #c9d1d9;
+}
+
+.routes-desktop-layout {
+  height: calc(100vh - var(--titlebar-height));
+  grid-template-columns: clamp(320px, 24vw, 380px) minmax(0, 1fr);
+  gap: 0.75rem;
+  padding: 0.75rem;
+}
+
+.routes-sidebar-shell,
+.routes-workspace-shell {
+  border: 1px solid color-mix(in oklab, var(--foreground) 14%, transparent);
+  background: transparent;
+  backdrop-filter: blur(14px) saturate(135%);
+  -webkit-backdrop-filter: blur(14px) saturate(135%);
+  border-radius: 1rem;
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--foreground) 12%, transparent),
+    0 24px 48px -36px color-mix(in oklab, var(--foreground) 35%, transparent);
+}
+
+.routes-workspace-shell {
+  overflow: hidden;
+}
+
+.routes-sidebar-header {
+  background: transparent;
+  border-bottom: 1px solid color-mix(in oklab, var(--foreground) 9%, transparent);
+}
+
+.routes-sidebar-search-row {
+  min-height: var(--sidebar-search-box-height);
+  display: flex;
+  align-items: center;
+}
+
+.routes-sidebar-search {
+  background: color-mix(in oklab, var(--background) 22%, transparent);
+  border-color: color-mix(in oklab, var(--foreground) 12%, transparent);
+}
+
+.routes-sidebar-hints {
+  background: transparent;
+  border-bottom: 1px solid color-mix(in oklab, var(--foreground) 8%, transparent);
 }
 
 .sidebar-header {
   height: var(--sidebar-header-height);
 }
 
-.sidebar-search-box {
-  height: var(--sidebar-search-box-height);
-}
-
 .sidebar-keyboard-hints {
-  height: var(--sidebar-keyboard-hints-height);
+  min-height: var(--sidebar-keyboard-hints-height);
 }
 
 .sidebar-item-list {
-  height: calc(
-    100vh -
-    var(--titlebar-height) -
-    var(--sidebar-search-box-height) -
-    var(--sidebar-header-height) -
-    var(--sidebar-keyboard-hints-height)
-  );
+  min-height: 100%;
 }
 
-:root {
-  --xterm-background: #ffffff;
-  --xterm-foreground: #24292f;
+.route-item {
+  background: transparent;
+  border-color: color-mix(in oklab, var(--foreground) 15%, transparent);
 }
 
-.dark {
-  --xterm-background: #0d1117;
-  --xterm-foreground: #c9d1d9;
+.route-item .route-display-name {
+  letter-spacing: 0.01em;
+}
+
+.routes-logs-shell {
+  border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent);
+  background: transparent;
+  backdrop-filter: blur(12px) saturate(130%);
+  -webkit-backdrop-filter: blur(12px) saturate(130%);
+  box-shadow:
+    inset 0 1px 0 color-mix(in oklab, var(--foreground) 8%, transparent),
+    0 14px 28px -24px color-mix(in oklab, var(--foreground) 18%, transparent);
+}
+
+[data-maximized="true"] .routes-logs-shell {
+  background: color-mix(in oklab, var(--background) 80%, transparent);
+}
+
+.routes-logs-terminal .xterm,
+.routes-logs-terminal .xterm-viewport,
+.xterm .composition-view {
+  background: transparent !important;
+}
+
+.routes-logs-action {
+  background: color-mix(in oklab, var(--background) 24%, transparent);
+  border: 1px solid color-mix(in oklab, var(--foreground) 12%, transparent);
+}
+
+.routes-logs-action:hover {
+  background: color-mix(in oklab, var(--background) 32%, transparent);
+}
+
+.routes-logs-scroll-button {
+  background: color-mix(in oklab, oklch(0.74 0.17 180) 62%, transparent);
+  color: var(--foreground);
+  border: 1px solid color-mix(in oklab, var(--foreground) 10%, transparent);
+}
+
+.routes-uptime-bar {
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--foreground) 12%, transparent);
+}
+
+.routes-uptime-bar-healthy {
+  background: oklch(0.7781 0.1936 153.76);
+}
+
+.routes-uptime-bar-unhealthy {
+  background: oklch(0.7312 0.1824 50.44);
+}
+
+.routes-uptime-bar-napping {
+  background: oklch(0.8181 0.156 80.65);
+}
+
+.routes-uptime-bar-starting {
+  background: color-mix(in oklab, oklch(0.6936 0.1665 251.03) 90%, transparent);
+}
+
+.routes-uptime-bar-unknown {
+  background: color-mix(in oklab, var(--muted-foreground) 45%, transparent);
+}
+
+@media (max-width: 1100px) {
+  .routes-desktop-layout {
+    grid-template-columns: clamp(300px, 30vw, 360px) minmax(0, 1fr);
+  }
 }

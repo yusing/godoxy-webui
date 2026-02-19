@@ -6,7 +6,7 @@ import RoutesDetailProvider from './RoutesDetailProvider'
 
 export default function RoutePageContent() {
   return (
-    <div className="content p-4 space-y-4 flex-1">
+    <div className="h-full overflow-y-auto scrollbar-hidden p-4 space-y-4 flex-1">
       <DockerStatsProvider />
       <ProxmoxStatsProvider />
       <RoutesDetailProvider />

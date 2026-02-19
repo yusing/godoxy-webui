@@ -16,12 +16,16 @@ export default function RoutePageHeader() {
   }
 
   return (
-    <div id="header" className="flex flex-col gap-2">
-      <div className="flex items-baseline gap-3">
-        <h1 className="text-lg font-semibold">{displayName ?? decodeRouteKey(selected)}</h1>
+    <div id="header" className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-3">
+        <h1 className="text-lg font-semibold tracking-tight">
+          {displayName ?? decodeRouteKey(selected)}
+        </h1>
         {percentage && (
-          <div className="flex items-center gap-2 flex-wrap">
-            <Label className="text-sm text-muted-foreground">{percentage} uptime (1h)</Label>
+          <div className="flex items-center gap-2 flex-wrap rounded-md border border-border/40 bg-muted/40 px-3 py-1.5">
+            <Label className="text-sm font-mono text-muted-foreground">
+              {percentage} uptime (1h)
+            </Label>
           </div>
         )}
         <ContainerControls routeKey={selected} />

@@ -4,7 +4,6 @@ import { type RouteKey, store } from '@/components/routes/store'
 import type { RouteStatus } from '@/lib/api'
 import { formatTimestamp } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import { healthStatusColorsFg } from '@/types/health'
 
 export default function RouteUptimeBar({
   routeKey,
@@ -21,8 +20,17 @@ export default function RouteUptimeBar({
   return <RouteUptimeBar_ statuses={statuses} className={className} />
 }
 
-const barWidth = 4 // w-1
-const gap = 4 // gap-1
+const barWidth = 6
+const gap = 2
+const barHeight = 18
+
+const uptimeBarStatusClass: Record<RouteStatus['status'] | 'unknown', string> = {
+  healthy: 'routes-uptime-bar-healthy',
+  unhealthy: 'routes-uptime-bar-unhealthy',
+  napping: 'routes-uptime-bar-napping',
+  starting: 'routes-uptime-bar-starting',
+  unknown: 'routes-uptime-bar-unknown',
+}
 
 const RouteUptimeBar_ = memo(
   ({ statuses, className }: { statuses: RouteStatus[]; className?: string }) => {
@@ -33,11 +41,11 @@ const RouteUptimeBar_ = memo(
 
       const containerWidth = containerRef.current.offsetWidth
 
-      const calculatedMax = Math.floor(containerWidth / (barWidth + gap))
+      const calculatedMax = Math.floor((containerWidth + gap) / (barWidth + gap))
 
-      const newMaxStatuses = Math.max(10, calculatedMax)
+      const newMaxStatuses = Math.max(12, calculatedMax)
       return newMaxStatuses
-    }, [containerRef])
+    }, [])
 
     const [barsCount, setBarsCount] = useState(0)
 
@@ -77,22 +85,22 @@ const RouteUptimeBar_ = memo(
 
     const displayStatuses = useMemo(() => statuses.slice(-barsCount), [statuses, barsCount])
 
-    const unitWidth = barWidth + gap
-    const height = 16 // h-4
-
     return (
-      <div ref={containerRef} className={cn('relative h-4 min-w-0', className)}>
+      <div
+        ref={containerRef}
+        className={cn('flex min-w-0 items-stretch gap-[2px] overflow-hidden', className)}
+        style={{ height: barHeight }}
+      >
         {Array.from({ length: barsCount }).map((_, i) => {
-          const left = i * unitWidth
           const status = displayStatuses[i]
           return (
             <div
               key={`bar-${i}-${status?.timestamp ?? 'empty'}`}
               className={cn(
-                'absolute top-0 h-full bg-current',
-                healthStatusColorsFg[status?.status ?? 'unknown']
+                'routes-uptime-bar shrink-0 rounded-[2px]',
+                uptimeBarStatusClass[status?.status ?? 'unknown']
               )}
-              style={{ left, width: barWidth, borderRadius: barWidth / 2, height }}
+              style={{ width: barWidth, height: barHeight }}
               title={
                 status
                   ? `${status.status} - ${formatTimestamp(status.timestamp)} - ${status.latency}ms`
