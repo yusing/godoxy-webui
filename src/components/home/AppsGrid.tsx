@@ -70,10 +70,7 @@ export default function AppGrid() {
       >
         <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 justify-between">
           <div className="flex items-center gap-2 w-full sm:w-auto">
-            <TabsList
-              className="flex w-full sm:w-auto gap-1 rounded-lg border bg-background/55
-              backdrop-blur supports-backdrop-filter:bg-background/40 p-1"
-            >
+            <TabsList className="flex w-full sm:w-auto gap-1 rounded-lg border p-1">
               {visibleTabs?.map(category => (
                 <TabsTrigger
                   key={category}
@@ -146,7 +143,7 @@ export default function AppGrid() {
 
 function KeyboardHints({ onDismiss }: { onDismiss: () => void }) {
   return (
-    <div className="rounded-lg border bg-background/60 px-3 py-1 text-xs text-muted-foreground backdrop-blur supports-backdrop-filter:bg-background/40 flex flex-wrap items-center gap-3">
+    <div className="rounded-lg border px-3 py-1 text-xs text-muted-foreground flex flex-wrap items-center gap-3 supports-backdrop-filter:bg-muted/45 supports-backdrop-filter:backdrop-blur">
       <div className="flex items-center gap-1">
         <Kbd>
           <ArrowUp className="h-3 w-3" />

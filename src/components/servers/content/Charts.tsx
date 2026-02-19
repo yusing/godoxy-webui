@@ -83,7 +83,7 @@ export default function MetricChart({
   const hasData = agg && agg.length > 0
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-card dark:bg-[color-mix(in_oklab,var(--card)_65%,black)] p-4">
+    <div className="rounded-2xl border border-border/60 bg-card supports-backdrop-filter:bg-card/45 p-4">
       <div className="mb-4">
         <h3 className="text-base font-medium">{label}</h3>
         <p className="text-sm text-muted-foreground">{description}</p>

@@ -46,15 +46,6 @@ export default function Searchbox() {
 
   return (
     <div className="relative flex-1 min-w-0 w-full">
-      <store.searchEngine.Render>
-        {searchEngine => (
-          <SearchIcon
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
-            searchEngine={searchEngine}
-            enabled={useSearchEngine}
-          />
-        )}
-      </store.searchEngine.Render>
       <store.searchQuery.Render>
         {(searchQuery, setSearchQuery) => (
           <InputGroup>
@@ -87,6 +78,19 @@ export default function Searchbox() {
                 }
               }}
             />
+            <store.searchEngine.Render>
+              {searchEngine => (
+                <InputGroupAddon align="inline-start">
+                  <InputGroupButton size="icon-sm">
+                    <SearchIcon
+                      className="size-4 text-muted-foreground"
+                      searchEngine={searchEngine}
+                      enabled={useSearchEngine}
+                    />
+                  </InputGroupButton>
+                </InputGroupAddon>
+              )}
+            </store.searchEngine.Render>
             {searchQuery.length > 0 && (
               <InputGroupAddon align="inline-end">
                 <InputGroupButton

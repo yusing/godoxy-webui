@@ -119,7 +119,7 @@ function SidebarProvider({
       <div
         data-slot="sidebar-wrapper"
         className={cn(
-          'group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex content w-full',
+          'group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar supports-backdrop-filter:has-data-[variant=inset]:bg-sidebar/15 flex content w-full',
           className
         )}
         {...props}
@@ -149,7 +149,7 @@ function Sidebar({
       <div
         data-slot="sidebar"
         className={cn(
-          'bg-sidebar text-sidebar-foreground flex h-(--sidebar-height) w-(--sidebar-width) flex-col',
+          'bg-sidebar supports-backdrop-filter:bg-sidebar/15 text-sidebar-foreground flex h-(--sidebar-height) w-(--sidebar-width) flex-col',
           className
         )}
         {...props}
@@ -166,7 +166,7 @@ function Sidebar({
           data-sidebar="sidebar"
           data-slot="sidebar"
           data-mobile="true"
-          className="bg-sidebar text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
+          className="bg-sidebar supports-backdrop-filter:bg-sidebar/15 text-sidebar-foreground w-(--sidebar-width) p-0 [&>button]:hidden"
           style={
             {
               '--sidebar-width': 'var(--sidebar-width-mobile)',
@@ -223,7 +223,7 @@ function Sidebar({
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className="bg-sidebar group-data-[variant=floating]:ring-sidebar-border group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:shadow-sm group-data-[variant=floating]:ring-1 flex size-full flex-col"
+          className="bg-sidebar supports-backdrop-filter:bg-sidebar/15 group-data-[variant=floating]:ring-sidebar-border group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:shadow-sm group-data-[variant=floating]:ring-1 flex size-full flex-col"
         >
           {children}
         </div>
@@ -297,7 +297,7 @@ function SidebarInput({ className, ...props }: React.ComponentProps<typeof Input
     <Input
       data-slot="sidebar-input"
       data-sidebar="input"
-      className={cn('bg-background h-8 w-full shadow-none', className)}
+      className={cn('bg-background supports-backdrop-filter:bg-transparent supports-backdrop-filter:backdrop-blur-sm h-8 w-full shadow-none', className)}
       {...props}
     />
   )
@@ -330,7 +330,7 @@ function SidebarSeparator({ className, ...props }: React.ComponentProps<typeof S
     <Separator
       data-slot="sidebar-separator"
       data-sidebar="separator"
-      className={cn('bg-sidebar-border mx-2 w-auto', className)}
+      className={cn('bg-sidebar-border supports-backdrop-filter:bg-sidebar-border/45 mx-2 w-auto', className)}
       {...props}
     />
   )

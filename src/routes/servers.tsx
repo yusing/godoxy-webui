@@ -11,7 +11,7 @@ export const Route = createFileRoute('/servers')({
 
 function ServersPage() {
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-background dark:bg-[color-mix(in_oklab,var(--background)_78%,black)] xl:flex-row">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden xl:flex-row">
       <ServersSidebar />
       <ServerContent />
       <Suspense>

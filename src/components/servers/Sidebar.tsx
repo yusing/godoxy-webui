@@ -24,7 +24,7 @@ export default function ServersSidebar() {
   const selectedTimestamp = store.use(`systemInfo.${selectedKey}.timestamp`)
 
   return (
-    <aside className="flex w-full flex-col border-b border-border/60 bg-background dark:bg-[color-mix(in_oklab,var(--background)_82%,black)] xl:h-full xl:w-[382px] xl:min-w-[340px] xl:max-w-[420px] xl:border-r xl:border-b-0">
+    <aside className="flex w-full flex-col border-b border-border/60 xl:h-full xl:w-[382px] xl:min-w-[340px] xl:max-w-[420px] xl:border-r xl:border-b-0">
       <div className="border-b border-border/60 p-3 xl:hidden">
         <details className="group rounded-xl border border-border/70 bg-card/40">
           <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-2.5">
@@ -105,7 +105,7 @@ function ServerItem({ agent, isSelected }: { agent?: string; isSelected?: boolea
     <a
       href={`#${agent ?? ''}`}
       className={cn(
-        'block cursor-pointer rounded-2xl border bg-card/90 px-4 py-3.5 transition-colors duration-200 hover:border-primary/40 hover:bg-card dark:bg-[color-mix(in_oklab,var(--card)_72%,black)]',
+        'block cursor-pointer rounded-2xl border px-4 py-3.5 transition-colors duration-200 hover:border-primary/40 hover:bg-muted',
         isSelected && 'border-primary/70'
       )}
       style={{
@@ -128,7 +128,7 @@ function ServerItem({ agent, isSelected }: { agent?: string; isSelected?: boolea
             />
             <span className="truncate text-md leading-none font-semibold">{agentKey}</span>
           </div>
-          <span className="rounded-md bg-card/70 px-2 py-0.5 text-xs text-muted-foreground text-nowrap">
+          <span className="rounded-md bg-card/70 supports-backdrop-filter:bg-card/45 px-2 py-0.5 text-xs text-muted-foreground text-nowrap">
             {timestamp ? `@ ${formatShortTime(timestamp)}` : '—'}
           </span>
         </div>
@@ -197,7 +197,7 @@ function CpuTemperatureToggle() {
   return (
     <fieldset
       aria-label="Temperature unit"
-      className="inline-flex h-8 items-center rounded-lg border border-border/70 bg-card/60 p-1"
+      className="inline-flex h-8 items-center rounded-lg border border-border/70 bg-card/60 supports-backdrop-filter:bg-card/45 p-1"
     >
       {UNIT_OPTIONS.map(opt => (
         <button

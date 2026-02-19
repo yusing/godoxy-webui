@@ -86,6 +86,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   const [userTheme, setUserTheme] = useState<UserTheme>(getStoredUserTheme)
 
   useEffect(() => {
+    handleThemeChange(userTheme)
+  }, [userTheme])
+
+  useEffect(() => {
     if (userTheme !== 'system') return
     return setupPreferredListener()
   }, [userTheme])

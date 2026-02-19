@@ -250,7 +250,7 @@ export function SectionedForm<T extends SectionId>({
           'w-full text-left rounded-lg px-3 py-2 text-sm font-medium',
           'transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring',
           isActive
-            ? 'bg-muted text-foreground'
+            ? 'bg-muted text-foreground supports-backdrop-filter:bg-muted/45'
             : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
         )}
       >
@@ -295,7 +295,7 @@ export function FormSection({ id, title, description, children, className }: For
       data-section={id}
       className={cn(
         'scroll-mt-20 rounded-xl border bg-card/30 p-4',
-        'supports-backdrop-filter:bg-card/20',
+        'supports-backdrop-filter:bg-inherit supports-backdrop-filter:backdrop-blur-sm',
         className
       )}
     >

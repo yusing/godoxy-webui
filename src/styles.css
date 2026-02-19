@@ -6,23 +6,24 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(0.9821 0 0);
-  --foreground: oklch(0.2435 0 0);
-  --card: oklch(0.9911 0 0);
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.2686 0 0);
+  --card: oklch(1 0 0);
   --card-foreground: oklch(0.2435 0 0);
-  --popover: oklch(0.9911 0 0);
+  --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.2435 0 0);
   --primary: oklch(0.4341 0.0392 41.9938);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.92 0.0651 74.3695);
-  --secondary-foreground: oklch(0.3499 0.0685 40.8288);
-  --muted: oklch(0.9521 0 0);
-  --muted-foreground: oklch(0.5032 0 0);
-  --accent: oklch(0.931 0 0);
-  --accent-foreground: oklch(0.2435 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.8822 0 0);
-  --input: oklch(0.8822 0 0);
+  --primary-foreground: oklch(0 0 0);
+  --secondary: oklch(0.967 0.0029 264.5419);
+  --secondary-foreground: oklch(0.4461 0.0263 256.8018);
+  --muted: oklch(0.9846 0.0017 247.8389);
+  --muted-foreground: oklch(0.551 0.0234 264.3637);
+  --accent: oklch(0.9869 0.0214 95.2774);
+  --accent-foreground: oklch(0.4732 0.1247 46.2007);
+  --destructive: oklch(0.6368 0.2078 25.3313);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.9276 0.0058 264.5313);
+  --input: oklch(0.9276 0.0058 264.5313);
   --ring: oklch(0.4341 0.0392 41.9938);
   --chart-1: oklch(0.6 0.12 255); /* blue */
   --chart-2: oklch(0.7 0.14 70); /* amber/orange */
@@ -37,14 +38,14 @@
   --success-foreground: oklch(0.45 0.12 145);
   --info: oklch(0.87 0.11 230);
   --info-foreground: oklch(0.25 0.08 230);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.21 0.006 285.885);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.21 0.006 285.885);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.705 0.015 286.067);
+  --sidebar: oklch(0.9846 0.0017 247.8389);
+  --sidebar-foreground: oklch(0.2686 0 0);
+  --sidebar-primary: oklch(0.7686 0.1647 70.0804);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.9869 0.0214 95.2774);
+  --sidebar-accent-foreground: oklch(0.4732 0.1247 46.2007);
+  --sidebar-border: oklch(0.9276 0.0058 264.5313);
+  --sidebar-ring: oklch(0.7686 0.1647 70.0804);
   --radius: 0.5rem;
 
   --titlebar-height: 48px;
@@ -52,6 +53,10 @@
   --sidebar-width-mobile: 18rem;
   --sidebar-width-icon: 3rem;
   --sidebar-height: calc(100vh - var(--titlebar-height));
+
+  --gradient-accent-a: color-mix(in oklab, var(--primary) 10%, transparent);
+  --gradient-accent-b: color-mix(in oklab, var(--foreground) 50%, transparent);
+  --gradient-accent-c: color-mix(in oklab, var(--secondary) 10%, transparent);
 }
 
 .dark {
@@ -95,6 +100,10 @@
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.3715 0 0);
   --sidebar-ring: oklch(0.7686 0.1647 70.0804);
+
+  --gradient-accent-a: color-mix(in oklab, var(--primary) 10%, transparent);
+  --gradient-accent-b: color-mix(in oklab, var(--background) 50%, transparent);
+  --gradient-accent-c: color-mix(in oklab, var(--secondary) 10%, transparent);
 }
 
 @theme inline {
@@ -163,6 +172,36 @@
   html {
     @apply font-sans antialiased;
   }
+  main {
+    @apply bg-background;
+  }
+  @supports (backdrop-filter: blur(1px)) {
+    main {
+      @apply bg-linear-to-br from-primary/10 via-background/60 to-secondary/10;
+      /*
+      background:
+        radial-gradient(
+          72% 60% at 15% 0%,
+          color-mix(in oklab, var(--gradient-accent-a) 18%, transparent),
+          transparent 70%
+        ),
+        radial-gradient(
+          70% 60% at 100% 0%,
+          color-mix(in oklab, var(--gradient-accent-b) 16%, transparent),
+          transparent 72%
+        ),
+        radial-gradient(
+          90% 70% at 50% 100%,
+          color-mix(in oklab, var(--gradient-accent-c) 10%, transparent),
+          transparent 78%
+        ),
+        linear-gradient(
+          to bottom,
+          color-mix(in oklab, var(--background) 94%, var(--foreground) 16%),
+          var(--background)
+        ); */
+    }
+  }
   .scrollbar-hidden {
     scrollbar-width: none;
     scrollbar-gutter: none;
@@ -177,7 +216,7 @@
   }
   #main-content {
     height: calc(100vh - var(--titlebar-height));
-    margin-top: var(--titlebar-height);
+    padding-top: var(--titlebar-height);
     overflow-x: hidden;
   }
   [data-slot="sidebar-container"] {

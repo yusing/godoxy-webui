@@ -79,7 +79,7 @@ function SystemInfoGraphsPage() {
         <SystemInfoGraphsProvider agent={agent} period={period} />
       </Suspense>
 
-      <div className="rounded-2xl border border-border/60 bg-card dark:bg-[color-mix(in_oklab,var(--card)_65%,black)] p-4 md:p-5">
+      <div className="rounded-2xl border border-border/60 bg-card supports-backdrop-filter:bg-card/45 p-4 md:p-5">
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
@@ -255,6 +255,18 @@ function SummaryCards({ agent, selectedAgent }: { agent: string; selectedAgent?:
 
   return (
     <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-3 md:grid-cols-5">
+      <style>
+        {`
+          .servers-metric-tile {
+            background-color: color-mix(in oklab, var(--metric-tile-tone) 30%, var(--card)) !important;
+          }
+          @supports (backdrop-filter: blur(1px)) {
+            .servers-metric-tile {
+              background-color: color-mix(in oklab, var(--metric-tile-tone) 15%, var(--card)) !important;
+            }
+          }
+        `}
+      </style>
       <CpuSummaryCard agent={dataAgent} />
       <MemorySummaryCard agent={dataAgent} />
       <DiskSummaryCard agent={dataAgent} />
@@ -466,9 +478,9 @@ function SummaryCard({
 }) {
   return (
     <div
-      className="min-h-[86px] rounded-2xl border px-3 py-2.5 md:min-h-[94px] md:px-3.5 md:py-2.5"
+      className="min-h-[86px] rounded-2xl border px-3 py-2.5 md:min-h-[94px] md:px-3.5 md:py-2.5 servers-metric-tile supports-backdrop-filter:backdrop-blur-sm"
       style={{
-        backgroundColor: `color-mix(in oklab, ${tone} 30%, var(--card))`,
+        ['--metric-tile-tone' as string]: tone,
         borderColor: `color-mix(in oklab, ${tone} 44%, transparent)`,
       }}
     >

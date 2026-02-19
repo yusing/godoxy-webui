@@ -59,18 +59,7 @@ export function MiddlewareComposeEditor({
     >
       <TabsList className="flex w-full flex-wrap gap-1 h-auto min-h-9 p-1">
         {keys.map((k, index) => (
-          <TabsTrigger
-            key={k}
-            value={String(index)}
-            render={
-              <Button
-                variant="outline"
-                size="sm"
-                type="button"
-                className="data-active:bg-primary! data-active:text-primary-foreground!"
-              />
-            }
-          >
+          <TabsTrigger key={k} value={String(index)}>
             <span className="truncate max-w-[120px]">{k}</span>
             <button
               type="button"

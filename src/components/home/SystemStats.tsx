@@ -10,7 +10,7 @@ export default function SystemStats() {
   return (
     <div className="grid grid-cols-4 sm:gap-4">
       {statsProps.map(stat => (
-        <Card key={stat.key} className="backdrop-blur">
+        <Card key={stat.key}>
           <CardHeader>
             <div className="flex items-center justify-between gap-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
