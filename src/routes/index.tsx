@@ -15,7 +15,7 @@ function HomePage() {
         <div className="relative flex h-full min-h-0 flex-col gap-5 mt-(--titlebar-height)">
           <SystemStats />
           <div className="grid min-h-0 flex-1 grid-cols-1 xl:grid-cols-12 gap-2">
-            <div className="min-h-0 xl:col-span-9 overflow-y-auto pr-1">
+            <div className="min-h-0 xl:col-span-9 overflow-y-auto px-1">
               <AppGrid />
             </div>
             <div className="min-h-0 xl:col-span-3">

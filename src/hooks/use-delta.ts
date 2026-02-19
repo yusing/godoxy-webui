@@ -24,7 +24,10 @@ export function useDelta(value: number | null | undefined, resetKey?: unknown): 
   return value - prevRef.current
 }
 
-export function usePercentageDelta(value: number | null | undefined, resetKey?: unknown): number | undefined {
+export function usePercentageDelta(
+  value: number | null | undefined,
+  resetKey?: unknown
+): number | undefined {
   const prevRef = useRef<number | null>(null)
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: we need to reset the previous value when the resetKey changes

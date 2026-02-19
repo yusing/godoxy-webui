@@ -242,7 +242,7 @@ function LogsInner({
         <LogThemeUpdater termRef={termRef} />
       </Suspense>
       <div
-        className={`routes-logs-shell overflow-hidden rounded-xl tracking-normal p-2 relative ${maximized ? 'h-full' : 'h-[45vh]'}`}
+        className={`routes-logs-shell rounded-xl tracking-normal p-2 relative ${maximized ? 'h-full' : 'h-[45vh]'}`}
       >
         <div ref={logsRef} className="routes-logs-terminal h-full w-full" />
         <div className="absolute top-4 right-6">

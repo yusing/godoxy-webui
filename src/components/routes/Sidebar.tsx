@@ -28,7 +28,7 @@ export default function RoutesSidebar({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'routes-sidebar flex h-full min-h-0 flex-col overflow-hidden rounded-2xl',
+        'routes-sidebar flex h-full min-h-0 flex-col rounded-2xl',
         className
       )}
     >
@@ -257,7 +257,7 @@ function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: Route
           {hideUptimebar => (
             <Label
               className={cn(
-                'text-sm font-mono-geist tabular-nums',
+                'text-sm font-mono tabular-nums',
                 hideUptimebar && 'w-[10ch] text-right'
               )}
             >

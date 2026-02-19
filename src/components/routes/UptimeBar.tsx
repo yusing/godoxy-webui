@@ -88,7 +88,7 @@ const RouteUptimeBar_ = memo(
     return (
       <div
         ref={containerRef}
-        className={cn('flex min-w-0 items-stretch gap-[2px] overflow-hidden', className)}
+        className={cn('flex min-w-0 items-stretch gap-[2px]', className)}
         style={{ height: barHeight }}
       >
         {Array.from({ length: barsCount }).map((_, i) => {

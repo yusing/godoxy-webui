@@ -12,7 +12,6 @@ import { formatRelTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { Badge } from '../ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
-import { ScrollArea } from '../ui/scroll-area'
 import { store } from './store'
 
 export { EventsList, EventsWatcher }
@@ -41,7 +40,12 @@ type Event = EventCommon &
     | {
         category: 'http_event'
         action: 'blocked'
-        data: { remote_ip: string; request_url: string; source: string; reason: string }
+        data: {
+          remote_ip: string
+          request_url: string
+          source: string
+          reason: string
+        }
       }
     | {
         category: 'provider_event'
@@ -63,19 +67,17 @@ type Event = EventCommon &
 function EventsList() {
   const events = store.events.use() ?? []
   return (
-    <Card className="h-full min-h-0 backdrop-blur bg-card/50 xl:bg-inherit xl:pt-0">
+    <Card className="h-full min-h-0 backdrop-blur bg-card/50 xl:shadow-none xl:bg-inherit xl:pt-0">
       <CardHeader className="shrink-0">
         <CardTitle className="text-base">Live activity</CardTitle>
         <CardDescription>Recent events and health signals</CardDescription>
       </CardHeader>
       <CardContent className="min-h-0 flex-1">
-        <ScrollArea className="h-[calc(100%-2rem)]">
-          <div className="space-y-2">
-            {events.map(event => (
-              <EventRow key={event.uuid} event={event as Event} />
-            ))}
-          </div>
-        </ScrollArea>
+        <div className="space-y-2 h-full overflow-y-auto px-1 -mx-1">
+          {events.map(event => (
+            <EventRow key={event.uuid} event={event as Event} />
+          ))}
+        </div>
       </CardContent>
     </Card>
   )
@@ -131,7 +133,10 @@ function EventRow({ event }: { event: Event }) {
   }
 
   return (
-    <div className="flex items-start justify-between gap-3 rounded-lg px-3 py-2 bg-card backdrop-blur">
+    <div
+      data-slot="card"
+      className="flex items-start justify-between gap-3 rounded-lg px-3 py-2 bg-card supports-backdrop-filter:bg-card/55 supports-backdrop-filter:backdrop-blur"
+    >
       <div className="min-w-0 space-y-1">
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="secondary" className="gap-1 bg-info/20 text-info-foreground">

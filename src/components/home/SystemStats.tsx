@@ -8,7 +8,7 @@ import type { Store } from './store'
 
 export default function SystemStats() {
   return (
-    <div className="grid grid-cols-4 sm:gap-4">
+    <div className="grid grid-cols-4 sm:gap-4 px-1">
       {statsProps.map(stat => (
         <Card key={stat.key}>
           <CardHeader>

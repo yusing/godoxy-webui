@@ -66,6 +66,7 @@ const AppItemInner = forwardRef<
     <button
       ref={ref}
       type="button"
+      data-slot="card"
       className={cn(
         'app-item group w-full rounded-xl bg-card/35 backdrop-blur px-3 py-2 text-left transition-all duration-200 hover:-translate-y-0.5 hover:from-background/95 hover:to-background/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring cursor-pointer',
         'data-[active=true]:ring-2 data-[active=true]:ring-ring'

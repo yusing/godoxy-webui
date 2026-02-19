@@ -26,7 +26,7 @@ export default function ConfigContent({ className }: { className?: string }) {
   const Content = section.Content
 
   return (
-    <div className={cn('relative', className)}>
+    <div className={cn('relative px-1', className)}>
       <header className="py-2 pr-1 flex justify-between sticky top-0 gap-1">
         <div className="flex items-center gap-1">
           <SidebarTrigger className="size-8" />

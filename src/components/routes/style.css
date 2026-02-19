@@ -1,13 +1,9 @@
 @import "@fontsource-variable/cascadia-code";
-@import "@fontsource-variable/geist-mono";
 
 :root {
   --sidebar-header-height: 40px;
   --sidebar-search-box-height: 40px;
   --sidebar-keyboard-hints-height: 40px;
-  --font-mono:
-    "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
   --xterm-background: transparent;
   --xterm-foreground: #24292f;
 }
