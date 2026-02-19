@@ -1,5 +1,12 @@
 import { IconCheck, IconPlus } from '@tabler/icons-react'
-import { createMixedState, useForm, useMemoryStore } from 'juststore'
+import {
+  Conditional,
+  createMixedState,
+  Render,
+  RenderWithUpdate,
+  useForm,
+  useMemoryStore,
+} from 'juststore'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { parse as parseYAML, stringify as stringifyYAML } from 'yaml'
@@ -136,7 +143,7 @@ export function AddAgentDialogButton({ className }: { className?: string }) {
         <DialogHeader>
           <div className="flex flex-col gap-2">
             <DialogTitle>Add New Agent</DialogTitle>
-            <form.type.Render>
+            <RenderWithUpdate state={form.type}>
               {(agentType, setAgentType) => (
                 <>
                   <div className="grid grid-cols-2 mt-2 border rounded-md">
@@ -166,7 +173,7 @@ export function AddAgentDialogButton({ className }: { className?: string }) {
                   </DialogDescription>
                 </>
               )}
-            </form.type.Render>
+            </RenderWithUpdate>
           </div>
         </DialogHeader>
         <FieldGroup className="gap-4">
@@ -218,7 +225,7 @@ export function AddAgentDialogButton({ className }: { className?: string }) {
             }
             labelProps={{ className: minWidth }}
           />
-          <form.type.Show on={type => type === 'docker'}>
+          <Conditional state={form.type} on={type => type === 'docker'}>
             <StoreFormCheckboxField
               state={form.nightly}
               title="Nightly"
@@ -226,10 +233,10 @@ export function AddAgentDialogButton({ className }: { className?: string }) {
               description="Nightly builds are less stable and may contain bugs"
               labelProps={{ className: minWidth }}
             />
-          </form.type.Show>
+          </Conditional>
         </FieldGroup>
         <DialogFooter>
-          <buttonState.Render>
+          <Render state={buttonState}>
             {([copyLoading, addLoading, agent, type]) => (
               <>
                 <Button
@@ -246,7 +253,7 @@ export function AddAgentDialogButton({ className }: { className?: string }) {
                 </Button>
               </>
             )}
-          </buttonState.Render>
+          </Render>
         </DialogFooter>
       </DialogContent>
     </Dialog>

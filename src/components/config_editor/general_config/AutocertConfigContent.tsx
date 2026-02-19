@@ -42,7 +42,7 @@ export default function AutocertConfigContent() {
         </Card>
       </Carousel>
       <Card>
-        <CardContent flex>
+        <CardContent className="flex flex-col gap-2">
           <AutocertConfigForm
             state={autocertConfig}
             onAddExtra={() => autocertConfig.extra.push({ provider: 'local' })}
@@ -134,7 +134,7 @@ function AutocertConfigContentExtra({ state }: { state: ArrayState<Autocert.Auto
           <IconTrash />
         </Button>
       </CardHeader>
-      <CardContent flex>
+      <CardContent className="flex flex-col gap-2">
         <AutocertConfigForm state={state.at(index) as ObjectState<Autocert.AutocertConfig>} />
       </CardContent>
     </Card>

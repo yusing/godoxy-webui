@@ -1,4 +1,4 @@
-import type { FormStore } from 'juststore'
+import { Conditional, type FormStore } from 'juststore'
 import { StoreFormCheckboxField } from '@/components/store/Checkbox'
 import { StoreFormInputField } from '@/components/store/Input'
 import type { Routes } from '@/types/godoxy'
@@ -21,9 +21,9 @@ export function RouteFileServerSection({ form }: RouteFileServerSectionProps) {
           </span>
         }
       />
-      <form.spa.Show on={spa => spa === true}>
+      <Conditional state={form.spa} on={spa => spa === true}>
         <StoreFormInputField state={form.index} title="Index" placeholder="/index.html" />
-      </form.spa.Show>
+      </Conditional>
     </>
   )
 }

@@ -1,3 +1,4 @@
+import { Render, RenderWithUpdate } from 'juststore'
 import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from 'lucide-react'
 import { motion } from 'motion/react'
 import { Suspense, useEffect, useMemo } from 'react'
@@ -114,9 +115,9 @@ export default function AppGrid() {
         </div>
 
         {/* Keyboard hints */}
-        <store.ui.showKeyboardHints.Render>
+        <RenderWithUpdate state={store.ui.showKeyboardHints}>
           {(show, setShow) => show && <KeyboardHints onDismiss={() => setShow(false)} />}
-        </store.ui.showKeyboardHints.Render>
+        </RenderWithUpdate>
 
         {categoryNames?.map((category, index) => {
           // workaround for favorites tab, use `All` items instead
@@ -129,9 +130,9 @@ export default function AppGrid() {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2, ease: 'easeInOut' }}
               >
-                <i.Render>
+                <Render state={i}>
                   {items => <AppCategory categoryIndex={index} category={category} items={items} />}
-                </i.Render>
+                </Render>
               </motion.div>
             </TabsContent>
           )

@@ -1,4 +1,4 @@
-import type { FieldPath } from 'juststore'
+import { type FieldPath, Render } from 'juststore'
 import { formatDuration } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { Progress } from '../ui/progress'
@@ -21,7 +21,7 @@ export default function SystemStatValue({
         <Description descriptionKey={descriptionKey} type={type} />
       </div>
       {type === 'progress' && (
-        <state.Render>{value => <Progress value={Number(value)} />}</state.Render>
+        <Render state={state}>{value => <Progress value={Number(value)} />}</Render>
       )}
       {type === 'duration' && (
         <span className="text-xs text-muted-foreground">since last restart</span>

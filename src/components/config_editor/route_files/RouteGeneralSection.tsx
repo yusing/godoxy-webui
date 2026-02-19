@@ -1,5 +1,5 @@
 import { IconX } from '@tabler/icons-react'
-import type { FormState, FormStore } from 'juststore'
+import { type FormState, type FormStore, RenderWithUpdate } from 'juststore'
 import { useEffect } from 'react'
 import { useAsync } from 'react-use'
 import { StoreFormInputField } from '@/components/store/Input'
@@ -179,7 +179,7 @@ function AgentSelect({ state }: { state: FormState<string | undefined> }) {
           ),
         }))}
       />
-      <state.Render>
+      <RenderWithUpdate state={state}>
         {(value, setValue) => (
           <Button
             type="button"
@@ -192,7 +192,7 @@ function AgentSelect({ state }: { state: FormState<string | undefined> }) {
             <IconX className="size-4" />
           </Button>
         )}
-      </state.Render>
+      </RenderWithUpdate>
     </div>
   )
 }

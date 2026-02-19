@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import type { ObjectState, ValueState } from 'juststore'
+import { type ObjectState, Render, type ValueState } from 'juststore'
 import { forwardRef, useMemo } from 'react'
 import type { HomepageItem } from '@/lib/api'
 import { api } from '@/lib/api-client'
@@ -37,13 +37,13 @@ export default function AppItem({ categoryIndex, appIndex, visibleIndex }: AppIt
   return (
     <ContextMenu>
       <ContextMenuTrigger>
-        <state.url.Render>
+        <Render state={state.url}>
           {url => (
             <Link to={url} target="_blank" preload={false} onClick={handleClick}>
               <AppItemInner visibleIndex={visibleIndex} state={state} />
             </Link>
           )}
-        </state.url.Render>
+        </Render>
       </ContextMenuTrigger>
       <AppItemContextMenuContent state={state} categoryIndex={categoryIndex} itemIndex={appIndex} />
     </ContextMenu>
@@ -87,30 +87,30 @@ const AppItemInner = forwardRef<
     >
       <div className="flex items-start gap-3 min-w-0">
         <div className="shrink-0 pt-0.5">
-          <state.icon.Render>
+          <Render state={state.icon}>
             {icon => <ThemeAwareAppIcon alias={alias} url={icon || undefined} />}
-          </state.icon.Render>
+          </Render>
         </div>
 
         <div className="min-w-0 flex-1 space-y-0.5">
           {/* Row 1: Name + Health */}
           <div className="flex items-center gap-2">
-            <state.name.Render>
+            <Render state={state.name}>
               {name => <span className="truncate text-sm font-medium">{name || alias}</span>}
-            </state.name.Render>
-            <store.Render path={`health.${alias}.status`}>
+            </Render>
+            <Render state={store.state(`health.${alias}.status`)}>
               {status => <HealthBadge status={status} />}
-            </store.Render>
+            </Render>
           </div>
 
           {/* Row 2: Description */}
-          <state.description.Render>
+          <Render state={state.description}>
             {description =>
               description ? (
                 <div className="truncate text-xs text-muted-foreground/90">{description}</div>
               ) : null
             }
-          </state.description.Render>
+          </Render>
 
           {/* Row 3: Category · Latency · Widgets */}
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground pt-0.5">

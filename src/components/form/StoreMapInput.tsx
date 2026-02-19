@@ -1,4 +1,4 @@
-import type { FieldPath, FieldValues, ObjectState } from 'juststore'
+import { Conditional, type FieldPath, type FieldValues, type ObjectState } from 'juststore'
 import { Activity, useMemo } from 'react'
 import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
 import { Badge } from '../ui/badge'
@@ -263,9 +263,9 @@ function StoreObjectInput<T extends FieldValues>({
         state['']?.set(getDefaultValue(getAdditionalPropertiesSchema(schema)) as T[string])
       }
       badge={
-        <state.Show on={value => !value || Object.keys(value).length === 0}>
+        <Conditional state={state} on={value => !value || Object.keys(value).length === 0}>
           <Badge variant="secondary">Not set</Badge>
-        </state.Show>
+        </Conditional>
       }
     >
       {keys.map((k, index) => (

@@ -1,5 +1,11 @@
 import { IconRefresh, IconTrash } from '@tabler/icons-react'
-import type { FieldPath, FieldValues, ObjectState, State } from 'juststore'
+import {
+  type FieldPath,
+  type FieldValues,
+  type ObjectState,
+  RenderWithUpdate,
+  type State,
+} from 'juststore'
 import { useEffect, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -105,7 +111,7 @@ export function StoreFieldInput<T extends FieldValues>({
         )}
 
         {allowedValues && allowedValues.length > 1 ? (
-          <child.Render>
+          <RenderWithUpdate state={child}>
             {(value, update) => (
               <Select
                 readOnly={readonly}
@@ -124,9 +130,9 @@ export function StoreFieldInput<T extends FieldValues>({
                 </SelectContent>
               </Select>
             )}
-          </child.Render>
+          </RenderWithUpdate>
         ) : isInputType(vSchema) ? (
-          <child.Render>
+          <RenderWithUpdate state={child}>
             {(value, update) => (
               <Input
                 readOnly={readonly}
@@ -136,10 +142,10 @@ export function StoreFieldInput<T extends FieldValues>({
                 onChange={({ target: { value } }) => update(value as T[typeof fieldKey])}
               />
             )}
-          </child.Render>
+          </RenderWithUpdate>
         ) : isToggleType(vSchema) ? (
           <div className="w-full flex items-center">
-            <child.Render>
+            <RenderWithUpdate state={child}>
               {(value, update) => (
                 <Checkbox
                   readOnly={readonly}
@@ -148,7 +154,7 @@ export function StoreFieldInput<T extends FieldValues>({
                   onCheckedChange={checked => update(Boolean(checked) as T[typeof fieldKey])}
                 />
               )}
-            </child.Render>
+            </RenderWithUpdate>
           </div>
         ) : null}
 

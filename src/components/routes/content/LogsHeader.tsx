@@ -5,7 +5,10 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import type { Container, ContainerImage, ProxmoxNodeConfig } from '@/lib/api'
 import { type RouteKey, store } from '../store'
 
-function formatContainerName(container?: Container, proxmox?: ProxmoxNodeConfig): React.ReactNode {
+function formatContainerName(
+  container?: Container | null,
+  proxmox?: ProxmoxNodeConfig | null
+): React.ReactNode {
   if (container) {
     return container.container_name
   }

@@ -1,3 +1,4 @@
+import { Render, RenderWithUpdate } from 'juststore'
 import { Search, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useMount } from 'react-use'
@@ -46,7 +47,7 @@ export default function Searchbox() {
 
   return (
     <div className="relative flex-1 min-w-0 w-full">
-      <store.searchQuery.Render>
+      <RenderWithUpdate state={store.searchQuery}>
         {(searchQuery, setSearchQuery) => (
           <InputGroup>
             <InputGroupInput
@@ -78,7 +79,7 @@ export default function Searchbox() {
                 }
               }}
             />
-            <store.searchEngine.Render>
+            <Render state={store.searchEngine}>
               {searchEngine => (
                 <InputGroupAddon align="inline-start">
                   <InputGroupButton size="icon-sm">
@@ -90,7 +91,7 @@ export default function Searchbox() {
                   </InputGroupButton>
                 </InputGroupAddon>
               )}
-            </store.searchEngine.Render>
+            </Render>
             {searchQuery.length > 0 && (
               <InputGroupAddon align="inline-end">
                 <InputGroupButton
@@ -111,7 +112,7 @@ export default function Searchbox() {
             </InputGroupAddon>
           </InputGroup>
         )}
-      </store.searchQuery.Render>
+      </RenderWithUpdate>
     </div>
   )
 }

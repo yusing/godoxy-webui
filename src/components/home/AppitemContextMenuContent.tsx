@@ -11,7 +11,7 @@ import {
   IconSquare,
 } from '@tabler/icons-react'
 import { Link } from '@tanstack/react-router'
-import type { ObjectState } from 'juststore'
+import { type ObjectState, Render } from 'juststore'
 import { type KeyboardEvent, useState } from 'react'
 import { toast } from 'sonner'
 import type { HomepageItem } from '@/lib/api'
@@ -126,7 +126,7 @@ export default function AppItemContextMenuContent({
           moveToCategory={moveToCategory}
           onNewCategory={() => setNewCategoryDialogOpen(true)}
         />
-        <state.show.Render>
+        <Render state={state.show}>
           {visible => (
             <>
               {visible ? (
@@ -142,7 +142,7 @@ export default function AppItemContextMenuContent({
               )}
               {/* Only visible items can be favorites */}
               {visible && (
-                <state.favorite.Render>
+                <Render state={state.favorite}>
                   {favorite => (
                     <ContextMenuItem
                       onClick={toggleFavorite}
@@ -152,11 +152,11 @@ export default function AppItemContextMenuContent({
                       {favorite ? 'Remove favorite' : 'Favorite'}
                     </ContextMenuItem>
                   )}
-                </state.favorite.Render>
+                </Render>
               )}
             </>
           )}
-        </state.show.Render>
+        </Render>
         <Link
           to="/routes"
           hash={routeKey}

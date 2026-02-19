@@ -1,4 +1,5 @@
 import { json } from '@codemirror/lang-json'
+import { RenderWithUpdate } from 'juststore'
 import { MapInput } from '@/components/form/MapInput'
 import { StoreInputField } from '@/components/store/Input'
 import { StoreSelectField } from '@/components/store/Select'
@@ -41,7 +42,7 @@ export default function MockRequestForm() {
           <StoreInputField state={store.mockRequest.remoteIP} />
         </div>
 
-        <store.mockRequest.headers.Render>
+        <RenderWithUpdate state={store.mockRequest.headers}>
           {(value, update) => (
             <MapInput
               label="Headers"
@@ -51,9 +52,9 @@ export default function MockRequestForm() {
               onChange={v => update(toArrayRecord(v))}
             />
           )}
-        </store.mockRequest.headers.Render>
+        </RenderWithUpdate>
 
-        <store.mockRequest.query.Render>
+        <RenderWithUpdate state={store.mockRequest.query}>
           {(value, update) => (
             <MapInput
               label="Query Parameters"
@@ -63,9 +64,9 @@ export default function MockRequestForm() {
               onChange={v => update(toArrayRecord(v))}
             />
           )}
-        </store.mockRequest.query.Render>
+        </RenderWithUpdate>
 
-        <store.mockRequest.cookies.Render>
+        <RenderWithUpdate state={store.mockRequest.cookies}>
           {(value, update) => (
             <MapInput
               label="Cookies"
@@ -75,7 +76,7 @@ export default function MockRequestForm() {
               onChange={v => update(toArrayCookies(v))}
             />
           )}
-        </store.mockRequest.cookies.Render>
+        </RenderWithUpdate>
 
         <StoreCodeMirrorField
           className="border rounded-md"

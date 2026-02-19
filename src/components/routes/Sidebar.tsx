@@ -1,5 +1,5 @@
 import { IconFilter } from '@tabler/icons-react'
-import type { FieldPath } from 'juststore'
+import { type FieldPath, Render } from 'juststore'
 import { ArrowDown, ArrowUp } from 'lucide-react'
 import { Suspense, useEffect } from 'react'
 import {
@@ -26,12 +26,7 @@ import { decodeRouteKey, encodeRouteKey } from './utils'
 
 export default function RoutesSidebar({ className }: { className?: string }) {
   return (
-    <div
-      className={cn(
-        'routes-sidebar flex h-full min-h-0 flex-col rounded-2xl',
-        className
-      )}
-    >
+    <div className={cn('routes-sidebar flex h-full min-h-0 flex-col rounded-2xl', className)}>
       <div className="routes-sidebar-header sidebar-header sticky top-0 z-10 px-3 py-3 flex items-center justify-between">
         <Label className="text-sm font-semibold tracking-wide uppercase text-muted-foreground">
           Routes
@@ -253,7 +248,7 @@ function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: Route
           <AppIcon alias={alias} size={18} />
           <Label className="route-display-name">{displayName || alias}</Label>
         </div>
-        <hideUptimebarState.Render>
+        <Render state={hideUptimebarState}>
           {hideUptimebar => (
             <Label
               className={cn(
@@ -264,7 +259,7 @@ function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: Route
               <RoutePercentageText routeKey={routeKey} />
             </Label>
           )}
-        </hideUptimebarState.Render>
+        </Render>
       </div>
       <RouteUptimeBar routeKey={routeKey} className="mt-2" />
     </button>

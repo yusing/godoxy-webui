@@ -18,12 +18,13 @@ export default function ConfigContent({ className }: { className?: string }) {
     sectionsByFileType[activeFile.type].sections.find(section => section.id === activeSection) ??
     sectionsByFileType[activeFile.type].sections[0]!
   const preloadedSections = sectionsByFileType[activeFile.type].sections.filter(
-    section => section.preload
+    section => 'preload' in section && section.preload
   )
 
   const label = section.label
 
   const Content = section.Content
+  const shouldPreload = 'preload' in section && section.preload
 
   return (
     <div className={cn('relative px-1', className)}>
@@ -50,7 +51,7 @@ export default function ConfigContent({ className }: { className?: string }) {
             </div>
           )
         })}
-        {!section.preload && (
+        {!shouldPreload && (
           <AnimatePresence mode="wait">
             <motion.div
               key={`${activeFile.type}-${activeFile.filename}-${activeSection}`}

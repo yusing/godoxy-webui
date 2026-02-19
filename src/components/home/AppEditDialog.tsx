@@ -1,4 +1,4 @@
-import { type ObjectState, useForm } from 'juststore'
+import { type ObjectState, Render, useForm } from 'juststore'
 import { useCallback } from 'react'
 import { toast } from 'sonner'
 import { StoreFormInputField } from '@/components/store/Input'
@@ -80,9 +80,9 @@ function AppEditDialog_({ state }: { state: ObjectState<HomepageItem> }) {
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4 py-2">
           <div className="flex items-start gap-4">
             <div className="hidden sm:flex h-full items-center shrink-0 border-2 p-2 rounded-xl">
-              <form.icon.Render>
+              <Render state={form.icon}>
                 {icon => <AppIcon size={36} alias={app.alias} url={icon} />}
-              </form.icon.Render>
+              </Render>
             </div>
             <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
               <StoreFormInputField state={form.name} title="App name" />

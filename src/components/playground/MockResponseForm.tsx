@@ -1,4 +1,5 @@
 import { json } from '@codemirror/lang-json'
+import { RenderWithUpdate } from 'juststore'
 import { MapInput } from '@/components/form/MapInput'
 import { StoreInputField } from '@/components/store/Input'
 import { FieldGroup, FieldLegend, FieldSet } from '../ui/field'
@@ -24,7 +25,7 @@ export default function MockResponseForm() {
       <FieldGroup>
         <StoreInputField state={store.mockResponse.statusCode} type="number" placeholder="200" />
 
-        <store.mockResponse.headers.Render>
+        <RenderWithUpdate state={store.mockResponse.headers}>
           {(value, update) => (
             <MapInput
               label="Headers"
@@ -34,7 +35,7 @@ export default function MockResponseForm() {
               onChange={v => update(toArrayRecord(v))}
             />
           )}
-        </store.mockResponse.headers.Render>
+        </RenderWithUpdate>
 
         <StoreCodeMirrorField
           className="border rounded-md"

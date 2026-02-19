@@ -1,4 +1,4 @@
-import { type FormState, type MemoryStore, useMemoryStore } from 'juststore'
+import { type FormState, type MemoryStore, RenderWithUpdate, useMemoryStore } from 'juststore'
 import { useEffect, useMemo } from 'react'
 import { useAsync } from 'react-use'
 import type { IconMetaSearch } from '@/lib/api'
@@ -49,7 +49,7 @@ export default function IconSearchField({ state: iconState, className }: IconSea
 
   return (
     <Command shouldFilter={false}>
-      <state.Render>
+      <RenderWithUpdate state={state}>
         {(value, setValue) => {
           const inputValue = getDisplayValue(value)
           return (
@@ -66,7 +66,7 @@ export default function IconSearchField({ state: iconState, className }: IconSea
             />
           )
         }}
-      </state.Render>
+      </RenderWithUpdate>
       <CommandList
         className={cn(
           className,

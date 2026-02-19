@@ -1,6 +1,6 @@
 import { IconCircleCheck } from '@tabler/icons-react'
 import type { Atom } from 'juststore'
-import { createAtom } from 'juststore'
+import { createAtom, Render } from 'juststore'
 import { useEffect, useId, useRef } from 'react'
 import { stringify as stringifyYAML } from 'yaml'
 import { type GoDoxyError, GoDoxyErrorAlert } from '@/components/GoDoxyError'
@@ -57,9 +57,9 @@ export default function RouteEditFormDialogContent({
         <Separator orientation="vertical" />
         <div className="flex flex-col gap-2">
           <Label className="pl-2 text-sm">Read-only Preview</Label>
-          <routeAtom.Render>
+          <Render state={routeAtom}>
             {value => <YAMLEditor readOnly value={stringifyYAML(value)} className="flex-1" />}
-          </routeAtom.Render>
+          </Render>
           <RouteErrorAlert errAtom={errorAtom} />
         </div>
       </div>

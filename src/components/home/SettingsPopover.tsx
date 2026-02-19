@@ -1,3 +1,4 @@
+import { Conditional } from 'juststore'
 import { Moon, Settings, Sun } from 'lucide-react'
 import { StoreSwitchField } from '@/components/store/Switch'
 import { Button } from '@/components/ui/button'
@@ -88,26 +89,23 @@ export default function SettingsPopover() {
               descriptionVariant="tooltip"
             />
           </div>
-          <store.ui.showKeyboardHints.Render>
-            {showKeyboardHints =>
-              !showKeyboardHints && (
-                <>
-                  <Separator />
-                  <div className="space-y-3">
-                    <Label className="text-xs font-medium">Keyboard Hints</Label>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full"
-                      onClick={() => store.ui.showKeyboardHints.set(true)}
-                    >
-                      Unhide Keyboard Hints
-                    </Button>
-                  </div>
-                </>
-              )
-            }
-          </store.ui.showKeyboardHints.Render>
+          <Conditional
+            state={store.ui.showKeyboardHints}
+            on={showKeyboardHints => !showKeyboardHints}
+          >
+            <Separator />
+            <div className="space-y-3">
+              <Label className="text-xs font-medium">Keyboard Hints</Label>
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={() => store.ui.showKeyboardHints.set(true)}
+              >
+                Unhide Keyboard Hints
+              </Button>
+            </div>
+          </Conditional>
         </div>
       </PopoverContent>
     </Popover>

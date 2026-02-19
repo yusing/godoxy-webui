@@ -12,7 +12,7 @@ import {
 } from '@tabler/icons-react'
 import type { VariantProps } from 'class-variance-authority'
 import type { FormState } from 'juststore'
-import { type FormStore, useForm } from 'juststore'
+import { type FormStore, Render, useForm } from 'juststore'
 import { useEffect, useMemo } from 'react'
 import { encodeRouteKey } from '@/components/routes/utils'
 import { FormSection, SectionedForm, type SectionItem } from '@/components/SectionedForm'
@@ -178,9 +178,7 @@ export default function RouteEditForm({
         <>
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between gap-4">
-              <form.alias.Render>
-                {alias => <span>{formatTitle(alias ?? '')}</span>}
-              </form.alias.Render>
+              <Render state={form.alias}>{alias => <span>{formatTitle(alias ?? '')}</span>}</Render>
               {actionButtons}
             </DialogTitle>
           </DialogHeader>
@@ -188,9 +186,9 @@ export default function RouteEditForm({
         </>
       )}
       {!dialog && formatTitle && TitlePortal && (
-        <form.alias.Render>
+        <Render state={form.alias}>
           {alias => <TitlePortal>{formatTitle(alias ?? '')}</TitlePortal>}
-        </form.alias.Render>
+        </Render>
       )}
       {!dialog && ActionButtonsPortal && <ActionButtonsPortal>{actionButtons}</ActionButtonsPortal>}
 

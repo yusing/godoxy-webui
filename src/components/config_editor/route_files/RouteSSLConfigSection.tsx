@@ -1,4 +1,4 @@
-import type { FormStore } from 'juststore'
+import { Conditional, type FormStore } from 'juststore'
 import { StoreFormCheckboxField } from '@/components/store/Checkbox'
 import { StoreFormInputField } from '@/components/store/Input'
 import { StoreFormMultiSelectField } from '@/components/store/MultiSelect'
@@ -36,7 +36,7 @@ export default function RouteSSLConfigSection({ form }: RouteSSLConfigSectionPro
         title="No TLS Verify"
         description="Skip TLS certificate verification"
       />
-      <form.no_tls_verify.Show on={noTLSVerify => noTLSVerify !== true}>
+      <Conditional state={form.no_tls_verify} on={noTLSVerify => noTLSVerify !== true}>
         <StoreFormInputField
           state={form.ssl_server_name}
           title="SSL Server Name"
@@ -63,7 +63,7 @@ export default function RouteSSLConfigSection({ form }: RouteSSLConfigSectionPro
           options={options}
           placeholder="TLS 1.3"
         />
-      </form.no_tls_verify.Show>
+      </Conditional>
     </FieldGroup>
   )
 }

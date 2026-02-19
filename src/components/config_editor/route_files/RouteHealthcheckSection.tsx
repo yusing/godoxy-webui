@@ -1,4 +1,4 @@
-import type { FormStore } from 'juststore'
+import { Conditional, type FormStore } from 'juststore'
 import { StoreFormCheckboxField } from '@/components/store/Checkbox'
 import { StoreFormInputField } from '@/components/store/Input'
 import { FieldGroup } from '@/components/ui/field'
@@ -12,7 +12,7 @@ export function RouteHealthcheckSection({ form }: RouteHealthcheckSectionProps) 
   return (
     <FieldGroup className="gap-4">
       <StoreFormCheckboxField state={form.healthcheck.disable} title="Disable" />
-      <form.healthcheck.disable.Show on={disable => disable !== true}>
+      <Conditional state={form.healthcheck.disable} on={disable => disable !== true}>
         <StoreFormInputField state={form.healthcheck.path} title="Path" placeholder="/" />
         <StoreFormCheckboxField state={form.healthcheck.use_get} title="Use GET" />
         <div className="flex gap-2">
@@ -29,7 +29,7 @@ export function RouteHealthcheckSection({ form }: RouteHealthcheckSectionProps) 
             placeholder="3"
           />
         </div>
-      </form.healthcheck.disable.Show>
+      </Conditional>
     </FieldGroup>
   )
 }
