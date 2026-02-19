@@ -11,6 +11,7 @@ count.txt
 .output
 .vinxi
 todos.json
+tsconfig.tsbuildinfo
 
 # schema
 src/types/godoxy/*.deref.json
@@ -20,3 +21,6 @@ CLAUDE.md
 .kilocode/
 .claude/
 .cursor/
+
+# wiki
+.source/
