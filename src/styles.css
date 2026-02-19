@@ -57,6 +57,9 @@
   --gradient-accent-a: color-mix(in oklab, var(--primary) 10%, transparent);
   --gradient-accent-b: color-mix(in oklab, var(--foreground) 50%, transparent);
   --gradient-accent-c: color-mix(in oklab, var(--secondary) 10%, transparent);
+
+  scrollbar-color: color-mix(in oklab, var(--foreground) 50%, transparent) transparent;
+  scrollbar-width: thin;
 }
 
 .dark {
@@ -178,28 +181,6 @@
   @supports (backdrop-filter: blur(1px)) {
     main {
       @apply bg-linear-to-br from-primary/10 via-background/60 to-secondary/10;
-      /*
-      background:
-        radial-gradient(
-          72% 60% at 15% 0%,
-          color-mix(in oklab, var(--gradient-accent-a) 18%, transparent),
-          transparent 70%
-        ),
-        radial-gradient(
-          70% 60% at 100% 0%,
-          color-mix(in oklab, var(--gradient-accent-b) 16%, transparent),
-          transparent 72%
-        ),
-        radial-gradient(
-          90% 70% at 50% 100%,
-          color-mix(in oklab, var(--gradient-accent-c) 10%, transparent),
-          transparent 78%
-        ),
-        linear-gradient(
-          to bottom,
-          color-mix(in oklab, var(--background) 94%, var(--foreground) 16%),
-          var(--background)
-        ); */
     }
   }
   .scrollbar-hidden {
@@ -216,11 +197,24 @@
   }
   #main-content {
     height: calc(100vh - var(--titlebar-height));
-    padding-top: var(--titlebar-height);
     overflow-x: hidden;
   }
   [data-slot="sidebar-container"] {
     margin-top: var(--titlebar-height);
+  }
+  [data-slot="card"] {
+    border-color: color-mix(in oklab, var(--foreground) 9%, transparent);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, var(--foreground) 7%, transparent),
+      0 0 0 1px color-mix(in oklab, var(--foreground) 6%, transparent),
+      0 12px 24px -20px color-mix(in oklab, var(--foreground) 14%, transparent);
+  }
+
+  ::-webkit-scrollbar-track {
+    background: color-mix(in oklab, var(--background) 50%, transparent);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: transparent;
   }
 }
 

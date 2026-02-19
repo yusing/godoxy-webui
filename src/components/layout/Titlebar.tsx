@@ -27,7 +27,7 @@ export default function Titlebar() {
   return (
     <div
       id="titlebar"
-      className="titlebar hidden data-[hidden=false]:flex data-[sidebar-open=true]:ml-(--sidebar-width) fixed top-0 inset-x-0 items-center justify-between px-4 border-b surface z-40 backdrop-blur-sm"
+      className="titlebar hidden data-[hidden=false]:flex data-[sidebar-open=true]:ml-(--sidebar-width) inset-x-0 items-center justify-between px-4 border-b surface z-40 backdrop-blur-sm sticky top-0"
     >
       <div className="flex items-center gap-2">
         <img src="icon0.svg" alt="GoDoxy" width={24} height={24} />

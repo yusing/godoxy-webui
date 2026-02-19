@@ -57,10 +57,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ThemeProvider>
-          <Titlebar />
-          <TitlebarController />
-          <main id="main-content">
-            {children}
+          <main>
+            <Titlebar />
+            <TitlebarController />
+            <div id="main-content"> {children} </div>
             <Toaster position="top-right" richColors closeButton theme="system" />
           </main>
         </ThemeProvider>
