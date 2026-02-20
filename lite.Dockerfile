@@ -44,7 +44,6 @@ FROM base AS prerelease
 WORKDIR /app
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
-RUN ln -s /app/src/components/ui /app/juststore-shadcn/src/components/ui
 COPY --from=schema-gen /temp/dev/src/types/godoxy/*.json ./src/types/godoxy/
 
 # for lite image, we want a fully static output

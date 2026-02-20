@@ -20,7 +20,9 @@ const config = defineConfig({
       sourcemap: false,
     }),
     // this is the plugin that enables path aliases
-    tsconfigPaths(),
+    tsconfigPaths({
+      projects: ['./tsconfig.json'],
+    }),
     tailwindcss(),
     tanstackStart(),
     viteReact({
