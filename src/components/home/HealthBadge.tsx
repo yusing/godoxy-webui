@@ -43,8 +43,8 @@ export default function HealthBadge({
     <span
       className={cn(
         'inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium',
-        className,
-        compact && 'px-1.5'
+        compact && 'rounded-full px-1.5 py-0 text-[10px] leading-4',
+        className
       )}
     >
       {label}

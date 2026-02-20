@@ -185,6 +185,7 @@
   }
   html {
     @apply font-sans antialiased;
+    overscroll-behavior: none;
   }
   :not(:has(#nd-home-layout)) {
     main {

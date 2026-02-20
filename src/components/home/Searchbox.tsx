@@ -106,7 +106,7 @@ export default function Searchbox() {
               </InputGroupAddon>
             )}
             <InputGroupAddon align="inline-end">
-              <InputGroupText>
+              <InputGroupText className="hidden sm:inline-flex">
                 <Kbd>{useSearchEngine ? 'Enter' : 'A-Z'}</Kbd>
               </InputGroupText>
             </InputGroupAddon>

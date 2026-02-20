@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { type ObjectState, Render, type ValueState } from 'juststore'
 import { forwardRef, useMemo } from 'react'
+import { useIsMobile } from '@/hooks/use-mobile'
 import type { HomepageItem } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { formatGoDuration } from '@/lib/format'
@@ -54,6 +55,7 @@ const AppItemInner = forwardRef<
   HTMLButtonElement,
   { state: ObjectState<HomepageItem>; visibleIndex: number }
 >(({ visibleIndex, state, ...props }, ref) => {
+  const isMobile = useIsMobile()
   const [alias, url, widgets, hasWidgets, category] = state.useCompute(item => [
     item.alias,
     item.url,
@@ -99,7 +101,7 @@ const AppItemInner = forwardRef<
               {name => <span className="truncate text-sm font-medium">{name || alias}</span>}
             </Render>
             <Render state={store.state(`health.${alias}.status`)}>
-              {status => <HealthBadge status={status} />}
+              {status => <HealthBadge status={status} compact={isMobile} />}
             </Render>
           </div>
 
@@ -145,5 +147,5 @@ function LatencyText({ latency }: { latency: ValueState<number> }) {
 
 function ThemeAwareAppIcon({ alias, url }: { alias: string; url?: string }) {
   const themeAware = store.ui.iconThemeAware.use()
-  return <AppIcon className="size-8" themeAware={themeAware} alias={alias} url={url} />
+  return <AppIcon className="size-6 sm:size-8" themeAware={themeAware} alias={alias} url={url} />
 }

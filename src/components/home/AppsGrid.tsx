@@ -9,9 +9,9 @@ import { Kbd } from '@/components/ui/kbd'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { HealthMap, HomepageCategory } from '@/lib/api'
+import { cn } from '@/lib/utils'
 import AppCategory from './AppCategory'
 import ArrowNavigation from './ArrowNavigation'
-import { EventsWatcher } from './EventList'
 import Searchbox from './Searchbox'
 import SettingsPopover from './SettingsPopover'
 import { store } from './store'
@@ -59,7 +59,6 @@ export default function AppGrid() {
     <>
       <Suspense>
         <HealthWatcher />
-        <EventsWatcher />
         <HomepageItemsProvider sortMethod={sortMethod} />
       </Suspense>
       <PendingFavoritesResetter activeCategory={activeCategory} />
@@ -67,11 +66,11 @@ export default function AppGrid() {
       <Tabs
         value={activeCategory}
         onValueChange={value => setActiveCategory(value)}
-        className="w-full"
+        className="w-full h-full"
       >
         <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 justify-between">
           <div className="flex items-center gap-2 w-full sm:w-auto">
-            <TabsList className="flex w-full sm:w-auto gap-1 rounded-lg border p-1">
+            <TabsList className="scrollbar-hidden flex w-full gap-1 overflow-x-auto rounded-lg border p-1 sm:w-auto">
               {visibleTabs?.map(category => (
                 <TabsTrigger
                   key={category}
@@ -115,15 +114,21 @@ export default function AppGrid() {
         </div>
 
         {/* Keyboard hints */}
-        <RenderWithUpdate state={store.ui.showKeyboardHints}>
-          {(show, setShow) => show && <KeyboardHints onDismiss={() => setShow(false)} />}
-        </RenderWithUpdate>
+        <div className="hidden md:block">
+          <RenderWithUpdate state={store.ui.showKeyboardHints}>
+            {(show, setShow) => show && <KeyboardHints onDismiss={() => setShow(false)} />}
+          </RenderWithUpdate>
+        </div>
 
         {categoryNames?.map((category, index) => {
           // workaround for favorites tab, use `All` items instead
           const i = store.homepageCategories.at(category === 'Favorites' ? 0 : index).items
           return (
-            <TabsContent key={category} value={category} className="sm:mt-2">
+            <TabsContent
+              key={category}
+              value={category}
+              className="sm:mt-2 overflow-y-auto scrollbar-hidden sm:scrollbar-default h-full"
+            >
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -142,9 +147,14 @@ export default function AppGrid() {
   )
 }
 
-function KeyboardHints({ onDismiss }: { onDismiss: () => void }) {
+function KeyboardHints({ onDismiss, className }: { onDismiss: () => void; className?: string }) {
   return (
-    <div className="rounded-lg border px-3 py-1 text-xs text-muted-foreground flex flex-wrap items-center gap-3 supports-backdrop-filter:bg-muted/45 supports-backdrop-filter:backdrop-blur">
+    <div
+      className={cn(
+        'rounded-lg border px-3 py-1 text-xs text-muted-foreground flex flex-wrap items-center gap-3 supports-backdrop-filter:bg-muted/45 supports-backdrop-filter:backdrop-blur',
+        className
+      )}
+    >
       <div className="flex items-center gap-1">
         <Kbd>
           <ArrowUp className="h-3 w-3" />

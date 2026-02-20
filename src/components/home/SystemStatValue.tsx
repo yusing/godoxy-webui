@@ -46,7 +46,11 @@ function DisplayValue({
     }
     return String(value)
   })
-  return <div className="text-xl font-semibold tracking-tight tabular-nums">{displayValue}</div>
+  return (
+    <div className="text-base sm:text-xl leading-none font-semibold tracking-tight tabular-nums">
+      {displayValue}
+    </div>
+  )
 }
 
 function Description({

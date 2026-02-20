@@ -5,7 +5,7 @@ import {
   IconRoute,
   IconShieldLock,
 } from '@tabler/icons-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { EventsLevel, HealthJSON, Route } from '@/lib/api'
 import { formatRelTime } from '@/lib/format'
@@ -64,15 +64,73 @@ type Event = EventCommon &
       }
   )
 
-function EventsList() {
+function EventsList({ mobileDrawer = false }: { mobileDrawer?: boolean }) {
   const events = store.events.use() ?? []
+  const [isExpanded, setIsExpanded] = useState(false)
+  const touchStartYRef = useRef<number | null>(null)
+  const touchDeltaYRef = useRef(0)
+  const pullOpenThreshold = 20
+  const pullCloseThreshold = 28
+
+  const onTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (!mobileDrawer) return
+    touchStartYRef.current = event.touches[0]?.clientY ?? null
+    touchDeltaYRef.current = 0
+  }
+
+  const onTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (!mobileDrawer || touchStartYRef.current == null) return
+    touchDeltaYRef.current =
+      (event.touches[0]?.clientY ?? touchStartYRef.current) - touchStartYRef.current
+  }
+
+  const onTouchEnd = () => {
+    if (!mobileDrawer) return
+    const delta = touchDeltaYRef.current
+    if (!isExpanded && delta < -pullOpenThreshold) {
+      setIsExpanded(true)
+    } else if (isExpanded && delta > pullCloseThreshold) {
+      setIsExpanded(false)
+    }
+    touchStartYRef.current = null
+    touchDeltaYRef.current = 0
+  }
+
   return (
-    <Card className="h-full min-h-0 backdrop-blur bg-card/50 xl:shadow-none xl:bg-inherit xl:pt-0">
-      <CardHeader className="shrink-0">
-        <CardTitle className="text-base">Live activity</CardTitle>
-        <CardDescription>Recent events and health signals</CardDescription>
+    <Card
+      className={cn(
+        'backdrop-blur bg-card/50',
+        mobileDrawer
+          ? [
+              'py-3 gap-2 h-auto min-h-0 overflow-hidden rounded-t-2xl rounded-b-none border-x border-t border-b-0 transition-[max-height] duration-300 ease-in-out',
+              isExpanded ? 'max-h-[65svh]' : 'max-h-14',
+            ]
+          : 'h-full min-h-0 xl:shadow-none xl:bg-inherit xl:pt-0'
+      )}
+    >
+      <CardHeader
+        className={cn('shrink-0', mobileDrawer && 'py-0')}
+        onClick={() => mobileDrawer && setIsExpanded(prev => !prev)}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+      >
+        {mobileDrawer ? (
+          <div className="mx-auto h-1 w-10 my-1 rounded-full bg-muted-foreground/35" />
+        ) : null}
+        <CardTitle className="text-base">Live Activity</CardTitle>
+        <CardDescription className="hidden sm:block">
+          Recent events and health signals
+        </CardDescription>
       </CardHeader>
-      <CardContent className="min-h-0 flex-1">
+      <CardContent
+        className={cn(
+          'min-h-0 flex-1',
+          mobileDrawer &&
+            'pb-6 max-h-[calc(65svh-5rem)] transition-opacity overflow-y-auto duration-300 ease-in-out',
+          mobileDrawer && (isExpanded ? 'opacity-100' : 'opacity-0 pointer-events-none')
+        )}
+      >
         <div className="space-y-2 h-full overflow-y-auto px-1 -mx-1">
           {events.map(event => (
             <EventRow key={event.uuid} event={event as Event} />
