@@ -39,6 +39,7 @@ export default function Logs({ routeKey }: { routeKey: RouteKey }) {
     let cancelled = false
     let raf: number | null = null
     let resizeObserver: ResizeObserver | null = null
+    let touchListenersAbort: AbortController | null = null
 
     const updateScrollDirection = () => {
       const term = termRef.current
@@ -58,6 +59,8 @@ export default function Logs({ routeKey }: { routeKey: RouteKey }) {
       cancelled = true
       if (raf != null) cancelAnimationFrame(raf)
       resizeObserver?.disconnect()
+      touchListenersAbort?.abort()
+      touchListenersAbort = null
       fitAddonRef.current = null
       termRef.current?.dispose()
       termRef.current = null
@@ -118,6 +121,44 @@ export default function Logs({ routeKey }: { routeKey: RouteKey }) {
 
       termRef.current = term
       fitAddonRef.current = fitAddon
+
+      let lastY = 0
+      let carry = 0
+
+      touchListenersAbort = new AbortController()
+      const listenerOptions = { passive: false, capture: true, signal: touchListenersAbort.signal }
+
+      const onTouchStart = (e: TouchEvent) => {
+        if (e.touches.length !== 1) return
+        lastY = e.touches[0]!.clientY
+        carry = 0
+      }
+
+      const onTouchMove = (e: TouchEvent) => {
+        if (e.touches.length !== 1) return
+
+        const currentY = e.touches[0]!.clientY
+        const deltaY = lastY - currentY
+        lastY = currentY
+
+        carry += deltaY / 4
+        const lines = Math.trunc(carry)
+        if (lines !== 0) {
+          term.scrollLines(lines)
+          carry -= lines
+        }
+
+        e.preventDefault()
+        e.stopPropagation()
+      }
+
+      const onTouchEnd = () => {
+        carry = 0
+      }
+
+      container.addEventListener('touchstart', onTouchStart, listenerOptions)
+      container.addEventListener('touchmove', onTouchMove, listenerOptions)
+      container.addEventListener('touchend', onTouchEnd, listenerOptions)
 
       resizeObserver = new ResizeObserver(() => scheduleFit())
       resizeObserver.observe(container)
@@ -234,7 +275,7 @@ function LogsInner({
       data-maximized={maximized ? 'true' : undefined}
       className={
         maximized
-          ? 'fixed inset-0 z-50 h-screen w-screen px-[5vw] py-[5vh] bg-background/20 backdrop-blur-sm'
+          ? 'fixed inset-0 z-50 h-screen w-screen md:px-[5vw] md:py-[5vh] bg-background/20 backdrop-blur-sm'
           : 'relative h-full w-full'
       }
     >

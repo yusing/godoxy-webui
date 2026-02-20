@@ -25,7 +25,7 @@ import { formatDuration, formatGoDuration, formatRelTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { decodeRouteKey } from '../utils'
 import Logs from './Logs'
-import LogsHeader from './LogsHeader'
+import LogsHeader, { getLogSourceBadgeText } from './LogsHeader'
 import RouteResponseTimeChart from './ResponseTimeChart'
 
 export default function RouteDetails() {
@@ -37,6 +37,9 @@ export default function RouteDetails() {
   const isExcluded = routeDetails?.excluded
   const showHomepageConfiguration = !isStream && !isExcluded
   const showLogs = routeDetails?.container || routeDetails?.proxmox
+  const logSourceBadge = showLogs
+    ? getLogSourceBadgeText(routeDetails?.container, routeDetails?.proxmox)
+    : ''
   const logType = routeDetails?.container
     ? 'Container'
     : routeDetails?.proxmox
@@ -103,6 +106,9 @@ export default function RouteDetails() {
                   </Label>
                 </TooltipContent>
               </Tooltip>
+              <Badge variant="secondary" className="hidden md:inline-flex max-w-[420px] truncate">
+                {logSourceBadge}
+              </Badge>
             </CardTitle>
             <CardDescription>
               <LogsHeader routeKey={routeKey} />

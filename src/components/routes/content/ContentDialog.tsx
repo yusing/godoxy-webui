@@ -9,7 +9,7 @@ export default function RouteContentDialog() {
 
   return (
     <Dialog open={isOpen && isMobile} onOpenChange={open => store.mobileDialogOpen.set(open)}>
-      <DialogContent className="p-0 w-full max-w-[calc(100%-2rem)]">
+      <DialogContent className="p-0 size-full overflow-y-auto scrollbar-hidden">
         <RoutePageContent />
       </DialogContent>
     </Dialog>
