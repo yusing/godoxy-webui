@@ -4,6 +4,3 @@
 [submodule "juststore-shadcn"]
 	path = juststore-shadcn
 	url = https://github.com/yusing/juststore-shadcn
-[submodule "juststore"]
-	path = juststore
-	url = https://github.com/yusing/juststore

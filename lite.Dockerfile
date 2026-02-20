@@ -18,7 +18,6 @@ RUN bun i -D --frozen-lockfile
 FROM utils-deps AS install
 RUN mkdir -p /temp/dev
 COPY package.json bun.lock /temp/dev/
-COPY juststore/package.json juststore/bun.lock /temp/dev/juststore/
 WORKDIR /temp/dev
 RUN bun install --frozen-lockfile
 
