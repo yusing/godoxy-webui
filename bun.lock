@@ -34,7 +34,7 @@
         "codemirror-json-schema-refined": "^0.8.2",
         "embla-carousel-auto-height": "^8.6.0",
         "embla-carousel-react": "^8.6.0",
-        "juststore": "^1.0.1",
+        "juststore": "^1.1.0",
         "lucide-react": "^0.575.0",
         "motion": "^12.34.2",
         "nitro": "^3.0.1-alpha.2",
@@ -993,7 +993,7 @@
 
     "json5": ["json5@2.2.3", "", { "bin": { "json5": "lib/cli.js" } }, "sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg=="],
 
-    "juststore": ["juststore@1.0.1", "", { "dependencies": { "change-case": "^5.4.4", "react-fast-compare": "^3.2.2" }, "peerDependencies": { "react": ">=18.0.0" } }, "sha512-KbwQ0NLrgtnhhFGE0HU+R6QPxkOo0jzzIa0w4pwCsupdlHhg4ge4T1wZNotBU8wywJC2fkKLVi7uOnhbGS0jdA=="],
+    "juststore": ["juststore@1.1.0", "", { "dependencies": { "change-case": "^5.4.4", "react-fast-compare": "^3.2.2" }, "peerDependencies": { "react": ">=18.0.0" } }, "sha512-XijXpzYEWn3Tpd0ySE95jKFEaG9lVeSgJJY4bNROrzBtMHBJXos85EfHRZJAqePjw2KHhOtHQ8n1Oun+hszTBQ=="],
 
     "kleur": ["kleur@3.0.3", "", {}, "sha512-eTIzlVOSUR+JxdDFepEYcBMtZ9Qqdef+rnzWdRZuMbOywu5tO2w2N7rqjoANZ5k9vywhL6Br1VRjUIgTQx4E8w=="],
 
