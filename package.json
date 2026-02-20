@@ -43,7 +43,7 @@
 		"codemirror-json-schema-refined": "^0.8.2",
 		"embla-carousel-auto-height": "^8.6.0",
 		"embla-carousel-react": "^8.6.0",
-		"juststore": "./juststore",
+		"juststore": "^1.0.1",
 		"lucide-react": "^0.575.0",
 		"motion": "^12.34.2",
 		"nitro": "^3.0.1-alpha.2",

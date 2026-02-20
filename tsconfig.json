@@ -27,7 +27,6 @@
     "incremental": true,
     "paths": {
       "@/*": ["./src/*"],
-      "juststore": ["./juststore/src/index.ts"],
       "@/components/store/*": ["./juststore-shadcn/src/components/store/*"],
       "@/public/*": ["./public/*"]
     }
