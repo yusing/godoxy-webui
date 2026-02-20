@@ -24,11 +24,11 @@ export default defineConfig({
     }),
     tsconfigPaths(),
     tailwindcss(),
-    tanstackStart(isDemoSite ? undefined : {
+    tanstackStart({
       prerender: {
-        enabled: true,
-        autoSubfolderIndex: true,
-        autoStaticPathsDiscovery: true,
+        enabled: !isDemoSite,
+        autoSubfolderIndex: !isDemoSite,
+        autoStaticPathsDiscovery: !isDemoSite,
         crawlLinks: false,
       },
     }),
