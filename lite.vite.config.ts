@@ -17,7 +17,7 @@ export default defineConfig({
       preset: isDemoSite ? 'cloudflare_pages' : undefined,
       cloudflare: isDemoSite
         ? {
-            deployConfig: true,
+            deployConfig: false,
             nodeCompat: true,
           }
         : undefined,
