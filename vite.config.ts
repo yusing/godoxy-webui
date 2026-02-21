@@ -8,6 +8,8 @@ import { nitro } from 'nitro/vite'
 import { defineConfig } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
+const PRESET = process.env.PRESET ?? 'bun'
+
 const config = defineConfig({
   server: {
     allowedHosts: true,
@@ -15,7 +17,7 @@ const config = defineConfig({
   plugins: [
     devtools(),
     nitro({
-      preset: 'bun',
+      preset: PRESET,
       minify: true,
       sourcemap: false,
     }),
