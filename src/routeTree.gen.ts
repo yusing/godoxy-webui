@@ -16,6 +16,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as ConfigRouteImport } from './routes/config'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WikiSplatRouteImport } from './routes/wiki.$'
+import { Route as ApiSplatRouteImport } from './routes/api/$'
 
 const ServersRoute = ServersRouteImport.update({
   id: '/servers',
@@ -52,6 +53,11 @@ const WikiSplatRoute = WikiSplatRouteImport.update({
   path: '/wiki/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiSplatRoute = ApiSplatRouteImport.update({
+  id: '/api/$',
+  path: '/api/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/playground': typeof PlaygroundRoute
   '/routes': typeof RoutesRoute
   '/servers': typeof ServersRoute
+  '/api/$': typeof ApiSplatRoute
   '/wiki/$': typeof WikiSplatRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +76,7 @@ export interface FileRoutesByTo {
   '/playground': typeof PlaygroundRoute
   '/routes': typeof RoutesRoute
   '/servers': typeof ServersRoute
+  '/api/$': typeof ApiSplatRoute
   '/wiki/$': typeof WikiSplatRoute
 }
 export interface FileRoutesById {
@@ -79,6 +87,7 @@ export interface FileRoutesById {
   '/playground': typeof PlaygroundRoute
   '/routes': typeof RoutesRoute
   '/servers': typeof ServersRoute
+  '/api/$': typeof ApiSplatRoute
   '/wiki/$': typeof WikiSplatRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +99,7 @@ export interface FileRouteTypes {
     | '/playground'
     | '/routes'
     | '/servers'
+    | '/api/$'
     | '/wiki/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +109,7 @@ export interface FileRouteTypes {
     | '/playground'
     | '/routes'
     | '/servers'
+    | '/api/$'
     | '/wiki/$'
   id:
     | '__root__'
@@ -108,6 +119,7 @@ export interface FileRouteTypes {
     | '/playground'
     | '/routes'
     | '/servers'
+    | '/api/$'
     | '/wiki/$'
   fileRoutesById: FileRoutesById
 }
@@ -118,6 +130,7 @@ export interface RootRouteChildren {
   PlaygroundRoute: typeof PlaygroundRoute
   RoutesRoute: typeof RoutesRoute
   ServersRoute: typeof ServersRoute
+  ApiSplatRoute: typeof ApiSplatRoute
   WikiSplatRoute: typeof WikiSplatRoute
 }
 
@@ -172,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WikiSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/$': {
+      id: '/api/$'
+      path: '/api/$'
+      fullPath: '/api/$'
+      preLoaderRoute: typeof ApiSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -182,6 +202,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlaygroundRoute: PlaygroundRoute,
   RoutesRoute: RoutesRoute,
   ServersRoute: ServersRoute,
+  ApiSplatRoute: ApiSplatRoute,
   WikiSplatRoute: WikiSplatRoute,
 }
 export const routeTree = rootRouteImport
