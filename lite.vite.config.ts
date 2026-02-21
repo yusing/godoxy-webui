@@ -17,8 +17,15 @@ export default defineConfig({
       preset: isDemoSite ? 'cloudflare_pages' : undefined,
       cloudflare: isDemoSite
         ? {
-            deployConfig: false,
+            deployConfig: true,
             nodeCompat: true,
+            wrangler: {
+              vars: {
+                API_HOST: 'demo.godoxy.dev',
+                API_SECURE: 'true',
+                DEMO_SITE: 'true'
+              },
+            }
           }
         : undefined,
     }),
