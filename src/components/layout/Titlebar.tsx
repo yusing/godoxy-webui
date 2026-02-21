@@ -16,7 +16,7 @@ type Page = {
 
 const pages: Page[] = [
   { href: '/', Icon: Grid3X3, label: 'Apps' },
-  { href: '/config', Icon: Code, label: 'Config', desktopOnly: true },
+  { href: '/config', Icon: Code, label: 'Config' },
   { href: '/routes', Icon: Route, label: 'Routes' },
   { href: '/playground', Icon: FlaskConical, label: 'Playground' },
   { href: '/servers', Icon: Server, label: 'Servers' },
@@ -27,17 +27,23 @@ export default function Titlebar() {
   return (
     <div
       id="titlebar"
-      className="titlebar hidden data-[hidden=false]:flex data-[sidebar-open=true]:ml-(--sidebar-width) inset-x-0 items-center justify-between px-4 border-b surface z-40 backdrop-blur-sm sticky top-0"
+      className="titlebar hidden
+      data-[hidden=false]:flex data-[hidden=false]:justify-between
+      data-[hidden=false]:sm:grid data-[hidden=false]:sm:grid-cols-[auto_1fr_auto_max-content]
+      data-[sidebar-open=true]:ml-(--sidebar-width)
+      inset-x-0 items-center px-4 border-b surface z-40 backdrop-blur-sm sticky top-0"
     >
       <div className="flex items-center gap-2">
         <img src="icon0.svg" alt="GoDoxy" width={24} height={24} />
-        <span className="font-semibold tracking-tight">{siteConfig.metadata.title}</span>
-        <VersionText />
-        <div className="flex items-center ml-4 gap-4 text-sm text-muted-foreground">
-          {pages.map(page => (
-            <Item key={page.href} {...page} />
-          ))}
-        </div>
+        <span className="text-sm sm:text-base font-semibold tracking-tight leading-none whitespace-nowrap">
+          {siteConfig.metadata.title}
+        </span>
+        <VersionText className="hidden sm:inline leading-none" />
+      </div>
+      <div className="flex items-center sm:pl-4 gap-3 sm:gap-4 text-sm text-muted-foreground">
+        {pages.map(page => (
+          <Item key={page.href} {...page} />
+        ))}
       </div>
       <div className="flex items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
         <ModeToggle />

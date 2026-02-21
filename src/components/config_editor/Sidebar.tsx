@@ -181,3 +181,23 @@ function UnsavedChangesIndicator({
     />
   ) : null
 }
+
+export function SidebarController() {
+  const sidebar = useSidebar()
+
+  useEffect(() => {
+    const check = () => {
+      if (sidebar.isMobile && sidebar.state === 'expanded') {
+        sidebar.toggleSidebar()
+      }
+    }
+    const unsubSection = configStore.activeSection.subscribe(check)
+    const unsubFile = configStore.activeFile.subscribe(check)
+    return () => {
+      unsubSection()
+      unsubFile()
+    }
+  }, [sidebar.isMobile, sidebar.state, sidebar.toggleSidebar])
+
+  return null
+}

@@ -4,7 +4,7 @@ import ConfigFilesListProvider from '@/components/config_editor/ConfigFilesListP
 import ConfigStateSyncronizer from '@/components/config_editor/ConfigStateSyncronizer'
 import ConfigValidationError from '@/components/config_editor/ConfigValidationError'
 import ConfigYAMLEditor from '@/components/config_editor/ConfigYAMLEditor'
-import ConfigSidebar from '@/components/config_editor/Sidebar'
+import ConfigSidebar, { SidebarController } from '@/components/config_editor/Sidebar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 
@@ -17,12 +17,12 @@ function ConfigPage() {
     <SidebarProvider>
       <ConfigFilesListProvider />
       <ConfigStateSyncronizer />
+      <SidebarController />
       <ConfigSidebar />
       <SidebarInset>
-        <div className="w-full h-full px-4 grid grid-cols-2 xl:grid-cols-[3fr_2fr] gap-1">
-          <ConfigContent className="w-[3/5] h-full pb-4 pr-2 overflow-y-auto" />
-          {/* 3/5 */}
-          <Card className="w-[2/5] bg-transparent flex flex-col h-full overflow-hidden rounded-none border-0 border-l">
+        <div className="w-full h-full px-4 md:grid md:grid-cols-2 xl:grid-cols-[3fr_2fr] gap-1">
+          <ConfigContent className="w-full md:w-[3/5] h-full pb-4 pr-2 overflow-y-auto" />
+          <Card className="hidden md:flex md:flex-col w-full md:w-[2/5] bg-transparent h-full overflow-hidden rounded-none border-0 border-l">
             <CardHeader className="shrink-0">
               <CardTitle>YAML Editor</CardTitle>
             </CardHeader>
