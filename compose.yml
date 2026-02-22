@@ -20,6 +20,7 @@ services:
       - ./public:${PWD}/public:rw
       - ./vite.config.ts:${PWD}/vite.config.ts:rw
       - ./tsconfig.json:${PWD}/tsconfig.json:rw
+      - ./source.config.ts:${PWD}/source.config.ts:rw
       - ./juststore:${PWD}/juststore:rw
       - ./juststore-shadcn:${PWD}/juststore-shadcn:rw
       - ./wiki:${PWD}/wiki:rw
@@ -27,6 +28,7 @@ services:
       - /var/cache/nginx:uid=1000,gid=1000
       - ${PWD}/dist:rw,uid=1000,gid=1000
       - ${PWD}/.tanstack:rw,uid=1000,gid=1000
+      - ${PWD}/.source:rw,uid=1000,gid=1000
     labels:
       proxy.aliases: godoxy-dev
       proxy.#1.rule_file: embed://webui_dev.yml

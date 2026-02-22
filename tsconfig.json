@@ -28,9 +28,11 @@
     "paths": {
       "@/*": ["./src/*"],
       "@/components/store/*": ["./juststore-shadcn/src/components/store/*"],
-      "@/public/*": ["./public/*"]
+      "@/public/*": ["./public/*"],
+      "@/wiki/*": ["./wiki/src/*"],
+      "fumadocs-mdx:collections/*": ["./.source/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "wiki"]
+  "exclude": ["node_modules"]
 }

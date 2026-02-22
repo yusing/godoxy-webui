@@ -15,8 +15,11 @@ import { Route as PlaygroundRouteImport } from './routes/playground'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as ConfigRouteImport } from './routes/config'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as WikiSplatRouteImport } from './routes/wiki.$'
+import { Route as DocsIndexRouteImport } from './routes/docs/index'
+import { Route as DocsSplatRouteImport } from './routes/docs/$'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
+import { Route as LlmsDotmdxDocsSplatRouteImport } from './routes/llms[.]mdx.docs.$'
+import { Route as DocsApiSearchRouteImport } from './routes/docs/api/search'
 
 const ServersRoute = ServersRouteImport.update({
   id: '/servers',
@@ -48,14 +51,29 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WikiSplatRoute = WikiSplatRouteImport.update({
-  id: '/wiki/$',
-  path: '/wiki/$',
+const DocsIndexRoute = DocsIndexRouteImport.update({
+  id: '/docs/',
+  path: '/docs/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsSplatRoute = DocsSplatRouteImport.update({
+  id: '/docs/$',
+  path: '/docs/$',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiSplatRoute = ApiSplatRouteImport.update({
   id: '/api/$',
   path: '/api/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LlmsDotmdxDocsSplatRoute = LlmsDotmdxDocsSplatRouteImport.update({
+  id: '/llms.mdx/docs/$',
+  path: '/llms.mdx/docs/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DocsApiSearchRoute = DocsApiSearchRouteImport.update({
+  id: '/docs/api/search',
+  path: '/docs/api/search',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -67,7 +85,10 @@ export interface FileRoutesByFullPath {
   '/routes': typeof RoutesRoute
   '/servers': typeof ServersRoute
   '/api/$': typeof ApiSplatRoute
-  '/wiki/$': typeof WikiSplatRoute
+  '/docs/$': typeof DocsSplatRoute
+  '/docs/': typeof DocsIndexRoute
+  '/docs/api/search': typeof DocsApiSearchRoute
+  '/llms.mdx/docs/$': typeof LlmsDotmdxDocsSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -77,7 +98,10 @@ export interface FileRoutesByTo {
   '/routes': typeof RoutesRoute
   '/servers': typeof ServersRoute
   '/api/$': typeof ApiSplatRoute
-  '/wiki/$': typeof WikiSplatRoute
+  '/docs/$': typeof DocsSplatRoute
+  '/docs': typeof DocsIndexRoute
+  '/docs/api/search': typeof DocsApiSearchRoute
+  '/llms.mdx/docs/$': typeof LlmsDotmdxDocsSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -88,7 +112,10 @@ export interface FileRoutesById {
   '/routes': typeof RoutesRoute
   '/servers': typeof ServersRoute
   '/api/$': typeof ApiSplatRoute
-  '/wiki/$': typeof WikiSplatRoute
+  '/docs/$': typeof DocsSplatRoute
+  '/docs/': typeof DocsIndexRoute
+  '/docs/api/search': typeof DocsApiSearchRoute
+  '/llms.mdx/docs/$': typeof LlmsDotmdxDocsSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -100,7 +127,10 @@ export interface FileRouteTypes {
     | '/routes'
     | '/servers'
     | '/api/$'
-    | '/wiki/$'
+    | '/docs/$'
+    | '/docs/'
+    | '/docs/api/search'
+    | '/llms.mdx/docs/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -110,7 +140,10 @@ export interface FileRouteTypes {
     | '/routes'
     | '/servers'
     | '/api/$'
-    | '/wiki/$'
+    | '/docs/$'
+    | '/docs'
+    | '/docs/api/search'
+    | '/llms.mdx/docs/$'
   id:
     | '__root__'
     | '/'
@@ -120,7 +153,10 @@ export interface FileRouteTypes {
     | '/routes'
     | '/servers'
     | '/api/$'
-    | '/wiki/$'
+    | '/docs/$'
+    | '/docs/'
+    | '/docs/api/search'
+    | '/llms.mdx/docs/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -131,7 +167,10 @@ export interface RootRouteChildren {
   RoutesRoute: typeof RoutesRoute
   ServersRoute: typeof ServersRoute
   ApiSplatRoute: typeof ApiSplatRoute
-  WikiSplatRoute: typeof WikiSplatRoute
+  DocsSplatRoute: typeof DocsSplatRoute
+  DocsIndexRoute: typeof DocsIndexRoute
+  DocsApiSearchRoute: typeof DocsApiSearchRoute
+  LlmsDotmdxDocsSplatRoute: typeof LlmsDotmdxDocsSplatRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -178,11 +217,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/wiki/$': {
-      id: '/wiki/$'
-      path: '/wiki/$'
-      fullPath: '/wiki/$'
-      preLoaderRoute: typeof WikiSplatRouteImport
+    '/docs/': {
+      id: '/docs/'
+      path: '/docs'
+      fullPath: '/docs/'
+      preLoaderRoute: typeof DocsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/$': {
+      id: '/docs/$'
+      path: '/docs/$'
+      fullPath: '/docs/$'
+      preLoaderRoute: typeof DocsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/$': {
@@ -190,6 +236,20 @@ declare module '@tanstack/react-router' {
       path: '/api/$'
       fullPath: '/api/$'
       preLoaderRoute: typeof ApiSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/llms.mdx/docs/$': {
+      id: '/llms.mdx/docs/$'
+      path: '/llms.mdx/docs/$'
+      fullPath: '/llms.mdx/docs/$'
+      preLoaderRoute: typeof LlmsDotmdxDocsSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/docs/api/search': {
+      id: '/docs/api/search'
+      path: '/docs/api/search'
+      fullPath: '/docs/api/search'
+      preLoaderRoute: typeof DocsApiSearchRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -203,7 +263,10 @@ const rootRouteChildren: RootRouteChildren = {
   RoutesRoute: RoutesRoute,
   ServersRoute: ServersRoute,
   ApiSplatRoute: ApiSplatRoute,
-  WikiSplatRoute: WikiSplatRoute,
+  DocsSplatRoute: DocsSplatRoute,
+  DocsIndexRoute: DocsIndexRoute,
+  DocsApiSearchRoute: DocsApiSearchRoute,
+  LlmsDotmdxDocsSplatRoute: LlmsDotmdxDocsSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

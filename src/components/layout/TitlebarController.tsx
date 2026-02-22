@@ -18,7 +18,11 @@ export default function TitlebarController() {
     const titlebar = document.getElementById('titlebar')
     if (!titlebar) return
     // hide titlebar on login page
-    if (location.pathname === '/login') {
+    if (
+      location.pathname === '/login' ||
+      location.pathname === '/docs' ||
+      location.pathname.startsWith('/docs/')
+    ) {
       titlebar.setAttribute('data-hidden', 'true')
     } else {
       titlebar.setAttribute('data-hidden', 'false')

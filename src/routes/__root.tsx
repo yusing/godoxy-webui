@@ -6,6 +6,7 @@ import TitlebarController from '@/components/layout/TitlebarController'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { Toaster } from '@/components/ui/sonner'
 import { siteConfig } from '@/site-config'
+import docsCss from '../docs.css?url'
 import appCss from '../styles.css?url'
 
 if (import.meta.env.DEV) {
@@ -13,7 +14,10 @@ if (import.meta.env.DEV) {
 }
 
 export const Route = createRootRoute({
-  head: () => ({
+  loader({ location }) {
+    return { css: location.pathname.startsWith('/docs') ? docsCss : appCss }
+  },
+  head: ({ loaderData }) => ({
     meta: [
       { charSet: 'utf-8' },
       {
@@ -29,7 +33,7 @@ export const Route = createRootRoute({
     links: [
       {
         rel: 'stylesheet',
-        href: appCss,
+        href: loaderData?.css ?? appCss,
       },
       {
         rel: 'apple-touch-icon',

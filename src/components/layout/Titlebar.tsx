@@ -20,7 +20,7 @@ const pages: Page[] = [
   { href: '/routes', Icon: Route, label: 'Routes' },
   { href: '/playground', Icon: FlaskConical, label: 'Playground' },
   { href: '/servers', Icon: Server, label: 'Servers' },
-  { href: '/wiki', Icon: BookOpenText, label: 'Wiki', pureLink: true },
+  { href: '/docs', Icon: BookOpenText, label: 'Docs', pureLink: true },
 ] as const
 
 export default function Titlebar() {
@@ -34,7 +34,7 @@ export default function Titlebar() {
       inset-x-0 items-center px-4 border-b surface z-40 backdrop-blur-sm sticky top-0"
     >
       <div className="flex items-center gap-2">
-        <img src="icon0.svg" alt="GoDoxy" width={24} height={24} />
+        <img src="/icon0.svg" alt="GoDoxy" width={24} height={24} />
         <span className="text-sm sm:text-base font-semibold tracking-tight leading-none whitespace-nowrap">
           {siteConfig.metadata.title}
         </span>
