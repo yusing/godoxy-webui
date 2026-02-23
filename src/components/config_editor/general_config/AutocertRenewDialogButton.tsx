@@ -40,7 +40,7 @@ export default function AutocertRenewDialogButton() {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger render={<Button size="sm" variant="outline" type="button" />}>
         <IconRefresh className="size-4" />
-        Renew
+        <span className="hidden lg:block">Renew</span>
       </DialogTrigger>
       <DialogContent className="min-w-[70vw]">
         <DialogHeader>

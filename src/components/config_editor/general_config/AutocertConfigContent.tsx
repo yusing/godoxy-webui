@@ -60,7 +60,7 @@ function CarouselNavigation({ ref }: { ref: React.RefObject<HTMLDivElement | nul
   return (
     <div ref={ref} className="flex gap-2 items-center">
       <CarouselPrevious className="left-0 translate-y-0 top-0 relative" />
-      <span className="text-sm text-muted-foreground">
+      <span className="text-sm text-muted-foreground text-nowrap">
         {api.selectedScrollSnap() + 1} of {api.slideNodes().length}
       </span>
       <CarouselNext className="right-0 translate-y-0 top-0 relative" />
