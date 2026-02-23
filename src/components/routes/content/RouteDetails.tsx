@@ -106,7 +106,7 @@ export default function RouteDetails() {
                   </Label>
                 </TooltipContent>
               </Tooltip>
-              <Badge variant="secondary" className="hidden md:inline-flex max-w-[420px] truncate">
+              <Badge variant="secondary" className="hidden lg:inline-flex max-w-[420px] truncate">
                 {logSourceBadge}
               </Badge>
             </CardTitle>
@@ -120,7 +120,7 @@ export default function RouteDetails() {
         </Card>
       )}
       {/* Basic Information */}
-      <div className="space-y-2 md:space-y-0 md:grid md:grid-cols-3 md:gap-3 w-full">
+      <div className="space-y-2 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-3 w-full">
         <Card size="sm" className="px-2">
           <CardHeader>
             <CardTitle>Basic Information</CardTitle>
@@ -145,7 +145,7 @@ export default function RouteDetails() {
             </DataList>
           </CardContent>
         </Card>
-        <Card size="sm" className="md:col-span-2 px-2">
+        <Card size="sm" className="lg:col-span-2 px-2">
           <CardHeader>
             <CardTitle>Response Time</CardTitle>
           </CardHeader>
@@ -167,7 +167,7 @@ export default function RouteDetails() {
         </CardContent>
       </Card> */}
       {/* Status & Configuration */}
-      <div className="space-y-2 md:space-y-0 md:grid md:grid-cols-2 md:gap-3 w-full">
+      <div className="space-y-2 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-3 w-full">
         <Card size="sm" className="px-2">
           <CardHeader>
             <CardTitle>Status</CardTitle>
@@ -230,8 +230,8 @@ export default function RouteDetails() {
       {/* Health Check & Homepage Configuration */}
       <div
         className={cn(
-          'space-y-2 md:space-y-0 md:grid md:grid-cols-2 md:gap-3 w-full',
-          !showHomepageConfiguration && 'md:grid-cols-1'
+          'space-y-2 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-3 w-full',
+          !showHomepageConfiguration && 'lg:grid-cols-1'
         )}
       >
         <Card size="sm" className="px-2">
