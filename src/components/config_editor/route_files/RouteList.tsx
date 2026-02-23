@@ -36,7 +36,7 @@ export default function RouteList() {
   return (
     <>
       <RouteDetailsProvider />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 overflow-y-auto h-full">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 overflow-y-auto h-full">
         {Object.entries(routes ?? {}).map(([key, value]) => (
           <Card key={key} className="p-2">
             <CardContent className="px-2">

@@ -39,7 +39,7 @@ export default function RouteEditFormDialogContent({
       showCloseButton={false}
       initialFocus={false}
     >
-      <div className="grid grid-cols-[1fr_1px_500px] gap-2">
+      <div className="lg:grid lg:grid-cols-[1fr_1px_500px] gap-2">
         <ScrollArea className="h-[90vh]">
           <RouteEditForm
             className="pr-2"
@@ -54,8 +54,8 @@ export default function RouteEditFormDialogContent({
             {...props}
           />
         </ScrollArea>
-        <Separator orientation="vertical" />
-        <div className="flex flex-col gap-2">
+        <Separator orientation="vertical" className="hidden lg:block" />
+        <div className="hidden lg:flex lg:flex-col gap-2">
           <Label className="pl-2 text-sm">Read-only Preview</Label>
           <Render state={routeAtom}>
             {value => <YAMLEditor readOnly value={stringifyYAML(value)} className="flex-1" />}
