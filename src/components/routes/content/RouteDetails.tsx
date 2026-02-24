@@ -1,13 +1,13 @@
 import { yaml } from '@codemirror/lang-yaml'
 import { IconArrowRight, IconInfoCircle } from '@tabler/icons-react'
-import { useEffect } from 'react'
+import { Fragment, useEffect } from 'react'
 import { stringify as stringifyYAML } from 'yaml'
-import { CodeMirror } from '@/components/ObjectDataList'
+import { CodeBlock } from '@/components/CodeBlock'
+import { CodeMirror } from '@/components/CodeMirror'
 import { store, useSelectedRoute } from '@/components/routes/store'
 import KeyboardReturn from '@/components/svg/keyboard-return'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import Code from '@/components/ui/code'
 import { DataList, DataListRow } from '@/components/ui/data-list'
 import {
   Empty,
@@ -21,7 +21,7 @@ import { Kbd } from '@/components/ui/kbd'
 import { Label } from '@/components/ui/label'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { IdlewatcherConfig } from '@/lib/api'
-import { blockRules } from '@/lib/codemirror/rules-block'
+import { blockRulesHighlightShiki } from '@/lib/codemirror/rules-block-shiki'
 import { formatDuration, formatGoDuration, formatRelTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { decodeRouteKey } from '../utils'
@@ -293,16 +293,14 @@ export default function RouteDetails() {
           <CardContent>
             <div className="space-y-3">
               {routeDetails.rules.map((rule, index) => (
-                <div key={index} className="border rounded-lg p-3">
-                  <div className="font-medium text-sm mb-2">{rule.name}</div>
-                  <CodeMirror
-                    className="w-full"
-                    readOnly
+                <Fragment key={rule.name || index}>
+                  {rule.name && <div className="font-medium text-sm mb-2">{rule.name}</div>}
+                  <CodeBlock
+                    lang="block"
                     value={`${rule.on} {\n  ${rule.do}\n}`}
-                    extensions={[blockRules()]}
-                    language="block"
+                    highlighter={blockRulesHighlightShiki}
                   />
-                </div>
+                </Fragment>
               ))}
             </div>
           </CardContent>

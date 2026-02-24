@@ -1,6 +1,6 @@
 import type { State } from 'juststore'
 import { stringify as stringifyYAML } from 'yaml'
-import { CodeMirror } from '@/components/ObjectDataList'
+import { CodeMirror } from '@/components/CodeMirror'
 import { blockRules } from '@/lib/codemirror/rules-block'
 import type { Routes } from '@/types/godoxy'
 

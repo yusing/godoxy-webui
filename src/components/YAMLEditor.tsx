@@ -1,7 +1,7 @@
 import type { ReactCodeMirrorProps } from '@uiw/react-codemirror'
 import { yamlSchemaExtensions, yamlWithRulesBlockSupport } from '@/lib/codemirror/yaml'
 import type { JSONSchema } from '@/types/schema'
-import { CodeMirror } from './ObjectDataList'
+import { CodeMirror } from './CodeMirror'
 
 export type YAMLEditorProps = {
   schema?: JSONSchema

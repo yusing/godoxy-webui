@@ -1,6 +1,6 @@
 import { yaml } from '@codemirror/lang-yaml'
 import { blockRules } from '@/lib/codemirror/rules-block'
-import { CodeMirror } from '../ObjectDataList'
+import { CodeMirror } from '../CodeMirror'
 import { Button } from '../ui/button'
 import { ButtonGroup } from '../ui/button-group'
 import { store } from './store'

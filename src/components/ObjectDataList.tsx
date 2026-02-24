@@ -1,18 +1,5 @@
-import { html } from '@codemirror/lang-html'
-import { json } from '@codemirror/lang-json'
-import { IconCopy } from '@tabler/icons-react'
-import ReactCodeMirror, {
-  EditorView,
-  type Extension,
-  type ReactCodeMirrorProps,
-} from '@uiw/react-codemirror'
-import { memo, type ReactNode, useCallback } from 'react'
-import { toast } from 'sonner'
-import { coolGlow, noctisLilac } from 'thememirror'
-import { useTheme } from '@/components/ThemeProvider'
-import { cn } from '@/lib/utils'
-import { Badge } from './ui/badge'
-import { Button } from './ui/button'
+import { memo, type ReactNode } from 'react'
+import { CodeBlock } from './CodeBlock'
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card'
 import { DataListRow } from './ui/data-list'
 
@@ -67,6 +54,7 @@ const ObjectDataList = memo(function ObjectDataList({
     // Check if object has only one item - if so, flatten it to key.subkey format
     const entries = Object.entries(v).filter(value => value !== undefined)
     if (entries.length === 1) {
+      // biome-ignore lint/style/noNonNullAssertion: .length === 1
       const [subKey, subValue] = entries[0]!
       return <ObjectDataList k={`${k}.${subKey}`} v={subValue} depth={depth + 1} />
     }
@@ -119,17 +107,13 @@ function Value({ v }: { v: unknown }) {
 
   if (typeof v === 'string') {
     if (v.startsWith('<!DOCTYPE html>') || (v.startsWith('<') && v.endsWith('>'))) {
-      processedValue = (
-        <CodeMirror value={v} extensions={[html(), EditorView.lineWrapping]} language="html" />
-      )
+      processedValue = <CodeBlock value={v} lang="html" />
       stringify = false
     } else if (
       ((v.includes('{') && v.includes('}')) || (v.includes('[') && v.includes(']'))) &&
       v.includes('"')
     ) {
-      processedValue = (
-        <CodeMirror value={v} extensions={[json(), EditorView.lineWrapping]} language="json" />
-      )
+      processedValue = <CodeBlock value={v} lang="json" />
       stringify = false
     }
   }
@@ -140,83 +124,5 @@ function Value({ v }: { v: unknown }) {
 
   return processedValue
 }
-
-export const CodeMirror = memo(
-  ({
-    className,
-    value,
-    setValue,
-    readOnly = true,
-    extensions,
-    language,
-    ...props
-  }: {
-    className?: string
-    value: string
-    setValue?: (value: string) => void
-    readOnly?: boolean
-    extensions?: Extension[]
-    language?: string
-  } & Omit<ReactCodeMirrorProps, 'value' | 'onChange'>) => {
-    const { resolvedTheme } = useTheme()
-
-    const handleCopy = useCallback(async () => {
-      try {
-        await navigator.clipboard.writeText(value)
-        toast.success('Copied to clipboard')
-      } catch (err) {
-        console.error('Failed to copy:', err)
-      }
-    }, [value])
-
-    return (
-      <div
-        className={cn(
-          'block relative py-1 min-h-[100px]',
-          className,
-          'max-w-full max-h-full overflow-auto'
-        )}
-      >
-        <style>
-          {`
-        .cm-gutters,
-        .cm-editor {
-          background-color: transparent !important;
-        }
-        .cm-scroller {
-          overflow-x: unset !important;
-        }
-        `}
-        </style>
-        <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
-          {language && <Badge variant="outline">{language.toUpperCase()}</Badge>}
-          <Button
-            size="icon"
-            type="button"
-            onClick={handleCopy}
-            aria-label="Copy code"
-            variant="ghost"
-            className="size-6"
-          >
-            <IconCopy className="size-3" />
-          </Button>
-        </div>
-        <ReactCodeMirror
-          value={value}
-          onChange={setValue}
-          readOnly={readOnly}
-          theme={resolvedTheme === 'light' ? noctisLilac : coolGlow}
-          extensions={extensions}
-          basicSetup={!readOnly}
-          height="100%"
-          style={{ fontWeight: '550' }}
-          {...props}
-        />
-      </div>
-    )
-  }
-)
-
-CodeMirror.displayName = 'CodeMirror'
 
 export default ObjectDataList
