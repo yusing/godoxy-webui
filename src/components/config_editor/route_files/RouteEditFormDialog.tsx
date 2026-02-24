@@ -7,7 +7,6 @@ import { type GoDoxyError, GoDoxyErrorAlert } from '@/components/GoDoxyError'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { DialogContent } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import YAMLEditor from '@/components/YAMLEditor'
 import { useWebSocketApi } from '@/hooks/websocket'
@@ -35,33 +34,39 @@ export default function RouteEditFormDialogContent({
 
   return (
     <DialogContent
-      className={cn('min-w-[90vw] min-h-[90vh]', className)}
+      className={cn(
+        'min-w-[90vw]',
+        'lg:grid lg:grid-cols-[1fr_1px_500px] items-center gap-2',
+        className
+      )}
       showCloseButton={false}
       initialFocus={false}
     >
-      <div className="lg:grid lg:grid-cols-[1fr_1px_500px] gap-2">
-        <ScrollArea className="h-[90vh]">
-          <RouteEditForm
-            className="pr-2"
-            dialog
-            onUpdate={route => {
-              routeAtom.set(route)
-              sendRouteRef.current?.(route)
-              if (onUpdate) {
-                onUpdate(route)
-              }
-            }}
-            {...props}
-          />
-        </ScrollArea>
-        <Separator orientation="vertical" className="hidden lg:block" />
-        <div className="hidden lg:flex lg:flex-col gap-2">
-          <Label className="pl-2 text-sm">Read-only Preview</Label>
-          <Render state={routeAtom}>
-            {value => <YAMLEditor readOnly value={stringifyYAML(value)} className="flex-1" />}
-          </Render>
-          <RouteErrorAlert errAtom={errorAtom} />
-        </div>
+      <RouteEditForm
+        className="pr-2 h-[calc(90vh-2rem)] overflow-y-auto"
+        dialog
+        onUpdate={route => {
+          routeAtom.set(route)
+          sendRouteRef.current?.(route)
+          if (onUpdate) {
+            onUpdate(route)
+          }
+        }}
+        {...props}
+      />
+      <Separator orientation="vertical" className="hidden lg:block" />
+      <div className="hidden lg:flex lg:flex-col lg:h-[calc(100vh-4rem)] lg:gap-2">
+        <Label className="pl-2 text-sm">Read-only Preview</Label>
+        <Render state={routeAtom}>
+          {value => (
+            <YAMLEditor
+              readOnly
+              value={stringifyYAML({ ...value, rules: undefined })}
+              className="flex-1"
+            />
+          )}
+        </Render>
+        <RouteErrorAlert errAtom={errorAtom} />
       </div>
       <RouteValidationProvider sendRouteRef={sendRouteRef} errorAtom={errorAtom} />
     </DialogContent>

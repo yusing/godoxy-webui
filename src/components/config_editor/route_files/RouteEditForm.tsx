@@ -1,5 +1,6 @@
 import {
   IconCheck,
+  IconCode,
   IconFolders,
   IconHeart,
   IconLock,
@@ -29,6 +30,7 @@ import { RouteHTTPConfigSection } from './RouteHTTPConfigSection'
 import { RouteIdlewatcherSection } from './RouteIdlewatcherSection'
 import { RouteMiddlewaresSection } from './RouteMiddlewaresSection'
 import { RouteProxmoxSection } from './RouteProxmoxSection'
+import { RouteRulesSection } from './RouteRulesSection'
 import RouteSSLConfigSection from './RouteSSLConfigSection'
 import { isHTTP, isStream } from './utils'
 
@@ -64,6 +66,7 @@ type FormSectionId =
   | 'proxmox'
   | 'idlewatcher'
   | 'middlewares'
+  | 'rules'
 
 export default function RouteEditForm({
   className,
@@ -111,6 +114,7 @@ export default function RouteEditForm({
   const showProxmox = true
   const showIdlewatcher = isHTTP(currentScheme) || isStream(currentScheme)
   const showMiddlewares = isHTTP(currentScheme)
+  const showRules = isHTTP(currentScheme)
 
   const sections: SectionItem<FormSectionId>[] = useMemo(
     () =>
@@ -138,8 +142,14 @@ export default function RouteEditForm({
           Icon: IconStack2,
           show: showMiddlewares,
         },
+        {
+          id: 'rules',
+          label: 'Rules',
+          Icon: IconCode,
+          show: showRules,
+        },
       ] as const,
-    [showFileServer, showHTTPConfig, showSSLConfig, showIdlewatcher, showMiddlewares]
+    [showFileServer, showHTTPConfig, showSSLConfig, showIdlewatcher, showMiddlewares, showRules]
   )
 
   const SaveButtonIcon = saveButtonIcon
@@ -275,6 +285,10 @@ export default function RouteEditForm({
               <RouteMiddlewaresSection
                 state={(form as FormStore<Routes.ReverseProxyRoute>).middlewares}
               />
+            </FormSection>
+
+            <FormSection id="rules" title="Rules" className={formSectionCN}>
+              <RouteRulesSection rules={form.rules} />
             </FormSection>
           </div>
         )}
