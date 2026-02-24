@@ -6,6 +6,7 @@ export interface PlaygroundState {
   mockRequest: MockRequest
   mockResponse: MockResponse
   playgroundResponse: PlaygroundResponse | null
+  lang: 'block' | 'yaml'
 }
 
 const defaultMockRequest: MockRequest = {
@@ -30,6 +31,7 @@ const defaultState: PlaygroundState = {
   mockRequest: defaultMockRequest,
   mockResponse: defaultMockResponse,
   playgroundResponse: null,
+  lang: 'block',
 }
 
 export const store = createStore('playground', defaultState)

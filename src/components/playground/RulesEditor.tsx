@@ -1,5 +1,4 @@
 import { yaml } from '@codemirror/lang-yaml'
-import { useState } from 'react'
 import { blockRules } from '@/lib/codemirror/rules-block'
 import { CodeMirror } from '../ObjectDataList'
 import { Button } from '../ui/button'
@@ -8,7 +7,7 @@ import { store } from './store'
 
 export default function RulesEditor() {
   const [rules, setRules] = store.rules.useState()
-  const [lang, setLang] = useState<'yaml' | 'block'>('block')
+  const [lang, setLang] = store.lang.useState()
 
   return (
     <div className="flex flex-col h-full space-y-2">

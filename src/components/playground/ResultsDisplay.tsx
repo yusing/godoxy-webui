@@ -1,13 +1,9 @@
-import { json } from '@codemirror/lang-json'
-import { yaml } from '@codemirror/lang-yaml'
 import { IconCheck, IconX } from '@tabler/icons-react'
-import { EditorView } from '@uiw/react-codemirror'
+import { Render } from 'juststore'
 import { motion } from 'motion/react'
 import { useEffect, useState } from 'react'
-import { stringify as stringifyYAML } from 'yaml'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Separator } from '@/components/ui/separator'
 import {
   Table,
@@ -17,9 +13,11 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { blockRulesHighlightShiki } from '@/lib/codemirror/rules-block-shiki'
 import { cn } from '@/lib/utils'
+import { CodeBlock } from '../CodeBlock'
 import { type GoDoxyError, GoDoxyErrorAlert } from '../GoDoxyError'
-import { CodeMirror } from '../ObjectDataList'
+import { Field, FieldLabel, FieldLegend, FieldSet } from '../ui/field'
 import { store } from './store'
 
 export default function ResultsDisplay() {
@@ -56,8 +54,8 @@ export default function ResultsDisplay() {
           </Badge>
         </div>
       </CardHeader>
-      <CardContent className="flex-1 min-h-0 overflow-hidden">
-        <ScrollArea className="h-full">
+      <CardContent className="flex-1 min-h-0">
+        <div className="h-full overflow-y-auto overflow-x-hidden">
           <motion.div
             key={animKey}
             initial={{ opacity: 0.3 }}
@@ -76,10 +74,11 @@ export default function ResultsDisplay() {
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-12">Valid</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>On</TableHead>
-                      <TableHead>Do</TableHead>
-                      <TableHead className="w-24">Type</TableHead>
+                      <Render state={store.lang}>
+                        {lang => lang === 'yaml' && <TableHead>Name</TableHead>}
+                      </Render>
+                      <TableHead style={{ width: '35%' }}>On</TableHead>
+                      <TableHead style={{ width: '75%' }}>Do</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -87,18 +86,23 @@ export default function ResultsDisplay() {
                       <TableRow key={index}>
                         <TableCell>
                           {rule.validationError ? (
-                            <IconX className="h-4 w-4 text-error-foreground" />
+                            <IconX className="size-4 text-error-foreground" />
                           ) : (
-                            <IconCheck className="h-4 w-4 text-success-foreground" />
+                            <IconCheck className="size-4 text-success-foreground" />
                           )}
                         </TableCell>
-                        <TableCell className="font-medium">{rule.name}</TableCell>
-                        <TableCell className="font-mono text-sm">{rule.on || '-'}</TableCell>
-                        <TableCell className="font-mono text-sm">{rule.do || '-'}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline">
-                            {rule.isResponseRule ? 'Response' : 'Request'}
-                          </Badge>
+                        <Render state={store.lang}>
+                          {lang =>
+                            lang === 'yaml' && (
+                              <TableCell className="font-medium">{rule.name}</TableCell>
+                            )
+                          }
+                        </Render>
+                        <TableCell style={{ width: '35%' }}>
+                          <RulesBlock value={unindent1(rule.on || '-')} />
+                        </TableCell>
+                        <TableCell style={{ width: '75%' }}>
+                          <RulesBlock value={unindent1(rule.do || '-')} />
                         </TableCell>
                       </TableRow>
                     ))}
@@ -132,7 +136,7 @@ export default function ResultsDisplay() {
                 <div className="flex flex-wrap gap-2">
                   {response.matchedRules.map((name, index) => (
                     <Badge key={index} variant="default">
-                      {name}
+                      {name || `Rule ${index + 1}`}
                     </Badge>
                   ))}
                 </div>
@@ -142,111 +146,101 @@ export default function ResultsDisplay() {
             <Separator />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Final Request</h3>
-                <div className="space-y-2 text-sm">
-                  <div>
-                    <span className="font-semibold">Method:</span>{' '}
-                    <code>{response.finalRequest.method}</code>
-                  </div>
-                  <div>
-                    <span className="font-semibold">Path:</span>{' '}
-                    <code>{response.finalRequest.path}</code>
-                  </div>
-                  <div>
-                    <span className="font-semibold">Host:</span>{' '}
-                    <code>{response.finalRequest.host}</code>
-                  </div>
-                  {Object.keys(response.finalRequest.headers).length > 0 && (
-                    <div>
-                      <span className="font-semibold">Headers:</span>
-                      <YAMLCodeBlock value={expandURLValues(response.finalRequest.headers)} />
-                    </div>
-                  )}
-                  {Object.keys(response.finalRequest.query).length > 0 && (
-                    <div>
-                      <span className="font-semibold">Query:</span>
-                      <YAMLCodeBlock value={expandURLValues(response.finalRequest.query)} />
-                    </div>
-                  )}
-                  {response.finalRequest.body && (
-                    <div>
-                      <span className="font-semibold">Body:</span>
-                      <JSONCodeBlock value={response.finalRequest.body} />
-                    </div>
-                  )}
-                </div>
-              </div>
+              <FieldSet>
+                <FieldLegend className="text-lg font-semibold">Final Request</FieldLegend>
+                <Field>
+                  <FieldLabel>Method</FieldLabel>
+                  <CodeBlock value={response.finalRequest.method} lang="plaintext" />
+                </Field>
+                <Field>
+                  <FieldLabel>Path</FieldLabel>
+                  <CodeBlock value={response.finalRequest.path} lang="plaintext" />
+                </Field>
+                <Field>
+                  <FieldLabel>Host</FieldLabel>
+                  <CodeBlock value={response.finalRequest.host} lang="plaintext" />
+                </Field>
+                {Object.keys(response.finalRequest.headers).length > 0 && (
+                  <Field>
+                    <FieldLabel>Headers</FieldLabel>
+                    <YAMLCodeBlock value={expandURLValues(response.finalRequest.headers)} />
+                  </Field>
+                )}
+                {Object.keys(response.finalRequest.query).length > 0 && (
+                  <Field>
+                    <FieldLabel>Query</FieldLabel>
+                    <YAMLCodeBlock value={expandURLValues(response.finalRequest.query)} />
+                  </Field>
+                )}
+                {response.finalRequest.body && (
+                  <Field>
+                    <FieldLabel>Body</FieldLabel>
+                    <JSONCodeBlock value={response.finalRequest.body} />
+                  </Field>
+                )}
+              </FieldSet>
 
-              <div>
-                <h3 className="text-lg font-semibold mb-2">Final Response</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold">Status Code:</span>{' '}
-                    <div
-                      className={cn(
-                        'rounded-md p-1 flex items-center justify-center',
-                        response.finalResponse.statusCode >= 200 &&
-                          response.finalResponse.statusCode < 300
-                          ? 'bg-success'
-                          : 'bg-error'
-                      )}
-                    >
-                      <code
-                        className={cn(
-                          'font-mono text-xs',
-                          response.finalResponse.statusCode >= 200 &&
-                            response.finalResponse.statusCode < 300
-                            ? 'text-success-foreground'
-                            : 'text-error-foreground'
-                        )}
-                      >
-                        {response.finalResponse.statusCode}
-                      </code>
-                    </div>
-                  </div>
-                  {Object.keys(response.finalResponse.headers).length > 0 && (
-                    <div>
-                      <span className="font-semibold">Headers:</span>
-                      <YAMLCodeBlock value={expandURLValues(response.finalResponse.headers)} />
-                    </div>
-                  )}
-                  {response.finalResponse.body && (
-                    <div>
-                      <span className="font-semibold">Body:</span>
-                      <JSONCodeBlock value={response.finalResponse.body} />
-                    </div>
-                  )}
-                </div>
-              </div>
+              <FieldSet>
+                <FieldLegend className="text-lg font-semibold">Final Response</FieldLegend>
+                <Field>
+                  <FieldLabel>Status Code</FieldLabel>
+                  <Badge
+                    variant="outline"
+                    className={cn(
+                      'max-w-fit font-mono text-xs',
+
+                      response.finalResponse.statusCode >= 200 &&
+                        response.finalResponse.statusCode < 300
+                        ? 'bg-success/80 text-success-foreground/80'
+                        : 'bg-error/80 text-error-foreground/80'
+                    )}
+                  >
+                    {response.finalResponse.statusCode}
+                  </Badge>
+                </Field>
+                {Object.keys(response.finalResponse.headers).length > 0 && (
+                  <Field>
+                    <FieldLabel>Headers</FieldLabel>
+                    <YAMLCodeBlock value={expandURLValues(response.finalResponse.headers)} />
+                  </Field>
+                )}
+                {response.finalResponse.body && (
+                  <Field>
+                    <FieldLabel>Body</FieldLabel>
+                    <JSONCodeBlock value={response.finalResponse.body} />
+                  </Field>
+                )}
+              </FieldSet>
             </div>
           </motion.div>
-        </ScrollArea>
+        </div>
       </CardContent>
     </Card>
   )
 }
 
-function YAMLCodeBlock({ value, readOnly = true }: { value: unknown; readOnly?: boolean }) {
+// shifts indent by 1 level
+function unindent1(value: string) {
+  return value.replace(/^ {2}/gm, '')
+}
+
+function RulesBlock({ value }: { value: string }) {
+  const lang = store.lang.use()
   return (
-    <CodeMirror
-      className="max-w-full ring-1 ring-inset ring-ring/70 rounded-md p-1 mt-2"
-      value={typeof value === 'string' ? value : stringifyYAML(value)}
-      extensions={[yaml(), EditorView.lineWrapping]}
-      readOnly={readOnly}
+    <CodeBlock
+      value={value}
+      lang="yaml"
+      highlighter={lang === 'block' ? blockRulesHighlightShiki : undefined}
     />
   )
 }
 
-function JSONCodeBlock({ value, readOnly = true }: { value: unknown; readOnly?: boolean }) {
-  return (
-    <CodeMirror
-      className="max-w-full ring-1 ring-inset ring-ring/70 rounded-md p-1 mt-2"
-      value={typeof value === 'string' ? value : JSON.stringify(value, null, 2)}
-      extensions={[json(), EditorView.lineWrapping]}
-      readOnly={readOnly}
-    />
-  )
+function YAMLCodeBlock({ value }: { value: unknown }) {
+  return <CodeBlock value={value} lang="yaml" />
+}
+
+function JSONCodeBlock({ value }: { value: unknown }) {
+  return <CodeBlock value={value} lang="json" />
 }
 
 function expandURLValues(values: Record<string, string[]>): Record<string, string> {
