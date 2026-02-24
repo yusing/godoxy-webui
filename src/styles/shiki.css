@@ -1,0 +1,9 @@
+.shiki {
+  text-wrap: wrap;
+  word-break: break-all;
+  white-space: var(--shiki-white-space, pre-wrap);
+  padding: 6px;
+  border: var(--color-border) 1.5px solid;
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+}
