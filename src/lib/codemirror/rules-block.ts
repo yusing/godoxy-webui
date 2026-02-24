@@ -1,7 +1,12 @@
+import { autocompletion, ifNotIn, type Completion, type CompletionSource } from '@codemirror/autocomplete'
 import { LanguageSupport, StreamLanguage, type StringStream } from '@codemirror/language'
 
 export function blockRules() {
-  return new LanguageSupport(blockRulesLanguage)
+  return new LanguageSupport(blockRulesLanguage, [
+    autocompletion({
+      override: [blockRulesCompletionSource],
+    }),
+  ])
 }
 
 const conditionKeywords = new Set([
@@ -43,9 +48,104 @@ const actionKeywords = new Set([
 
 const controlKeywords = new Set(['default', 'elif', 'else'])
 const patternFunctions = new Set(['glob', 'regex'])
+const httpMethods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'CONNECT', 'HEAD', 'OPTIONS', 'TRACE']
+const protocolAtoms = ['http', 'https', 'h1', 'h2', 'h2c', 'h3']
+const logLevels = ['debug', 'info', 'warn', 'error', 'fatal']
+const mutationActions = new Set(['set', 'add', 'remove'])
+const mutationFieldKeywords = new Set([
+  'header',
+  'resp_header',
+  'query',
+  'cookie',
+  'body',
+  'resp_body',
+  'status',
+])
+
+const blockRuleKeywordCompletions: Completion[] = [
+  ...[...controlKeywords].map(label => ({
+    label,
+    type: 'keyword',
+    detail: 'control',
+  })),
+  ...[...conditionKeywords].map(label => ({
+    label,
+    type: 'keyword',
+    detail: 'condition',
+  })),
+  ...[...actionKeywords].map(label => ({
+    label,
+    type: 'keyword',
+    detail: 'action',
+  })),
+  ...[...patternFunctions].map(label => ({
+    label,
+    type: 'function',
+    detail: 'pattern',
+  })),
+  ...httpMethods.map(label => ({
+    label,
+    type: 'constant',
+    detail: 'method',
+  })),
+  ...protocolAtoms.map(label => ({
+    label,
+    type: 'constant',
+    detail: 'protocol',
+  })),
+]
+
+const logLevelCompletions: Completion[] = logLevels.map(label => ({
+  label,
+  type: 'constant',
+  detail: 'log level',
+}))
+const mutationFieldCompletions: Completion[] = [...mutationFieldKeywords].map(label => ({
+  label,
+  type: 'property',
+  detail: 'field',
+}))
+
+const keywordWordRegex = /[A-Za-z_][A-Za-z0-9_-]*/
+
+function createCompletionResult({
+  from,
+  options,
+}: {
+  from: number
+  options: Completion[]
+}) {
+  return {
+    from,
+    options,
+    validFor: /^[A-Za-z0-9_-]*$/,
+  }
+}
+
+export const blockRulesCompletionSource: CompletionSource = ifNotIn(
+  ['LineComment', 'BlockComment', 'Comment', 'String'],
+  context => {
+    const line = context.state.doc.lineAt(context.pos)
+    const linePrefix = context.state.sliceDoc(line.from, context.pos)
+    const word = context.matchBefore(keywordWordRegex)
+    const from = word?.from ?? context.pos
+
+    if (/\b(?:log|notify)\s+[A-Za-z_-]*$/.test(linePrefix)) {
+      return createCompletionResult({ from, options: logLevelCompletions })
+    }
+    if (/\b(?:set|add|remove)\s+[A-Za-z_-]*$/.test(linePrefix)) {
+      return createCompletionResult({ from, options: mutationFieldCompletions })
+    }
+
+    if (!word && !context.explicit) return null
+
+    return createCompletionResult({ from, options: blockRuleKeywordCompletions })
+  }
+)
 
 type BlockRulesState = {
   expectLogLevel: boolean
+  expectMutationField: boolean
   expectPatternArgs: boolean
   expectVarCallArgs: boolean
   inBlockComment: boolean
@@ -135,6 +235,7 @@ export const blockRulesLanguage = StreamLanguage.define({
   startState() {
     return {
       expectLogLevel: false,
+      expectMutationField: false,
       expectPatternArgs: false,
       expectVarCallArgs: false,
       inBlockComment: false,
@@ -146,6 +247,7 @@ export const blockRulesLanguage = StreamLanguage.define({
   token(stream, state: BlockRulesState) {
     if (stream.sol()) {
       state.expectLogLevel = false
+      state.expectMutationField = false
     }
 
     if (state.inBlockComment) {
@@ -261,9 +363,16 @@ export const blockRulesLanguage = StreamLanguage.define({
 
     if (stream.match(/[A-Za-z_][A-Za-z0-9_-]*/)) {
       const word = stream.current()
+      if (state.expectMutationField) {
+        state.expectMutationField = false
+        if (mutationFieldKeywords.has(word)) return 'attributeName'
+      }
       if (controlKeywords.has(word) || conditionKeywords.has(word) || actionKeywords.has(word)) {
         if (word === 'log' || word === 'notify') {
           state.expectLogLevel = true
+        }
+        if (mutationActions.has(word)) {
+          state.expectMutationField = true
         }
         return 'keyword'
       }
@@ -271,8 +380,8 @@ export const blockRulesLanguage = StreamLanguage.define({
         state.expectPatternArgs = true
         return 'builtin'
       }
-      if (/^(GET|POST|PUT|PATCH|DELETE|CONNECT|HEAD|OPTIONS|TRACE)$/.test(word)) return 'atom'
-      if (/^(http|https|h1|h2|h2c|h3)$/.test(word)) return 'atom'
+      if (httpMethods.includes(word)) return 'atom'
+      if (protocolAtoms.includes(word)) return 'atom'
       return null
     }
 
