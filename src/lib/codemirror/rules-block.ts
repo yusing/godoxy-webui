@@ -131,7 +131,7 @@ function isCommentBoundary(stream: StringStream) {
   return /\s/.test(prev)
 }
 
-const blockRulesLanguage = StreamLanguage.define({
+export const blockRulesLanguage = StreamLanguage.define({
   startState() {
     return {
       expectLogLevel: false,

@@ -1,9 +1,25 @@
+import { yamlLanguage } from '@codemirror/lang-yaml'
 import { linter } from '@codemirror/lint'
+import { LanguageSupport } from '@codemirror/language'
+import { parseMixed } from '@lezer/common'
 import { hoverTooltip } from '@uiw/react-codemirror'
 import { stateExtensions } from 'codemirror-json-schema-refined'
 import { yamlSchemaHover, yamlSchemaLinter } from 'codemirror-json-schema-refined/yaml'
 import type { JSONSchema7 } from 'json-schema'
 import type { JSONSchema } from '@/types/schema'
+import { blockRulesLanguage } from './rules-block'
+import { isRulesBlockContentNode } from './yaml-rules'
+
+const yamlWithRulesBlockLanguage = yamlLanguage.configure({
+  wrap: parseMixed((node, input) => {
+    if (!isRulesBlockContentNode(node, input)) return null
+    return { parser: blockRulesLanguage.parser }
+  }),
+})
+
+export function yamlWithRulesBlockSupport() {
+  return new LanguageSupport(yamlWithRulesBlockLanguage)
+}
 
 export function yamlSchemaExtensions(schema: JSONSchema | undefined) {
   if (!schema) return []
