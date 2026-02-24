@@ -391,7 +391,9 @@ export interface DiskIOCountersStat {
 
 export interface DiskUsageStat {
   free: number;
+  /** interned */
   fstype: string;
+  /** interned */
   path: string;
   total: number;
   used: number;
@@ -724,8 +726,11 @@ export interface LogFilterStatusCodeRange {
 }
 
 export interface LogRetention {
+  /** @min 0 */
   days: number;
+  /** @min 0 */
   keep_size: number;
+  /** @min 0 */
   last: number;
 }
 
@@ -818,7 +823,6 @@ export interface PEMPairResponse {
 
 export interface ParsedRule {
   do: string;
-  isResponseRule: boolean;
   name: string;
   on: string;
   /** we need the structured error, not the plain string */
@@ -828,7 +832,7 @@ export interface ParsedRule {
 export interface PlaygroundRequest {
   mockRequest?: MockRequest;
   mockResponse?: MockResponse;
-  rules: RouteApiRawRule[];
+  rules: string;
 }
 
 export interface PlaygroundResponse {
@@ -947,12 +951,6 @@ export interface Route {
   ssl_trusted_certificate: string;
 }
 
-export interface RouteApiRawRule {
-  do: string;
-  name: string;
-  on: string;
-}
-
 export type RouteApiRoutesByProvider = Record<string, Route[]>;
 
 export interface RouteProvider {
@@ -999,6 +997,7 @@ export interface RulesRule {
 export interface SensorsTemperatureStat {
   critical: number;
   high: number;
+  /** interned */
   name: string;
   temperature: number;
 }
@@ -2285,13 +2284,13 @@ export namespace Route {
   /**
    * @description List routes
    * @tags route, websocket
-   * @name Routes
+   * @name List
    * @summary List routes
    * @request GET:/route/list
    * @response `200` `(Route)[]` OK
    * @response `403` `ErrorResponse` Forbidden
    */
-  export namespace Routes {
+  export namespace List {
     export type RequestParams = {};
     export type RequestQuery = {
       /** Provider */
@@ -3966,13 +3965,13 @@ export class Api<
      * @description List routes
      *
      * @tags route, websocket
-     * @name Routes
+     * @name List
      * @summary List routes
      * @request GET:/route/list
      * @response `200` `(Route)[]` OK
      * @response `403` `ErrorResponse` Forbidden
      */
-    routes: (
+    list: (
       query?: {
         /** Provider */
         provider?: string;
