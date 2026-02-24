@@ -17,10 +17,15 @@ export default function RulesEditor() {
           Rules ({lang === 'yaml' ? 'YAML' : 'Block'})
         </span>
         <ButtonGroup>
-          <Button variant={lang === 'yaml' ? 'default' : 'outline'} onClick={() => setLang('yaml')}>
+          <Button
+            size="sm"
+            variant={lang === 'yaml' ? 'default' : 'outline'}
+            onClick={() => setLang('yaml')}
+          >
             YAML
           </Button>
           <Button
+            size="sm"
             variant={lang === 'block' ? 'default' : 'outline'}
             onClick={() => setLang('block')}
           >

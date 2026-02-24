@@ -76,7 +76,7 @@ export default function AppCategory({
   return (
     <div
       id="app-category"
-      className="grid grid-cols-2 gap-2 auto-rows-max md:grid-cols-3 2xl:grid-cols-4"
+      className="px-1 grid grid-cols-2 gap-2 auto-rows-max md:grid-cols-3 2xl:grid-cols-4"
     >
       {itemState.map(({ alias, index: appIndex, visibleIndex }) => (
         <AppItem

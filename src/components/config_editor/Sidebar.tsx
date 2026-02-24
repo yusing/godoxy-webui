@@ -57,14 +57,9 @@ export default function ConfigSidebar() {
               </div>
             </div>
             <SidebarGroupContent className="flex-1 min-h-0">
-              <Command>
-                <div className="px-2">
-                  <CommandInput
-                    inputGroupClassName="rounded-sm rounded-b-sm!"
-                    placeholder="Search files..."
-                  />
-                </div>
-                <CommandList className="max-h-none -mx-1">
+              <Command className="px-1.5">
+                <CommandInput inputGroupClassName="rounded-sm rounded-b-sm! border-0 border-b-foreground/30 border-b" />
+                <CommandList className="max-h-none -mx-2.5">
                   <CommandEmpty>No files found.</CommandEmpty>
                   <FileList />
                 </CommandList>
