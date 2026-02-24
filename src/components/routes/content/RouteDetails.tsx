@@ -21,6 +21,7 @@ import { Kbd } from '@/components/ui/kbd'
 import { Label } from '@/components/ui/label'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { IdlewatcherConfig } from '@/lib/api'
+import { blockRules } from '@/lib/codemirror/rules-block'
 import { formatDuration, formatGoDuration, formatRelTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { decodeRouteKey } from '../utils'
@@ -294,12 +295,13 @@ export default function RouteDetails() {
               {routeDetails.rules.map((rule, index) => (
                 <div key={index} className="border rounded-lg p-3">
                   <div className="font-medium text-sm mb-2">{rule.name}</div>
-                  <div className="grid grid-cols-[110px_1fr] gap-x-2 gap-y-1 items-center">
-                    <div className="text-xs text-muted-foreground">Action</div>
-                    <Code className="w-full">{rule.do}</Code>
-                    <div className="text-xs text-muted-foreground">Condition</div>
-                    <Code className="w-full">{rule.on}</Code>
-                  </div>
+                  <CodeMirror
+                    className="w-full"
+                    readOnly
+                    value={`${rule.on} {\n  ${rule.do}\n}`}
+                    extensions={[blockRules()]}
+                    language="block"
+                  />
                 </div>
               ))}
             </div>
