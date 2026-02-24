@@ -1,4 +1,9 @@
-import { autocompletion, ifNotIn, type Completion, type CompletionSource } from '@codemirror/autocomplete'
+import {
+  autocompletion,
+  type Completion,
+  type CompletionSource,
+  ifNotIn,
+} from '@codemirror/autocomplete'
 import { LanguageSupport, StreamLanguage, type StringStream } from '@codemirror/language'
 
 export function blockRules() {
@@ -62,6 +67,34 @@ const mutationFieldKeywords = new Set([
   'status',
 ])
 
+const staticVariables = [
+  'req_method',
+  'req_scheme',
+  'req_host',
+  'req_port',
+  'req_addr',
+  'req_path',
+  'req_query',
+  'req_url',
+  'req_uri',
+  'req_content_type',
+  'req_content_length',
+  'remote_host',
+  'remote_port',
+  'remote_addr',
+  'status_code',
+  'resp_content_type',
+  'resp_content_length',
+  'upstream_name',
+  'upstream_scheme',
+  'upstream_host',
+  'upstream_port',
+  'upstream_addr',
+  'upstream_url',
+]
+
+const dynamicVariableFunctions = ['header', 'resp_header', 'cookie', 'arg', 'form', 'postform', 'redacted']
+
 const blockRuleKeywordCompletions: Completion[] = [
   ...[...controlKeywords].map(label => ({
     label,
@@ -93,6 +126,16 @@ const blockRuleKeywordCompletions: Completion[] = [
     type: 'constant',
     detail: 'protocol',
   })),
+  ...staticVariables.map(label => ({
+    label: `$${label}`,
+    type: 'variable',
+    detail: 'variable',
+  })),
+  ...dynamicVariableFunctions.map(label => ({
+    label: `$${label}`,
+    type: 'function',
+    detail: 'dynamic variable',
+  })),
 ]
 
 const logLevelCompletions: Completion[] = logLevels.map(label => ({
@@ -106,19 +149,27 @@ const mutationFieldCompletions: Completion[] = [...mutationFieldKeywords].map(la
   detail: 'field',
 }))
 
-const keywordWordRegex = /[A-Za-z_][A-Za-z0-9_-]*/
+const keywordWordRegex = /\$?[A-Za-z_][A-Za-z0-9_-]*/
 
-function createCompletionResult({
-  from,
-  options,
-}: {
-  from: number
-  options: Completion[]
-}) {
+function tokenizeVariableReference(stream: StringStream, state: BlockRulesState) {
+  if (stream.match(/\$\{[A-Za-z_][A-Za-z0-9_]*\}/)) return 'variableName'
+
+  const variableMatch = stream.match(/\$([A-Za-z_][A-Za-z0-9_]*)/)
+  if (!variableMatch) return null
+
+  if (stream.match('(', false)) {
+    state.expectVarCallArgs = true
+    return 'builtin'
+  }
+
+  return 'variableName'
+}
+
+function createCompletionResult({ from, options }: { from: number; options: Completion[] }) {
   return {
     from,
     options,
-    validFor: /^[A-Za-z0-9_-]*$/,
+    validFor: /^\$?[A-Za-z0-9_-]*$/,
   }
 }
 
@@ -166,6 +217,10 @@ function tokenVarCallArgs(stream: StringStream, state: BlockRulesState) {
   }
   if (stream.match(',')) return 'separator'
   if (stream.match(/\d+\b/)) return 'number'
+
+  const variableToken = tokenizeVariableReference(stream, state)
+  if (variableToken) return variableToken
+
   if (stream.match(/[A-Za-z_][A-Za-z0-9_.:/-]*/)) return 'attributeName'
 
   const quote = stream.peek()
@@ -281,12 +336,8 @@ export const blockRulesLanguage = StreamLanguage.define({
         return 'string'
       }
 
-      if (stream.match(/\$\{[A-Za-z_][A-Za-z0-9_]*\}/)) return 'keyword'
-      if (stream.match(/\$[A-Za-z_][A-Za-z0-9_]*(?=\()/)) {
-        state.expectVarCallArgs = true
-        return 'keyword'
-      }
-      if (stream.match(/\$[A-Za-z_][A-Za-z0-9_]*/)) return 'keyword'
+      const variableToken = tokenizeVariableReference(stream, state)
+      if (variableToken) return variableToken
 
       let escaped = false
       while (!stream.eol()) {
@@ -352,12 +403,8 @@ export const blockRulesLanguage = StreamLanguage.define({
     if (stream.match(/[()]/)) return 'punctuation'
     if (stream.match(/[&|]/)) return 'operator'
 
-    if (stream.match(/\$\{[A-Za-z_][A-Za-z0-9_]*\}/)) return 'keyword'
-    if (stream.match(/\$[A-Za-z_][A-Za-z0-9_]*(?=\()/)) {
-      state.expectVarCallArgs = true
-      return 'keyword'
-    }
-    if (stream.match(/\$[A-Za-z_][A-Za-z0-9_]*/)) return 'keyword'
+    const variableToken = tokenizeVariableReference(stream, state)
+    if (variableToken) return variableToken
 
     if (stream.match(/\d+(?:\.\d+)?(?:-\d+)?(?:xx)?\b/)) return 'number'
 
