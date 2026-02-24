@@ -1,3 +1,5 @@
+@import "@fontsource-variable/cascadia-code";
+
 .shiki {
   text-wrap: wrap;
   word-break: break-all;
@@ -5,5 +7,6 @@
   padding: 6px;
   border: var(--color-border) 1.5px solid;
   border-radius: var(--radius-md);
-  font-family: var(--font-mono);
+  font-family:  "Cascadia Code Variable", "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "monospace";
+  font-weight: 500;
 }

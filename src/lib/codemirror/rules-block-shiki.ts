@@ -28,6 +28,8 @@ const blockRulesShiki: LanguageRegistration = {
     { include: '#strings' },
     { include: '#log-statement' },
     { include: '#mutation-statement' },
+    { include: '#method-statement' },
+    { include: '#proto-statement' },
     { include: '#pattern-function' },
     { include: '#dynamic-variable' },
     { include: '#variables' },
@@ -113,6 +115,7 @@ const blockRulesShiki: LanguageRegistration = {
             { include: '#strings' },
             { include: '#dynamic-variable' },
             { include: '#variables' },
+            { include: '#constants' },
             { include: '#numbers' },
           ],
         },
@@ -135,6 +138,51 @@ const blockRulesShiki: LanguageRegistration = {
               // mutation field keyword
               match: `\\b(${mutationFieldsRe})\\b`,
               name: 'variable.parameter.rules-block',
+            },
+            { include: '#strings' },
+            { include: '#dynamic-variable' },
+            { include: '#variables' },
+            { include: '#constants' },
+            { include: '#numbers' },
+          ],
+        },
+      ],
+    },
+    // method <HTTP_METHOD>
+    'method-statement': {
+      patterns: [
+        {
+          begin: '\\bmethod\\b',
+          end: `(?=$|[{}&|])`,
+          beginCaptures: {
+            '0': { name: 'keyword.other.condition.rules-block' },
+          },
+          patterns: [
+            {
+              match: `\\b(${httpMethodsRe})\\b`,
+              name: 'constant.language.method.rules-block',
+            },
+            { include: '#strings' },
+            { include: '#dynamic-variable' },
+            { include: '#variables' },
+            { include: '#numbers' },
+          ],
+        },
+      ],
+    },
+    // proto <protocol>
+    'proto-statement': {
+      patterns: [
+        {
+          begin: '\\bproto\\b',
+          end: `(?=$|[{}&|])`,
+          beginCaptures: {
+            '0': { name: 'keyword.other.condition.rules-block' },
+          },
+          patterns: [
+            {
+              match: `\\b(${protocolAtomsRe})\\b`,
+              name: 'constant.language.protocol.rules-block',
             },
             { include: '#strings' },
             { include: '#dynamic-variable' },
@@ -171,6 +219,7 @@ const blockRulesShiki: LanguageRegistration = {
           end: '\\)',
           beginCaptures: {
             '0': { name: 'variable.other.builtin.rules-block' },
+            '2': { name: 'punctuation.rules-block' },
           },
           endCaptures: {
             '0': { name: 'punctuation.rules-block' },

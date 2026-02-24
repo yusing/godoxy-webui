@@ -10,7 +10,7 @@ const blockRulesShikiHighlighter = await createHighlighter({
 
 function highlightShiki(
   value: string,
-  lang: 'yaml' | 'html' | 'json' | 'plaintext',
+  lang: 'yaml' | 'html' | 'json' | 'plaintext' | (string & {}),
   resolvedTheme: 'dark' | 'light'
 ) {
   return blockRulesShikiHighlighter.codeToHtml(value, {
@@ -21,7 +21,7 @@ function highlightShiki(
 
 type CodeBlockProps = {
   value: unknown
-  lang: 'yaml' | 'html' | 'json' | 'plaintext'
+  lang: 'yaml' | 'html' | 'json' | 'plaintext' | (string & {})
   highlighter?: (value: string) => string
   textWrap?: boolean
 }
