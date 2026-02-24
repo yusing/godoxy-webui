@@ -43,15 +43,12 @@ type LocalRuleFile = `file://${string}`
 /** Rule preset file */
 type RulePresetFile = `embed://${string}`
 
-type WithRuleOptions =
-  | {
-      /** Route Rules */
-      rules?: RouteRule[]
-    }
-  | {
-      /** Route Rule file */
-      rule_file?: LocalRuleFile | RulePresetFile
-    }
+type WithRuleOptions = {
+  /** Route Rules */
+  rules?: RouteRule[] | string
+  /** Route Rule file */
+  rule_file?: LocalRuleFile | RulePresetFile
+}
 
 export type Route = (ReverseProxyRoute | FileServerRoute | StreamRoute) & WithRuleOptions
 
