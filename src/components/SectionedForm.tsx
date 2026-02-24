@@ -20,6 +20,42 @@ type SectionedFormProps<T extends SectionId> = {
   className?: string
 }
 
+function isScrollableY(el: HTMLElement, win: Window) {
+  const style = win.getComputedStyle(el)
+  return /(auto|scroll|overlay)/.test(style.overflowY) && el.scrollHeight > el.clientHeight
+}
+
+// Ignore outer wheel snapping when a nested scroll container is being interacted with.
+export function shouldIgnoreOuterWheelSnap(
+  eventTarget: EventTarget | null,
+  scrollRoot: HTMLElement | Window,
+  deltaY: number
+) {
+  if (!eventTarget || deltaY === 0) return false
+  if ((eventTarget as { nodeType?: number }).nodeType !== 1) return false
+
+  const targetEl = eventTarget as HTMLElement
+  const rootEl = 'document' in scrollRoot ? null : scrollRoot
+  const doc = targetEl.ownerDocument
+  const win = doc.defaultView
+  if (!win) return false
+
+  let node: HTMLElement | null = targetEl
+  while (node && node !== rootEl) {
+    if (isScrollableY(node, win)) {
+      const canScrollUp = node.scrollTop > 0
+      const canScrollDown = node.scrollTop + node.clientHeight < node.scrollHeight
+      if ((deltaY < 0 && canScrollUp) || (deltaY > 0 && canScrollDown)) return true
+
+      const activeEl = doc.activeElement
+      if (activeEl && activeEl.nodeType === 1 && node.contains(activeEl)) return true
+    }
+    node = node.parentElement
+  }
+
+  return false
+}
+
 // Tracks the active section based on scroll position and manual navigation.
 // Adds light wheel snapping between sections while preserving normal smooth scroll.
 function useSectionTracker<T extends SectionId>(sections: SectionItem<T>[], defaultSection?: T) {
@@ -147,6 +183,7 @@ function useSectionTracker<T extends SectionId>(sections: SectionItem<T>[], defa
 
     const onWheel: EventListener = event => {
       if (!(event instanceof WheelEvent)) return
+      if (shouldIgnoreOuterWheelSnap(event.target, scrollRoot, event.deltaY)) return
       const { height } = getViewport()
       const delta = Math.abs(event.deltaY)
       if (delta <= 0) return
@@ -154,7 +191,7 @@ function useSectionTracker<T extends SectionId>(sections: SectionItem<T>[], defa
       const now = Date.now()
       const history = scrollSnapRef.current
       history.push({ value: delta, time: now })
-      while (history.length > 0 && now - history[0]!.time > 140) history.shift()
+      while (history.length > 0 && now - (history[0]?.time ?? 0) > 140) history.shift()
 
       const totalDelta = history.reduce((sum, entry) => sum + entry.value, 0)
       const isSmallScroll = delta <= height * 0.18 && totalDelta <= height * 0.35
@@ -264,7 +301,10 @@ export function SectionedForm<T extends SectionId>({
 
   return (
     <div
-      className={cn('grid grid-cols-[max-content_minmax(0,1fr)] gap-6 min-h-0 flex-1', className)}
+      className={cn(
+        'grid grid-cols-[max-content_minmax(0,1fr)] gap-6 min-h-0 flex-1 overscroll-none',
+        className
+      )}
     >
       {hiddenStyle ? <style>{hiddenStyle}</style> : null}
       <nav
