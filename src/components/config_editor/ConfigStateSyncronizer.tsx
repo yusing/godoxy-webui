@@ -3,15 +3,17 @@ import { isEqual } from 'juststore'
 import { useEffect } from 'react'
 import { useMount } from 'react-use'
 import { parse as parseYAML, stringify as stringifyYAML } from 'yaml'
-import { api, formatErrorString } from '@/lib/api-client'
+import { api, formatErrorString, useEndpoint } from '@/lib/api-client'
 import type { ConfigFile } from '@/types/file'
 import type { Config } from '@/types/godoxy'
 import type { GoDoxyError } from '../GoDoxyError'
 import { configStore } from './store'
 
 export default function ConfigStateSyncronizer() {
+  const endpoint = useEndpoint(api.file.get)
+
   useMount(() => {
-    api.file
+    endpoint
       .get(
         {
           type: configStore.activeFile.type.value ?? 'config',
@@ -42,7 +44,7 @@ export default function ConfigStateSyncronizer() {
       configStore.content.reset()
       configStore.isLoading.set(true)
       configStore.error.reset()
-      api.file
+      endpoint
         .get({
           type: activeFile?.type ?? 'config',
           filename: activeFile?.filename ?? 'config.yml',

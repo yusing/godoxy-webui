@@ -1,4 +1,5 @@
 import { AxiosError } from 'axios'
+import { useEffect, useRef } from 'react'
 import { Api, type ErrorResponse } from '@/lib/api'
 
 // this is for server side only, on client side we use relative path for middleware to handle
@@ -34,4 +35,63 @@ export function formatError(data: AxiosError | ErrorResponse | string): ErrorRes
 export function formatErrorString(data: AxiosError | ErrorResponse | string): string {
   const error = formatError(data)
   return `${error.message}${error.error ? `: ${error.error}` : ''}`
+}
+
+const neverSettled = new Promise<never>(() => {})
+
+function isAbortError(error: unknown): boolean {
+  return (
+    (error instanceof AxiosError && error.code === 'ERR_CANCELED') ||
+    (error instanceof DOMException && error.name === 'AbortError')
+  )
+}
+
+type EndpointWithSignal<TQuery, TResponse, TParams extends object> = (
+  query: TQuery,
+  params?: TParams
+) => Promise<TResponse>
+
+type ParamsWithoutSignal<TParams extends object> = Omit<TParams, 'signal'>
+
+export function useEndpoint<TQuery, TResponse, TParams extends { signal?: AbortSignal }>(
+  endpoint: EndpointWithSignal<TQuery, TResponse, TParams>
+) {
+  const abortControllerRef = useRef<AbortController | null>(null)
+  const requestIdRef = useRef(0)
+
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort()
+      abortControllerRef.current = null
+    }
+  }, [])
+
+  const get = (query: TQuery, params?: ParamsWithoutSignal<TParams>) => {
+    requestIdRef.current += 1
+    const requestId = requestIdRef.current
+
+    abortControllerRef.current?.abort()
+    const abortController = new AbortController()
+    abortControllerRef.current = abortController
+
+    return endpoint(query, {
+      ...(params as TParams),
+      signal: abortController.signal,
+    }).then(
+      response => {
+        if (requestId !== requestIdRef.current) {
+          return neverSettled
+        }
+        return response
+      },
+      error => {
+        if (requestId !== requestIdRef.current || isAbortError(error)) {
+          return neverSettled
+        }
+        throw error
+      }
+    )
+  }
+
+  return { get }
 }
