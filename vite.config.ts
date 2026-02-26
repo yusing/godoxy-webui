@@ -10,10 +10,15 @@ import { defineConfig } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 const PRESET = process.env.PRESET ?? 'bun'
+const DEBUG_BUILD = ['1', 'true'].includes(process.env.DEBUG_BUILD ?? '')
 
 const config = defineConfig({
   server: {
     allowedHosts: true,
+  },
+  build: {
+    minify: !DEBUG_BUILD,
+    sourcemap: DEBUG_BUILD,
   },
   plugins: [
     mdx(await import('./source.config')),
@@ -61,8 +66,8 @@ const config = defineConfig({
     }),
     nitro({
       preset: PRESET,
-      minify: true,
-      sourcemap: false,
+      minify: !DEBUG_BUILD,
+      sourcemap: DEBUG_BUILD,
     }),
   ],
 })
