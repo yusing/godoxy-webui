@@ -46,15 +46,17 @@ function isAbortError(error: unknown): boolean {
   )
 }
 
-type EndpointWithSignal<TQuery, TResponse, TParams extends object> = (
-  query: TQuery,
-  params?: TParams
-) => Promise<TResponse>
+type StripSignalFromLastArg<TArgs extends unknown[]> =
+  TArgs extends [...infer Prefix, infer Last]
+    ? Last extends object | undefined
+      ? undefined extends Last
+        ? [...Prefix, Omit<Exclude<Last, undefined>, 'signal'>?]
+        : [...Prefix, Omit<Last, 'signal'>]
+      : TArgs
+    : TArgs
 
-type ParamsWithoutSignal<TParams extends object> = Omit<TParams, 'signal'>
-
-export function useEndpoint<TQuery, TResponse, TParams extends { signal?: AbortSignal }>(
-  endpoint: EndpointWithSignal<TQuery, TResponse, TParams>
+export function useEndpoint<TArgs extends unknown[], TResult>(
+  endpoint: (...args: TArgs) => Promise<TResult>
 ) {
   const abortControllerRef = useRef<AbortController | null>(null)
   const requestIdRef = useRef(0)
@@ -66,7 +68,8 @@ export function useEndpoint<TQuery, TResponse, TParams extends { signal?: AbortS
     }
   }, [])
 
-  const get = (query: TQuery, params?: ParamsWithoutSignal<TParams>) => {
+  const get = (...args: StripSignalFromLastArg<TArgs>): Promise<TResult> => {
+    const inputArgs = args as unknown[]
     requestIdRef.current += 1
     const requestId = requestIdRef.current
 
@@ -74,10 +77,21 @@ export function useEndpoint<TQuery, TResponse, TParams extends { signal?: AbortS
     const abortController = new AbortController()
     abortControllerRef.current = abortController
 
-    return endpoint(query, {
-      ...(params as TParams),
-      signal: abortController.signal,
-    }).then(
+    let endpointArgs: unknown[]
+    if (inputArgs.length > endpoint.length) {
+      const params = inputArgs[inputArgs.length - 1] as Record<string, unknown>
+      endpointArgs = [
+        ...inputArgs.slice(0, -1),
+        {
+          ...params,
+          signal: abortController.signal,
+        },
+      ]
+    } else {
+      endpointArgs = [...inputArgs, { signal: abortController.signal }]
+    }
+
+    return endpoint(...(endpointArgs as TArgs)).then(
       response => {
         if (requestId !== requestIdRef.current) {
           return neverSettled
