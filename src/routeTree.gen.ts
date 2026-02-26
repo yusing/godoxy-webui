@@ -17,7 +17,6 @@ import { Route as ConfigRouteImport } from './routes/config'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DocsIndexRouteImport } from './routes/docs/index'
 import { Route as DocsSplatRouteImport } from './routes/docs/$'
-import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as LlmsDotmdxDocsSplatRouteImport } from './routes/llms[.]mdx.docs.$'
 import { Route as DocsApiSearchRouteImport } from './routes/docs/api/search'
 
@@ -61,11 +60,6 @@ const DocsSplatRoute = DocsSplatRouteImport.update({
   path: '/docs/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiSplatRoute = ApiSplatRouteImport.update({
-  id: '/api/$',
-  path: '/api/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LlmsDotmdxDocsSplatRoute = LlmsDotmdxDocsSplatRouteImport.update({
   id: '/llms.mdx/docs/$',
   path: '/llms.mdx/docs/$',
@@ -84,7 +78,6 @@ export interface FileRoutesByFullPath {
   '/playground': typeof PlaygroundRoute
   '/routes': typeof RoutesRoute
   '/servers': typeof ServersRoute
-  '/api/$': typeof ApiSplatRoute
   '/docs/$': typeof DocsSplatRoute
   '/docs/': typeof DocsIndexRoute
   '/docs/api/search': typeof DocsApiSearchRoute
@@ -97,7 +90,6 @@ export interface FileRoutesByTo {
   '/playground': typeof PlaygroundRoute
   '/routes': typeof RoutesRoute
   '/servers': typeof ServersRoute
-  '/api/$': typeof ApiSplatRoute
   '/docs/$': typeof DocsSplatRoute
   '/docs': typeof DocsIndexRoute
   '/docs/api/search': typeof DocsApiSearchRoute
@@ -111,7 +103,6 @@ export interface FileRoutesById {
   '/playground': typeof PlaygroundRoute
   '/routes': typeof RoutesRoute
   '/servers': typeof ServersRoute
-  '/api/$': typeof ApiSplatRoute
   '/docs/$': typeof DocsSplatRoute
   '/docs/': typeof DocsIndexRoute
   '/docs/api/search': typeof DocsApiSearchRoute
@@ -126,7 +117,6 @@ export interface FileRouteTypes {
     | '/playground'
     | '/routes'
     | '/servers'
-    | '/api/$'
     | '/docs/$'
     | '/docs/'
     | '/docs/api/search'
@@ -139,7 +129,6 @@ export interface FileRouteTypes {
     | '/playground'
     | '/routes'
     | '/servers'
-    | '/api/$'
     | '/docs/$'
     | '/docs'
     | '/docs/api/search'
@@ -152,7 +141,6 @@ export interface FileRouteTypes {
     | '/playground'
     | '/routes'
     | '/servers'
-    | '/api/$'
     | '/docs/$'
     | '/docs/'
     | '/docs/api/search'
@@ -166,7 +154,6 @@ export interface RootRouteChildren {
   PlaygroundRoute: typeof PlaygroundRoute
   RoutesRoute: typeof RoutesRoute
   ServersRoute: typeof ServersRoute
-  ApiSplatRoute: typeof ApiSplatRoute
   DocsSplatRoute: typeof DocsSplatRoute
   DocsIndexRoute: typeof DocsIndexRoute
   DocsApiSearchRoute: typeof DocsApiSearchRoute
@@ -231,13 +218,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DocsSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/$': {
-      id: '/api/$'
-      path: '/api/$'
-      fullPath: '/api/$'
-      preLoaderRoute: typeof ApiSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/llms.mdx/docs/$': {
       id: '/llms.mdx/docs/$'
       path: '/llms.mdx/docs/$'
@@ -262,7 +242,6 @@ const rootRouteChildren: RootRouteChildren = {
   PlaygroundRoute: PlaygroundRoute,
   RoutesRoute: RoutesRoute,
   ServersRoute: ServersRoute,
-  ApiSplatRoute: ApiSplatRoute,
   DocsSplatRoute: DocsSplatRoute,
   DocsIndexRoute: DocsIndexRoute,
   DocsApiSearchRoute: DocsApiSearchRoute,
