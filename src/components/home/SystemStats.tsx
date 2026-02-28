@@ -1,8 +1,7 @@
 import type { FieldPath } from 'juststore'
-import { Clock, Cpu, HardDrive, type LucideIcon, MemoryStick } from 'lucide-react'
+import { Clock, Cpu, HardDrive, type LucideIcon, MemoryStick, Wifi } from 'lucide-react'
 import { Suspense } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useIsMobile } from '@/hooks/use-mobile'
 import { formatDuration } from '@/lib/format'
 import SystemStatsProvider from './SystemStatsProvider'
 import SystemStatValue from './SystemStatValue'
@@ -33,8 +32,10 @@ function SystemStatsMobile() {
 }
 
 function SystemStatsDesktop() {
+  const hasSecondaryDisk = Boolean(store.systemInfo.secondaryPartitionUsageDesc.use())
+
   return (
-    <div className="hidden sm:grid grid-cols-2 gap-2 px-1 sm:grid-cols-4 sm:gap-4">
+    <div className="hidden sm:grid grid-cols-2 gap-2 px-1 sm:grid-cols-5 sm:gap-4">
       {statsProps.map(stat => (
         <Card key={stat.key} size="sm" className="h-full">
           <CardHeader>
@@ -46,11 +47,28 @@ function SystemStatsDesktop() {
             </div>
           </CardHeader>
           <CardContent className="space-y-1.5 sm:space-y-2">
-            <SystemStatValue
-              valueKey={stat.key}
-              descriptionKey={stat.descriptionKey}
-              type={stat.type}
-            />
+            {stat.key === 'rootPartitionUsage' ? (
+              <>
+                <SystemStatValue
+                  valueKey={stat.key}
+                  descriptionKey={stat.descriptionKey}
+                  type={stat.type}
+                />
+                {hasSecondaryDisk && (
+                  <SystemStatValue
+                    valueKey="secondaryPartitionUsage"
+                    descriptionKey="secondaryPartitionUsageDesc"
+                    type="progress"
+                  />
+                )}
+              </>
+            ) : (
+              <SystemStatValue
+                valueKey={stat.key}
+                descriptionKey={stat.descriptionKey}
+                type={stat.type}
+              />
+            )}
           </CardContent>
         </Card>
       ))}
@@ -62,7 +80,7 @@ type StatProp = {
   label: string
   mobileLabel: string
   icon: LucideIcon
-  mobileValueMode?: 'percent' | 'description' | 'duration'
+  mobileValueMode?: 'percent' | 'description' | 'duration' | 'text'
   type: 'text' | 'progress' | 'duration'
   color: string
   key: FieldPath<Store['systemInfo']>
@@ -76,6 +94,9 @@ function MobileStatRow({ stat }: { stat: StatProp }) {
   const displayValue = (() => {
     if (stat.mobileValueMode === 'duration') {
       return formatDuration(Number(value), { unit: 's' })
+    }
+    if (stat.mobileValueMode === 'text') {
+      return String(value)
     }
     return `${value}%`
   })()
@@ -129,5 +150,14 @@ const statsProps: StatProp[] = [
     color: 'bg-chart-3',
     key: 'rootPartitionUsage',
     descriptionKey: 'rootPartitionUsageDesc',
+  },
+  {
+    label: 'Network',
+    mobileLabel: 'Net',
+    icon: Wifi,
+    mobileValueMode: 'text',
+    type: 'text',
+    color: 'bg-chart-4',
+    key: 'networkSpeedSummary',
   },
 ] as const
