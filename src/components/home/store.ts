@@ -40,8 +40,12 @@ type SystemInfoSimple = {
   cpuAverage: number
   rootPartitionUsage: number
   rootPartitionUsageDesc: string
+  secondaryPartitionUsage: number
+  secondaryPartitionUsageDesc: string
   memoryUsage: number
   memoryUsageDesc: string
+  networkSpeedUpload: number
+  networkSpeedDownload: number
 }
 
 export const store = createStore<Store>('homepage', {
@@ -50,8 +54,12 @@ export const store = createStore<Store>('homepage', {
     cpuAverage: 0,
     rootPartitionUsage: 0,
     rootPartitionUsageDesc: '',
+    secondaryPartitionUsage: 0,
+    secondaryPartitionUsageDesc: '',
     memoryUsage: 0,
     memoryUsageDesc: '',
+    networkSpeedUpload: 0,
+    networkSpeedDownload: 0,
   },
   homepageCategories: [],
   searchQuery: '',
