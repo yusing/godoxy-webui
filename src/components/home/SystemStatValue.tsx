@@ -1,8 +1,11 @@
+import { IconArrowDown, IconArrowUp } from '@tabler/icons-react'
 import { type FieldPath, Render } from 'juststore'
-import { formatDuration } from '@/lib/format'
+import { formatBytes, formatDuration } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { Progress } from '../ui/progress'
 import { type Store, store } from './store'
+
+export type SystemStatValueType = 'text' | 'progress' | 'duration' | 'upload' | 'download'
 
 export default function SystemStatValue({
   valueKey,
@@ -11,7 +14,7 @@ export default function SystemStatValue({
 }: {
   valueKey: FieldPath<Store['systemInfo']>
   descriptionKey?: FieldPath<Store['systemInfo']>
-  type: 'text' | 'progress' | 'duration'
+  type: SystemStatValueType
 }) {
   const state = store.systemInfo[valueKey]
   return (
@@ -35,7 +38,7 @@ function DisplayValue({
   type,
 }: {
   valueKey: FieldPath<Store['systemInfo']>
-  type: 'text' | 'progress' | 'duration'
+  type: SystemStatValueType
 }) {
   const displayValue = store.systemInfo[valueKey].useCompute(value => {
     if (type === 'duration') {
@@ -44,10 +47,37 @@ function DisplayValue({
     if (type === 'progress') {
       return `${value}%`
     }
+    if (type === 'upload') {
+      type = 'text'
+      return (
+        <>
+          <IconArrowUp className="size-4 text-green-500" />{' '}
+          {formatBytes(Number(value), { precision: 0, unit: '/s' })}
+        </>
+      )
+    }
+    if (type === 'download') {
+      type = 'text'
+      return (
+        <>
+          <IconArrowDown className="size-4 text-red-500" />{' '}
+          {formatBytes(Number(value), { precision: 0, unit: '/s' })}
+        </>
+      )
+    }
     return String(value)
   })
+  const isTextLike = type === 'text' || type === 'upload' || type === 'download'
   return (
-    <div className="text-base sm:text-xl leading-none font-semibold tracking-tight tabular-nums">
+    <div
+      className={cn(
+        'font-semibold tracking-tight tabular-nums',
+        isTextLike
+          ? 'text-base sm:text-lg leading-tight whitespace-nowrap'
+          : 'text-base sm:text-xl leading-none',
+        isTextLike && 'flex items-center gap-1'
+      )}
+    >
       {displayValue}
     </div>
   )
@@ -58,7 +88,7 @@ function Description({
   type,
 }: {
   descriptionKey?: FieldPath<Store['systemInfo']>
-  type: 'text' | 'progress' | 'duration'
+  type: SystemStatValueType
 }) {
   const value = store.systemInfo[descriptionKey ?? 'uptime'].use()
   return (

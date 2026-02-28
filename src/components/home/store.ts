@@ -44,7 +44,8 @@ type SystemInfoSimple = {
   secondaryPartitionUsageDesc: string
   memoryUsage: number
   memoryUsageDesc: string
-  networkSpeedSummary: string
+  networkSpeedUpload: number
+  networkSpeedDownload: number
 }
 
 export const store = createStore<Store>('homepage', {
@@ -57,7 +58,8 @@ export const store = createStore<Store>('homepage', {
     secondaryPartitionUsageDesc: '',
     memoryUsage: 0,
     memoryUsageDesc: '',
-    networkSpeedSummary: '—',
+    networkSpeedUpload: 0,
+    networkSpeedDownload: 0,
   },
   homepageCategories: [],
   searchQuery: '',

@@ -1,7 +1,7 @@
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { DiskUsageStat, MemVirtualMemoryStat, StatsResponse, SystemInfo } from '@/lib/api'
-import { store } from './store'
 import { formatBytes } from '@/lib/format'
+import { store } from './store'
 
 export default function SystemStatsProvider() {
   useWebSocketApi<SystemInfo>({
@@ -19,7 +19,8 @@ export default function SystemStatsProvider() {
         secondaryPartitionUsageDesc: getSecondaryDiskUsageDesc(data.disks, '/'),
         memoryUsage: Math.round(data.memory.used_percent * 100) / 100,
         memoryUsageDesc: getMemoryUsageDesc(data.memory),
-        networkSpeedSummary: getNetworkSpeedSummary(data),
+        networkSpeedUpload: data.network?.upload_speed ?? 0,
+        networkSpeedDownload: data.network?.download_speed ?? 0,
       }),
   })
 
@@ -50,7 +51,24 @@ function getDiskUsageDesc(disks: Record<string, DiskUsageStat>, path: string) {
 function getSecondaryDisk(disks: Record<string, DiskUsageStat>, path: string) {
   const allDisks = Object.values(disks)
   const primaryDisk = getDisk(disks, path)
-  return allDisks.find(d => d.path !== primaryDisk?.path)
+  if (!primaryDisk) {
+    return undefined
+  }
+  return allDisks.find(d => !isSameDisk(d, primaryDisk))
+}
+
+function isSameDisk(disk: DiskUsageStat, otherDisk: DiskUsageStat) {
+  if (disk.path === otherDisk.path) {
+    return true
+  }
+  if (
+    disk.fstype === otherDisk.fstype &&
+    disk.total === otherDisk.total &&
+    disk.used === otherDisk.used
+  ) {
+    return true
+  }
+  return false
 }
 
 function getSecondaryDiskUsage(disks: Record<string, DiskUsageStat>, path: string) {
@@ -62,15 +80,10 @@ function getSecondaryDiskUsageDesc(disks: Record<string, DiskUsageStat>, path: s
   if (!disk) {
     return ''
   }
-  return `${disk.path}: ${formatBytes(disk.used, { precision: 1 })} / ${formatBytes(disk.total, { precision: 1 })}`
+  const key = Object.entries(disks).find(([_, d]) => Object.is(d, disk))?.[0]
+  return `${key}: ${formatBytes(disk.used, { precision: 1 })} / ${formatBytes(disk.total, { precision: 1 })}`
 }
 
 function getMemoryUsageDesc(memory: MemVirtualMemoryStat) {
   return `${formatBytes(memory.used, { precision: 1 })} / ${formatBytes(memory.total, { precision: 1 })}`
-}
-
-function getNetworkSpeedSummary(data: SystemInfo) {
-  const uploadSpeed = data.network?.upload_speed ?? 0
-  const downloadSpeed = data.network?.download_speed ?? 0
-  return `↑ ${formatBytes(uploadSpeed, { precision: 0, unit: '/s' })} ↓ ${formatBytes(downloadSpeed, { precision: 0, unit: '/s' })}`
 }
