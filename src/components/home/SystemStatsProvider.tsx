@@ -9,19 +9,30 @@ export default function SystemStatsProvider() {
     query: {
       interval: '2s',
     },
-    onMessage: data =>
+    onMessage: data => {
+      const secondDriveOptions = getSecondDriveOptions(data.disks, '/')
+      const selectedSecondDrive = resolveSelectedSecondDrive(secondDriveOptions)
+
+      if (store.selectedSecondDrive.value !== selectedSecondDrive) {
+        store.selectedSecondDrive.set(selectedSecondDrive)
+      }
+
       store.systemInfo.set({
         uptime: store.systemInfo.uptime.value,
         cpuAverage: Math.round(data.cpu_average * 100) / 100,
         rootPartitionUsage: Math.round(getDiskUsage(data.disks, '/') ?? 0 * 100),
         rootPartitionUsageDesc: getDiskUsageDesc(data.disks, '/'),
-        secondaryPartitionUsage: Math.round(getSecondaryDiskUsage(data.disks, '/') ?? 0 * 100),
-        secondaryPartitionUsageDesc: getSecondaryDiskUsageDesc(data.disks, '/'),
+        secondDriveOptions,
+        secondaryPartitionUsage: Math.round(
+          getSelectedDiskUsage(data.disks, selectedSecondDrive) ?? 0 * 100
+        ),
+        secondaryPartitionUsageDesc: getSelectedDiskUsageDesc(data.disks, selectedSecondDrive),
         memoryUsage: Math.round(data.memory.used_percent * 100) / 100,
         memoryUsageDesc: getMemoryUsageDesc(data.memory),
         networkSpeedUpload: data.network?.upload_speed ?? 0,
         networkSpeedDownload: data.network?.download_speed ?? 0,
-      }),
+      })
+    },
   })
 
   useWebSocketApi<StatsResponse>({
@@ -33,7 +44,7 @@ export default function SystemStatsProvider() {
 }
 
 function getDisk(disks: Record<string, DiskUsageStat>, path: string) {
-  return Object.values(disks).find(d => d.path === path) ?? Object.values(disks)[0]
+  return Object.values(disks).find(d => d.path === path) ?? getDiskEntries(disks)[0]?.[1]
 }
 
 function getDiskUsage(disks: Record<string, DiskUsageStat>, path: string) {
@@ -48,42 +59,59 @@ function getDiskUsageDesc(disks: Record<string, DiskUsageStat>, path: string) {
   return `${formatBytes(disk.used, { precision: 1 })} / ${formatBytes(disk.total, { precision: 1 })}`
 }
 
-function getSecondaryDisk(disks: Record<string, DiskUsageStat>, path: string) {
-  const allDisks = Object.values(disks)
-  const primaryDisk = getDisk(disks, path)
-  if (!primaryDisk) {
-    return undefined
-  }
-  return allDisks.find(d => !isSameDisk(d, primaryDisk))
+function getSelectedDisk(disks: Record<string, DiskUsageStat>, path: string) {
+  return Object.values(disks).find(d => d.path === path)
 }
 
-function isSameDisk(disk: DiskUsageStat, otherDisk: DiskUsageStat) {
-  if (disk.path === otherDisk.path) {
-    return true
-  }
-  if (
-    disk.fstype === otherDisk.fstype &&
-    disk.total === otherDisk.total &&
-    disk.used === otherDisk.used
-  ) {
-    return true
-  }
-  return false
+function getSelectedDiskUsage(disks: Record<string, DiskUsageStat>, path: string) {
+  return getSelectedDisk(disks, path)?.used_percent
 }
 
-function getSecondaryDiskUsage(disks: Record<string, DiskUsageStat>, path: string) {
-  return getSecondaryDisk(disks, path)?.used_percent
-}
-
-function getSecondaryDiskUsageDesc(disks: Record<string, DiskUsageStat>, path: string) {
-  const disk = getSecondaryDisk(disks, path)
+function getSelectedDiskUsageDesc(disks: Record<string, DiskUsageStat>, path: string) {
+  const disk = getSelectedDisk(disks, path)
   if (!disk) {
     return ''
   }
-  const key = Object.entries(disks).find(([_, d]) => Object.is(d, disk))?.[0]
-  return `${key}: ${formatBytes(disk.used, { precision: 1 })} / ${formatBytes(disk.total, { precision: 1 })}`
+  return `${disk.path}: ${formatBytes(disk.used, { precision: 1 })} / ${formatBytes(disk.total, { precision: 1 })}`
 }
 
 function getMemoryUsageDesc(memory: MemVirtualMemoryStat) {
   return `${formatBytes(memory.used, { precision: 1 })} / ${formatBytes(memory.total, { precision: 1 })}`
+}
+
+function getDiskEntries(disks: Record<string, DiskUsageStat>) {
+  return Object.entries(disks).sort(([, left], [, right]) => {
+    if (right.total !== left.total) {
+      return right.total - left.total
+    }
+    const depthDiff = getPathDepth(left.path) - getPathDepth(right.path)
+    if (depthDiff !== 0) {
+      return depthDiff
+    }
+    return left.path.localeCompare(right.path)
+  })
+}
+
+function getSecondDriveOptions(disks: Record<string, DiskUsageStat>, rootPath: string) {
+  return getDiskEntries(disks)
+    .map(([, disk]) => disk.path)
+    .filter(path => path !== rootPath)
+}
+
+function resolveSelectedSecondDrive(options: string[]) {
+  const currentSelection = store.selectedSecondDrive.value
+  if (currentSelection === '') {
+    return ''
+  }
+  if (currentSelection && options.includes(currentSelection)) {
+    return currentSelection
+  }
+  return ''
+}
+
+function getPathDepth(path: string) {
+  if (path === '/') {
+    return 0
+  }
+  return path.split('/').filter(Boolean).length
 }

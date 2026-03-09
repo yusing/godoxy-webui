@@ -24,6 +24,7 @@ function SystemStatsMobile() {
   const stats = statsProps.filter(stat => {
     return !('hideOnMobile' in stat && stat.hideOnMobile)
   })
+
   return (
     <Card size="sm" className="mx-1 block sm:hidden">
       <CardContent className="grid grid-cols-5 gap-y-2 [&>*:nth-child(odd)]:col-start-1 [&>*:nth-child(even)]:col-start-4">

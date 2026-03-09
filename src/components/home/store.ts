@@ -14,6 +14,7 @@ export type Store = {
   itemState: Array<ItemState>
   health: HealthMap
   pendingFavorites: boolean
+  selectedSecondDrive: string
   editingApp?: {
     categoryIndex: number
     itemIndex: number
@@ -40,6 +41,7 @@ type SystemInfoSimple = {
   cpuAverage: number
   rootPartitionUsage: number
   rootPartitionUsageDesc: string
+  secondDriveOptions: string[]
   secondaryPartitionUsage: number
   secondaryPartitionUsageDesc: string
   memoryUsage: number
@@ -54,6 +56,7 @@ export const store = createStore<Store>('homepage', {
     cpuAverage: 0,
     rootPartitionUsage: 0,
     rootPartitionUsageDesc: '',
+    secondDriveOptions: [],
     secondaryPartitionUsage: 0,
     secondaryPartitionUsageDesc: '',
     memoryUsage: 0,
@@ -66,6 +69,7 @@ export const store = createStore<Store>('homepage', {
   itemState: [],
   health: {},
   pendingFavorites: false,
+  selectedSecondDrive: '',
   searchEngine: 'duckduckgo',
   ui: {
     showKeyboardHints: true,

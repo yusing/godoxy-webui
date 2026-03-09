@@ -1,5 +1,6 @@
 import { Conditional } from 'juststore'
 import { Moon, Settings, Sun } from 'lucide-react'
+import { StoreSelectField } from '@/components/store/Select'
 import { StoreSwitchField } from '@/components/store/Switch'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -10,6 +11,15 @@ import { store } from './store'
 
 export default function SettingsPopover() {
   const sortMethod = store.settings.sortMethod.use()
+  const secondDriveOptions = store.systemInfo.secondDriveOptions.useCompute(options => {
+    return [
+      { label: 'None', value: '' },
+      ...options.map(option => ({
+        label: option,
+        value: option,
+      })),
+    ]
+  })
 
   return (
     <Popover>
@@ -52,6 +62,21 @@ export default function SettingsPopover() {
             </RadioGroup>
           </div>
           <Separator />
+          <Conditional
+            state={store.systemInfo.secondDriveOptions}
+            on={options => options.length > 0}
+          >
+            <div className="space-y-3">
+              <Label className="text-xs font-medium">Second Drive</Label>
+              <StoreSelectField
+                state={store.selectedSecondDrive}
+                options={secondDriveOptions}
+                className="w-full"
+                captializeSelectItems={false}
+              />
+            </div>
+            <Separator />
+          </Conditional>
           <div className="space-y-3">
             <Label className="text-xs font-medium">UI Preferences</Label>
             <StoreSwitchField
