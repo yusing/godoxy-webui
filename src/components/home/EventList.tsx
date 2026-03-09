@@ -105,7 +105,7 @@ function EventsList({ mobileDrawer = false }: { mobileDrawer?: boolean }) {
               'py-3 gap-2 h-auto min-h-0 overflow-hidden rounded-t-2xl rounded-b-none border-x border-t border-b-0 transition-[max-height] duration-300 ease-in-out',
               isExpanded ? 'max-h-[65svh]' : 'max-h-14',
             ]
-          : 'h-full min-h-0 xl:shadow-none xl:bg-inherit xl:pt-0'
+          : 'h-full min-h-0 xl:shadow-none xl:bg-inherit xl:py-0'
       )}
     >
       <CardHeader
@@ -337,8 +337,6 @@ function EventData({ event }: { event: Event }) {
       }
     }
   }
-
-  return <span>Unknown health action {(event as EventCommon).action}</span>
 }
 
 function EventsWatcher() {

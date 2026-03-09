@@ -10,13 +10,13 @@ export const Route = createFileRoute('/')({
 
 function HomePage() {
   return (
-    <div className="h-screen fixed inset-0">
+    <div className="h-full">
       <EventsWatcher />
       <div className="sm:mx-auto h-full min-h-0 p-2 sm:p-4 overflow-hidden">
-        <div className="relative flex h-full min-h-0 flex-col gap-2 sm:gap-5 mt-(--titlebar-height)">
+        <div className="relative flex h-full min-h-0 flex-col gap-2 sm:gap-5">
           <SystemStats />
-          <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-12 gap-2">
-            <div className="min-h-0 md:col-span-9 lg:col-span-8 px-1 pb-28 lg:pb-0">
+          <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 overflow-hidden lg:grid-cols-12">
+            <div className="flex min-h-0 flex-col overflow-hidden md:col-span-9 lg:col-span-8 px-1">
               <AppGrid />
             </div>
             <div className="min-h-0 hidden lg:block md:col-span-3 lg:col-span-4">

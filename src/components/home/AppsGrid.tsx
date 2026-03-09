@@ -66,9 +66,9 @@ export default function AppGrid() {
       <Tabs
         value={activeCategory}
         onValueChange={value => setActiveCategory(value)}
-        className="w-full h-full"
+        className="w-full h-full min-h-0 flex flex-col"
       >
-        <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 justify-between">
+        <div className="flex shrink-0 flex-col items-start justify-between gap-2 lg:flex-row lg:items-center">
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <TabsList className="scrollbar-hidden flex w-full gap-1 overflow-x-auto rounded-lg border p-1 sm:w-auto">
               {visibleTabs?.map(category => (
@@ -114,7 +114,7 @@ export default function AppGrid() {
         </div>
 
         {/* Keyboard hints */}
-        <div className="hidden md:block">
+        <div className="hidden shrink-0 md:block">
           <RenderWithUpdate state={store.ui.showKeyboardHints}>
             {(show, setShow) => show && <KeyboardHints onDismiss={() => setShow(false)} />}
           </RenderWithUpdate>
@@ -127,7 +127,7 @@ export default function AppGrid() {
             <TabsContent
               key={category}
               value={category}
-              className="sm:mt-2 overflow-y-auto scrollbar-hidden sm:scrollbar-default h-full"
+              className="sm:mt-2 min-h-0 flex-1 overflow-y-auto scrollbar-hidden sm:scrollbar-default"
             >
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
