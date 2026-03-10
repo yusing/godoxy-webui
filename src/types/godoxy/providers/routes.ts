@@ -180,6 +180,8 @@ export type StreamRoute = {
   port?: StreamPort | Port
   /** Stream bind IP */
   bind?: IPv4 | IPv6
+  /** Relay incoming/effective client address to upstream via PROXY protocol (TCP only) */
+  relay_proxy_protocol_header?: boolean
   /** Agent */
   agent?: string
   /** Healthcheck config */

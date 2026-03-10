@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useAsync } from 'react-use'
 import { StoreFormInputField } from '@/components/store/Input'
 import { StoreFormSelectField } from '@/components/store/Select'
+import { StoreFormSwitchField } from '@/components/store/Switch'
 import { Button } from '@/components/ui/button'
 import { FieldSet } from '@/components/ui/field'
 import type { Route as RouteResponse } from '@/lib/api'
@@ -21,6 +22,7 @@ export function RouteGeneralSection({ form, details }: RouteGeneralSectionProps)
   const isHTTPOrStream = form.scheme.useCompute(
     scheme => utils.isHTTP(scheme) || utils.isStream(scheme)
   )
+  const isTCP = form.scheme.useCompute(scheme => utils.isStream(scheme) && scheme === 'tcp')
 
   return (
     <>
@@ -47,6 +49,13 @@ export function RouteGeneralSection({ form, details }: RouteGeneralSectionProps)
         <FileServerBindAddrFields
           form={form as FormStore<Routes.FileServerRoute>}
           details={details}
+        />
+      )}
+
+      {isTCP && (
+        <StoreFormSwitchField
+          state={(form as FormStore<Routes.StreamRoute>).relay_proxy_protocol_header}
+          title="Relay PROXY Protocol Header"
         />
       )}
 
