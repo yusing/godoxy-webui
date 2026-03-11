@@ -20,7 +20,7 @@ import {
 import { Kbd } from '@/components/ui/kbd'
 import { Label } from '@/components/ui/label'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import type { IdlewatcherConfig } from '@/lib/api'
+import type { HealthJSON, IdlewatcherConfig } from '@/lib/api'
 import { blockRulesHighlightShiki } from '@/lib/codemirror/rules-block-shiki'
 import { formatDuration, formatGoDuration, formatRelTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -53,8 +53,6 @@ export default function RouteDetails() {
     if (routeKey) {
       if (!routeDetails) {
         store.routeDetails[routeKey]!.reset()
-      } else {
-        store.routeDetails[routeKey]!.set(routeDetails)
       }
     }
   }, [routeKey, routeDetails])
@@ -314,8 +312,8 @@ export default function RouteDetails() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {routeDetails.path_patterns.map((pattern, index) => (
-                <Badge key={index} variant="outline" className="font-mono">
+              {routeDetails.path_patterns.map(pattern => (
+                <Badge key={pattern} variant="outline" className="font-mono">
                   {pattern}
                 </Badge>
               ))}
@@ -470,19 +468,97 @@ export default function RouteDetails() {
         </Card>
       )}
       {/* Load Balancer */}
-      {routeDetails.load_balance && (
-        <Card size="sm" className="px-2">
-          <CardHeader>
-            <CardTitle>Load Balancer</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CodeMirror
-              className="mt-1"
-              value={stringifyYAML(routeDetails.load_balance)}
-              extensions={[yaml()]}
-            />
-          </CardContent>
-        </Card>
+      {routeDetails.health.extra && (
+        <div className="space-y-2">
+          <Card size="sm" className="px-2">
+            <CardHeader>
+              <CardTitle>Load Balancer Config</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DataList>
+                <DataListRow label="Link" value={routeDetails.health.extra.config.link} />
+                <DataListRow
+                  label="Mode"
+                  value={routeDetails.health.extra.config.mode || 'roundrobin'}
+                />
+                <DataListRow
+                  label="Sticky"
+                  value={routeDetails.health.extra.config.sticky ? 'Yes' : 'No'}
+                />
+                <DataListRow
+                  label="Sticky max age"
+                  value={
+                    routeDetails.health.extra.config.sticky_max_age
+                      ? formatGoDuration(routeDetails.health.extra.config.sticky_max_age)
+                      : 'Default'
+                  }
+                />
+                {/* <DataListRow
+                  label="Weight"
+                  value={String(routeDetails.health.extra.config.weight)}
+                /> */}
+                {routeDetails.health.extra.config.options &&
+                  Object.keys(routeDetails.health.extra.config.options).length > 0 && (
+                    <DataListRow
+                      label="Options"
+                      value={
+                        <CodeBlock
+                          lang="yaml"
+                          value={stringifyYAML(routeDetails.health.extra.config.options)}
+                          highlighter={blockRulesHighlightShiki}
+                        />
+                      }
+                    />
+                  )}
+              </DataList>
+            </CardContent>
+          </Card>
+          {routeDetails.health.extra.pool &&
+            Object.keys(routeDetails.health.extra.pool).length > 0 && (
+              <Card size="sm" className="px-2">
+                <CardHeader>
+                  <CardTitle>Pool servers</CardTitle>
+                  <CardDescription>
+                    Health status of each backend in the load balancer pool
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {Object.entries(routeDetails.health.extra.pool).map(([addr, entry]) => {
+                      const info = entry as HealthJSON
+                      return (
+                        <div
+                          key={addr}
+                          className="rounded-md border border-border/60 bg-muted/20 p-3"
+                        >
+                          <div className="font-medium text-sm mb-2">{`${addr} (${info.name})`}</div>
+                          <DataList>
+                            {info.status && <DataListRow label="Status" value={info.status} />}
+                            <DataListRow
+                              label="Latency"
+                              value={formatDuration(info.latency, {
+                                unit: 'ms',
+                              })}
+                            />
+                            <DataListRow
+                              label="Uptime"
+                              value={formatDuration(info.uptime, {
+                                unit: 's',
+                              })}
+                            />
+                            {info.detail !== '' && (
+                              <DataListRow label="Detail" value={info.detail} />
+                            )}
+                            <DataListRow label="URL" value={info.url} />
+                          </DataList>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+        </div>
       )}
       {/* Middlewares */}
       {routeDetails.middlewares && Object.keys(routeDetails.middlewares).length > 0 && (
