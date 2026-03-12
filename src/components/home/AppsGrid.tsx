@@ -127,7 +127,7 @@ export default function AppGrid() {
             <TabsContent
               key={category}
               value={category}
-              className="sm:mt-2 min-h-0 flex-1 overflow-y-auto scrollbar-hidden sm:scrollbar-default"
+              className="sm:mt-2 min-h-0 flex-1 overflow-y-auto py-1 scrollbar-hidden sm:scrollbar-default"
             >
               <motion.div
                 initial={{ opacity: 0, y: 10 }}

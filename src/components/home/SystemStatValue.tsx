@@ -41,31 +41,28 @@ function DisplayValue({
   type: SystemStatValueType
 }) {
   const displayValue = store.systemInfo[valueKey].useCompute(value => {
-    if (type === 'duration') {
-      return formatDuration(Number(value), { unit: 's' })
+    switch (type) {
+      case 'duration':
+        return formatDuration(Number(value), { unit: 's' })
+      case 'progress':
+        return `${value}%`
+      case 'upload':
+        return (
+          <>
+            <IconArrowUp className="size-4 text-green-500" />{' '}
+            {formatBytes(Number(value), { precision: 0, unit: '/s' })}
+          </>
+        )
+      case 'download':
+        return (
+          <>
+            <IconArrowDown className="size-4 text-red-500" />{' '}
+            {formatBytes(Number(value), { precision: 0, unit: '/s' })}
+          </>
+        )
+      default:
+        return String(value)
     }
-    if (type === 'progress') {
-      return `${value}%`
-    }
-    if (type === 'upload') {
-      type = 'text'
-      return (
-        <>
-          <IconArrowUp className="size-4 text-green-500" />{' '}
-          {formatBytes(Number(value), { precision: 0, unit: '/s' })}
-        </>
-      )
-    }
-    if (type === 'download') {
-      type = 'text'
-      return (
-        <>
-          <IconArrowDown className="size-4 text-red-500" />{' '}
-          {formatBytes(Number(value), { precision: 0, unit: '/s' })}
-        </>
-      )
-    }
-    return String(value)
   })
   const isTextLike = type === 'text' || type === 'upload' || type === 'download'
   return (
