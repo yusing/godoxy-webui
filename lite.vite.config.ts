@@ -1,18 +1,21 @@
 /// <reference types="vite/client" />
+
+import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
-import viteReact from '@vitejs/plugin-react'
+import viteReact, { reactCompilerPreset } from '@vitejs/plugin-react'
 import mdx from 'fumadocs-mdx/vite'
 import { nitro } from 'nitro/vite'
 import { defineConfig } from 'vite'
-import tsconfigPaths from 'vite-tsconfig-paths'
 
 const isDemoSite = process.env.DEMO_SITE === 'true'
 
 export default defineConfig({
+  resolve: {
+    tsconfigPaths: true,
+  },
   plugins: [
     mdx(await import('./source.config')),
-    tsconfigPaths(),
     tailwindcss(),
     tanstackStart({
       prerender: isDemoSite
@@ -40,17 +43,14 @@ export default defineConfig({
         },
       ],
     }),
-    viteReact({
-      babel: {
-        plugins: [
-          [
-            'babel-plugin-react-compiler',
-            {
-              compilationMode: 'annotation',
-            },
-          ],
-        ],
-      },
+    viteReact(),
+    babel({
+      presets: [
+        reactCompilerPreset({
+          compilationMode: 'annotation',
+          target: '19',
+        }),
+      ],
     }),
     nitro({
       minify: true,

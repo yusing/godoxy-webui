@@ -30,9 +30,6 @@ COPY . .
 RUN sed -i 's/\.middleware(\[staticFunctionMiddleware\])//g' src/routes/docs/\$.tsx
 COPY --from=schema-gen /temp/dev/src/types/godoxy/*.json ./src/types/godoxy/
 
-ARG DEBUG_BUILD=false
-ENV DEBUG_BUILD=${DEBUG_BUILD}
-
 ENV NODE_ENV=production
 RUN bun --bun vite build
 

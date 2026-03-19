@@ -1,32 +1,27 @@
 /// <reference types="vite/client" />
 
+import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
-import { devtools } from '@tanstack/devtools-vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
-import viteReact from '@vitejs/plugin-react'
+import viteReact, { reactCompilerPreset } from '@vitejs/plugin-react'
 import mdx from 'fumadocs-mdx/vite'
 import { nitro } from 'nitro/vite'
 import { defineConfig } from 'vite'
-import tsconfigPaths from 'vite-tsconfig-paths'
 
-const PRESET = process.env.PRESET ?? 'bun'
-const DEBUG_BUILD = ['1', 'true'].includes(process.env.DEBUG_BUILD ?? '')
+const PRESET = process.env.PRESET
+const production = process.env.NODE_ENV === 'production'
+
+console.log(process.env.NODE_ENV, production)
 
 const config = defineConfig({
   server: {
     allowedHosts: true,
   },
-  build: {
-    minify: !DEBUG_BUILD,
-    sourcemap: DEBUG_BUILD,
+  resolve: {
+    tsconfigPaths: true,
   },
   plugins: [
     mdx(await import('./source.config')),
-    devtools(),
-    // this is the plugin that enables path aliases
-    tsconfigPaths({
-      projects: ['./tsconfig.json'],
-    }),
     tailwindcss(),
     tanstackStart({
       prerender: {
@@ -52,22 +47,19 @@ const config = defineConfig({
         },
       ],
     }),
-    viteReact({
-      babel: {
-        plugins: [
-          [
-            'babel-plugin-react-compiler',
-            {
-              compilationMode: 'annotation',
-            },
-          ],
-        ],
-      },
+    viteReact(),
+    babel({
+      presets: [
+        reactCompilerPreset({
+          compilationMode: 'annotation',
+          target: '19',
+        }),
+      ],
     }),
     nitro({
       preset: PRESET,
-      minify: !DEBUG_BUILD,
-      sourcemap: DEBUG_BUILD,
+      minify: production,
+      sourcemap: !production,
     }),
   ],
 })
