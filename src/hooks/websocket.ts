@@ -1,7 +1,7 @@
 import { isEqual } from 'juststore'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useLocation } from 'react-use'
-
+import { CSRF_HEADER_NAME, getCSRFToken, getCSRFWebSocketProtocol } from '@/lib/csrf'
 import { logger } from '@/lib/logger'
 import { ReadyState, useWebSocket } from '@/lib/react-use-websocket'
 
@@ -59,6 +59,8 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
   const heartbeatIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const lastMessageRef = useRef<TMessage | null>(null)
   const location = useLocation()
+  const csrfToken = useMemo(() => getCSRFToken(), [])
+  const websocketProtocol = useMemo(() => getCSRFWebSocketProtocol(csrfToken), [csrfToken])
 
   // Create WebSocket URL
   const socketURL = useMemo(() => {
@@ -161,6 +163,7 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
           signal: controller.signal,
           headers: {
             Accept: 'application/json, text/plain;q=0.9,*/*;q=0.8',
+            ...(csrfToken ? { [CSRF_HEADER_NAME]: csrfToken } : {}),
           },
         })
 
@@ -183,26 +186,27 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
 
     fetchInitialData()
     return () => controller.abort()
-  }, [query, socketURL, json, onMessage, endpoint, httpAsInitial])
+  }, [query, socketURL, json, onMessage, endpoint, httpAsInitial, csrfToken])
 
   // Use WebSocket hook with enhanced configuration
   const { sendJsonMessage, sendMessage, readyState, getWebSocket } = useWebSocket<TMessage>(
     socketURL,
     {
       queryParams: query,
+      protocols: websocketProtocol ? [websocketProtocol] : undefined,
       share: false,
       onOpen: handleOpen,
       onClose: handleClose,
       onError: handleEventError,
       onMessage: handleMessage,
-      shouldReconnect: closeEvent => {
+      shouldReconnect: (closeEvent: CloseEvent) => {
         // Only reconnect on unexpected disconnections and if we should still be connected
         return shouldConnect && closeEvent.code !== 1000
       },
       reconnectAttempts,
       reconnectInterval,
       retryOnError: true,
-      onReconnectStop: numAttempts => {
+      onReconnectStop: (numAttempts: number) => {
         handleErrorRef.current?.(`Failed to reconnect after ${numAttempts} attempts`)
       },
       // Enable heartbeat for automatic ping-pong handling

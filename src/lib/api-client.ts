@@ -1,6 +1,7 @@
-import { AxiosError } from 'axios'
+import { AxiosError, AxiosHeaders } from 'axios'
 import { useEffect, useRef } from 'react'
 import { Api, type ErrorResponse } from '@/lib/api'
+import { withCSRFHeader } from '@/lib/csrf'
 
 // this is for server side only, on client side we use relative path for middleware to handle
 const apiAddr = process.env.GODOXY_API_ADDR ? `http://${process.env.GODOXY_API_ADDR}` : ''
@@ -9,6 +10,19 @@ export const api = new Api({
   baseURL: `${apiAddr}/api/v1`,
   secure: process.env.GODOXY_API_ADDR !== undefined && process.env.NODE_ENV === 'production',
   format: 'json',
+})
+
+api.instance.interceptors.request.use(config => {
+  const headers = withCSRFHeader({}, config.method)
+  if (Object.keys(headers).length === 0) {
+    return config
+  }
+  const nextHeaders = AxiosHeaders.from(config.headers)
+  for (const [key, value] of Object.entries(headers)) {
+    nextHeaders.set(key, value)
+  }
+  config.headers = nextHeaders
+  return config
 })
 
 export function formatError(data: AxiosError | ErrorResponse | string): ErrorResponse {
@@ -46,14 +60,13 @@ function isAbortError(error: unknown): boolean {
   )
 }
 
-type StripSignalFromLastArg<TArgs extends unknown[]> =
-  TArgs extends [...infer Prefix, infer Last]
-    ? Last extends object | undefined
-      ? undefined extends Last
-        ? [...Prefix, Omit<Exclude<Last, undefined>, 'signal'>?]
-        : [...Prefix, Omit<Last, 'signal'>]
-      : TArgs
+type StripSignalFromLastArg<TArgs extends unknown[]> = TArgs extends [...infer Prefix, infer Last]
+  ? Last extends object | undefined
+    ? undefined extends Last
+      ? [...Prefix, Omit<Exclude<Last, undefined>, 'signal'>?]
+      : [...Prefix, Omit<Last, 'signal'>]
     : TArgs
+  : TArgs
 
 export function useEndpoint<TArgs extends unknown[], TResult>(
   endpoint: (...args: TArgs) => Promise<TResult>
