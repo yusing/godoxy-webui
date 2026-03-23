@@ -468,7 +468,7 @@ export default function RouteDetails() {
         </Card>
       )}
       {/* Load Balancer */}
-      {routeDetails.health.extra && (
+      {routeDetails.health?.extra && (
         <div className="space-y-2">
           <Card size="sm" className="px-2">
             <CardHeader>
@@ -513,7 +513,7 @@ export default function RouteDetails() {
               </DataList>
             </CardContent>
           </Card>
-          {routeDetails.health.extra.pool &&
+          {routeDetails.health?.extra?.pool &&
             Object.keys(routeDetails.health.extra.pool).length > 0 && (
               <Card size="sm" className="px-2">
                 <CardHeader>
