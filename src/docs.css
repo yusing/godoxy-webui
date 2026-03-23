@@ -2,10 +2,3 @@
 @import "fumadocs-ui/css/dusk.css";
 @import "fumadocs-ui/css/preset.css";
 @import "fumadocs-openapi/css/preset.css";
-
-/* Temp fix of https://github.com/fuma-nama/fumadocs/issues/3130 */
-@layer components {
-  #nd-sidebar .\*\:flex-col\! > :is(.flex, .inline-flex):not(.flex-col) {
-    @apply flex-row! gap-2!;
-  }
-}
