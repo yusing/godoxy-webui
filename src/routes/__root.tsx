@@ -1,8 +1,10 @@
 import { createRootRoute, HeadContent, Scripts } from '@tanstack/react-router'
+import { useEffect } from 'react'
 import Titlebar from '@/components/layout/Titlebar'
 import TitlebarController from '@/components/layout/TitlebarController'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import { Toaster } from '@/components/ui/sonner'
+import { registerBfcacheReload } from '@/lib/bfcache-reload'
 import { siteConfig } from '@/site-config'
 import docsCss from '../docs.css?url'
 import appCss from '../styles.css?url'
@@ -59,6 +61,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <ThemeProvider>
+          <BfcacheRestoreGuard />
           <main>
             <Titlebar />
             <TitlebarController />
@@ -81,4 +84,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </body>
     </html>
   )
+}
+
+function BfcacheRestoreGuard() {
+  useEffect(() => registerBfcacheReload(), [])
+
+  return null
 }
