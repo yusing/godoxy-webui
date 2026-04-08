@@ -86,6 +86,11 @@ export type ReverseProxyRoute = {
   load_balance?: LoadBalanceConfig
   /** Middlewares */
   middlewares?: MiddlewaresMap
+  /** Named inbound mTLS profile for this route.
+   *
+   * Only supported when no global entrypoint inbound mTLS profile is configured.
+   */
+  inbound_mtls_profile?: string
   /** Homepage config */
   homepage?: HomepageConfig
   /** Access log config */
@@ -151,6 +156,11 @@ export type FileServerRoute = {
    * See https://pkg.go.dev/net/http#hdr-Patterns-ServeMux
    */
   path_patterns?: PathPattern[]
+  /** Named inbound mTLS profile for this route.
+   *
+   * Only supported when no global entrypoint inbound mTLS profile is configured.
+   */
+  inbound_mtls_profile?: string
   /** Middlewares */
   middlewares?: MiddlewaresMap
   /** Homepage config */

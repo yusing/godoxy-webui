@@ -4,7 +4,10 @@ import type { ACLConfig } from './acl'
 import type { AutocertConfig } from './autocert'
 import type { EntrypointConfig } from './entrypoint'
 import type { HomepageConfig } from './homepage'
+import type { InboundMTLSProfiles } from './inbound_mtls'
 import type { Providers } from './providers'
+
+export type { InboundMTLSProfile, InboundMTLSProfiles } from './inbound_mtls'
 
 export type Config = {
   /** Optional access control configuration */
@@ -13,6 +16,8 @@ export type Config = {
   autocert?: AutocertConfig
   /** Optional entrypoint configuration */
   entrypoint?: EntrypointConfig
+  /** Named inbound mTLS trust profiles */
+  inbound_mtls_profiles?: InboundMTLSProfiles
   /** Providers configuration (include file, docker, notification) */
   providers: Providers
   /** List of domains to match

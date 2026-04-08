@@ -7,6 +7,8 @@ export type EntrypointConfig = {
   support_proxy_protocol?: boolean
   /** Enable support for relay proxy protocol header */
   relay_proxy_protocol_header?: boolean
+  /** Named inbound mTLS profile enforced for all HTTPS traffic on this entrypoint */
+  inbound_mtls_profile?: string
   /** Entrypoint middleware configuration */
   middlewares?: EntrypointMiddlewares
   /** Entrypoint access log configuration */
