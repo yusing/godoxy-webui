@@ -5,6 +5,8 @@ import type { RequestLogConfig } from './access_log'
 export type EntrypointConfig = {
   /** Enable support for proxy protocol */
   support_proxy_protocol?: boolean
+  /** Enable support for relay proxy protocol header */
+  relay_proxy_protocol_header?: boolean
   /** Entrypoint middleware configuration */
   middlewares?: EntrypointMiddlewares
   /** Entrypoint access log configuration */
