@@ -919,6 +919,7 @@ export interface Route {
   homepage: HomepageItemConfig;
   host: string;
   idlewatcher?: IdlewatcherConfig | null;
+  inbound_mtls_profile: string;
   /** Index file to serve for single-page app mode */
   index: string;
   load_balance?: LoadBalancerConfig | null;
@@ -932,6 +933,8 @@ export interface Route {
   provider?: string | null;
   proxmox?: ProxmoxNodeConfig | null;
   purl: string;
+  /** TCP only: relay PROXY protocol header to the destination */
+  relay_proxy_protocol_header: boolean;
   response_header_timeout: number;
   root: string;
   rule_file?: string | null;
@@ -1262,6 +1265,7 @@ export namespace Cert {
    * @summary Renew cert
    * @request GET:/cert/renew
    * @response `200` `SuccessResponse` OK
+   * @response `400` `ErrorResponse` Bad Request
    * @response `403` `ErrorResponse` Forbidden
    * @response `500` `ErrorResponse` Internal Server Error
    */
@@ -2816,6 +2820,7 @@ export class Api<
      * @summary Renew cert
      * @request GET:/cert/renew
      * @response `200` `SuccessResponse` OK
+     * @response `400` `ErrorResponse` Bad Request
      * @response `403` `ErrorResponse` Forbidden
      * @response `500` `ErrorResponse` Internal Server Error
      */
