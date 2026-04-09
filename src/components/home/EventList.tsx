@@ -7,11 +7,15 @@ import {
 } from '@tabler/icons-react'
 import { useEffect, useRef, useState } from 'react'
 import { useWebSocketApi } from '@/hooks/websocket'
-import type { EventsLevel, HealthJSON, Route } from '@/lib/api'
+import type { Event as ApiEvent, EventsLevel, HealthJSON, Route } from '@/lib/api'
 import { formatRelTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { Badge } from '../ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
+import {
+  createBufferedPrependListUpdater,
+  type BufferedPrependListUpdater,
+} from './event-list-buffer'
 import { store } from './store'
 
 export { EventsList, EventsWatcher }
@@ -25,7 +29,7 @@ type EventCommon = {
   action: string
 }
 
-type Event = EventCommon &
+type HomeEvent = EventCommon &
   (
     | {
         category: 'health'
@@ -133,7 +137,7 @@ function EventsList({ mobileDrawer = false }: { mobileDrawer?: boolean }) {
       >
         <div className="space-y-2 h-full overflow-y-auto px-1 -mx-1">
           {events.map(event => (
-            <EventRow key={event.uuid} event={event as Event} />
+            <EventRow key={event.uuid} event={event as HomeEvent} />
           ))}
         </div>
       </CardContent>
@@ -156,7 +160,7 @@ function levelClassname(level: EventsLevel) {
   }
 }
 
-function EventRow({ event }: { event: Event }) {
+function EventRow({ event }: { event: HomeEvent }) {
   const isHealthServiceDown = event.category === 'health' && event.action === 'service_down'
 
   let icon: React.ReactNode
@@ -254,7 +258,7 @@ function RelTimeBadge({
   )
 }
 
-function EventData({ event }: { event: Event }) {
+function EventData({ event }: { event: HomeEvent }) {
   switch (event.category) {
     case 'pool.proxmox_nodes': {
       return (
@@ -340,14 +344,27 @@ function EventData({ event }: { event: Event }) {
 }
 
 function EventsWatcher() {
+  const eventsBufferRef = useRef<BufferedPrependListUpdater<HomeEvent> | null>(null)
+
+  if (!eventsBufferRef.current) {
+    eventsBufferRef.current = createBufferedPrependListUpdater<ApiEvent, HomeEvent>({
+      limit: 50,
+      throttleMs: 75,
+      set: store.events.set,
+    })
+  }
+
   useEffect(() => {
     store.events.reset()
+    return () => {
+      eventsBufferRef.current?.clear()
+    }
   }, [])
 
-  useWebSocketApi<Event>({
+  useWebSocketApi<HomeEvent>({
     endpoint: '/events',
     onMessage: data => {
-      store.events.set(prev => [data, ...prev].slice(0, 50))
+      eventsBufferRef.current?.enqueue(data)
     },
   })
   return null
