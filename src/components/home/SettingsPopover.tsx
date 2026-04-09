@@ -72,7 +72,7 @@ export default function SettingsPopover() {
                 state={store.selectedSecondDrive}
                 options={secondDriveOptions}
                 className="w-full"
-                captializeSelectItems={false}
+                capitalizeSelectItems={false}
               />
             </div>
             <Separator />

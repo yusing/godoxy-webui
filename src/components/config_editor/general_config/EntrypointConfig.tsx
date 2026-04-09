@@ -39,7 +39,7 @@ function EntrypointNetworkConfig() {
             description="Require client certificates for all HTTPS traffic on this entrypoint using a named profile."
             options={[undefined, ...profileNames]}
             className="w-full"
-            captializeSelectItems={false}
+            capitalizeSelectItems={false}
           />
         </div>
       </CardContent>

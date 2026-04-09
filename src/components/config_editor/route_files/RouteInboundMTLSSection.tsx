@@ -25,7 +25,7 @@ export function RouteInboundMTLSSection({ form }: RouteInboundMTLSSectionProps) 
           description="Optional named client-certificate trust profile for this HTTP-based route."
           options={profileNames}
           className="w-full"
-          captializeSelectItems={false}
+          capitalizeSelectItems={false}
         />
         <RenderWithUpdate state={form.inbound_mtls_profile}>
           {(value, setValue) => (
@@ -36,6 +36,7 @@ export function RouteInboundMTLSSection({ form }: RouteInboundMTLSSectionProps) 
               className="shrink-0"
               onClick={() => setValue(undefined)}
               disabled={!value}
+              aria-label="Clear mTLS profile selection"
             >
               <IconX className="size-4" />
             </Button>
