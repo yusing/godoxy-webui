@@ -1,9 +1,8 @@
-import { AxiosError } from 'axios'
 import { isEqual } from 'juststore'
 import { useEffect } from 'react'
 import { useMount } from 'react-use'
 import { parse as parseYAML, stringify as stringifyYAML } from 'yaml'
-import { api, formatErrorString, useEndpoint } from '@/lib/api-client'
+import { api, formatErrorString, isFetchApiError, useEndpoint } from '@/lib/api-client'
 import type { ConfigFile } from '@/types/file'
 import type { Config } from '@/types/godoxy'
 import type { GoDoxyError } from '../GoDoxyError'
@@ -109,8 +108,8 @@ async function validate(content: string, type: ConfigFile['type']) {
     .validate({ type }, content)
     .then(() => null)
     .catch(e => {
-      if (e instanceof AxiosError) {
-        return e.response?.data as GoDoxyError
+      if (isFetchApiError(e) && e.error != null) {
+        return e.error as GoDoxyError
       }
       return null
     })

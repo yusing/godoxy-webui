@@ -1,11 +1,8 @@
-import type { AxiosError } from 'axios'
 import { toast } from 'sonner'
 import type { ErrorResponse } from './api'
 import { formatError } from './api-client'
 
-export function toastError<T extends string | Error | Event | ErrorResponse | AxiosError>(
-  error: T
-) {
+export function toastError(error: string | Error | Event | ErrorResponse | unknown) {
   if (error instanceof Event) {
     toast.error('Websocket error', { duration: 3000 })
   } else {

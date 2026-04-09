@@ -1,52 +1,90 @@
-import { AxiosError, AxiosHeaders } from 'axios'
 import { useEffect, useRef } from 'react'
-import { Api, type ErrorResponse } from '@/lib/api'
+import {
+  Api,
+  ContentType,
+  type ErrorResponse,
+  type FullRequestParams,
+  type HttpResponse,
+} from '@/lib/api'
 import { withCSRFHeader } from '@/lib/csrf'
 
 // this is for server side only, on client side we use relative path for middleware to handle
 const apiAddr = process.env.GODOXY_API_ADDR ? `http://${process.env.GODOXY_API_ADDR}` : ''
 
-export const api = new Api({
-  baseURL: `${apiAddr}/api/v1`,
-  secure: process.env.GODOXY_API_ADDR !== undefined && process.env.NODE_ENV === 'production',
-  format: 'json',
-})
-
-api.instance.interceptors.request.use(config => {
-  const headers = withCSRFHeader({}, config.method)
-  if (Object.keys(headers).length === 0) {
-    return config
+function csrfFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  const method = (init?.method ?? 'GET').toUpperCase()
+  const extra = withCSRFHeader({}, method)
+  if (Object.keys(extra).length === 0) {
+    return fetch(input, init)
   }
-  const nextHeaders = AxiosHeaders.from(config.headers)
-  for (const [key, value] of Object.entries(headers)) {
-    nextHeaders.set(key, value)
+  const headers = new Headers(init?.headers ?? undefined)
+  for (const [key, value] of Object.entries(extra)) {
+    headers.set(key, value)
   }
-  config.headers = nextHeaders
-  return config
-})
+  return fetch(input, { ...init, headers })
+}
 
-export function formatError(data: AxiosError | ErrorResponse | string): ErrorResponse {
-  if (data instanceof AxiosError) {
-    if (data.response) {
-      if (typeof data.response.data === 'object') {
-        return data.response.data as ErrorResponse
-      }
-      if (typeof data.response.data === 'string') {
-        return { message: data.response.data }
-      }
-      return { message: data.message }
+function createApi(): Api {
+  const client = new Api({
+    baseUrl: `${apiAddr}/api/v1`,
+    customFetch: csrfFetch,
+    baseApiParams: {
+      secure: process.env.GODOXY_API_ADDR !== undefined && process.env.NODE_ENV === 'production',
+      format: 'json',
+    },
+  })
+  const request = client.request.bind(client)
+  client.request = (async (params: FullRequestParams) => {
+    const effective =
+      params.type === undefined && typeof params.body === 'string'
+        ? { ...params, type: ContentType.Text }
+        : params
+    return request(effective)
+  }) as typeof client.request
+  return client
+}
+
+export const api = createApi()
+
+export function isFetchApiError(err: unknown): err is HttpResponse<unknown, unknown> {
+  return (
+    err !== null &&
+    typeof err === 'object' &&
+    'ok' in err &&
+    typeof (err as Response).ok === 'boolean' &&
+    (err as Response).ok === false
+  )
+}
+
+export function formatError(data: unknown): ErrorResponse {
+  if (isFetchApiError(data)) {
+    const body = data.error
+    if (body !== null && typeof body === 'object' && 'message' in body) {
+      return body as ErrorResponse
     }
+    if (typeof body === 'string') {
+      return { message: body }
+    }
+    if (body instanceof Error) {
+      return { message: body.message }
+    }
+    return { message: data.statusText || 'Request failed' }
   }
-  if (typeof data === 'object') {
+  if (typeof data === 'object' && data !== null) {
     if (data instanceof Error) {
       return { message: data.message }
     }
-    return data as ErrorResponse
+    if ('message' in data && typeof (data as ErrorResponse).message === 'string') {
+      return data as ErrorResponse
+    }
   }
-  return { message: data }
+  if (typeof data === 'string') {
+    return { message: data }
+  }
+  return { message: String(data) }
 }
 
-export function formatErrorString(data: AxiosError | ErrorResponse | string): string {
+export function formatErrorString(data: unknown): string {
   const error = formatError(data)
   return `${error.message}${error.error ? `: ${error.error}` : ''}`
 }
@@ -55,8 +93,8 @@ const neverSettled = new Promise<never>(() => {})
 
 function isAbortError(error: unknown): boolean {
   return (
-    (error instanceof AxiosError && error.code === 'ERR_CANCELED') ||
-    (error instanceof DOMException && error.name === 'AbortError')
+    (error instanceof DOMException && error.name === 'AbortError') ||
+    (error instanceof Error && error.name === 'AbortError')
   )
 }
 
