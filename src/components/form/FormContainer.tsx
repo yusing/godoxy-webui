@@ -1,5 +1,5 @@
 import { IconChevronDown, IconPlus } from '@tabler/icons-react'
-import { Children, type ReactNode } from 'react'
+import React, { Children, type ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -44,9 +44,10 @@ export function FormContainer({
 }: FormContainerProps) {
   'use memo'
 
-  const hasChildren = Children.count(children) > 0
+  const nChildren = Children.count(children)
+  const hasChildren = nChildren > 0
   const collapsible = level > 1
-  const defaultOpen = required && hasChildren
+  const defaultOpen = hasChildren && (required || nChildren === 1)
 
   const title = card ? (
     <div className="flex gap-4 items-center">
@@ -129,8 +130,12 @@ export function FormContainer({
     </>
   )
 
-  const maybeCollapsible = (children: ReactNode) =>
-    collapsible ? <CollapsibleContent>{children}</CollapsibleContent> : children
+  function Content(props: React.PropsWithChildren) {
+    if (collapsible) {
+      return <CollapsibleContent>{props.children}</CollapsibleContent>
+    }
+    return props.children
+  }
 
   const result = card ? (
     <Card aria-required={required || undefined} className={cn(readonly && 'opacity-60 grayscale')}>
@@ -138,23 +143,19 @@ export function FormContainer({
         {header}
         {desc}
       </CardHeader>
-      {maybeCollapsible(
-        <>
-          {content}
-          {foot}
-        </>
-      )}
+      <Content>
+        {content}
+        {foot}
+      </Content>
     </Card>
   ) : (
     <div aria-required={required || undefined} className={cn(readonly && 'opacity-60 grayscale')}>
       {header}
-      {maybeCollapsible(
-        <>
-          {desc}
-          {content}
-          {foot}
-        </>
-      )}
+      <Content>
+        {desc}
+        {content}
+        {foot}
+      </Content>
     </div>
   )
 
