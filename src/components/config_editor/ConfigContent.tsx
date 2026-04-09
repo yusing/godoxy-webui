@@ -15,10 +15,10 @@ export default function ConfigContent({ className }: { className?: string }) {
   const [isTitleOverridden, setIsTitleOverridden] = useState(false)
 
   const section =
-    sectionsByFileType[activeFile.type].sections.find(section => section.id === activeSection) ??
+    sectionsByFileType[activeFile.type].sections.find(s => s.id === activeSection) ??
     sectionsByFileType[activeFile.type].sections[0]!
   const preloadedSections = sectionsByFileType[activeFile.type].sections.filter(
-    section => 'preload' in section && section.preload
+    s => 'preload' in s && s.preload
   )
 
   const label = section.label
@@ -44,10 +44,10 @@ export default function ConfigContent({ className }: { className?: string }) {
         titleTarget={headerTitleEl}
         setTitleOverride={setIsTitleOverridden}
       >
-        {preloadedSections.map(section => {
+        {preloadedSections.map(s => {
           return (
-            <div key={section.id} hidden={section.id !== activeSection}>
-              <section.Content isActive={section.id === activeSection} />
+            <div key={s.id} hidden={s.id !== activeSection}>
+              <s.Content isActive={s.id === activeSection} />
             </div>
           )
         })}

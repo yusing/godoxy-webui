@@ -34,8 +34,8 @@ export default function AppEditDialog() {
 
 function AppEditDialog_({ state }: { state: ObjectState<HomepageItem> }) {
   const app = state.use()
-  const icon = state.icon.useCompute(icon => {
-    if (icon) return icon
+  const icon = state.icon.useCompute(_icon => {
+    if (_icon) return _icon
     return (app.name || app.alias)
       .split('.')[0]!
       .toLowerCase()
@@ -81,7 +81,7 @@ function AppEditDialog_({ state }: { state: ObjectState<HomepageItem> }) {
           <div className="flex items-start gap-4">
             <div className="hidden sm:flex h-full items-center shrink-0 border-2 p-2 rounded-xl">
               <Render state={form.icon}>
-                {icon => <AppIcon size={36} alias={app.alias} url={icon} />}
+                {_icon => <AppIcon size={36} alias={app.alias} url={_icon} />}
               </Render>
             </div>
             <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">

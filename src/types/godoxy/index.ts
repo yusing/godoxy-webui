@@ -45,19 +45,19 @@ if (typeof window !== 'undefined') {
   } as unknown as typeof Buffer
 }
 
-import $ from '@apidevtools/json-schema-ref-parser'
+import { dereference } from '@apidevtools/json-schema-ref-parser'
 
-const ACLSchema = (await $.dereference(_ACLSchema)) as typeof ACLSchemaDeref
-const AutocertSchema = (await $.dereference(_AutocertSchema)) as typeof AutocertSchemaDeref
-const ConfigSchema = (await $.dereference(_ConfigSchema)) as typeof ConfigSchemaDeref
-const DockerRoutesSchema = (await $.dereference(
+const ACLSchema = (await dereference(_ACLSchema)) as typeof ACLSchemaDeref
+const AutocertSchema = (await dereference(_AutocertSchema)) as typeof AutocertSchemaDeref
+const ConfigSchema = (await dereference(_ConfigSchema)) as typeof ConfigSchemaDeref
+const DockerRoutesSchema = (await dereference(
   _DockerRoutesSchema
 )) as typeof DockerRoutesSchemaDeref
-const MaxmindSchema = (await $.dereference(_MaxmindSchema)) as typeof MaxmindSchemaDeref
-const MiddlewareComposeSchema = (await $.dereference(
+const MaxmindSchema = (await dereference(_MaxmindSchema)) as typeof MaxmindSchemaDeref
+const MiddlewareComposeSchema = (await dereference(
   _MiddlewareComposeSchema
 )) as typeof MiddlewareComposeSchemaDeref
-const RoutesSchema = (await $.dereference(_RoutesSchema)) as typeof RoutesSchemaDeref
+const RoutesSchema = (await dereference(_RoutesSchema)) as typeof RoutesSchemaDeref
 
 export {
   ACLSchema,

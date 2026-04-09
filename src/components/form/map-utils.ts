@@ -38,7 +38,7 @@ function getMergedValuesAndKeys({
   if (!shouldSortMapKeys(schema)) return { keys, mergedValues }
 
   return {
-    keys: keys.sort((key1, key2) =>
+    keys: keys.toSorted((key1, key2) =>
       compareKeys(key1, key2, {
         keyField: String(keyField),
         nameField: String(nameField),
@@ -67,7 +67,7 @@ function getMergedKeys({
   const keys = Array.from(merged)
   if (!shouldSortMapKeys(schema)) return keys
 
-  return keys.sort((key1, key2) =>
+  return keys.toSorted((key1, key2) =>
     compareKeys(key1, key2, {
       keyField: String(keyField),
       nameField: String(nameField),

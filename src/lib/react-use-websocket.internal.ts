@@ -1,5 +1,5 @@
 // @ts-nocheck
-export type UseWebSocketExport = typeof import('react-use-websocket')['default']
+export type UseWebSocketExport = (typeof import('react-use-websocket'))['default']
 
 export type ReactUseWebSocketModule = typeof import('react-use-websocket') & {
   useWebSocket?: UseWebSocketExport

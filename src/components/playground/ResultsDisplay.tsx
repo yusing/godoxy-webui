@@ -244,5 +244,5 @@ function JSONCodeBlock({ value }: { value: unknown }) {
 }
 
 function expandURLValues(values: Record<string, string[]>): Record<string, string> {
-  return Object.fromEntries(Object.entries(values).map(([key, values]) => [key, values.join(',')]))
+  return Object.fromEntries(Object.entries(values).map(([k, v]) => [k, v.join(',')]))
 }

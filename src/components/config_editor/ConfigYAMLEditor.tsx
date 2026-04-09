@@ -28,7 +28,7 @@ export default function ConfigYAMLEditor({ ...props }: Omit<ReactCodeMirrorProps
   return (
     <YAMLEditor
       value={content}
-      onChange={content => configStore.content.set(content)}
+      onChange={_content => configStore.content.set(_content)}
       schema={activeFile ? schemas[activeFile.type] : undefined}
       {...props}
     />

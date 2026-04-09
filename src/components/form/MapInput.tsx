@@ -69,7 +69,7 @@ function RecordInput<T extends Record<string, unknown>>({
   const keys = useMemo(() => {
     const current = Object.keys(value ?? {})
     const currentSet = new Set(current)
-    // eslint-disable-next-line react-hooks/refs
+    //
     const ordered: string[] = pureKeysRef.current.filter(k => currentSet.has(k))
     for (const k of ordered) currentSet.delete(k)
     for (const k of currentSet) ordered.push(k)
@@ -82,13 +82,12 @@ function RecordInput<T extends Record<string, unknown>>({
       else complex.push(k)
     }
     const ranked = [...scalar, ...complex]
-    // eslint-disable-next-line react-hooks/refs
     pureKeysRef.current = ranked
     return ranked
   }, [value, valueSchema])
 
   function deleteKey(actualKey: string) {
-    const newValue = { ...(value ?? {}) } as Record<string, unknown>
+    const newValue = { ...value } as Record<string, unknown>
     delete newValue[actualKey]
     onChange(newValue as T)
   }

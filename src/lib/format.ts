@@ -117,20 +117,12 @@ export function toFahrenheit(celsius: number) {
 export function formatRelTime(t: Date | number | null, ref: Date | number = new Date()): string {
   if (!t || (typeof t === 'number' && t <= 0)) return 'never'
 
-  const toDate = (v: Date | number): Date => {
-    if (v instanceof Date) return v
-    const ms = v > 1e12 ? v : v * 1000
-    return new Date(ms)
-  }
-
   const tTime = toDate(t)
   if (Number.isNaN(tTime.getTime())) return 'never'
 
   const refTime = toDate(ref)
   const diff = tTime.getTime() - refTime.getTime()
   const absDiff = Math.abs(diff)
-
-  const round = (value: number) => Math.round(value)
 
   if (absDiff < 1000) return 'now'
 
@@ -140,20 +132,19 @@ export function formatRelTime(t: Date | number | null, ref: Date | number = new 
 
   if (absDiff < 60 * 1000) {
     const seconds = absDiff / 1000
-    return diff < 0 ? `${round(seconds)} seconds ago` : `in ${round(seconds)} seconds`
+    return diff < 0 ? `${Math.round(seconds)} seconds ago` : `in ${Math.round(seconds)} seconds`
   }
 
   if (absDiff < 60 * 60 * 1000) {
     const minutes = absDiff / (60 * 1000)
-    return diff < 0 ? `${round(minutes)} minutes ago` : `in ${round(minutes)} minutes`
+    return diff < 0 ? `${Math.round(minutes)} minutes ago` : `in ${Math.round(minutes)} minutes`
   }
 
   if (absDiff < 24 * 60 * 60 * 1000) {
     const hours = absDiff / (60 * 60 * 1000)
-    return diff < 0 ? `${round(hours)} hours ago` : `in ${round(hours)} hours`
+    return diff < 0 ? `${Math.round(hours)} hours ago` : `in ${Math.round(hours)} hours`
   }
 
-  const pad2 = (n: number) => String(n).padStart(2, '0')
   const timePart = `${pad2(tTime.getHours())}:${pad2(tTime.getMinutes())}:${pad2(tTime.getSeconds())}`
   const mdPart = `${pad2(tTime.getMonth() + 1)}-${pad2(tTime.getDate())}`
 
@@ -168,4 +159,14 @@ export function providerName(name: string) {
     return name.slice(0, -1)
   }
   return name
+}
+
+export function pad2(n: number) {
+  return String(n).padStart(2, '0')
+}
+
+function toDate(v: Date | number): Date {
+  if (v instanceof Date) return v
+  const ms = v > 1e12 ? v : v * 1000
+  return new Date(ms)
 }

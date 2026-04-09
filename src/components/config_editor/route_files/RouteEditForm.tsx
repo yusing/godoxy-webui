@@ -80,7 +80,7 @@ export default function RouteEditForm({
   onSave,
   titlePortal: TitlePortal,
   actionButtonsPortal: ActionButtonsPortal,
-  formatTitle = (alias: string) => `Edit Route: ${alias}`,
+  formatTitle = (_alias: string) => `Edit Route: ${_alias}`,
   saveButtonIcon = IconCheck,
   saveButtonText = 'Done',
   secondActionButtonIcon = IconX,
@@ -200,7 +200,9 @@ export default function RouteEditForm({
         <>
           <DialogHeader>
             <DialogTitle className="flex items-center justify-between gap-4">
-              <Render state={form.alias}>{alias => <span>{formatTitle(alias ?? '')}</span>}</Render>
+              <Render state={form.alias}>
+                {_alias => <span>{formatTitle(_alias ?? '')}</span>}
+              </Render>
               {actionButtons}
             </DialogTitle>
           </DialogHeader>
@@ -209,7 +211,7 @@ export default function RouteEditForm({
       )}
       {!dialog && formatTitle && TitlePortal && (
         <Render state={form.alias}>
-          {alias => <TitlePortal>{formatTitle(alias ?? '')}</TitlePortal>}
+          {_alias => <TitlePortal>{formatTitle(_alias ?? '')}</TitlePortal>}
         </Render>
       )}
       {!dialog && ActionButtonsPortal && <ActionButtonsPortal>{actionButtons}</ActionButtonsPortal>}

@@ -76,15 +76,14 @@ function RouteCardContent({
         <RouteEditFormDialogContent
           alias={alias}
           route={route}
-          formatTitle={alias => (
+          formatTitle={_alias => (
             <div className="flex items-center gap-2">
               <Label className="text-muted-foreground">Editing Route: </Label>
-              <span className="font-semibold">{alias}</span>
+              <span className="font-semibold">{_alias}</span>
             </div>
           )}
           onSave={v => {
             setIsEditing(false)
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { alias: _, ...rest } = v // exclude alias from the saved route, we don't want this in route files
             onSave(alias, rest)
           }}

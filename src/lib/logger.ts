@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/**/
 
 const level = process.env.NODE_ENV === 'production' ? 'info' : 'debug'
 
@@ -12,8 +12,8 @@ const LEVELS = {
 class Logger {
   level: keyof typeof LEVELS
 
-  constructor(level: keyof typeof LEVELS) {
-    this.level = level
+  constructor(_level: keyof typeof LEVELS) {
+    this.level = _level
   }
 
   debug(message: string, ...args: any[]) {

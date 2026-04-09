@@ -14,9 +14,9 @@ export function RouteMiddlewaresSection({ state }: RouteMiddlewaresSectionProps)
 
   const workingValue: MiddlewareCompose.EntrypointMiddlewares = useMemo(() => {
     if (!value) return []
-    return Object.entries(value).map(([key, value]) => ({
-      use: middlewareUseToSnakeCase(key),
-      ...value,
+    return Object.entries(value).map(([k, v]) => ({
+      use: middlewareUseToSnakeCase(k),
+      ...v,
     }))
   }, [value])
 

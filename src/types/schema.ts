@@ -79,21 +79,21 @@ type PropertySchema = { [key: string]: JSONSchema | undefined }
 
 function distinctSchema(schema: PropertySchema): PropertySchema {
   // select one for multiple fields with same description or title
-  const distinctSchema: Record<string, JSONSchema & { key?: string }> = {}
+  const _distinctSchema: Record<string, JSONSchema & { key?: string }> = {}
   Object.entries(schema).forEach(([key, value]) => {
     if (!value) return
     const distinctKey = value.title ?? value.description ?? key
-    if (!distinctSchema[distinctKey]) {
-      distinctSchema[distinctKey] = {
+    if (!_distinctSchema[distinctKey]) {
+      _distinctSchema[distinctKey] = {
         ...value,
         key,
       }
     }
   })
-  return Object.values(distinctSchema).reduce((acc, schema) => {
-    const key = schema.key!
-    delete schema.key
-    acc[key] = schema
+  return Object.values(_distinctSchema).reduce((acc, _schema) => {
+    const key = _schema.key!
+    delete _schema.key
+    acc[key] = _schema
     return acc
   }, {} as PropertySchema)
 }
@@ -280,25 +280,6 @@ function getDefaultValue(
   if (schema.const !== undefined) return schema.const
   if (schema.enum && schema.enum.length > 0) return schema.enum[0]
 
-  function isSchemaType(inner: JSONSchema, type: string): boolean {
-    if (inner.type === type) return true
-    if (Array.isArray(inner.type)) return inner.type.includes(type)
-    return false
-  }
-
-  function isObjectishSchema(inner: JSONSchema): boolean {
-    return Boolean(
-      isSchemaType(inner, 'object') ||
-        inner.properties ||
-        inner.additionalProperties ||
-        inner.patternProperties
-    )
-  }
-
-  function isArrayishSchema(inner: JSONSchema): boolean {
-    return Boolean(isSchemaType(inner, 'array') || inner.items || inner.prefixItems)
-  }
-
   if (isUnionType(schema)) {
     const unionSchemas = getUnionSchemas(schema)
     const picked =
@@ -334,4 +315,23 @@ function getDefaultValue(
     }
   }
   return ''
+}
+
+function isSchemaType(inner: JSONSchema, type: string): boolean {
+  if (inner.type === type) return true
+  if (Array.isArray(inner.type)) return inner.type.includes(type)
+  return false
+}
+
+function isObjectishSchema(inner: JSONSchema): boolean {
+  return Boolean(
+    isSchemaType(inner, 'object') ||
+    inner.properties ||
+    inner.additionalProperties ||
+    inner.patternProperties
+  )
+}
+
+function isArrayishSchema(inner: JSONSchema): boolean {
+  return Boolean(isSchemaType(inner, 'array') || inner.items || inner.prefixItems)
 }

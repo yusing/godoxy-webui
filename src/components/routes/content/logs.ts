@@ -1,3 +1,5 @@
+import { pad2 } from '@/lib/format'
+
 export {
   extractDockerTimestamp,
   extractLeadingTimestamp,
@@ -174,12 +176,12 @@ function formatLineForTerminal(line: string, type: 'docker' | 'proxmox') {
 
   // For Proxmox journalctl logs, try to parse the journalctl format (e.g., "Jan 25 14:55:23")
   if (!hasDate && type === 'proxmox') {
-    const ts = parseJournalctlTimestamp(line)
-    if (ts && ts.match) {
-      const body = formatLogContent(stripLeadingSeparator(line.slice(ts.match.length)), {
+    const jts = parseJournalctlTimestamp(line)
+    if (jts && jts.match) {
+      const body = formatLogContent(stripLeadingSeparator(line.slice(jts.match.length)), {
         hasExternalTimestamp: true,
       })
-      return `${formatLocalDateTimeColored(ts.date)} ${body}`
+      return `${formatLocalDateTimeColored(jts.date)} ${body}`
     }
   }
 
@@ -497,6 +499,5 @@ function colorizeSystemLogTokens(line: string): string {
 }
 
 function formatLocalDateTimeColored(date: Date) {
-  const pad2 = (n: number) => String(n).padStart(2, '0')
   return `${ansi.dim}${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())} ${pad2(date.getHours())}:${pad2(date.getMinutes())}:${pad2(date.getSeconds())}${ansi.reset}`
 }

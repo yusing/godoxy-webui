@@ -16,13 +16,6 @@ function getDiffs<T extends object>(
 
   const diffs = new Set<string>()
 
-  const isPlainObject = (value: unknown): value is Record<string, unknown> => {
-    if (value === null || typeof value !== 'object') return false
-    if (Array.isArray(value)) return false
-    const proto = Object.getPrototypeOf(value)
-    return proto === Object.prototype || proto === null
-  }
-
   const walk = (a: unknown, b: unknown, path: string, depth: number) => {
     if (isEqual(a, b)) return
 
@@ -42,4 +35,11 @@ function getDiffs<T extends object>(
 
   walk(orig, current, '', 0)
   return Array.from(diffs)
+}
+
+function isPlainObject(value: unknown): value is Record<string, unknown> {
+  if (value === null || typeof value !== 'object') return false
+  if (Array.isArray(value)) return false
+  const proto = Object.getPrototypeOf(value)
+  return proto === Object.prototype || proto === null
 }

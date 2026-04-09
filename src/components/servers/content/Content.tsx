@@ -195,18 +195,18 @@ function SystemInfoGraphsPage() {
 
 function ServerVersionBadge({ agent }: { agent: string }) {
   const version = store.useCompute(`agents.${agent}.version`, value => normalizeVersion(value))
-  const cn = 'inline-flex h-7 items-center rounded-2xl border px-2 font-mono text-xs'
+  const className = 'inline-flex h-7 items-center rounded-2xl border px-2 font-mono text-xs'
   const style = {
     backgroundColor: `color-mix(in oklab, ${DS_TONE['bg-pve']} 36%, var(--card))`,
     borderColor: `color-mix(in oklab, ${DS_TONE['bg-pve']} 58%, transparent)`,
     color: DS_TONE['text-muted'],
   }
   return version ? (
-    <span className={cn} style={style}>
+    <span className={className} style={style}>
       {version}
     </span>
   ) : (
-    <span className={cn} style={style}>
+    <span className={className} style={style}>
       <VersionText className="text-current" />
     </span>
   )

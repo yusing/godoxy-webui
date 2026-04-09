@@ -14,7 +14,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from './ui/alert'
 
 const convertANSI = new Convert()
-// biome-ignore lint/suspicious/noControlCharactersInRegex: ANSI escape codes are safe
+/* eslint-disable-next-line no-control-regex */
 const ansiRegex = /(\x1b\[[0-9;]*m)/g
 
 export type GoDoxyError = string | Record<string, unknown> | WithSubject | NestedError

@@ -1,17 +1,17 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "@fontsource-variable/geist";
-@import "@fontsource-variable/geist-mono";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
   --font-sans:
-    "Geist", ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
-    "Segoe UI Symbol", "Noto Color Emoji";
+    'Geist', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
   --font-mono:
-    "Geist Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
+    'Geist Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
 
   --background: oklch(1 0 0);
   --foreground: oklch(0.2686 0 0);
@@ -213,13 +213,13 @@
     height: calc(100vh - var(--titlebar-height));
     overflow-x: hidden;
   }
-  [data-slot="sidebar-container"] {
+  [data-slot='sidebar-container'] {
     margin-top: var(--titlebar-height);
   }
 }
 
 @layer components {
-  [data-slot="card"] {
+  [data-slot='card'] {
     border-color: color-mix(in oklab, var(--foreground) 9%, transparent);
     box-shadow:
       inset 0 1px 0 color-mix(in oklab, var(--foreground) 7%, transparent),

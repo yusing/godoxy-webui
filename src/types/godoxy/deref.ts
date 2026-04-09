@@ -1,4 +1,4 @@
-import $RefParser from '@apidevtools/json-schema-ref-parser'
+import { dereference } from '@apidevtools/json-schema-ref-parser'
 import fs from 'bun'
 
 const inputFile = process.argv[2]
@@ -10,7 +10,7 @@ if (!inputFile) {
 const outputFile = inputFile.replace('.json', '.deref.json')
 
 try {
-  const schema = await $RefParser.dereference(inputFile)
+  const schema = await dereference(inputFile)
   fs.write(outputFile, JSON.stringify(schema, null, 0))
 } catch (error) {
   console.error(error)

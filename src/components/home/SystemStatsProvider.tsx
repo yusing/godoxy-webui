@@ -20,11 +20,11 @@ export default function SystemStatsProvider() {
       store.systemInfo.set({
         uptime: store.systemInfo.uptime.value,
         cpuAverage: Math.round(data.cpu_average * 100) / 100,
-        rootPartitionUsage: Math.round(getDiskUsage(data.disks, '/') ?? 0 * 100),
+        rootPartitionUsage: Math.round(getDiskUsage(data.disks, '/') ?? 0) * 100,
         rootPartitionUsageDesc: getDiskUsageDesc(data.disks, '/'),
         secondDriveOptions,
         secondaryPartitionUsage: Math.round(
-          getSelectedDiskUsage(data.disks, selectedSecondDrive) ?? 0 * 100
+          (getSelectedDiskUsage(data.disks, selectedSecondDrive) ?? 0) * 100
         ),
         secondaryPartitionUsageDesc: getSelectedDiskUsageDesc(data.disks, selectedSecondDrive),
         memoryUsage: Math.round(data.memory.used_percent * 100) / 100,
@@ -80,7 +80,7 @@ function getMemoryUsageDesc(memory: MemVirtualMemoryStat) {
 }
 
 function getDiskEntries(disks: Record<string, DiskUsageStat>) {
-  return Object.entries(disks).sort(([, left], [, right]) => {
+  return Object.entries(disks).toSorted(([, left], [, right]) => {
     if (right.total !== left.total) {
       return right.total - left.total
     }

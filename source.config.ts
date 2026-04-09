@@ -1,11 +1,11 @@
-import { remarkMdxMermaid } from "fumadocs-core/mdx-plugins";
-import { metaSchema, pageSchema } from "fumadocs-core/source/schema";
-import { defineConfig, defineDocs } from "fumadocs-mdx/config";
+import { remarkMdxMermaid } from 'fumadocs-core/mdx-plugins'
+import { metaSchema, pageSchema } from 'fumadocs-core/source/schema'
+import { defineConfig, defineDocs } from 'fumadocs-mdx/config'
 
 // You can customise Zod schemas for frontmatter and `meta.json` here
 // see https://fumadocs.dev/docs/mdx/collections
 export const docs = defineDocs({
-  dir: "wiki/content/docs",
+  dir: 'wiki/content/docs',
   docs: {
     schema: pageSchema,
     postprocess: {
@@ -15,10 +15,10 @@ export const docs = defineDocs({
   meta: {
     schema: metaSchema,
   },
-});
+})
 
 export default defineConfig({
   mdxOptions: {
     remarkPlugins: [remarkMdxMermaid],
   },
-});
+})

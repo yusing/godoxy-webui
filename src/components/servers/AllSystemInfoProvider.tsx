@@ -16,8 +16,8 @@ export default function AllSystemInfoProvider() {
     },
     onMessage: data => {
       // server sends one agent at a time, so we need to set each one individually
-      for (const agent in data) {
-        store.systemInfo[agent]?.set(data[agent]!)
+      for (const _agent in data) {
+        store.systemInfo[_agent]?.set(data[_agent]!)
       }
       store.readyState.set(true)
     },
@@ -34,8 +34,8 @@ export default function AllSystemInfoProvider() {
         }
         store.agents.set(
           res.data.reduce(
-            (acc, agent) => {
-              acc[agent.name] = agent
+            (acc, _agent) => {
+              acc[_agent.name] = _agent
               return acc
             },
             {} as Record<string, Agent>

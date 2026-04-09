@@ -192,7 +192,7 @@ export function SidebarController() {
       unsubSection()
       unsubFile()
     }
-  }, [sidebar.isMobile, sidebar.state, sidebar.toggleSidebar])
+  }, [sidebar])
 
   return null
 }

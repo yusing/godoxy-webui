@@ -42,7 +42,7 @@ export default function AccessControlConfigContent() {
 
 function ACLNotifyConfig() {
   const providerNames = configStore.configObject.providers.notification.useCompute(
-    p => p?.map(p => p.name) ?? []
+    providers => providers?.map(provider => provider.name) ?? []
   )
   const schema = useMemo(() => {
     const s = structuredClone(ACLSchema.definitions.ACLConfig.properties.notify)

@@ -412,7 +412,7 @@ function StoreMapInputItem<T extends FieldValues>({
         effectiveSchema
           ? {
               ...schema,
-              properties: { ...(schema.properties ?? {}), [fieldKey]: effectiveSchema },
+              properties: { ...schema.properties, [fieldKey]: effectiveSchema },
             }
           : schema
       }

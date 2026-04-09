@@ -139,7 +139,7 @@ export function StoreFieldInput<T extends FieldValues>({
                 value={stringify(value) ?? ''}
                 type={getInputType(vSchema?.type)}
                 placeholder={placeholder?.value ?? 'Value'}
-                onChange={({ target: { value } }) => update(value as T[typeof fieldKey])}
+                onChange={({ target }) => update(target.value as T[typeof fieldKey])}
               />
             )}
           </RenderWithUpdate>
