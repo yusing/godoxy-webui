@@ -7,28 +7,42 @@ cli:
 plugins:
   sources:
     - id: trunk
-      ref: v1.7.4
+      ref: v1.7.6
       uri: https://github.com/trunk-io/plugins
 # Many linters and tools depend on runtimes - configure them here. (https://docs.trunk.io/runtimes)
 runtimes:
   enabled:
     - node@22.16.0
     - python@3.10.8
+tools:
+  definitions:
+    - name: oxlint
+      runtime: node
+      package: oxlint
+      shims: [oxlint]
+      known_good_version: 1.59.0
+    - name: oxfmt
+      runtime: node
+      package: oxfmt
+      shims: [oxfmt]
+      known_good_version: 0.44.0
 # This is the section where you manage your linters. (https://docs.trunk.io/check/configuration)
 lint:
   disabled:
+    - biome
     - prettier
   enabled:
-    - svgo@4.0.0
+    - svgo@4.0.1
     - oxipng@10.1.0
-    - actionlint@1.7.11
-    - checkov@3.2.506
-    - biome@2.4.4
+    - oxlint@1.59.0
+    - oxfmt@0.44.0
+    - actionlint@1.7.12
+    - checkov@3.2.517
     - git-diff-check
     - hadolint@2.14.0
-    - markdownlint@0.47.0
-    - osv-scanner@2.3.3
-    - trufflehog@3.93.6
+    - markdownlint@0.48.0
+    - osv-scanner@2.3.5
+    - trufflehog@3.94.3
     - yamllint@1.38.0
   ignore:
     - linters: [ALL]
@@ -38,6 +52,58 @@ lint:
         - src/components/ui # shadcn components
         - src/types/**/*.json
         - src/lib/api.ts
+  definitions:
+    - name: oxlint
+      tools: [oxlint]
+      files: [typescript, javascript]
+      hold_the_line: false
+      commands:
+        - name: lint
+          run: oxlint --deny-warnings -f unix ${target}
+          output: regex
+          parse_regex: "(?P<path>[^:]+):(?P<line>\\d+):(?P<col>\\d+): (?P<message>.*) \\[(?P<severity>[^/]+)/(?P<code>[^\\]]+)\\]"
+          success_codes: [0, 1]
+          read_output_from: stdout
+          batch: true
+          cache_results: true
+      direct_configs:
+        - .oxlintrc.json
+      affects_cache:
+        - .oxlintrc.json
+        - tsconfig.json
+        - package.json
+      suggest_if: config_present
+      version_command:
+        parse_regex: ${semver}
+        run: oxlint --version
+    - name: oxfmt
+      tools: [oxfmt]
+      files:
+        - typescript
+        - javascript
+        - json
+        - yaml
+        - css
+        - html
+        - markdown
+      commands:
+        - name: format
+          output: rewrite
+          run: oxfmt --stdin-filepath ${target} -
+          stdin: true
+          success_codes: [0]
+          formatter: true
+      direct_configs:
+        - .oxfmtrc.json
+        - .oxfmtrc.jsonc
+      affects_cache:
+        - .oxfmtrc.json
+        - .oxfmtrc.jsonc
+        - package.json
+      suggest_if: config_present
+      version_command:
+        parse_regex: ${semver}
+        run: oxfmt --version
 actions:
   enabled:
     - trunk-announce
