@@ -11,21 +11,24 @@ import { withCSRFHeader } from '@/lib/csrf'
 // this is for server side only, on client side we use relative path for middleware to handle
 const apiAddr = process.env.GODOXY_API_ADDR ? `http://${process.env.GODOXY_API_ADDR}` : ''
 
-function csrfFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
-  const method = (init?.method ?? 'GET').toUpperCase()
-  const extra = withCSRFHeader({}, method)
-  if (Object.keys(extra).length === 0) {
-    return fetch(input, init)
-  }
-  const headers = new Headers(init?.headers ?? undefined)
-  for (const [key, value] of Object.entries(extra)) {
-    headers.set(key, value)
-  }
-  return fetch(input, { ...init, headers })
-}
+const csrfFetch: typeof fetch = Object.assign(
+  (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+    const method = (init?.method ?? 'GET').toUpperCase()
+    const extra = withCSRFHeader({}, method)
+    if (Object.keys(extra).length === 0) {
+      return fetch(input, init)
+    }
+    const headers = new Headers(init?.headers ?? undefined)
+    for (const [key, value] of Object.entries(extra)) {
+      headers.set(key, value)
+    }
+    return fetch(input, { ...init, headers })
+  },
+  fetch
+)
 
-function createApi(): Api {
-  const client = new Api({
+function createApi(): Api<unknown> {
+  const client = new Api<unknown>({
     baseUrl: `${apiAddr}/api/v1`,
     customFetch: csrfFetch,
     baseApiParams: {
