@@ -1,0 +1,54 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["unicorn", "typescript", "oxc", "react", "react-perf", "jsdoc", "import"],
+  "categories": {
+    "correctness": "warn",
+    "suspicious": "warn"
+  },
+  "rules": {
+    "import/no-unassigned-import": ["warn", { "allow": ["**/*.css"] }],
+    "react/react-in-jsx-scope": "off"
+  },
+  "settings": {
+    "next": {
+      "rootDir": []
+    },
+    "react": {
+      "formComponents": [],
+      "linkComponents": [],
+      "version": "19",
+      "componentWrapperFunctions": []
+    },
+    "jsdoc": {
+      "ignorePrivate": false,
+      "ignoreInternal": false,
+      "ignoreReplacesDocs": true,
+      "overrideReplacesDocs": true,
+      "augmentsExtendsReplacesDocs": false,
+      "implementsReplacesDocs": false,
+      "exemptDestructuredRootsFromChecks": false,
+      "tagNamePreference": {}
+    },
+    "vitest": {
+      "typecheck": false
+    }
+  },
+  "ignorePatterns": [
+    "src/components/ui/**",
+    "src/types/**/*.json",
+    "src/routeTree.gen.ts",
+    "src/lib/api.ts",
+    "src/**/*.test.ts",
+    "juststore/dist/**",
+    "juststore/tests/**",
+    "wiki/**"
+  ],
+  "overrides": [
+    {
+      "files": ["src/types/**/*.ts"],
+      "rules": {
+        "jsdoc/check-tag-names": "off"
+      }
+    }
+  ]
+}
