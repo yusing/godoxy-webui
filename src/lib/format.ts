@@ -132,17 +132,23 @@ export function formatRelTime(t: Date | number | null, ref: Date | number = new 
 
   if (absDiff < 60 * 1000) {
     const seconds = absDiff / 1000
-    return diff < 0 ? `${Math.round(seconds)} seconds ago` : `in ${Math.round(seconds)} seconds`
+    const rounded = Math.round(seconds)
+    const unit = rounded === 1 ? 'second' : 'seconds'
+    return diff < 0 ? `${rounded} ${unit} ago` : `in ${rounded} ${unit}`
   }
 
   if (absDiff < 60 * 60 * 1000) {
     const minutes = absDiff / (60 * 1000)
-    return diff < 0 ? `${Math.round(minutes)} minutes ago` : `in ${Math.round(minutes)} minutes`
+    const rounded = Math.round(minutes)
+    const unit = rounded === 1 ? 'minute' : 'minutes'
+    return diff < 0 ? `${rounded} ${unit} ago` : `in ${rounded} ${unit}`
   }
 
   if (absDiff < 24 * 60 * 60 * 1000) {
     const hours = absDiff / (60 * 60 * 1000)
-    return diff < 0 ? `${Math.round(hours)} hours ago` : `in ${Math.round(hours)} hours`
+    const rounded = Math.round(hours)
+    const unit = rounded === 1 ? 'hour' : 'hours'
+    return diff < 0 ? `${rounded} ${unit} ago` : `in ${rounded} ${unit}`
   }
 
   const timePart = `${pad2(tTime.getHours())}:${pad2(tTime.getMinutes())}:${pad2(tTime.getSeconds())}`
