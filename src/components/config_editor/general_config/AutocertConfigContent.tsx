@@ -1,13 +1,14 @@
 import { IconTrash } from '@tabler/icons-react'
 import AutoHeight from 'embla-carousel-auto-height'
 import type { ArrayState, ObjectState } from 'juststore'
-import { Suspense, useEffect, useRef } from 'react'
+import { Suspense, useEffect, useId, useRef } from 'react'
 import { FormContainer } from '@/components/form/FormContainer'
 import { StoreFieldInput } from '@/components/form/StoreFieldInput'
 import { StoreMapInput, StoreObjectInput } from '@/components/form/StoreMapInput'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Carousel, CarouselNext, CarouselPrevious, useCarousel } from '@/components/ui/carousel'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -15,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { type Autocert, AutocertSchema } from '@/types/godoxy'
+import { type Autocert, AutocertSchema, ConfigSchema } from '@/types/godoxy'
 import type { JSONSchema } from '@/types/schema'
 import { configStore } from '../store'
 import AutocertInfo from './AutocertInfo'
@@ -49,6 +50,13 @@ export default function AutocertConfigContent() {
           />
         </CardContent>
       </Card>
+      <StoreMapInput
+        card
+        label="Inbound mTLS Profiles"
+        description="Named client-certificate trust profiles that can use the system CA store and additional PEM CA files."
+        schema={ConfigSchema.definitions.InboundMTLSProfiles}
+        state={configStore.configObject.inbound_mtls_profiles.ensureObject()}
+      />
     </div>
   )
 }
@@ -122,6 +130,7 @@ function AutocertConfigContentExtra({ state }: { state: ArrayState<Autocert.Auto
   const numItems = state.useCompute(value => value?.length ?? 0)
 
   return Array.from({ length: numItems }).map((_, index) => (
+    // biome-ignore lint/suspicious/noArrayIndexKey: extra certificates are edited in-place and should keep a stable mounted form by position
     <Card key={index} className="col-span-full border-2 border-border">
       <CardHeader className="flex items-center gap-4">
         <CardTitle>Extra certificate {index + 1}</CardTitle>
@@ -162,6 +171,7 @@ function useLabelAndSchema(provider: string): [string, JSONSchema | undefined] {
 
 function DnsProviderOptionsEditor({ state }: { state: ObjectState<Autocert.AutocertConfig> }) {
   const provider = state.useCompute(cfg => cfg?.provider ?? 'local')
+  const authMethodFieldId = useId()
   const [label, schema] = useLabelAndSchema(provider)
 
   if (schema) {
@@ -206,12 +216,12 @@ function DnsProviderOptionsEditor({ state }: { state: ObjectState<Autocert.Autoc
     return (
       <div className="flex flex-col gap-3">
         <div className="flex flex-col gap-2">
-          <label className="text-sm font-medium">Auth method</label>
+          <Label htmlFor={authMethodFieldId}>Auth method</Label>
           <Select
             value={authMode}
             onValueChange={v => setAuthMode(v as 'application_key' | 'oauth2')}
           >
-            <SelectTrigger>
+            <SelectTrigger id={authMethodFieldId}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

@@ -28,6 +28,7 @@ import { RouteGeneralSection } from './RouteGeneralSection'
 import { RouteHealthcheckSection } from './RouteHealthcheckSection'
 import { RouteHTTPConfigSection } from './RouteHTTPConfigSection'
 import { RouteIdlewatcherSection } from './RouteIdlewatcherSection'
+import { RouteInboundMTLSSection } from './RouteInboundMTLSSection'
 import { RouteMiddlewaresSection } from './RouteMiddlewaresSection'
 import { RouteProxmoxSection } from './RouteProxmoxSection'
 import { RouteRulesSection } from './RouteRulesSection'
@@ -62,6 +63,7 @@ type FormSectionId =
   | 'fileserver'
   | 'http'
   | 'ssl'
+  | 'mtls'
   | 'healthcheck'
   | 'proxmox'
   | 'idlewatcher'
@@ -111,6 +113,7 @@ export default function RouteEditForm({
   const showFileServer = currentScheme === 'fileserver'
   const showHTTPConfig = isHTTP(currentScheme)
   const showSSLConfig = currentScheme === 'https'
+  const showInboundMTLS = isHTTP(currentScheme) || currentScheme === 'fileserver'
   const showProxmox = true
   const showIdlewatcher = isHTTP(currentScheme) || isStream(currentScheme)
   const showMiddlewares = isHTTP(currentScheme)
@@ -128,6 +131,7 @@ export default function RouteEditForm({
         },
         { id: 'http', label: 'HTTP Config', Icon: IconSettings, show: showHTTPConfig },
         { id: 'ssl', label: 'SSL Config', Icon: IconLock, show: showSSLConfig },
+        { id: 'mtls', label: 'Inbound mTLS', Icon: IconLock, show: showInboundMTLS },
         { id: 'healthcheck', label: 'Health Check', Icon: IconHeart, show: true },
         { id: 'proxmox', label: 'Proxmox', Icon: IconServer, show: showProxmox },
         {
@@ -149,7 +153,15 @@ export default function RouteEditForm({
           show: showRules,
         },
       ] as const,
-    [showFileServer, showHTTPConfig, showSSLConfig, showIdlewatcher, showMiddlewares, showRules]
+    [
+      showFileServer,
+      showHTTPConfig,
+      showSSLConfig,
+      showInboundMTLS,
+      showIdlewatcher,
+      showMiddlewares,
+      showRules,
+    ]
   )
 
   const SaveButtonIcon = saveButtonIcon
@@ -247,6 +259,17 @@ export default function RouteEditForm({
               className={formSectionCN}
             >
               <RouteSSLConfigSection form={form as FormStore<Routes.ReverseProxyRoute>} />
+            </FormSection>
+
+            <FormSection
+              id="mtls"
+              title="Inbound mTLS"
+              description="Configure client-certificate validation for incoming HTTPS traffic on this route"
+              className={formSectionCN}
+            >
+              <RouteInboundMTLSSection
+                form={form as FormStore<Routes.ReverseProxyRoute | Routes.FileServerRoute>}
+              />
             </FormSection>
 
             <FormSection

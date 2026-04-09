@@ -38,10 +38,10 @@ export type Section = {
 const configSections = [
   {
     id: 'autocert',
-    label: 'SSL Certificates',
+    label: 'Certificates & Trust',
     icon: Shield,
     Content: AutocertConfigContent,
-    diffPaths: ['autocert'],
+    diffPaths: ['autocert', 'inbound_mtls_profiles'],
   },
   {
     id: 'access-control',
