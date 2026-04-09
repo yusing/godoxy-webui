@@ -166,12 +166,15 @@ function getEffectiveValueSchema(
   return vSchema
 }
 
+/** Primary label: matches schema getTitle / StoreFieldInput (title, then description, then key). */
 function getLabel(schema: JSONSchema | undefined, field: string): string {
   if (!schema) return field
-  return !schema.title && schema.description ? schema.description : field
+  return schema.title ?? schema.description ?? field
 }
 
+/** Secondary line: field key (render as code) when schema defines title or description. */
 function getDescription(schema: JSONSchema | undefined, field: string): string | undefined {
   if (!schema) return undefined
-  return !schema.title && schema.description ? field : schema.title || schema.description
+  if (schema.title ?? schema.description) return field
+  return undefined
 }

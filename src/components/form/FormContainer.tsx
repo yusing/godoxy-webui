@@ -55,15 +55,32 @@ export function FormContainer({
       {badge}
     </div>
   ) : (
-    <Label className={cn(level > 0 && 'capitalize text-xs')}>{label}</Label>
+    <Label className={cn(level > 0 && 'block text-sm capitalize')}>{label}</Label>
   )
 
-  const header = (
+  const desc = description ? (
+    card ? (
+      <CardDescription>{description}</CardDescription>
+    ) : (
+      <code className="block text-left text-xs text-muted-foreground">{description}</code>
+    )
+  ) : null
+
+  /** Non-card: stack under title like StoreFieldInput (label + key line). */
+  const nonCardFieldLabelStack =
+    !card && (label || description) ? (
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5 items-start">
+        {label ? title : null}
+        {description ? desc : null}
+      </div>
+    ) : null
+
+  const header = card ? (
     <div className="flex items-center gap-2">
       {collapsible ? (
         <CollapsibleTrigger className="flex w-full items-center gap-2 text-left cursor-pointer *:cursor-pointer">
           {title}
-          <IconChevronDown className="ml-auto size-4 transition-transform group-data-open:rotate-180" />
+          <IconChevronDown className="ml-auto size-4 shrink-0 transition-transform group-data-open:rotate-180" />
         </CollapsibleTrigger>
       ) : (
         title
@@ -74,15 +91,28 @@ export function FormContainer({
         </Button>
       )}
     </div>
+  ) : collapsible ? (
+    <div className="flex w-full items-start gap-2">
+      <CollapsibleTrigger className="flex min-w-0 flex-1 items-center gap-2 rounded-md text-left cursor-pointer outline-none *:cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
+        {nonCardFieldLabelStack}
+        <IconChevronDown className="size-4 shrink-0 transition-transform group-data-open:rotate-180" />
+      </CollapsibleTrigger>
+      {!hasChildren && canAdd && onAdd && (
+        <Button type="button" variant="ghost" size="icon" onClick={onAdd} className="shrink-0">
+          <IconPlus />
+        </Button>
+      )}
+    </div>
+  ) : (
+    <div className="flex items-center gap-2">
+      {title}
+      {!hasChildren && canAdd && onAdd && (
+        <Button type="button" variant="ghost" size="icon" onClick={onAdd}>
+          <IconPlus />
+        </Button>
+      )}
+    </div>
   )
-
-  const desc = description ? (
-    card ? (
-      <CardDescription>{description}</CardDescription>
-    ) : (
-      <Label className="text-muted-foreground text-xs">{description}</Label>
-    )
-  ) : null
 
   const content =
     hasChildren &&
@@ -149,10 +179,13 @@ export function FormContainer({
       </Content>
     </Card>
   ) : (
-    <div aria-required={required || undefined} className={cn(readonly && 'opacity-60 grayscale')}>
+    <div
+      aria-required={required || undefined}
+      className={cn('flex min-w-0 flex-col gap-2', readonly && 'opacity-60 grayscale')}
+    >
       {header}
       <Content>
-        {desc}
+        {collapsible ? null : desc}
         {content}
         {foot}
       </Content>
