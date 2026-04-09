@@ -175,6 +175,6 @@ function getLabel(schema: JSONSchema | undefined, field: string): string {
 /** Secondary line: field key (render as code) when schema defines title or description. */
 function getDescription(schema: JSONSchema | undefined, field: string): string | undefined {
   if (!schema) return undefined
-  if (schema.title ?? schema.description) return field
+  if (schema.title != null || schema.description != null) return field
   return undefined
 }
