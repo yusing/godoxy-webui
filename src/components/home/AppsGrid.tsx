@@ -5,7 +5,7 @@ import { Suspense, useEffect, useMemo } from 'react'
 import { CategoryIcon } from '@/components/home/CategoryIcon'
 import { Button } from '@/components/ui/button'
 import { CustomCombobox } from '@/components/ui/custom-combobox'
-import { Kbd } from '@/components/ui/kbd'
+import { Kbd, KbdGroup } from '@/components/ui/kbd'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { HealthMap, HomepageCategory } from '@/lib/api'
@@ -15,6 +15,8 @@ import ArrowNavigation from './ArrowNavigation'
 import Searchbox from './Searchbox'
 import SettingsPopover from './SettingsPopover'
 import { store } from './store'
+import { Separator } from '../ui/separator'
+import { IconX } from '@tabler/icons-react'
 
 export default function AppGrid() {
   const [activeCategoryValue, setActiveCategory] = store.navigation.activeCategory.useState()
@@ -115,7 +117,7 @@ export default function AppGrid() {
         </div>
 
         {/* Keyboard hints */}
-        <div className="hidden shrink-0 md:block">
+        <div className="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-50 md:block">
           <RenderWithUpdate state={store.ui.showKeyboardHints}>
             {(show, setShow) => show && <KeyboardHints onDismiss={() => setShow(false)} />}
           </RenderWithUpdate>
@@ -152,55 +154,60 @@ function KeyboardHints({ onDismiss, className }: { onDismiss: () => void; classN
   return (
     <div
       className={cn(
-        'rounded-lg border px-3 py-1 text-xs text-muted-foreground flex flex-wrap items-center gap-3 supports-backdrop-filter:bg-muted/45 supports-backdrop-filter:backdrop-blur',
+        'hidden lg:flex text-nowrap',
+        'rounded-xl border px-3 py-1 text-xs text-foreground/90 items-center gap-3 supports-backdrop-filter:bg-muted/25 supports-backdrop-filter:backdrop-blur',
+        '**:data-[slot=kbd]:border **:data-[slot=kbd]:border-border',
+        '[&_svg]:size-4',
+        '[&_span]:pl-1',
         className
       )}
     >
-      <div className="flex items-center gap-1">
+      <KbdGroup>
         <Kbd>
-          <ArrowUp className="h-3 w-3" />
+          <ArrowUp />
         </Kbd>
         <Kbd>
-          <ArrowDown className="h-3 w-3" />
-        </Kbd>
-        <span>Move</span>
-      </div>
-      <div className="flex items-center gap-1">
-        <Kbd>
-          <ArrowLeft className="h-3 w-3" />
-        </Kbd>
-        <Kbd>
-          <ArrowRight className="h-3 w-3" />
+          <ArrowDown />
         </Kbd>
         <span>Move</span>
-      </div>
-      <div className="flex items-center gap-1">
+      </KbdGroup>
+      <KbdGroup>
+        <Kbd>
+          <ArrowLeft />
+        </Kbd>
+        <Kbd>
+          <ArrowRight />
+        </Kbd>
+        <span>Move</span>
+      </KbdGroup>
+      <KbdGroup>
         <Kbd>Enter</Kbd>
         <span>Open</span>
-      </div>
-      <div className="flex items-center gap-1">
+      </KbdGroup>
+      <KbdGroup>
         <Kbd>Esc</Kbd>
         <span>Reset</span>
-      </div>
-      <div className="flex items-center gap-1">
+      </KbdGroup>
+      <KbdGroup>
         <Kbd>Alt</Kbd>
         <span>+</span>
         <Kbd>
-          <ArrowLeft className="h-3 w-3" />
+          <ArrowLeft />
         </Kbd>
         <Kbd>
-          <ArrowRight className="h-3 w-3" />
+          <ArrowRight />
         </Kbd>
         <span>Switch category</span>
-      </div>
-      <div className="flex items-center gap-1">
+      </KbdGroup>
+      <KbdGroup>
         <Kbd>A-Z</Kbd>
         <span>Search</span>
-      </div>
-      <div className="ml-auto flex items-center gap-2">
-        <span className="hidden lg:inline">Tab is disabled on this page</span>
-        <Button size="sm" variant="outline" onClick={onDismiss}>
-          Dismiss
+      </KbdGroup>
+      <Separator orientation="vertical" className="h-4 w-px bg-border" />
+      <div className="ml-auto flex items-center gap-2 shrink-0">
+        <span className="hidden xl:inline">Tab is disabled on this page</span>
+        <Button size="icon-sm" variant="ghost" onClick={onDismiss}>
+          <IconX className="size-4" />
         </Button>
       </div>
     </div>
