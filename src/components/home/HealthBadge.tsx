@@ -18,20 +18,20 @@ export default function HealthBadge({
   switch (s) {
     case 'healthy':
       label = compact ? 'OK' : 'Healthy'
-      className = 'bg-success/25 text-success-foreground'
+      className = 'bg-success/50 text-success-foreground'
       break
     case 'unhealthy':
     case 'error':
       label = compact ? 'ERR' : s === 'error' ? 'Error' : 'Unhealthy'
-      className = 'bg-destructive/20 text-destructive'
+      className = 'bg-error/50 text-error-foreground'
       break
     case 'napping':
       label = compact ? 'NAP' : 'Napping'
-      className = 'bg-yellow-500/25 text-yellow-500'
+      className = 'bg-warning/50 text-warning-foreground'
       break
     case 'starting':
       label = compact ? 'INIT' : 'Starting'
-      className = 'bg-blue-500/25 text-blue-500'
+      className = 'bg-info/50 text-info-foreground'
       break
     case 'unknown':
     default:

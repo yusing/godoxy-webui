@@ -355,27 +355,32 @@ export const TreeNodeContent = ({
 
 export type TreeExpanderProps = ComponentProps<typeof motion.div> & {
   hasChildren?: boolean;
+  parentLevel?: number;
 };
 
 export const TreeExpander = ({
   hasChildren = false,
+  parentLevel,
   className,
   onClick,
   ...props
 }: TreeExpanderProps) => {
-  const { expandedIds, toggleExpanded } = useTree();
+  const { expandedIds, toggleExpanded, indent } = useTree();
   const { nodeId } = useTreeNode();
   const isExpanded = expandedIds.has(nodeId);
 
   if (!hasChildren) {
-    return <div className="mr-1 h-4 w-4" />;
+    if (parentLevel === 0) {
+      return null;
+    }
+    return <div className="mr-1" style={{ width: (indent ?? 0) - 8, height: '100%' }} />;
   }
 
   return (
     <motion.div
       animate={{ rotate: isExpanded ? 90 : 0 }}
       className={cn(
-        "mr-1 flex h-4 w-4 cursor-pointer items-center justify-center",
+        "mr-1 flex size-4 cursor-pointer items-center justify-center",
         className
       )}
       onClick={(e) => {

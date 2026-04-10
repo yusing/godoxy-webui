@@ -191,8 +191,8 @@ export default function ResultsDisplay() {
 
                       response.finalResponse.statusCode >= 200 &&
                         response.finalResponse.statusCode < 300
-                        ? 'bg-success/80 text-success-foreground/80'
-                        : 'bg-error/80 text-error-foreground/80'
+                        ? 'bg-success text-success-foreground'
+                        : 'bg-error text-error-foreground'
                     )}
                   >
                     {response.finalResponse.statusCode}

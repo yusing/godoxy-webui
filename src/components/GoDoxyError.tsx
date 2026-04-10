@@ -38,7 +38,7 @@ function subjectsToLabel(subjects?: string[]): string {
 }
 
 // FIXME: fix this
-// eslint-disable-next-line react-refresh/only-export-components
+//
 export function flattenGoDoxyError(
   input: GoDoxyError,
   level = 0,
@@ -252,7 +252,7 @@ export function GoDoxyErrorText({ err, level }: { err: GoDoxyError; level?: numb
   }, [rows])
 
   return (
-    <TreeProvider>
+    <TreeProvider selectable={false} showIcons={false} indent={12}>
       <TreeView>{renderNodes(tree, 0)}</TreeView>
     </TreeProvider>
   )
@@ -265,7 +265,7 @@ function renderNodes(nodes: TreeSpec[], parentLevel = 0) {
     return (
       <TreeNode key={node.id} nodeId={node.id} level={node.level} isLast={isLast}>
         <TreeNodeTrigger className="py-0.5">
-          <TreeExpander hasChildren={hasChildren} />
+          <TreeExpander hasChildren={hasChildren} parentLevel={parentLevel} />
           <TreeLabel className="text-wrap wrap-break-word">{node.label}</TreeLabel>
         </TreeNodeTrigger>
         {hasChildren && (
