@@ -22,7 +22,6 @@ export default function SystemStatsProvider() {
         cpuAverage: Math.round(data.cpu_average * 100) / 100,
         rootPartitionUsage: Math.round(getDiskUsage(data.disks, '/') ?? 0) * 100,
         rootPartitionUsageDesc: getDiskUsageDesc(data.disks, '/'),
-        secondDriveOptions,
         secondaryPartitionUsage: Math.round(
           (getSelectedDiskUsage(data.disks, selectedSecondDrive) ?? 0) * 100
         ),
@@ -32,6 +31,8 @@ export default function SystemStatsProvider() {
         networkSpeedUpload: data.network?.upload_speed ?? 0,
         networkSpeedDownload: data.network?.download_speed ?? 0,
       })
+
+      store.settings.secondDriveOptions.set(secondDriveOptions)
     },
   })
 

@@ -11,15 +11,7 @@ import { store } from './store'
 
 export default function SettingsPopover() {
   const sortMethod = store.settings.sortMethod.use()
-  const secondDriveOptions = store.systemInfo.secondDriveOptions.useCompute(options => {
-    return [
-      { label: 'None', value: '' },
-      ...options.map(option => ({
-        label: option,
-        value: option,
-      })),
-    ]
-  })
+  const secondDriveOptions = store.settings.secondDriveOptions.use()
 
   return (
     <Popover>
@@ -62,15 +54,12 @@ export default function SettingsPopover() {
             </RadioGroup>
           </div>
           <Separator />
-          <Conditional
-            state={store.systemInfo.secondDriveOptions}
-            on={options => options.length > 0}
-          >
+          <Conditional state={store.settings.secondDriveOptions} on={options => options.length > 0}>
             <div className="space-y-3">
               <Label className="text-xs font-medium">Second Drive</Label>
               <StoreSelectField
                 state={store.selectedSecondDrive}
-                options={secondDriveOptions}
+                options={[undefined, ...secondDriveOptions]}
                 className="w-full"
                 capitalizeSelectItems={false}
               />

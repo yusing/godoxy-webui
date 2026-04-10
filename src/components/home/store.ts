@@ -31,6 +31,7 @@ export type Store = {
   }
   settings: {
     sortMethod: 'clicks' | 'alphabetical' | 'custom'
+    secondDriveOptions: string[]
     // Future settings can be added here
   }
   events: Event[]
@@ -41,7 +42,6 @@ type SystemInfoSimple = {
   cpuAverage: number
   rootPartitionUsage: number
   rootPartitionUsageDesc: string
-  secondDriveOptions: string[]
   secondaryPartitionUsage: number
   secondaryPartitionUsageDesc: string
   memoryUsage: number
@@ -56,7 +56,6 @@ export const store = createStore<Store>('homepage', {
     cpuAverage: 0,
     rootPartitionUsage: 0,
     rootPartitionUsageDesc: '',
-    secondDriveOptions: [],
     secondaryPartitionUsage: 0,
     secondaryPartitionUsageDesc: '',
     memoryUsage: 0,
@@ -82,6 +81,7 @@ export const store = createStore<Store>('homepage', {
   },
   settings: {
     sortMethod: 'alphabetical',
+    secondDriveOptions: [],
   },
   events: [],
 })
