@@ -35,8 +35,8 @@ export default function HealthBadge({
       break
     case 'unknown':
     default:
-      label = compact ? '??' : 'Unknown'
-      className = 'bg-muted text-muted-foreground'
+      label = compact ? '???' : 'Unknown'
+      className = 'bg-foreground/10 text-muted-foreground text-xs'
   }
 
   return (

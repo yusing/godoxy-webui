@@ -96,12 +96,12 @@ const AppItemInner = forwardRef<
 
         <div className="min-w-0 flex-1 space-y-0.5">
           {/* Row 1: Name + Health */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2">
             <Render state={state.name}>
               {name => <span className="truncate text-sm font-medium">{name || alias}</span>}
             </Render>
             <Render state={store.state(`health.${alias}.status`)}>
-              {status => <HealthBadge status={status} compact={isMobile} />}
+              {status => <HealthBadge status={status} compact />}
             </Render>
           </div>
 
@@ -115,9 +115,8 @@ const AppItemInner = forwardRef<
           </Render>
 
           {/* Row 3: Category · Latency · Widgets */}
-          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground pt-0.5">
+          <div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground pt-0.5">
             <span className="truncate max-w-[100px]">{category}</span>
-            <span aria-hidden>·</span>
             <LatencyText latency={store.state(`health.${alias}.latency`)} />
 
             {hasWidgets && (
@@ -142,7 +141,15 @@ AppItemInner.displayName = 'AppItem'
 
 function LatencyText({ latency }: { latency: ValueState<number> }) {
   const formatted = latency.useCompute(value => formatGoDuration(value))
-  return <span className="tabular-nums">{formatted}</span>
+  if (!formatted) {
+    return null
+  }
+  return (
+    <>
+      <span aria-hidden>·</span>
+      <span className="tabular-nums">{formatted}</span>
+    </>
+  )
 }
 
 function ThemeAwareAppIcon({ alias, url }: { alias: string; url?: string }) {

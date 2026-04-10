@@ -72,12 +72,12 @@ export default function AppGrid() {
       >
         <div className="flex shrink-0 flex-col items-start justify-between gap-2 lg:flex-row lg:items-center">
           <div className="flex items-center gap-2 w-full sm:w-auto">
-            <TabsList className="scrollbar-hidden flex w-full gap-1 overflow-x-auto rounded-lg border p-1 sm:w-auto">
+            <TabsList className="scrollbar-hidden flex h-10 w-full items-stretch gap-1 overflow-x-auto rounded-lg border p-1 sm:w-auto">
               {visibleTabs?.map(category => (
                 <TabsTrigger
                   key={category}
                   value={category}
-                  className="flex items-center gap-2 text-xs sm:text-sm whitespace-nowrap"
+                  className="flex h-full min-h-0 items-center gap-2 text-xs sm:text-sm whitespace-nowrap"
                   onKeyDown={e => {
                     // prevent arrow navigation on tabs, we handle it with ArrowNavigation
                     e.stopPropagation()
@@ -86,7 +86,7 @@ export default function AppGrid() {
                 >
                   <CategoryIcon
                     category={category.toLowerCase().replace(/\s+/g, '-')}
-                    className="size-3 sm:size-4"
+                    className="size-4"
                   />
                   <span className="hidden sm:inline-flex items-center gap-1">
                     {category}
