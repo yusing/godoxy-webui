@@ -1,8 +1,10 @@
+import { IconAlertCircle, IconPhotoOff } from '@tabler/icons-react'
 import { type FormState, type MemoryStore, RenderWithUpdate, useMemoryStore } from 'juststore'
-import { useEffect, useMemo } from 'react'
+import { type ReactNode, useEffect, useMemo } from 'react'
 import { useAsync } from 'react-use'
 import type { IconMetaSearch } from '@/lib/api'
 import { api } from '@/lib/api-client'
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty'
 import { cn } from '@/lib/utils'
 import { AppIcon } from './AppIcon'
 import LoadingRing from './LoadingRing'
@@ -38,6 +40,26 @@ function getDisplayValue(state: IconSearchFieldState) {
   if (!state.currentIcon) return state.searchValue
   if (!state.variant) return iconURL(state.currentIcon)
   return iconURLVariant(state.currentIcon, state.variant)
+}
+
+function IconSearchEmptyPane({
+  icon,
+  title,
+  description,
+}: {
+  icon: ReactNode
+  title: string
+  description: string
+}) {
+  return (
+    <Empty>
+      <EmptyHeader>
+        <EmptyMedia variant="icon">{icon}</EmptyMedia>
+        <EmptyTitle>{title}</EmptyTitle>
+        <EmptyDescription>{description}</EmptyDescription>
+      </EmptyHeader>
+    </Empty>
+  )
 }
 
 export default function IconSearchField({ state: iconState, className }: IconSearchFieldProps) {
@@ -106,15 +128,23 @@ function IconItems({
 
   return (
     <>
-      <CommandEmpty>
+      <CommandEmpty className={loading || error || !icons?.length ? 'col-span-full' : ''}>
         {loading ? (
           <div className="flex items-center justify-center h-full">
             <LoadingRing />
           </div>
         ) : error ? (
-          'Error loading icons'
+          <IconSearchEmptyPane
+            icon={<IconAlertCircle className="size-4" />}
+            title="Couldn't load icons"
+            description="Something went wrong. Try again in a moment."
+          />
         ) : (
-          'No icons found'
+          <IconSearchEmptyPane
+            icon={<IconPhotoOff className="size-4" />}
+            title="No icons found"
+            description="Try a different search term or paste an image URL."
+          />
         )}
       </CommandEmpty>
       {icons?.map(icon => (
