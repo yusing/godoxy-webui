@@ -20,10 +20,10 @@ export default function SystemStatsProvider() {
       store.systemInfo.set({
         uptime: store.systemInfo.uptime.value,
         cpuAverage: Math.round(data.cpu_average * 100) / 100,
-        rootPartitionUsage: Math.round(getDiskUsage(data.disks, '/') ?? 0) * 100,
+        rootPartitionUsage: Math.round(getDiskUsage(data.disks, '/') ?? 0),
         rootPartitionUsageDesc: getDiskUsageDesc(data.disks, '/'),
         secondaryPartitionUsage: Math.round(
-          (getSelectedDiskUsage(data.disks, selectedSecondDrive) ?? 0) * 100
+          getSelectedDiskUsage(data.disks, selectedSecondDrive) ?? 0
         ),
         secondaryPartitionUsageDesc: getSelectedDiskUsageDesc(data.disks, selectedSecondDrive),
         memoryUsage: Math.round(data.memory.used_percent * 100) / 100,
