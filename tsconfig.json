@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "types": ["vite/client"],
+    "types": ["vite/client", "node"],
     "allowJs": true,
     "skipLibCheck": true,
     "useDefineForClassFields": true,
@@ -30,9 +30,11 @@
       "@/components/store/*": ["./juststore-shadcn/src/components/store/*"],
       "@/public/*": ["./public/*"],
       "@/wiki/*": ["./wiki/src/*"],
+      "juststore": ["./node_modules/juststore"],
       "fumadocs-mdx:collections/*": ["./.source/*"]
-    }
+    },
+    "rootDir": "."
   },
-  "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "include": ["./src/**/*.ts", "./src/**/*.tsx"],
+  "exclude": ["node_modules", "dist", "./src/**/*.test.ts", "./src/**/*.test.tsx"]
 }
