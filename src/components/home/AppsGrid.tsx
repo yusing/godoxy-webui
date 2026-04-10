@@ -94,6 +94,7 @@ export default function AppGrid() {
               ))}
               {overflowTabs.length > 0 && (
                 <CustomCombobox
+                  triggerClassName="bg-transparent! rounded-sm"
                   value={overflowTabs.find(c => c === activeCategory)}
                   items={overflowTabs}
                   itemToIcon={c => (
