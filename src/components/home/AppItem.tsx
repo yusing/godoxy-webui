@@ -1,7 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { type ObjectState, Render, type ValueState } from 'juststore'
 import { forwardRef, useMemo } from 'react'
-import { useIsMobile } from '@/hooks/use-mobile'
 import type { HomepageItem } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { formatGoDuration } from '@/lib/format'
@@ -55,7 +54,6 @@ const AppItemInner = forwardRef<
   HTMLButtonElement,
   { state: ObjectState<HomepageItem>; visibleIndex: number }
 >(({ visibleIndex, state, ...props }, ref) => {
-  const isMobile = useIsMobile()
   const [alias, url, widgets, hasWidgets, category] = state.useCompute(item => [
     item.alias,
     item.url,
