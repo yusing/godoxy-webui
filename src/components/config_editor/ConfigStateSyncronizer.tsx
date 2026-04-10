@@ -44,11 +44,19 @@ export default function ConfigStateSyncronizer() {
       configStore.isLoading.set(true)
       configStore.error.reset()
       endpoint
-        .get({
-          type: activeFile?.type ?? 'config',
-          filename: activeFile?.filename ?? 'config.yml',
+        .get(
+          {
+            type: activeFile?.type ?? 'config',
+            filename: activeFile?.filename ?? 'config.yml',
+          },
+          {
+            format: 'text',
+          }
+        )
+        .then(r => {
+          configStore.content.set(r.data)
+          configStore.originalConfig.set(parseYAML(r.data) as Config.Config)
         })
-        .then(r => configStore.content.set(r.data))
         .catch(err => configStore.error.set(formatErrorString(err)))
         .finally(() => configStore.isLoading.set(false))
     })
@@ -62,7 +70,7 @@ export default function ConfigStateSyncronizer() {
           return
         }
       } catch {
-        configStore.content.reset()
+        // content is temporarily invalid while user is editing, don't overwrite it
         configStore.validateError.set('invalid yaml')
         return
       }
@@ -78,7 +86,7 @@ export default function ConfigStateSyncronizer() {
   // when content changes, set the rootObject and validate
   useEffect(() => {
     const unsubscribe = configStore.content.subscribe(content => {
-      if (!content || typeof content !== 'string') {
+      if (typeof content !== 'string') {
         configStore.content.reset()
         configStore.configObject.reset()
         configStore.originalConfig.reset()
@@ -93,7 +101,7 @@ export default function ConfigStateSyncronizer() {
           configStore.validateError.set(err as GoDoxyError)
         )
       } catch {
-        configStore.content.reset()
+        // keep the user's input so they can fix it; don't update configObject
         configStore.validateError.set('invalid yaml')
       }
     })
