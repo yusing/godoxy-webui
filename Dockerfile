@@ -1,4 +1,4 @@
-FROM oven/bun:1.3.11-alpine AS base
+FROM oven/bun:1.3.12-alpine AS base
 
 HEALTHCHECK NONE
 
@@ -34,7 +34,7 @@ ENV NODE_ENV=production
 RUN bun --bun vite build
 
 # Production image, copy all the files and run bun
-FROM oven/bun:1.3.11-distroless AS release
+FROM oven/bun:1.3.12-distroless AS release
 ENV NODE_ENV=production
 
 USER 1001:1001
