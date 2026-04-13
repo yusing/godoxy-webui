@@ -48,7 +48,6 @@ export function CodeBlock({ value, lang, highlighter, textWrap = true }: CodeBlo
     <div
       style={{ '--shiki-white-space': textWrap ? 'pre-wrap' : 'pre' } as React.CSSProperties}
       className="max-w-full text-sm"
-      // biome-ignore lint/security/noDangerouslySetInnerHtml: syntax highlighting
       dangerouslySetInnerHTML={{
         __html: highlighter
           ? highlighter(valueString)
