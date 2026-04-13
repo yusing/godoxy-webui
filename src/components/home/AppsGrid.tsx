@@ -15,7 +15,6 @@ import ArrowNavigation from './ArrowNavigation'
 import Searchbox from './Searchbox'
 import SettingsPopover from './SettingsPopover'
 import { store } from './store'
-import { Separator } from '../ui/separator'
 import { IconX } from '@tabler/icons-react'
 
 export default function AppGrid() {
@@ -155,10 +154,11 @@ function KeyboardHints({ onDismiss, className }: { onDismiss: () => void; classN
     <div
       className={cn(
         'hidden lg:flex text-nowrap',
-        'rounded-xl border px-3 py-1 text-xs text-foreground/90 items-center gap-3 supports-backdrop-filter:bg-muted/25 supports-backdrop-filter:backdrop-blur',
+        'rounded-xl border px-3 py-1 text-xs text-foreground/90 items-center supports-backdrop-filter:bg-muted/25 supports-backdrop-filter:backdrop-blur',
         '**:data-[slot=kbd]:border **:data-[slot=kbd]:border-border',
         '[&_svg]:size-4',
         '[&_span]:pl-1',
+        'divide-x divide-foreground/10 *:px-3',
         className
       )}
     >
@@ -203,18 +203,14 @@ function KeyboardHints({ onDismiss, className }: { onDismiss: () => void; classN
         <Kbd>A-Z</Kbd>
         <span>Search</span>
       </KbdGroup>
-      <Separator orientation="vertical" className="h-4 w-px bg-border" />
-      <div className="ml-auto flex items-center gap-2 shrink-0">
-        <span className="hidden xl:inline">Tab is disabled on this page</span>
-        <Button
-          size="icon-sm"
-          variant="ghost"
-          onClick={onDismiss}
-          aria-label="Dismiss keyboard hints"
-        >
-          <IconX />
-        </Button>
-      </div>
+      <Button
+        size="icon-sm"
+        variant="ghost"
+        onClick={onDismiss}
+        aria-label="Dismiss keyboard hints"
+      >
+        <IconX className="text-muted-foreground" />
+      </Button>
     </div>
   )
 }
