@@ -370,10 +370,11 @@ export const TreeExpander = ({
   const isExpanded = expandedIds.has(nodeId);
 
   if (!hasChildren) {
-    if (parentLevel === 0) {
+    if (parentLevel == null || parentLevel === 0) {
       return null;
     }
-    return <div className="mr-1" style={{ width: (indent ?? 0) - 8, height: '100%' }} />;
+
+    return <div className="mr-1" style={{ width: Math.max(0, (indent ?? 0) - 8), height: '100%' }} />;
   }
 
   return (

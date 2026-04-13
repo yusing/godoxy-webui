@@ -25,19 +25,19 @@ function PlaygroundPage() {
           </div>
         </div>
 
-        <Tabs defaultValue="rules" className="flex-1 overflow-hidden">
+        <Tabs defaultValue="rules" className="flex-col flex-1">
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="rules">Rules</TabsTrigger>
             <TabsTrigger value="request">Mock Request</TabsTrigger>
             <TabsTrigger value="response">Mock Response</TabsTrigger>
           </TabsList>
-          <TabsContent value="rules" className="flex-1 mt-2 overflow-hidden">
+          <TabsContent value="rules">
             <RulesEditor />
           </TabsContent>
-          <TabsContent value="request" className="flex-1 mt-2 overflow-y-auto">
+          <TabsContent value="request">
             <MockRequestForm />
           </TabsContent>
-          <TabsContent value="response" className="flex-1 mt-2 overflow-y-auto">
+          <TabsContent value="response">
             <MockResponseForm />
           </TabsContent>
         </Tabs>

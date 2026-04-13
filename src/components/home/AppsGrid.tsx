@@ -206,8 +206,13 @@ function KeyboardHints({ onDismiss, className }: { onDismiss: () => void; classN
       <Separator orientation="vertical" className="h-4 w-px bg-border" />
       <div className="ml-auto flex items-center gap-2 shrink-0">
         <span className="hidden xl:inline">Tab is disabled on this page</span>
-        <Button size="icon-sm" variant="ghost" onClick={onDismiss}>
-          <IconX className="size-4" />
+        <Button
+          size="icon-sm"
+          variant="ghost"
+          onClick={onDismiss}
+          aria-label="Dismiss keyboard hints"
+        >
+          <IconX />
         </Button>
       </div>
     </div>

@@ -37,9 +37,7 @@ function subjectsToLabel(subjects?: string[]): string {
   return `${subjects.join('.')}:`
 }
 
-// FIXME: fix this
-//
-export function flattenGoDoxyError(
+function flattenGoDoxyError(
   input: GoDoxyError,
   level = 0,
   rows: FlatRow[] = [],
