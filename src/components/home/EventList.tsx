@@ -197,7 +197,7 @@ function EventRow({ event }: { event: HomeEvent }) {
   return (
     <div
       data-slot="card"
-      className="flex items-start justify-between gap-3 rounded-lg px-3 py-2 bg-card supports-backdrop-filter:bg-card/55 supports-backdrop-filter:backdrop-blur"
+      className="flex items-start justify-between gap-3 rounded-lg px-3 py-2 bg-card supports-backdrop-filter:bg-card/55 supports-backdrop-filter:backdrop-blur border border-border/30 shadow-sm"
     >
       <div className="min-w-0 space-y-1">
         <div className="flex flex-wrap items-center gap-2">
