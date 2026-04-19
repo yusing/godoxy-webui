@@ -25,27 +25,8 @@ const config = defineConfig({
     tailwindcss(),
     tanstackStart({
       prerender: {
-        enabled: true,
-        crawlLinks: true,
-        autoSubfolderIndex: true,
-        autoStaticPathsDiscovery: true,
-        failOnError: false,
-        filter: ({ path }) => !path.startsWith('/api/'),
+        enabled: false,
       },
-      pages: [
-        {
-          path: '/docs',
-        },
-        {
-          path: '/docs/godoxy',
-        },
-        {
-          path: '/docs/impl',
-        },
-        {
-          path: '/docs/api/search',
-        },
-      ],
     }),
     viteReact(),
     babel({
