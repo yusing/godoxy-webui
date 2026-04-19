@@ -43,7 +43,7 @@ function LoginPage() {
     async (value: FormValues) => {
       form.clearErrors()
       await api.auth
-        .callback(value)
+        .callback(value, { format: 'text' })
         .then(() => navigate({ to: '/', replace: true }))
         .catch(error => form.password.setError(formatError(error).message))
     },

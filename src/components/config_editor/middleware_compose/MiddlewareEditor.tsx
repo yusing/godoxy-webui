@@ -55,7 +55,7 @@ export function MiddlewareComposeEditor({
     <Tabs
       value={selectedTab !== undefined ? String(selectedTab) : undefined}
       onValueChange={value => setSelectedTab(value ? Number(value) : undefined)}
-      className="w-full"
+      className="w-full flex flex-col"
     >
       <TabsList className="flex w-full flex-wrap gap-1 h-auto min-h-9 p-1">
         {keys.map((k, index) => (
