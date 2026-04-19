@@ -1,4 +1,3 @@
-import { IconCheck, IconX } from '@tabler/icons-react'
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -8,6 +7,8 @@ import {
   MemoryStick,
   Thermometer,
   Wifi,
+  Check,
+  X,
 } from 'lucide-react'
 import type { ElementType, ReactNode } from 'react'
 import { Suspense, useCallback, useMemo } from 'react'
@@ -426,7 +427,7 @@ function StreamBadge({
         color: appliedTextTone,
       }}
     >
-      {supported ? <IconCheck className="size-3" /> : <IconX className="size-3" />}
+      {supported ? <Check className="size-3" /> : <X className="size-3" />}
       {label}
     </span>
   )

@@ -1,9 +1,4 @@
-import {
-  IconArrowsMaximize,
-  IconArrowsMinimize,
-  IconChevronDown,
-  IconChevronUp,
-} from '@tabler/icons-react'
+import { Maximize2, Minimize2, ChevronDown, ChevronUp } from 'lucide-react'
 import { FitAddon } from '@xterm/addon-fit'
 import { WebFontsAddon } from '@xterm/addon-web-fonts'
 import { WebLinksAddon } from '@xterm/addon-web-links'
@@ -294,7 +289,7 @@ function LogsInner({
             aria-label={maximized ? 'Minimize logs' : 'Maximize logs'}
             onClick={() => maximizedAtom.set(!maximized)}
           >
-            {maximized ? <IconArrowsMinimize /> : <IconArrowsMaximize />}
+            {maximized ? <Minimize2 /> : <Maximize2 />}
           </Button>
         </div>
         <div className="absolute bottom-4 right-6">
@@ -328,7 +323,7 @@ function LogsInner({
 }
 
 function LogChevron({ direction }: { direction: 'up' | 'down' }) {
-  return direction === 'up' ? <IconChevronUp /> : <IconChevronDown />
+  return direction === 'up' ? <ChevronUp /> : <ChevronDown />
 }
 
 function LogThemeUpdater({ termRef }: { termRef: React.RefObject<Terminal | null> }) {

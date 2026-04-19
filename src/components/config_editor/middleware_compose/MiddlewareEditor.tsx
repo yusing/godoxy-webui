@@ -1,4 +1,4 @@
-import { IconPlus, IconX } from '@tabler/icons-react'
+import { Plus, X } from 'lucide-react'
 import React, { useMemo } from 'react'
 import { NamedListInput } from '@/components/form/NamedListInput'
 import { Button } from '@/components/ui/button'
@@ -82,7 +82,7 @@ export function MiddlewareComposeEditor({
               }}
               onPointerDown={e => e.stopPropagation()}
             >
-              <IconX className="size-3.5" />
+              <X className="size-3.5" />
             </button>
           </TabsTrigger>
         ))}
@@ -102,7 +102,7 @@ export function MiddlewareComposeEditor({
             setSelectedTab(newIndex)
           }}
         >
-          <IconPlus className="size-4" />
+          <Plus className="size-4" />
         </Button>
       </TabsList>
       {Object.entries(data).map(([k, v], index) => (

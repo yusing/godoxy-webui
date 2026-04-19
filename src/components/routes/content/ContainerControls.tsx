@@ -1,4 +1,4 @@
-import { IconLoader2, IconPlayerPlay, IconRotate, IconSquare } from '@tabler/icons-react'
+import { Loader2, Play, RotateCw, Square } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { type RouteKey, store } from '@/components/routes/store'
@@ -11,21 +11,21 @@ import { cn } from '@/lib/utils'
 const containerActions = [
   {
     label: 'Start',
-    Icon: IconPlayerPlay,
+    Icon: Play,
     tone: 'start',
     enableIfDocker: (running: boolean) => !running,
     enableIfProxmox: (status: string) => status !== 'running',
   },
   {
     label: 'Stop',
-    Icon: IconSquare,
+    Icon: Square,
     tone: 'stop',
     enableIfDocker: (running: boolean) => running,
     enableIfProxmox: (status: string) => status === 'running',
   },
   {
     label: 'Restart',
-    Icon: IconRotate,
+    Icon: RotateCw,
     tone: 'restart',
     enableIfDocker: (running: boolean) => running,
     enableIfProxmox: (status: string) => status === 'running',
@@ -141,7 +141,7 @@ export default function ContainerControls({ routeKey }: { routeKey: RouteKey }) 
             <TooltipTrigger
               render={() =>
                 isLoading === action.label ? (
-                  <IconLoader2 className="size-4 animate-spin text-inherit" />
+                  <Loader2 className="size-4 animate-spin text-inherit" />
                 ) : (
                   <action.Icon className="size-4 text-inherit" />
                 )

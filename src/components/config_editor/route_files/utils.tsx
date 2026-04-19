@@ -1,4 +1,4 @@
-import { IconFolder, IconGlobe, IconWifi } from '@tabler/icons-react'
+import { Folder, Globe, Wifi } from 'lucide-react'
 import type { Route as RouteResponse } from '@/lib/api'
 import type { Routes } from '@/types/godoxy'
 import type { Port, StreamPort } from '@/types/godoxy/types'
@@ -8,7 +8,7 @@ const routeSchemes = [
   {
     label: 'Reverse Proxy (http)',
     value: 'http',
-    icon: IconGlobe,
+    icon: Globe,
     description: 'Proxy to a web app',
     cardDescription: (route: Routes.ReverseProxyRoute) => {
       return (
@@ -24,7 +24,7 @@ const routeSchemes = [
   {
     label: 'Reverse Proxy (h2c)',
     value: 'h2c',
-    icon: IconGlobe,
+    icon: Globe,
     description: 'Proxy to a web app with HTTP/2 Clear-Text',
     cardDescription: (route: Routes.ReverseProxyRoute) => {
       return (
@@ -40,7 +40,7 @@ const routeSchemes = [
   {
     label: 'Reverse Proxy (https)',
     value: 'https',
-    icon: IconGlobe,
+    icon: Globe,
     description: 'Proxy to a secure web app over https',
     cardDescription: (route: Routes.ReverseProxyRoute) => {
       return (
@@ -56,7 +56,7 @@ const routeSchemes = [
   {
     label: 'File Server',
     value: 'fileserver',
-    icon: IconFolder,
+    icon: Folder,
     description: 'Serve static files',
     cardDescription: (route: Routes.FileServerRoute) => {
       return (
@@ -69,7 +69,7 @@ const routeSchemes = [
   {
     label: 'Stream (tcp)',
     value: 'tcp',
-    icon: IconWifi,
+    icon: Wifi,
     description: 'Port forward a tcp app',
     cardDescription: (route: Routes.StreamRoute) => {
       return (
@@ -86,7 +86,7 @@ const routeSchemes = [
   {
     label: 'Stream (udp)',
     value: 'udp',
-    icon: IconWifi,
+    icon: Wifi,
     description: 'Port forward a udp app',
     cardDescription: (route: Routes.StreamRoute) => {
       return (

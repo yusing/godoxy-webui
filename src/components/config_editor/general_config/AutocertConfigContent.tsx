@@ -1,4 +1,4 @@
-import { IconTrash } from '@tabler/icons-react'
+import { Trash2 } from 'lucide-react'
 import AutoHeight from 'embla-carousel-auto-height'
 import type { ArrayState, ObjectState } from 'juststore'
 import { Suspense, useEffect, useId, useRef } from 'react'
@@ -140,7 +140,7 @@ function AutocertConfigContentExtra({ state }: { state: ArrayState<Autocert.Auto
           size="icon"
           onClick={() => state.splice(index, 1)}
         >
-          <IconTrash />
+          <Trash2 />
         </Button>
       </CardHeader>
       <CardContent className="flex flex-col gap-2">

@@ -1,4 +1,4 @@
-import { IconX } from '@tabler/icons-react'
+import { X } from 'lucide-react'
 import { type FormState, type FormStore, RenderWithUpdate } from 'juststore'
 import { useEffect } from 'react'
 import { useAsync } from 'react-use'
@@ -198,7 +198,7 @@ function AgentSelect({ state }: { state: FormState<string | undefined> }) {
             onClick={() => setValue(undefined)}
             disabled={!value}
           >
-            <IconX className="size-4" />
+            <X className="size-4" />
           </Button>
         )}
       </RenderWithUpdate>

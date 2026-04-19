@@ -1,4 +1,4 @@
-import { IconX } from '@tabler/icons-react'
+import { X } from 'lucide-react'
 import { type FormStore, RenderWithUpdate } from 'juststore'
 import { StoreFormSelectField } from '@/components/store/Select'
 import { Button } from '@/components/ui/button'
@@ -38,7 +38,7 @@ export function RouteInboundMTLSSection({ form }: RouteInboundMTLSSectionProps) 
               disabled={!value}
               aria-label="Clear mTLS profile selection"
             >
-              <IconX className="size-4" />
+              <X className="size-4" />
             </Button>
           )}
         </RenderWithUpdate>

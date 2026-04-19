@@ -1,4 +1,4 @@
-import { IconCheck, IconPlus } from '@tabler/icons-react'
+import { Check, Plus } from 'lucide-react'
 import {
   Conditional,
   createMixedState,
@@ -136,7 +136,7 @@ export function AddAgentDialogButton({ className }: { className?: string }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={<Button variant={'outline'} size="sm" className={className} />}>
-        <IconPlus />
+        <Plus />
         Add agent
       </DialogTrigger>
       <DialogContent>
@@ -161,7 +161,7 @@ export function AddAgentDialogButton({ className }: { className?: string }) {
                           {icon}
                           {label}
                         </div>
-                        {type === agentType && <IconCheck className="size-4" />}
+                        {type === agentType && <Check className="size-4" />}
                       </button>
                     ))}
                   </div>

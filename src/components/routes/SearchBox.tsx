@@ -1,4 +1,4 @@
-import { IconSearch } from '@tabler/icons-react'
+import { Search } from 'lucide-react'
 import { useCallback, useEffect, useRef } from 'react'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '../ui/input-group'
 
@@ -73,7 +73,7 @@ export default function RoutesSidebarSearchBox() {
     <div className="routes-sidebar-search-row px-1 py-1.5">
       <InputGroup>
         <InputGroupAddon align="inline-start">
-          <IconSearch className="text-muted-foreground" />
+          <Search className="text-muted-foreground" />
         </InputGroupAddon>
         <InputGroupInput
           className="w-full"

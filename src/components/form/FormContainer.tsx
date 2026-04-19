@@ -1,4 +1,4 @@
-import { IconChevronDown, IconPlus } from '@tabler/icons-react'
+import { ChevronDown, Plus } from 'lucide-react'
 import React, { Children, type ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import {
@@ -80,14 +80,14 @@ export function FormContainer({
       {collapsible ? (
         <CollapsibleTrigger className="flex w-full items-center gap-2 text-left cursor-pointer *:cursor-pointer">
           {title}
-          <IconChevronDown className="ml-auto size-4 shrink-0 transition-transform group-data-open:rotate-180" />
+          <ChevronDown className="ml-auto size-4 shrink-0 transition-transform group-data-open:rotate-180" />
         </CollapsibleTrigger>
       ) : (
         title
       )}
       {!hasChildren && canAdd && onAdd && (
         <Button type="button" variant="ghost" size="icon" onClick={onAdd}>
-          <IconPlus />
+          <Plus />
         </Button>
       )}
     </div>
@@ -95,11 +95,11 @@ export function FormContainer({
     <div className="flex w-full items-start gap-2">
       <CollapsibleTrigger className="flex min-w-0 flex-1 items-center gap-2 rounded-md text-left cursor-pointer outline-none *:cursor-pointer focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
         {nonCardFieldLabelStack}
-        <IconChevronDown className="size-4 shrink-0 transition-transform group-data-open:rotate-180" />
+        <ChevronDown className="size-4 shrink-0 transition-transform group-data-open:rotate-180" />
       </CollapsibleTrigger>
       {!hasChildren && canAdd && onAdd && (
         <Button type="button" variant="ghost" size="icon" onClick={onAdd} className="shrink-0">
-          <IconPlus />
+          <Plus />
         </Button>
       )}
     </div>
@@ -108,7 +108,7 @@ export function FormContainer({
       {title}
       {!hasChildren && canAdd && onAdd && (
         <Button type="button" variant="ghost" size="icon" onClick={onAdd}>
-          <IconPlus />
+          <Plus />
         </Button>
       )}
     </div>
@@ -221,7 +221,7 @@ function FooterAddButton({
       onClick={onAdd}
       title={`Add item to ${label}`}
     >
-      <IconPlus /> {label}
+      <Plus /> {label}
     </Button>
   )
 }

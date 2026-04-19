@@ -1,4 +1,4 @@
-import { IconArrowDown, IconArrowUp } from '@tabler/icons-react'
+import { ArrowDown, ArrowUp } from 'lucide-react'
 import { type FieldPath, Render } from 'juststore'
 import { formatBytes, formatDuration } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -49,14 +49,14 @@ function DisplayValue({
       case 'upload':
         return (
           <>
-            <IconArrowUp className="size-4 text-green-500" />{' '}
+            <ArrowUp className="size-4 text-green-500" />{' '}
             {formatBytes(Number(value), { precision: 0, unit: '/s' })}
           </>
         )
       case 'download':
         return (
           <>
-            <IconArrowDown className="size-4 text-red-500" />{' '}
+            <ArrowDown className="size-4 text-red-500" />{' '}
             {formatBytes(Number(value), { precision: 0, unit: '/s' })}
           </>
         )

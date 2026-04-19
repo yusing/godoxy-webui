@@ -1,6 +1,5 @@
-import { IconFilter } from '@tabler/icons-react'
+import { ArrowDown, ArrowUp, Filter } from 'lucide-react'
 import { type FieldPath, Render } from 'juststore'
-import { ArrowDown, ArrowUp } from 'lucide-react'
 import { Suspense, useEffect } from 'react'
 import {
   type RouteDisplaySettings,
@@ -33,7 +32,7 @@ export default function RoutesSidebar({ className }: { className?: string }) {
         </Label>
         <Popover>
           <PopoverTrigger aria-label="Filters">
-            <IconFilter className="size-4 text-muted-foreground hover:text-foreground transition-colors" />
+            <Filter className="size-4 text-muted-foreground hover:text-foreground transition-colors" />
           </PopoverTrigger>
           <PopoverContent className="flex flex-col gap-2">
             <Setting field="dockerOnly" label="Docker only" />

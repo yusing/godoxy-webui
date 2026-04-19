@@ -16,7 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
-import { IconLayoutSidebar } from '@tabler/icons-react'
+import { PanelLeft } from 'lucide-react'
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state'
@@ -248,7 +248,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       }}
       {...props}
     >
-      <IconLayoutSidebar />
+      <PanelLeft />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   )

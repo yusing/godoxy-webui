@@ -1,4 +1,4 @@
-import { IconCopy } from '@tabler/icons-react'
+import { Copy } from 'lucide-react'
 import ReactCodeMirror, { type Extension, type ReactCodeMirrorProps } from '@uiw/react-codemirror'
 import { memo, useCallback } from 'react'
 import { toast } from 'sonner'
@@ -65,7 +65,7 @@ export const CodeMirror = memo(
             variant="ghost"
             className="size-6"
           >
-            <IconCopy className="size-3" />
+            <Copy className="size-3" />
           </Button>
         </div>
         <ReactCodeMirror

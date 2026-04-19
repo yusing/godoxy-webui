@@ -1,5 +1,5 @@
 import { yaml } from '@codemirror/lang-yaml'
-import { IconArrowRight, IconInfoCircle } from '@tabler/icons-react'
+import { ArrowRight, Info } from 'lucide-react'
 import { Fragment, useEffect } from 'react'
 import { stringify as stringifyYAML } from 'yaml'
 import { CodeBlock } from '@/components/CodeBlock'
@@ -94,7 +94,7 @@ export default function RouteDetails() {
               <span>{logType} Logs</span>
               <Tooltip>
                 <TooltipTrigger>
-                  <IconInfoCircle className="size-4" />
+                  <Info className="size-4" />
                 </TooltipTrigger>
                 <TooltipContent>
                   <Label className="text-xs">
@@ -372,7 +372,7 @@ export default function RouteDetails() {
                     key={key}
                     label={`${port.IP}:${port.PublicPort}`}
                     value={`${port.PrivatePort}/${port.Type}`}
-                    seperator={<IconArrowRight className="size-4" />}
+                    seperator={<ArrowRight className="size-4" />}
                   />
                 ))}
               </DataList>
@@ -421,7 +421,7 @@ export default function RouteDetails() {
                       key={source}
                       label={source}
                       value={destination}
-                      seperator={<IconArrowRight className="size-4" />}
+                      seperator={<ArrowRight className="size-4" />}
                     />
                   )
                 )}
@@ -624,7 +624,7 @@ function InlineEmpty({ title, description }: { title: string; description: strin
     <Empty className="sm:col-span-3 border-border/40 bg-muted/10 py-4">
       <EmptyHeader>
         <EmptyMedia variant="icon">
-          <IconInfoCircle className="size-4" />
+          <Info className="size-4" />
         </EmptyMedia>
         <EmptyTitle>{title}</EmptyTitle>
         <EmptyDescription>{description}</EmptyDescription>

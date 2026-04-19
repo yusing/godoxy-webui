@@ -1,4 +1,4 @@
-import { IconCircleCheck } from '@tabler/icons-react'
+import { CircleCheck } from 'lucide-react'
 import type { Atom } from 'juststore'
 import { createAtom, Render } from 'juststore'
 import { useEffect, useId, useRef } from 'react'
@@ -78,7 +78,7 @@ function RouteErrorAlert({ errAtom }: { errAtom: Atom<GoDoxyError | undefined> }
   if (!err)
     return (
       <Alert variant="success">
-        <IconCircleCheck />
+        <CircleCheck />
         <AlertTitle>Valid</AlertTitle>
         <AlertDescription>The configuration is valid.</AlertDescription>
       </Alert>

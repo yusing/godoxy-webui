@@ -1,4 +1,4 @@
-import { IconRefresh } from '@tabler/icons-react'
+import { RefreshCw } from 'lucide-react'
 import Convert from 'ansi-to-html'
 import { useCallback, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -39,7 +39,7 @@ export default function AutocertRenewDialogButton() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger render={<Button size="sm" variant="outline" type="button" />}>
-        <IconRefresh className="size-4" />
+        <RefreshCw className="size-4" />
         <span className="hidden lg:block">Renew</span>
       </DialogTrigger>
       <DialogContent className="min-w-[70vw]">

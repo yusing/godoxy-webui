@@ -1,4 +1,4 @@
-import { IconCheck, IconPencil, IconTrash } from '@tabler/icons-react'
+import { Check, Pencil, Trash2 } from 'lucide-react'
 import { type ReactNode, useMemo, useRef, useState } from 'react'
 import { FieldInput } from '@/components/form/FieldInput'
 import { ListInput } from '@/components/form/ListInput'
@@ -308,7 +308,7 @@ function ComplexEntryHeader({
               disabled={draft === '' || taken}
               aria-label="Confirm"
             >
-              <IconCheck className="size-4" />
+              <Check className="size-4" />
             </InputGroupButton>
           </InputGroup>
         ) : (
@@ -327,7 +327,7 @@ function ComplexEntryHeader({
                   setEditing(true)
                 }}
               >
-                <IconPencil className="size-4" />
+                <Pencil className="size-4" />
               </Button>
             )}
           </div>
@@ -335,7 +335,7 @@ function ComplexEntryHeader({
       </div>
       {!readonly && (
         <Button type="button" variant="destructive" onClick={onDelete}>
-          <IconTrash />
+          <Trash2 />
           Delete
         </Button>
       )}

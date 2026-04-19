@@ -1,4 +1,4 @@
-import { IconAlertCircle, IconPhotoOff } from '@tabler/icons-react'
+import { AlertCircle, ImageOff } from 'lucide-react'
 import { type FormState, type MemoryStore, RenderWithUpdate, useMemoryStore } from 'juststore'
 import { type ReactNode, useEffect, useMemo } from 'react'
 import { useAsync } from 'react-use'
@@ -135,13 +135,13 @@ function IconItems({
           </div>
         ) : error ? (
           <IconSearchEmptyPane
-            icon={<IconAlertCircle className="size-4" />}
+            icon={<AlertCircle className="size-4" />}
             title="Couldn't load icons"
             description="Something went wrong. Try again in a moment."
           />
         ) : (
           <IconSearchEmptyPane
-            icon={<IconPhotoOff className="size-4" />}
+            icon={<ImageOff className="size-4" />}
             title="No icons found"
             description="Try a different search term or paste an image URL."
           />

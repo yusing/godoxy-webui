@@ -1,4 +1,4 @@
-import { IconCircleCheck } from '@tabler/icons-react'
+import { CircleCheck } from 'lucide-react'
 import { GoDoxyErrorAlert } from '../GoDoxyError'
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert'
 import { configStore } from './store'
@@ -8,7 +8,7 @@ export default function ConfigValidationError({ className }: { className?: strin
   if (!error)
     return (
       <Alert variant="success" className={className}>
-        <IconCircleCheck />
+        <CircleCheck />
         <AlertTitle>Valid</AlertTitle>
         <AlertDescription>The configuration is valid.</AlertDescription>
       </Alert>

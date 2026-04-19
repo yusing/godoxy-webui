@@ -1,4 +1,4 @@
-import { IconPlus, IconRefresh } from '@tabler/icons-react'
+import { Plus, RefreshCw } from 'lucide-react'
 import { useEffect, useMemo } from 'react'
 import { Dialog } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
@@ -53,13 +53,13 @@ export default function NewRouteForm({ isActive }: { isActive: boolean }) {
             <span className="font-semibold">{alias}</span>
           </div>
         )}
-        saveButtonIcon={IconPlus}
+        saveButtonIcon={Plus}
         saveButtonText="Create"
         onSave={route => {
           configStore.activeSection.reset()
           onSave(route)
         }}
-        secondActionButtonIcon={IconRefresh}
+        secondActionButtonIcon={RefreshCw}
         secondActionButtonText="Reset"
         secondActionButtonVariant="outline"
         onSecondAction={() => {}}

@@ -1,4 +1,4 @@
-import { IconPlus } from '@tabler/icons-react'
+import { Plus } from 'lucide-react'
 import { type FormStore, useForm } from 'juststore'
 import { useState } from 'react'
 import { StoreFormInputField } from '@/components/store/Input'
@@ -57,7 +57,7 @@ export default function AddFilePopoverButton(props: React.ComponentProps<typeof 
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger render={<Button {...props} />}>
-        <IconPlus />
+        <Plus />
       </PopoverTrigger>
       <PopoverContent>
         <form

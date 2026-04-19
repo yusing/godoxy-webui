@@ -1,4 +1,4 @@
-import { IconChevronRight, IconFile } from '@tabler/icons-react'
+import { ChevronRight, File } from 'lucide-react'
 import { Command } from 'cmdk'
 import { useEffect, useMemo } from 'react'
 import type { FileType } from '@/lib/api'
@@ -95,7 +95,7 @@ function FileList() {
                 className={cn('data-selected:bg-inherit', selected && 'text-info-foreground')}
                 data-checked={selected ? 'true' : 'false'}
               >
-                <IconFile className="size-4 shrink-0" />
+                <File className="size-4 shrink-0" />
                 <span className="truncate">{file.filename}</span>
               </CommandItem>
             )
@@ -146,7 +146,7 @@ function Sections() {
                       isActive={isActive}
                       diffPaths={(section as Section).diffPaths}
                     />
-                    {isActive && <IconChevronRight className="size-4 shrink-0" />}
+                    {isActive && <ChevronRight className="size-4 shrink-0" />}
                   </div>
                 </SidebarMenuButton>
               </SidebarMenuItem>

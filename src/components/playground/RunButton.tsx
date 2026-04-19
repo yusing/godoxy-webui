@@ -1,4 +1,4 @@
-import { IconPlayerPlay } from '@tabler/icons-react'
+import { Play } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '../ui/button'
 import { store } from './store'
@@ -21,7 +21,7 @@ export default function RunButton() {
 
   return (
     <Button onClick={runPlayground} isLoading={isLoading} loadingText="Running...">
-      <IconPlayerPlay className="size-4" /> <span>Run</span>
+      <Play className="size-4" /> <span>Run</span>
     </Button>
   )
 }

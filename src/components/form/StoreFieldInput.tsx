@@ -1,4 +1,4 @@
-import { IconRefresh, IconTrash } from '@tabler/icons-react'
+import { RefreshCw, Trash2 } from 'lucide-react'
 import {
   type FieldPath,
   type FieldValues,
@@ -164,7 +164,7 @@ export function StoreFieldInput<T extends FieldValues>({
             variant="destructive"
             onClick={child.reset}
           >
-            {deleteType === 'delete' ? <IconTrash /> : <IconRefresh />}
+            {deleteType === 'delete' ? <Trash2 /> : <RefreshCw />}
             <span className="sr-only shrink-0 min-w-0">
               {deleteType === 'delete' ? 'Delete' : 'Reset'}
             </span>

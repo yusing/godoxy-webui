@@ -1,4 +1,4 @@
-import { IconFolder, IconGlobe, type IconProps, IconWifi } from '@tabler/icons-react'
+import { Folder, Globe, Wifi, type LucideProps } from 'lucide-react'
 import type { Routes } from '@/types/godoxy'
 
 export default function RouteIcon({
@@ -8,8 +8,8 @@ export default function RouteIcon({
 }: {
   scheme: Routes.Route['scheme']
   className?: string
-} & IconProps) {
-  if (scheme === 'fileserver') return <IconFolder className={className} {...props} />
-  if (scheme === 'tcp' || scheme === 'udp') return <IconWifi className={className} {...props} />
-  return <IconGlobe className={className} {...props} />
+} & LucideProps) {
+  if (scheme === 'fileserver') return <Folder className={className} {...props} />
+  if (scheme === 'tcp' || scheme === 'udp') return <Wifi className={className} {...props} />
+  return <Globe className={className} {...props} />
 }

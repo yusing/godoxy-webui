@@ -1,7 +1,7 @@
-import { IconCode, IconRoute } from '@tabler/icons-react'
+import { Code, Route } from 'lucide-react'
 
 export const fileTypeLabels = {
-  config: { label: 'GoDoxy Config', value: 'config', icon: IconCode },
-  provider: { label: 'Route Files', value: 'provider', icon: IconRoute },
-  middleware: { label: 'Middleware Compose', value: 'middleware', icon: IconCode },
+  config: { label: 'GoDoxy Config', value: 'config', icon: Code },
+  provider: { label: 'Route Files', value: 'provider', icon: Route },
+  middleware: { label: 'Middleware Compose', value: 'middleware', icon: Code },
 } as const

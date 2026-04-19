@@ -1,4 +1,4 @@
-import { IconTrash } from '@tabler/icons-react'
+import { Trash2 } from 'lucide-react'
 import { useCallback } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -127,7 +127,7 @@ export function ListInputItem<T extends string>({
       )}
       {!readonly && (
         <Button type="button" variant="destructive" onClick={onItemDelete} title="Delete">
-          <IconTrash />
+          <Trash2 />
           Delete
         </Button>
       )}

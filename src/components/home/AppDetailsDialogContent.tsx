@@ -1,4 +1,4 @@
-import { IconSearch } from '@tabler/icons-react'
+import { Search } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
 import { useAsync } from 'react-use'
 import { Badge } from '@/components/ui/badge'
@@ -48,7 +48,7 @@ export default function AppDetailsDialogContent({ alias }: { alias: string }) {
       <DialogHeader>
         <DialogTitle className="text-lg font-semibold">Route Details</DialogTitle>
         <DialogDescription className="gap-2 relative">
-          <IconSearch className="size-4 text-muted-foreground absolute left-2 top-1/2 -translate-y-1/2" />
+          <Search className="size-4 text-muted-foreground absolute left-2 top-1/2 -translate-y-1/2" />
           <Input
             className="w-full pl-8"
             placeholder="Search in route data..."

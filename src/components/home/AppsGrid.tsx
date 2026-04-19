@@ -1,5 +1,5 @@
 import { Render, RenderWithUpdate } from 'juststore'
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp } from 'lucide-react'
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, X } from 'lucide-react'
 import { motion } from 'motion/react'
 import { Suspense, useEffect, useMemo } from 'react'
 import { CategoryIcon } from '@/components/home/CategoryIcon'
@@ -15,8 +15,6 @@ import ArrowNavigation from './ArrowNavigation'
 import Searchbox from './Searchbox'
 import SettingsPopover from './SettingsPopover'
 import { store } from './store'
-import { IconX } from '@tabler/icons-react'
-
 export default function AppGrid() {
   const [activeCategoryValue, setActiveCategory] = store.navigation.activeCategory.useState()
 
@@ -209,7 +207,7 @@ function KeyboardHints({ onDismiss, className }: { onDismiss: () => void; classN
         onClick={onDismiss}
         aria-label="Dismiss keyboard hints"
       >
-        <IconX className="text-muted-foreground" />
+        <X className="text-muted-foreground" />
       </Button>
     </div>
   )

@@ -1,4 +1,4 @@
-import { IconCheck, IconX } from '@tabler/icons-react'
+import { Check, X } from 'lucide-react'
 import { Render } from 'juststore'
 import { motion } from 'motion/react'
 import { useEffect, useState } from 'react'
@@ -86,9 +86,9 @@ export default function ResultsDisplay() {
                       <TableRow key={index}>
                         <TableCell>
                           {rule.validationError ? (
-                            <IconX className="size-4 text-error-foreground" />
+                            <X className="size-4 text-error-foreground" />
                           ) : (
-                            <IconCheck className="size-4 text-success-foreground" />
+                            <Check className="size-4 text-success-foreground" />
                           )}
                         </TableCell>
                         <Render state={store.lang}>

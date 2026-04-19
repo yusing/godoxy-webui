@@ -1,4 +1,4 @@
-import { IconAlertCircle } from '@tabler/icons-react'
+import { AlertCircle } from 'lucide-react'
 import Convert from 'ansi-to-html'
 import type { ReactNode } from 'react'
 import { useMemo } from 'react'
@@ -211,7 +211,7 @@ export function GoDoxyErrorAlert({
 }) {
   return (
     <Alert variant="error" className={className}>
-      <IconAlertCircle />
+      <AlertCircle />
       <AlertTitle>{title}</AlertTitle>
       <AlertDescription className="-ml-5 max-h-[150px] overflow-y-auto">
         {err && <GoDoxyErrorText err={err} />}

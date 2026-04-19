@@ -1,15 +1,15 @@
 import {
-  IconEdit,
-  IconEye,
-  IconEyeOff,
-  IconFolder,
-  IconHeart,
-  IconInfoCircle,
-  IconPlayerPlay,
-  IconPlus,
-  IconRotate,
-  IconSquare,
-} from '@tabler/icons-react'
+  SquarePen,
+  Eye,
+  EyeOff,
+  Folder,
+  Heart,
+  Info,
+  Play,
+  Plus,
+  RotateCw,
+  Square,
+} from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { type ObjectState, Render } from 'juststore'
 import { type KeyboardEvent, useState } from 'react'
@@ -117,7 +117,7 @@ export default function AppItemContextMenuContent({
             store.editingApp.set({ categoryIndex: categoryIndex, itemIndex: itemIndex })
           }
         >
-          <IconEdit className="size-4" />
+          <SquarePen className="size-4" />
           Edit
         </ContextMenuItem>
         <MoveToSubmenu
@@ -131,12 +131,12 @@ export default function AppItemContextMenuContent({
             <>
               {visible ? (
                 <ContextMenuItem onClick={toggleVisibility}>
-                  <IconEyeOff className="size-4" />
+                  <EyeOff className="size-4" />
                   Hide
                 </ContextMenuItem>
               ) : (
                 <ContextMenuItem onClick={toggleVisibility}>
-                  <IconEye className="size-4" />
+                  <Eye className="size-4" />
                   Unhide
                 </ContextMenuItem>
               )}
@@ -148,7 +148,7 @@ export default function AppItemContextMenuContent({
                       onClick={toggleFavorite}
                       className={cn(favorite && 'text-primary')}
                     >
-                      <IconHeart className="size-4" />
+                      <Heart className="size-4" />
                       {favorite ? 'Remove favorite' : 'Favorite'}
                     </ContextMenuItem>
                   )}
@@ -164,7 +164,7 @@ export default function AppItemContextMenuContent({
           onClick={() => setSelectedRoute(routeKey)}
         >
           <ContextMenuItem>
-            <IconInfoCircle className="size-4" />
+            <Info className="size-4" />
             Details
           </ContextMenuItem>
         </Link>
@@ -205,7 +205,7 @@ function MoveToSubmenu({
   return (
     <ContextMenuSub>
       <ContextMenuSubTrigger>
-        <IconFolder className="size-4" />
+        <Folder className="size-4" />
         Move to
       </ContextMenuSubTrigger>
       <ContextMenuSubContent>
@@ -220,7 +220,7 @@ function MoveToSubmenu({
           </ContextMenuItem>
         ))}
         <ContextMenuItem onClick={onNewCategory}>
-          <IconPlus className="size-4 mr-2" />
+          <Plus className="size-4 mr-2" />
           New Category
         </ContextMenuItem>
       </ContextMenuSubContent>
@@ -288,21 +288,21 @@ function NewCategoryDialog({
 const containerItems = [
   {
     label: 'Start',
-    Icon: IconPlayerPlay,
+    Icon: Play,
     api: api.docker.start,
     className: 'text-success',
     enableIf: (status: HealthStatusType) => status !== 'healthy',
   },
   {
     label: 'Stop',
-    Icon: IconSquare,
+    Icon: Square,
     api: api.docker.stop,
     className: 'text-error',
     enableIf: (status: HealthStatusType) => status !== 'napping',
   },
   {
     label: 'Restart',
-    Icon: IconRotate,
+    Icon: RotateCw,
     api: api.docker.restart,
     className: 'text-warning',
     enableIf: (status: HealthStatusType) => status !== 'napping',

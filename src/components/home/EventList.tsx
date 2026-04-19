@@ -1,10 +1,4 @@
-import {
-  IconActivity,
-  IconBox,
-  IconFileUnknown,
-  IconRoute,
-  IconShieldLock,
-} from '@tabler/icons-react'
+import { Activity, Box, FileQuestionMark, RouteIcon, Shield } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { Event as ApiEvent, EventsLevel, HealthJSON, Route } from '@/lib/api'
@@ -167,30 +161,30 @@ function EventRow({ event }: { event: HomeEvent }) {
   let label: string
   switch (event.category) {
     case 'health':
-      icon = <IconActivity className="size-3.5" />
+      icon = <Activity className="size-3.5" />
       label = 'health'
       break
     case 'pool.proxmox_nodes':
     case 'pool.http_routes':
     case 'pool.stream_routes':
     case 'pool.excluded_routes':
-      icon = <IconRoute className="size-3.5" />
+      icon = <RouteIcon className="size-3.5" />
       label = 'proxy'
       break
     case 'provider_event':
-      icon = <IconBox className="size-3.5" />
+      icon = <Box className="size-3.5" />
       label = event.data.type // file / docker
       break
     case 'acl_event':
-      icon = <IconShieldLock className="size-3.5" />
+      icon = <Shield className="size-3.5" />
       label = 'acl'
       break
     case 'http_event':
-      icon = <IconShieldLock className="size-3.5" />
+      icon = <Shield className="size-3.5" />
       label = 'http'
       break
     default:
-      icon = <IconFileUnknown className="size-3.5" />
+      icon = <FileQuestionMark className="size-3.5" />
       label = 'unknown'
   }
 

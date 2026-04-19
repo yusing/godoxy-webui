@@ -1,4 +1,4 @@
-import { IconArrowRight, IconCopy, IconEdit, IconTrash } from '@tabler/icons-react'
+import { ArrowRight, Copy, SquarePen, Trash2 } from 'lucide-react'
 import { isEqual } from 'juststore'
 import { AppIcon } from '@/components/AppIcon'
 import { StoreCheckboxField } from '@/components/store/Checkbox'
@@ -67,13 +67,13 @@ export default function RouteDisplay({
         </div>
         <div className="flex items-center gap-3">
           <Button title="Edit" variant="outline" size="sm" onClick={onEdit}>
-            <IconEdit className="size-4" />
+            <SquarePen className="size-4" />
           </Button>
           <Button title="Duplicate" variant="outline" size="sm" onClick={onDuplicate}>
-            <IconCopy className="size-4" />
+            <Copy className="size-4" />
           </Button>
           <Button title="Delete" size="sm" variant="destructive" onClick={onDelete}>
-            <IconTrash className="size-4" />
+            <Trash2 className="size-4" />
           </Button>
         </div>
       </div>
@@ -83,7 +83,7 @@ export default function RouteDisplay({
         {listeningAddress && (
           <>
             <span className="font-mono">{listeningAddress}</span>
-            <IconArrowRight className="size-4" />
+            <ArrowRight className="size-4" />
           </>
         )}
         <span className="font-mono">{proxyAddress}</span>
