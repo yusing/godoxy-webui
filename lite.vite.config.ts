@@ -18,30 +18,9 @@ export default defineConfig({
     mdx(await import('./source.config')),
     tailwindcss(),
     tanstackStart({
-      prerender: isDemoSite
-        ? undefined
-        : {
-            enabled: true,
-            autoSubfolderIndex: true,
-            autoStaticPathsDiscovery: true,
-            crawlLinks: true,
-            failOnError: false,
-            filter: ({ path }) => !path.startsWith('/api/'),
-          },
-      pages: [
-        {
-          path: '/docs',
-        },
-        {
-          path: '/docs/godoxy',
-        },
-        {
-          path: '/docs/impl',
-        },
-        {
-          path: '/docs/api/search',
-        },
-      ],
+      prerender: {
+        enabled: false,
+      },
     }),
     viteReact(),
     babel({
@@ -55,7 +34,6 @@ export default defineConfig({
     nitro({
       minify: true,
       sourcemap: false,
-      serverDir: false,
       preset: isDemoSite ? 'cloudflare_pages' : undefined,
       cloudflare: isDemoSite
         ? {

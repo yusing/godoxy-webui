@@ -30,7 +30,7 @@ COPY --from=schema-gen /temp/dev/src/types/godoxy/*.json ./src/types/godoxy/
 
 # for lite image, we want a fully static output
 ENV NODE_ENV=production
-RUN bun --bun vite build --config lite.vite.config.ts
+RUN bun vite build --config lite.vite.config.ts
 
 # Production image, copy all the files and run nginx
 FROM nginx:1-alpine
