@@ -1,5 +1,6 @@
 import { Search } from 'lucide-react'
 import { useCallback, useEffect, useRef } from 'react'
+import { cn } from '@/lib/utils'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '../ui/input-group'
 
 function isPrintableKey(key: string) {
@@ -15,31 +16,43 @@ function isEditableElement(element: Element | null) {
   )
 }
 
-export default function RoutesSidebarSearchBox() {
+type RoutesSearchBoxProps = {
+  /** Root element class that wraps `.route-item` nodes; default matches the routes sidebar list. */
+  itemListRootClass?: string
+  className?: string
+}
+
+export default function RoutesSidebarSearchBox({
+  itemListRootClass = 'sidebar-item-list',
+  className,
+}: RoutesSearchBoxProps) {
   const ref = useRef<HTMLInputElement>(null)
 
-  const applyFilter = useCallback((searchQuery: string) => {
-    const items = Array.from(
-      document.querySelectorAll<HTMLElement>('.sidebar-item-list .route-item')
-    )
-    // empty search query, show all items
-    if (!searchQuery) {
-      for (const item of items) {
-        item.hidden = false
+  const applyFilter = useCallback(
+    (searchQuery: string) => {
+      const items = Array.from(
+        document.querySelectorAll<HTMLElement>(`.${itemListRootClass} .route-item`)
+      )
+      // empty search query, show all items
+      if (!searchQuery) {
+        for (const item of items) {
+          item.hidden = false
+        }
+        return
       }
-      return
-    }
 
-    // filter items based on search query
-    for (const item of items) {
-      const displayName = item.querySelector('.route-display-name')?.textContent
-      if (displayName?.toLowerCase().includes(searchQuery.toLowerCase())) {
-        item.hidden = false
-      } else {
-        item.hidden = true
+      // filter items based on search query
+      for (const item of items) {
+        const displayName = item.querySelector('.route-display-name')?.textContent
+        if (displayName?.toLowerCase().includes(searchQuery.toLowerCase())) {
+          item.hidden = false
+        } else {
+          item.hidden = true
+        }
       }
-    }
-  }, [])
+    },
+    [itemListRootClass]
+  )
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -70,7 +83,7 @@ export default function RoutesSidebarSearchBox() {
   }, [applyFilter])
 
   return (
-    <div className="routes-sidebar-search-row px-1 py-1.5">
+    <div className={cn('routes-sidebar-search-row px-1 py-1.5', className)}>
       <InputGroup>
         <InputGroupAddon align="inline-start">
           <Search className="text-muted-foreground" />

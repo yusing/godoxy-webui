@@ -59,7 +59,7 @@ export default function RouteDisplay({
             />
           </div>
           <div>
-            <h3 className="font-semibold text">{alias}</h3>
+            <h3 className="route-display-name font-semibold text">{alias}</h3>
             <p className="text-muted-foreground text-xs">
               {utils.getRouteType(route.scheme) + (alias.startsWith('x-') ? ' Template' : '')}
             </p>

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import RoutesSidebarSearchBox from '@/components/routes/SearchBox'
 import type { RouteKey } from '@/components/routes/store'
 import { encodeRouteKey } from '@/components/routes/utils'
 import { Card, CardContent } from '@/components/ui/card'
@@ -7,6 +8,7 @@ import { Label } from '@/components/ui/label'
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { Route } from '@/lib/api'
 import type { Routes } from '@/types/godoxy'
+import { ConfigHeaderTitle } from '../ConfigHeaderActions'
 import { configStore, routesConfigStore } from '../store'
 import RouteDisplay from './RouteDisplay'
 import RouteEditFormDialogContent from './RouteEditFormDialog'
@@ -35,10 +37,19 @@ export default function RouteList() {
 
   return (
     <>
+      <ConfigHeaderTitle>
+        <span className="inline-flex items-center gap-2 sm:gap-3 flex-wrap min-w-0 text-xl font-bold">
+          <span>Route List</span>
+          <RoutesSidebarSearchBox
+            itemListRootClass="config-route-list"
+            className="px-0 py-0 w-full min-w-0 sm:w-56 sm:max-w-xs text-base font-normal"
+          />
+        </span>
+      </ConfigHeaderTitle>
       <RouteDetailsProvider />
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 px-0.5 overflow-y-auto h-full">
+      <div className="config-route-list grid grid-cols-1 xl:grid-cols-2 gap-4 px-0.5 overflow-y-auto h-full">
         {Object.entries(routes ?? {}).map(([key, value]) => (
-          <Card key={key} size="sm">
+          <Card key={key} size="sm" className="route-item">
             <CardContent>
               <RouteCardContent
                 alias={key}
