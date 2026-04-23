@@ -161,12 +161,20 @@ export function StoreFieldInput<T extends FieldValues>({
         {allowDelete && !required && !readonly && (
           <Button
             type={deleteType === 'delete' ? 'button' : 'reset'}
-            variant="destructive"
+            variant={deleteType === 'delete' ? 'destructive' : 'ghost'}
+            size={deleteType === 'delete' ? 'default' : 'icon'}
+            className={
+              deleteType === 'reset'
+                ? 'shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground'
+                : undefined
+            }
+            title={deleteType === 'delete' ? 'Remove field' : 'Reset to default'}
+            aria-label={deleteType === 'delete' ? 'Remove field' : 'Reset to default'}
             onClick={child.reset}
           >
-            {deleteType === 'delete' ? <Trash2 /> : <RefreshCw />}
+            {deleteType === 'delete' ? <Trash2 /> : <RefreshCw className="size-4" />}
             <span className="sr-only shrink-0 min-w-0">
-              {deleteType === 'delete' ? 'Delete' : 'Reset'}
+              {deleteType === 'delete' ? 'Delete' : 'Reset to default'}
             </span>
           </Button>
         )}

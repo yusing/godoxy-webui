@@ -12,6 +12,7 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
+import { IndentedListBody } from '@/components/form/IndentedListBlock'
 
 type FormContainerProps = {
   label?: string
@@ -25,6 +26,10 @@ type FormContainerProps = {
   onAdd?: () => void
   canAdd?: boolean
   readonly?: boolean
+  /** Visible label on the bottom add control; defaults to `label` when set. */
+  addButtonLabel?: string
+  /** Extra classes on the non-card content wrapper around `children`. */
+  contentClassName?: string
   children: ReactNode
 }
 
@@ -40,6 +45,8 @@ export function FormContainer({
   onAdd,
   canAdd,
   readonly = false,
+  addButtonLabel,
+  contentClassName,
   children,
 }: FormContainerProps) {
   'use memo'
@@ -103,36 +110,39 @@ export function FormContainer({
         </Button>
       )}
     </div>
-  ) : (
+  ) : label || (!hasChildren && canAdd && onAdd) ? (
     <div className="flex items-center gap-2">
-      {title}
+      {label ? title : null}
       {!hasChildren && canAdd && onAdd && (
         <Button type="button" variant="ghost" size="icon" onClick={onAdd}>
           <Plus />
         </Button>
       )}
     </div>
+  ) : null
+
+  const nonCardContentClass = cn(
+    grid
+      ? 'grid grid-cols-1 2xl:grid-cols-2 gap-3 has-[&>input]:mt-4 has-[&>select]:mt-4 has-[&>label]:mt-4'
+      : 'flex flex-col gap-3',
+    contentClassName
   )
 
   const content =
     hasChildren &&
     (card ? (
       <CardContent
-        className={cn(grid ? 'grid grid-cols-1 2xl:grid-cols-2 gap-3' : 'flex flex-col gap-3')}
-      >
-        {children}
-      </CardContent>
-    ) : (
-      <div
         className={cn(
-          grid
-            ? 'grid grid-cols-1 2xl:grid-cols-2 gap-3 has-[&>input]:mt-4 has-[&>select]:mt-4 has-[&>label]:mt-4'
-            : 'flex flex-col gap-3',
-          level > 0 && hasChildren && 'p-2 border-l-3 border-border'
+          grid ? 'grid grid-cols-1 2xl:grid-cols-2 gap-3' : 'flex flex-col gap-3',
+          contentClassName
         )}
       >
         {children}
-      </div>
+      </CardContent>
+    ) : level > 0 && hasChildren ? (
+      <IndentedListBody className={nonCardContentClass}>{children}</IndentedListBody>
+    ) : (
+      <div className={nonCardContentClass}>{children}</div>
     ))
 
   const foot = (
@@ -142,11 +152,16 @@ export function FormContainer({
         onAdd &&
         (card ? (
           <CardFooter className="p-0">
-            <FooterAddButton onAdd={onAdd} label={label} card={true} />
+            <FooterAddButton
+              onAdd={onAdd}
+              label={label}
+              addButtonLabel={addButtonLabel}
+              card={true}
+            />
           </CardFooter>
         ) : (
           <div data-slot="card-footer" className="pt-4">
-            <FooterAddButton onAdd={onAdd} label={label} />
+            <FooterAddButton onAdd={onAdd} label={label} addButtonLabel={addButtonLabel} />
           </div>
         ))}
       {footer &&
@@ -181,7 +196,7 @@ export function FormContainer({
   ) : (
     <div
       aria-required={required || undefined}
-      className={cn('flex min-w-0 flex-col gap-2', readonly && 'opacity-60 grayscale')}
+      className={cn('flex min-w-0 flex-col gap-4', readonly && 'opacity-60 grayscale')}
     >
       {header}
       <Content>
@@ -207,11 +222,15 @@ function FooterAddButton({
   onAdd,
   card = true,
   label,
+  addButtonLabel,
 }: {
   onAdd: () => void
   card?: boolean
   label?: string
+  addButtonLabel?: string
 }) {
+  const text = addButtonLabel ?? (label?.trim() ? label : null) ?? 'Add item'
+  const title = label?.trim() ? `Add item (${label.trim()})` : 'Add item'
   return (
     <Button
       type="button"
@@ -219,9 +238,10 @@ function FooterAddButton({
       className="w-full rounded-sm flex items-center gap-2 text-xs"
       variant="ghost"
       onClick={onAdd}
-      title={`Add item to ${label}`}
+      title={title}
+      aria-label={title}
     >
-      <Plus /> {label}
+      <Plus /> {text}
     </Button>
   )
 }

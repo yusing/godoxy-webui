@@ -3,6 +3,7 @@ import AutoHeight from 'embla-carousel-auto-height'
 import type { ArrayState, ObjectState } from 'juststore'
 import { Suspense, useEffect, useId, useRef } from 'react'
 import { FormContainer } from '@/components/form/FormContainer'
+import { IndentedListBlock } from '@/components/form/IndentedListBlock'
 import { StoreFieldInput } from '@/components/form/StoreFieldInput'
 import { StoreMapInput, StoreObjectInput } from '@/components/form/StoreMapInput'
 import { Button } from '@/components/ui/button'
@@ -130,23 +131,24 @@ function AutocertConfigContentExtra({ state }: { state: ArrayState<Autocert.Auto
   const numItems = state.useCompute(value => value?.length ?? 0)
 
   return Array.from({ length: numItems }).map((_, index) => (
-    // biome-ignore lint/suspicious/noArrayIndexKey: extra certificates are edited in-place and should keep a stable mounted form by position
-    <Card key={index} className="col-span-full border-2 border-border">
-      <CardHeader className="flex items-center gap-4">
-        <CardTitle>Extra certificate {index + 1}</CardTitle>
+    <IndentedListBlock
+      key={index}
+      title={`Extra certificate ${index + 1}`}
+      titleMono={false}
+      headerEnd={
         <Button
           type="button"
           variant="destructive"
           size="icon"
+          aria-label={`Remove extra certificate ${index + 1}`}
           onClick={() => state.splice(index, 1)}
         >
           <Trash2 />
         </Button>
-      </CardHeader>
-      <CardContent className="flex flex-col gap-2">
-        <AutocertConfigForm state={state.at(index) as ObjectState<Autocert.AutocertConfig>} />
-      </CardContent>
-    </Card>
+      }
+    >
+      <AutocertConfigForm state={state.at(index) as ObjectState<Autocert.AutocertConfig>} />
+    </IndentedListBlock>
   ))
 }
 

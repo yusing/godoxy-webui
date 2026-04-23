@@ -1,4 +1,3 @@
-import { Trash2 } from 'lucide-react'
 import { useCallback } from 'react'
 
 import { Button } from '@/components/ui/button'
@@ -99,36 +98,44 @@ export function ListInputItem<T extends string>({
   readonly?: boolean
 }) {
   return (
-    <div className="flex items-center gap-2">
-      {schema?.items?.enum ? (
-        <Select
-          readOnly={readonly}
-          value={item as string}
-          onValueChange={e => onItemChange(e as T)}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder={placeholder} />
-          </SelectTrigger>
-          <SelectContent>
-            {schema.items.enum.map(selectItem => (
-              <SelectItem value={selectItem} key={String(selectItem)}>
-                {selectItem}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      ) : (
-        <Input
-          readOnly={readonly}
-          value={item}
-          placeholder={placeholder}
-          onChange={e => onItemChange(e.target.value as T)}
-        />
-      )}
+    <div className="group/list-row col-span-full flex min-w-0 w-full items-center gap-2">
+      <div className="min-w-0 flex-1">
+        {schema?.items?.enum ? (
+          <Select
+            readOnly={readonly}
+            value={item as string}
+            onValueChange={e => onItemChange(e as T)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder={placeholder} />
+            </SelectTrigger>
+            <SelectContent>
+              {schema.items.enum.map(selectItem => (
+                <SelectItem value={selectItem} key={String(selectItem)}>
+                  {selectItem}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        ) : (
+          <Input
+            readOnly={readonly}
+            value={item}
+            placeholder={placeholder}
+            onChange={e => onItemChange(e.target.value as T)}
+          />
+        )}
+      </div>
       {!readonly && (
-        <Button type="button" variant="destructive" onClick={onItemDelete} title="Delete">
-          <Trash2 />
-          Delete
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="shrink-0 text-muted-foreground hover:text-destructive md:opacity-0 md:transition-opacity md:group-hover/list-row:opacity-100 md:group-focus-within/list-row:opacity-100 max-md:opacity-100"
+          onClick={onItemDelete}
+          title="Remove from list"
+        >
+          Remove
         </Button>
       )}
     </div>

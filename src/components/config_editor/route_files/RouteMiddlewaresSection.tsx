@@ -38,6 +38,7 @@ export function RouteMiddlewaresSection({ state }: RouteMiddlewaresSectionProps)
       label=""
       card={false}
       grid={false}
+      addButtonLabel="Add middleware step"
       nameField="use"
       keyField="use"
       schema={MiddlewareComposeSchema.definitions.MiddlewareComposeItem}

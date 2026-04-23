@@ -283,8 +283,8 @@ function ComplexEntryHeader({
   }
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="w-full @container">
+    <div className="flex min-h-8 items-center gap-2">
+      <div className="flex min-h-8 w-full min-w-0 items-center @container">
         {editing && !readonly ? (
           <InputGroup>
             <InputGroupInput

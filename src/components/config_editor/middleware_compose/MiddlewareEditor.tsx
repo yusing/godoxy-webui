@@ -30,6 +30,7 @@ export function MiddlewareEditor({
     <NamedListInput
       label={label}
       card={false}
+      addButtonLabel="Add middleware step"
       nameField="use"
       keyField="use"
       schema={MiddlewareComposeSchema.definitions.MiddlewareComposeItem}
@@ -107,8 +108,14 @@ export function MiddlewareComposeEditor({
       </TabsList>
       {Object.entries(data).map(([k, v], index) => (
         <TabsContent key={k} value={String(index)} className="mt-4 flex flex-col gap-4">
-          <div className="flex flex-col gap-3">
-            <Label>Name</Label>
+          <div className="flex flex-col gap-2">
+            <div className="space-y-1">
+              <Label className="text-foreground">Compose entry name</Label>
+              <p className="text-xs text-muted-foreground">
+                Key for this middleware chain in the compose file; the tab and list header use this
+                name.
+              </p>
+            </div>
             <Input
               value={k}
               onChange={e => {
@@ -138,7 +145,7 @@ export function MiddlewareComposeEditor({
           <MiddlewareEditor
             label={k}
             data={(Array.isArray(v) ? v : []) as MiddlewareCompose.EntrypointMiddlewares}
-            onChange={v => onChange({ ...data, [k]: v })}
+            onChange={chains => onChange({ ...data, [k]: chains })}
           />
         </TabsContent>
       ))}

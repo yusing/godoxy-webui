@@ -1,8 +1,10 @@
+import { Trash2 } from 'lucide-react'
 import { useCallback, useMemo } from 'react'
 import { MapInput } from '@/components/form/MapInput'
 import { Button } from '@/components/ui/button'
 import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
 import { FormContainer } from './FormContainer'
+import { IndentedListBlock } from './IndentedListBlock'
 import { stringify } from './utils'
 
 type NamedListInputProps<IndexType extends string, T extends Record<IndexType, unknown>> = {
@@ -17,6 +19,8 @@ type NamedListInputProps<IndexType extends string, T extends Record<IndexType, u
   grid?: boolean
   level?: number
   readonly?: boolean
+  /** Label for the bottom add button (avoids repeating the list `label`). */
+  addButtonLabel?: string
 }
 
 function NamedListInputItem<IndexType extends string, T extends Record<IndexType, unknown>>({
@@ -46,15 +50,33 @@ function NamedListInputItem<IndexType extends string, T extends Record<IndexType
 }) {
   'use memo'
   const name = item[nameField] as string
+  const title = name?.length ? name : `Step ${index + 1}`
   return (
-    <div className="named-list-input-item flex w-full flex-col gap-3 col-span-full">
+    <IndentedListBlock
+      className="named-list-input-item"
+      title={title}
+      headerEnd={
+        !readonly ? (
+          <Button
+            type="button"
+            variant="destructive"
+            className="shrink-0"
+            aria-label={`Delete ${title}`}
+            onClick={() => onDelete(index)}
+          >
+            <Trash2 />
+            Delete
+          </Button>
+        ) : undefined
+      }
+    >
       <MapInput<T>
-        label={name}
+        label={undefined}
         readonly={readonly}
         card={false}
         grid={grid}
         placeholder={placeholder}
-        level={level + 1}
+        level={level}
         keyField={keyField}
         nameField={nameField}
         schema={
@@ -67,22 +89,9 @@ function NamedListInputItem<IndexType extends string, T extends Record<IndexType
           }
         }
         value={item}
-        footer={
-          !readonly && (
-            <Button
-              size="sm"
-              className="w-full"
-              variant="destructive"
-              type="button"
-              onClick={() => onDelete(index)}
-            >
-              {`Delete ${name?.length ? name : `Item ${index + 1}`}`}
-            </Button>
-          )
-        }
         onChange={e => onChange(index, e)}
       />
-    </div>
+    </IndentedListBlock>
   )
 }
 
@@ -98,6 +107,7 @@ export function NamedListInput<IndexType extends string, T extends Record<IndexT
   grid = true,
   level = 0,
   readonly = false,
+  addButtonLabel,
 }: Readonly<NamedListInputProps<IndexType, T>>) {
   'use memo'
   const listValue: T[] = useMemo(() => (Array.isArray(value) ? value : []), [value])
@@ -144,6 +154,7 @@ export function NamedListInput<IndexType extends string, T extends Record<IndexT
       onAdd={handleAddItem}
       canAdd={!readonly}
       readonly={readonly}
+      addButtonLabel={addButtonLabel}
     >
       {listValue.map((item, index) => (
         <NamedListInputItem
