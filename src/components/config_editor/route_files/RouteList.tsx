@@ -47,9 +47,13 @@ export default function RouteList() {
         </span>
       </ConfigHeaderTitle>
       <RouteDetailsProvider />
-      <div className="config-route-list grid grid-cols-1 xl:grid-cols-2 gap-4 px-0.5 overflow-y-auto h-full">
+      <div className="config-route-list grid grid-cols-1 gap-2.5 px-0.5 md:grid-cols-2 md:gap-2.5 overflow-y-auto h-full min-h-0">
         {Object.entries(routes ?? {}).map(([key, value]) => (
-          <Card key={key} size="sm" className="route-item">
+          <Card
+            key={key}
+            size="sm"
+            className="route-item min-w-0 border-0 py-2.5 shadow-sm ring-1 ring-inset ring-foreground/5 data-[size=sm]:py-2.5"
+          >
             <CardContent>
               <RouteCardContent
                 alias={key}

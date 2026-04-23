@@ -1,11 +1,15 @@
-import { ArrowRight, Copy, SquarePen, Trash2 } from 'lucide-react'
-import { isEqual } from 'juststore'
+import { isEqual, RenderWithUpdate } from 'juststore'
+import {
+  Activity,
+  Copy,
+  LayoutDashboard,
+  Network,
+  SquarePen,
+  Trash2,
+  type LucideIcon,
+} from 'lucide-react'
 import { AppIcon } from '@/components/AppIcon'
-import { StoreCheckboxField } from '@/components/store/Checkbox'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Field, FieldLabel } from '@/components/ui/field'
-import { Separator } from '@/components/ui/separator'
 import type { Route as RouteResponse } from '@/lib/api'
 import { cn } from '@/lib/utils'
 import type { Routes } from '@/types/godoxy'
@@ -13,6 +17,14 @@ import type { CIDR } from '@/types/godoxy/types'
 import { routesConfigStore as store } from '../store'
 import RouteIcon from './RouteIcon'
 import * as utils from './utils'
+
+const routeCardActionVisibility = cn(
+  'flex shrink-0 items-center transition-opacity duration-150',
+  'opacity-100',
+  '[@media(hover:hover)_and_(pointer:fine)]:opacity-0',
+  '[@media(hover:hover)_and_(pointer:fine)]:group-hover/card:opacity-100',
+  '[@media(hover:hover)_and_(pointer:fine)]:group-focus-within/card:opacity-100'
+)
 
 export default function RouteDisplay({
   alias,
@@ -32,65 +44,60 @@ export default function RouteDisplay({
   const listeningAddress = utils.getListeningAddress(route, details)
   const proxyAddress = utils.getProxyAddressOrRoot(route, details)
 
-  const [iconBg, iconFg] = utils.getIconColorsByScheme(route.scheme)
+  const mappingLabel =
+    listeningAddress != null && listeningAddress !== ''
+      ? `${listeningAddress} -> ${proxyAddress}`
+      : proxyAddress
+
+  const [, iconFg] = utils.getIconColorsByScheme(route.scheme)
 
   return (
-    <div className="space-y-2.5">
-      {/* Header with icon, title and edit button */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div
-            className={cn(
-              'shrink-0 rounded-lg p-1.5 border',
-              iconBg, // fallback only
-              'not-has-[svg]:bg-gray-500/30 not-has-[svg]:border-gray-500/20' // gray bg for app icon
-            )}
-          >
+    <div className="flex min-w-0 flex-col gap-2">
+      <div className="flex min-w-0 items-start justify-between gap-2">
+        <div className="flex min-w-0 flex-1 items-start gap-2">
+          <div className="mt-0.5 grid size-8 shrink-0 place-content-center rounded-md border border-border/80 bg-muted/30">
             <AppIcon
               alias={alias}
-              className="size-4"
+              className="size-3.5"
               fallback={
                 <RouteIcon
                   scheme={route.scheme ?? 'http'}
-                  className={iconFg}
+                  className={cn('size-3.5', iconFg)}
                   data-slot="fallback"
                 />
               }
             />
           </div>
-          <div>
-            <h3 className="route-display-name font-semibold text">{alias}</h3>
-            <p className="text-muted-foreground text-xs">
+          <div className="min-w-0 pt-0.5">
+            <h3 className="route-display-name truncate text-sm font-medium leading-tight text-foreground">
+              {alias}
+            </h3>
+            <p className="text-muted-foreground mt-0.5 text-[0.6875rem] leading-snug">
               {utils.getRouteType(route.scheme) + (alias.startsWith('x-') ? ' Template' : '')}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <Button title="Edit" variant="outline" size="sm" onClick={onEdit}>
-            <SquarePen className="size-4" />
+        <div className={cn(routeCardActionVisibility, 'gap-0.5')}>
+          <Button title="Edit" variant="outline" size="icon-sm" onClick={onEdit}>
+            <SquarePen className="size-3.5" />
           </Button>
-          <Button title="Duplicate" variant="outline" size="sm" onClick={onDuplicate}>
-            <Copy className="size-4" />
+          <Button title="Duplicate" variant="outline" size="icon-sm" onClick={onDuplicate}>
+            <Copy className="size-3.5" />
           </Button>
-          <Button title="Delete" size="sm" variant="destructive" onClick={onDelete}>
-            <Trash2 className="size-4" />
+          <Button title="Delete" size="icon-sm" variant="destructive" onClick={onDelete}>
+            <Trash2 className="size-3.5" />
           </Button>
         </div>
       </div>
 
-      {/* Connection details */}
-      <div className="flex items-center gap-1 text-muted-foreground text-xs px-1 ml-9.5">
-        {listeningAddress && (
-          <>
-            <span className="font-mono">{listeningAddress}</span>
-            <ArrowRight className="size-4" />
-          </>
-        )}
-        <span className="font-mono">{proxyAddress}</span>
-      </div>
-
-      <Separator />
       <QuickSettings alias={alias} />
+
+      <p
+        className="bg-muted/25 text-muted-foreground min-w-0 truncate rounded-md border border-border/50 px-2 py-1.5 font-mono text-[0.7rem] leading-normal tabular-nums"
+        title={mappingLabel}
+      >
+        {mappingLabel}
+      </p>
     </div>
   )
 }
@@ -102,9 +109,73 @@ const DEFAULT_CIDR_ALLOW = [
   '100.64.0.0/12',
 ] as CIDR[]
 
+const settingChipBase = cn(
+  'inline-flex min-h-8 max-w-full items-center gap-1.5 rounded-[min(var(--radius-md),8px)] border border-border/35 bg-transparent px-1.5 py-1 text-[0.8125rem] font-medium',
+  'text-muted-foreground/80 transition-[background-color,border-color,color,box-shadow,opacity]',
+  'hover:border-border/60 hover:bg-muted/25 hover:text-foreground/95',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/45 focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+  'disabled:pointer-events-none disabled:opacity-50',
+  '[-webkit-tap-highlight-color:transparent]'
+)
+
+function QuickSettingChip({
+  label,
+  title,
+  icon: Icon,
+  active,
+  onClick,
+  mode = 'pressed',
+  disabled,
+  ariaChecked,
+}: {
+  label: string
+  title: string
+  icon: LucideIcon
+  active: boolean
+  onClick: () => void
+  mode?: 'pressed' | 'checkbox'
+  disabled?: boolean
+  ariaChecked?: boolean | 'mixed'
+}) {
+  const checkbox = mode === 'checkbox'
+  return (
+    <button
+      type="button"
+      title={title}
+      aria-label={title}
+      {...(checkbox
+        ? {
+            role: 'checkbox' as const,
+            'aria-checked': (ariaChecked ?? active) as boolean | 'mixed',
+            disabled,
+          }
+        : { 'aria-pressed': active })}
+      onClick={onClick}
+      className={cn(
+        settingChipBase,
+        active && !disabled && 'text-foreground',
+        checkbox &&
+          disabled &&
+          'border-dashed border-warning/40 bg-warning/10 text-muted-foreground'
+      )}
+    >
+      <Icon
+        className={cn(
+          'size-3.5 shrink-0 transition-[color,opacity]',
+          active && !disabled && 'text-primary',
+          !active && !disabled && 'text-muted-foreground/75',
+          disabled && 'text-warning/85'
+        )}
+        aria-hidden
+      />
+      <span className={cn('leading-snug', disabled && 'text-muted-foreground')}>{label}</span>
+    </button>
+  )
+}
+
 function QuickSettings({ alias }: { alias: string }) {
   return (
-    <div className="flex flex-wrap md:grid md:grid-cols-2 gap-4 md:gap-2.5 rounded-md">
+    <div className="flex flex-wrap gap-x-1.5 gap-y-1">
       <LANOnlyToggle alias={alias} />
       <HealthCheckToggle alias={alias} />
       <ShowOnDashboardToggle alias={alias} />
@@ -117,16 +188,12 @@ function LANOnlyToggle({ alias }: { alias: string }) {
     `configObject.${alias}.scheme`,
     s => utils.getRouteType(s) === 'Reverse Proxy'
   )
-  const [matchesDefault, hasCustom, ariaChecked] = store.useCompute(
+  const [matchesDefault, hasCustom] = store.useCompute(
     `configObject.${alias}.middlewares.cidr_whitelist.allow`,
     m => {
-      const matchesDefault = isEqual(m, DEFAULT_CIDR_ALLOW)
-      const hasCustom = m && !matchesDefault
-      return [
-        matchesDefault,
-        hasCustom,
-        hasCustom ? 'mixed' : matchesDefault ? 'true' : 'false',
-      ] as const
+      const allowMatchesDefault = isEqual(m, DEFAULT_CIDR_ALLOW)
+      const allowHasCustom = Boolean(m) && !allowMatchesDefault
+      return [allowMatchesDefault, allowHasCustom] as const
     }
   )
 
@@ -145,45 +212,41 @@ function LANOnlyToggle({ alias }: { alias: string }) {
     return null
   }
 
+  const tip = hasCustom
+    ? 'Custom CIDR whitelist — adjust in route settings'
+    : matchesDefault
+      ? 'Remove default CIDR whitelist'
+      : 'Add default CIDR whitelist'
+
   return (
-    <Field
-      orientation="horizontal"
-      title={
-        hasCustom
-          ? undefined
-          : matchesDefault
-            ? 'Remove default CIDR whitelist'
-            : 'Add default CIDR whitelist'
-      }
-      className="w-auto shrink-0"
-    >
-      <Checkbox
-        id="lan-only"
-        checked={matchesDefault}
-        disabled={hasCustom}
-        onCheckedChange={handleChange}
-        aria-checked={ariaChecked}
-      />
-      <FieldLabel htmlFor="lan-only" className="text-xs">
-        LAN Only
-        {hasCustom && (
-          <p className="text-xs text-muted-foreground">
-            Custom CIDR whitelist detected, manual update is required
-          </p>
-        )}
-      </FieldLabel>
-    </Field>
+    <QuickSettingChip
+      label="Private"
+      title={tip}
+      icon={Network}
+      mode="checkbox"
+      active={matchesDefault}
+      disabled={hasCustom}
+      ariaChecked={hasCustom ? 'mixed' : matchesDefault}
+      onClick={() => handleChange(!matchesDefault)}
+    />
   )
 }
 
 function HealthCheckToggle({ alias }: { alias: string }) {
+  const state = store.state(`configObject.${alias}.healthcheck.disable`).withDefault(false)
+
   return (
-    <StoreCheckboxField
-      state={store.state(`configObject.${alias}.healthcheck.disable`).withDefault(false)}
-      title="No Health Check"
-      labelPlacement="right"
-      labelProps={{ className: 'text-xs' }}
-    />
+    <RenderWithUpdate state={state}>
+      {(value, update) => (
+        <QuickSettingChip
+          label="Healthcheck"
+          title="No health check"
+          icon={Activity}
+          active={!value}
+          onClick={() => update(!value)}
+        />
+      )}
+    </RenderWithUpdate>
   )
 }
 
@@ -192,18 +255,26 @@ function ShowOnDashboardToggle({ alias }: { alias: string }) {
     `configObject.${alias}.scheme`,
     s => utils.getRouteType(s) === 'Reverse Proxy'
   )
+  const showState = store.state(`configObject.${alias}.homepage.show`).derived({
+    from: value => value ?? true,
+    to: value => !!value,
+  })
+
   if (!isReverseProxy) {
     return null
   }
+
   return (
-    <StoreCheckboxField
-      state={store.state(`configObject.${alias}.homepage.show`).derived({
-        from: value => value ?? true, // default to true if undefined
-        to: value => !!value,
-      })}
-      title="Show on Dashboard"
-      labelPlacement="right"
-      labelProps={{ className: 'text-xs' }}
-    />
+    <RenderWithUpdate state={showState}>
+      {(value, update) => (
+        <QuickSettingChip
+          label="Dashboard"
+          title="Show on dashboard"
+          icon={LayoutDashboard}
+          active={Boolean(value)}
+          onClick={() => update(!value)}
+        />
+      )}
+    </RenderWithUpdate>
   )
 }
