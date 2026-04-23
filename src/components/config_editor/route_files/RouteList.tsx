@@ -52,7 +52,7 @@ export default function RouteList() {
           <Card
             key={key}
             size="sm"
-            className="route-item min-w-0 border-0 py-2.5 shadow-sm ring-1 ring-inset ring-foreground/5 data-[size=sm]:py-2.5"
+            className="route-item min-w-0 border-0 py-2.5 shadow-sm ring-1 ring-inset ring-foreground/5 data-[size=sm]:py-2.5 bg-card/45!"
           >
             <CardContent>
               <RouteCardContent
