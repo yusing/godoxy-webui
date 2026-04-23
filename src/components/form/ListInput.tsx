@@ -1,9 +1,10 @@
 import { useCallback } from 'react'
 
-import { Button } from '@/components/ui/button'
+import { FieldRemoveTextButton } from '@/components/form/delete-button'
 import { Input } from '@/components/ui/input'
 import type { JSONSchema } from '@/types/schema'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select'
+import { cn } from '@/lib/utils'
 import { FormContainer } from './FormContainer'
 
 type ListInputProps<T extends string> = {
@@ -98,8 +99,15 @@ export function ListInputItem<T extends string>({
   readonly?: boolean
 }) {
   return (
-    <div className="group/list-row col-span-full flex min-w-0 w-full items-center gap-2">
-      <div className="min-w-0 flex-1">
+    <div className="group/list-row relative col-span-full w-full min-w-0">
+      <div
+        className={cn(
+          'min-w-0',
+          !readonly &&
+            // “Remove” is wider than an icon: reserve room so text and control don’t overlap the input edge
+            'max-md:pr-20 md:pr-0 md:transition-[padding] md:duration-150 md:group-hover/list-row:pr-20 md:group-focus-within/list-row:pr-20'
+        )}
+      >
         {schema?.items?.enum ? (
           <Select
             readOnly={readonly}
@@ -127,16 +135,11 @@ export function ListInputItem<T extends string>({
         )}
       </div>
       {!readonly && (
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="shrink-0 text-muted-foreground hover:text-destructive md:opacity-0 md:transition-opacity md:group-hover/list-row:opacity-100 md:group-focus-within/list-row:opacity-100 max-md:opacity-100"
+        <FieldRemoveTextButton
+          className="absolute top-1/2 z-10 -translate-y-1/2 right-1.5 max-md:opacity-100 md:pointer-events-none md:opacity-0 md:transition-opacity md:group-hover/list-row:pointer-events-auto md:group-hover/list-row:opacity-100 md:group-focus-within/list-row:pointer-events-auto md:group-focus-within/list-row:opacity-100"
           onClick={onItemDelete}
           title="Remove from list"
-        >
-          Remove
-        </Button>
+        />
       )}
     </div>
   )

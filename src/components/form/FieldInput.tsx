@@ -1,7 +1,6 @@
-import { RefreshCw, Trash2 } from 'lucide-react'
 import { useMemo } from 'react'
 
-import { Button } from '@/components/ui/button'
+import { FieldValueSlot } from '@/components/form/delete-button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import {
@@ -22,7 +21,7 @@ import {
   type JSONSchema,
 } from '@/types/schema'
 import { Label } from '../ui/label'
-import { stringify } from './utils'
+import { isNullishOrEmptyFieldValue, stringify } from './utils'
 
 export { FieldInput, type FieldInputProps }
 
@@ -35,6 +34,8 @@ type FieldInputProps<T> = {
   onChange: (v: unknown) => void
   allowDelete: boolean
   deleteType?: 'delete' | 'reset'
+  /** Grid form section: icon remove, show on row hover. */
+  grid?: boolean
   readonly?: boolean
 }
 
@@ -47,6 +48,7 @@ function FieldInput<T>({
   onChange,
   allowDelete = true,
   deleteType = 'delete',
+  grid = false,
   readonly = false,
 }: Readonly<FieldInputProps<T>>) {
   'use memo'
@@ -59,6 +61,10 @@ function FieldInput<T>({
 
   const vSchema = schema?.properties?.[fieldKey]
   const title = useMemo(() => getTitle(schema, fieldKey), [schema, fieldKey])
+
+  const canAct = allowDelete && !required && !readonly
+  const showDelete = canAct && deleteType === 'delete'
+  const showReset = canAct && deleteType === 'reset' && !isNullishOrEmptyFieldValue(fieldValue)
 
   return (
     <div
@@ -96,57 +102,44 @@ function FieldInput<T>({
           </div>
         )}
 
-        {allowedValues && allowedValues.length > 1 ? (
-          <Select readOnly={readonly} value={stringify(fieldValue)} onValueChange={onChange}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder={placeholder?.value ?? 'Value'} />
-            </SelectTrigger>
-            <SelectContent>
-              {allowedValues.map(item => (
-                <SelectItem value={stringify(item)} key={stringify(item)}>
-                  {item}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        ) : isInputType(vSchema) ? (
-          <Input
-            readOnly={readonly}
-            value={stringify(fieldValue)}
-            type={getInputType(vSchema?.type)}
-            placeholder={placeholder?.value ?? 'Value'}
-            onChange={({ target: { value } }) => onChange(value)}
-          />
-        ) : isToggleType(vSchema) ? (
-          <div className="w-full flex items-center">
-            <Checkbox
-              disabled={readonly}
-              checked={Boolean(fieldValue)}
-              onCheckedChange={checked => onChange(Boolean(checked))}
+        <FieldValueSlot
+          grid={grid}
+          showDelete={showDelete}
+          showReset={showReset}
+          onRemove={() => onChange(undefined)}
+          onReset={() => onChange(undefined)}
+        >
+          {allowedValues && allowedValues.length > 1 ? (
+            <Select readOnly={readonly} value={stringify(fieldValue)} onValueChange={onChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={placeholder?.value ?? 'Value'} />
+              </SelectTrigger>
+              <SelectContent>
+                {allowedValues.map(item => (
+                  <SelectItem value={stringify(item)} key={stringify(item)}>
+                    {item}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : isInputType(vSchema) ? (
+            <Input
+              readOnly={readonly}
+              value={stringify(fieldValue)}
+              type={getInputType(vSchema?.type)}
+              placeholder={placeholder?.value ?? 'Value'}
+              onChange={({ target: { value } }) => onChange(value)}
             />
-          </div>
-        ) : null}
-
-        {allowDelete && !required && !readonly && (
-          <Button
-            type={deleteType === 'delete' ? 'button' : 'reset'}
-            variant={deleteType === 'delete' ? 'destructive' : 'ghost'}
-            size={deleteType === 'delete' ? 'default' : 'icon'}
-            className={
-              deleteType === 'reset'
-                ? 'shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground'
-                : undefined
-            }
-            title={deleteType === 'delete' ? 'Remove field' : 'Reset to default'}
-            aria-label={deleteType === 'delete' ? 'Remove field' : 'Reset to default'}
-            onClick={() => onChange(undefined)}
-          >
-            {deleteType === 'delete' ? <Trash2 /> : <RefreshCw className="size-4" />}
-            <span className="sr-only shrink-0 min-w-0">
-              {deleteType === 'delete' ? 'Delete' : 'Reset to default'}
-            </span>
-          </Button>
-        )}
+          ) : isToggleType(vSchema) ? (
+            <div className="w-full flex items-center">
+              <Checkbox
+                disabled={readonly}
+                checked={Boolean(fieldValue)}
+                onCheckedChange={checked => onChange(Boolean(checked))}
+              />
+            </div>
+          ) : null}
+        </FieldValueSlot>
       </div>
     </div>
   )

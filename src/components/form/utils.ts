@@ -8,6 +8,7 @@ export {
   getEffectiveValueSchema,
   getLabel,
   getTypePriority,
+  isNullishOrEmptyFieldValue,
   stringify,
 }
 
@@ -16,6 +17,22 @@ function stringify(value: unknown): string | undefined {
   if (value === null) return undefined
   return String(value)
 }
+
+/** True when a reset control should stay hidden: null, undefined, or "". */
+function isNullishOrEmptyFieldValue(value: unknown): boolean {
+  if (value == null) return true
+  if (typeof value === 'string' && value === '') return true
+  return false
+}
+
+/**
+ * On `group/field-row` (and list/complex rows). FormContainer’s `form-field-cols` tightens
+ * `gap-x` on md+ only when this row is :hover or :focus-within and contains
+ * [data-form-row-action], so a filled-but-idle field keeps the wider default column gap.
+ */
+const FORM_FIELD_ROW_ATTR = 'data-form-field-row' as const
+
+export const FormFieldRowProps = { [FORM_FIELD_ROW_ATTR]: '' } as const
 
 function canAddKey(schema: JSONSchema) {
   if (schema.additionalProperties === undefined) return false

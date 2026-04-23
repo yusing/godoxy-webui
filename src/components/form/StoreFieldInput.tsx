@@ -1,4 +1,3 @@
-import { RefreshCw, Trash2 } from 'lucide-react'
 import {
   type FieldPath,
   type FieldValues,
@@ -7,7 +6,7 @@ import {
   type State,
 } from 'juststore'
 import { useEffect, useMemo } from 'react'
-import { Button } from '@/components/ui/button'
+import { FieldValueSlot } from '@/components/form/delete-button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import {
@@ -29,7 +28,7 @@ import {
   type JSONSchema,
 } from '@/types/schema'
 import { Label } from '../ui/label'
-import { stringify } from './utils'
+import { isNullishOrEmptyFieldValue, stringify } from './utils'
 
 type StoreFieldInputProps<T extends FieldValues> = {
   state: ObjectState<T>
@@ -39,6 +38,8 @@ type StoreFieldInputProps<T extends FieldValues> = {
   allowKeyChange: boolean
   allowDelete: boolean
   deleteType?: 'delete' | 'reset'
+  /** Grid form section: icon remove, show on row hover. */
+  grid?: boolean
   readonly?: boolean
   onKeyChange?: (newKey: string) => void
 }
@@ -57,6 +58,7 @@ export function StoreFieldInput<T extends FieldValues>({
   allowKeyChange = true,
   allowDelete = true,
   deleteType = 'delete',
+  grid = false,
   readonly = false,
   onKeyChange,
 }: Readonly<StoreFieldInputProps<T>>) {
@@ -79,6 +81,10 @@ export function StoreFieldInput<T extends FieldValues>({
   }, [child, vSchema?.const])
 
   if (vSchema?.const !== undefined && !allowKeyChange && (required || !allowDelete)) return null
+
+  const canAct = allowDelete && !required && !readonly
+  const showDelete = canAct && deleteType === 'delete'
+  const showReset = canAct && deleteType === 'reset' && !isNullishOrEmptyFieldValue(child.value)
 
   return (
     <div
@@ -110,74 +116,61 @@ export function StoreFieldInput<T extends FieldValues>({
           </div>
         )}
 
-        {allowedValues && allowedValues.length > 1 ? (
-          <RenderWithUpdate state={child}>
-            {(value, update) => (
-              <Select
-                readOnly={readonly}
-                value={stringify(value) ?? ''}
-                onValueChange={v => update(v as T[typeof fieldKey])}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder={placeholder?.value ?? 'Value'} />
-                </SelectTrigger>
-                <SelectContent>
-                  {allowedValues.map(item => (
-                    <SelectItem value={stringify(item)} key={stringify(item)}>
-                      {item}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-          </RenderWithUpdate>
-        ) : isInputType(vSchema) ? (
-          <RenderWithUpdate state={child}>
-            {(value, update) => (
-              <Input
-                readOnly={readonly}
-                value={stringify(value) ?? ''}
-                type={getInputType(vSchema?.type)}
-                placeholder={placeholder?.value ?? 'Value'}
-                onChange={({ target }) => update(target.value as T[typeof fieldKey])}
-              />
-            )}
-          </RenderWithUpdate>
-        ) : isToggleType(vSchema) ? (
-          <div className="w-full flex items-center">
+        <FieldValueSlot
+          grid={grid}
+          showDelete={showDelete}
+          showReset={showReset}
+          onRemove={child.reset}
+          onReset={child.reset}
+        >
+          {allowedValues && allowedValues.length > 1 ? (
             <RenderWithUpdate state={child}>
               {(value, update) => (
-                <Checkbox
+                <Select
                   readOnly={readonly}
-                  disabled={readonly}
-                  checked={Boolean(value)}
-                  onCheckedChange={checked => update(Boolean(checked) as T[typeof fieldKey])}
+                  value={stringify(value) ?? ''}
+                  onValueChange={v => update(v as T[typeof fieldKey])}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder={placeholder?.value ?? 'Value'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {allowedValues.map(item => (
+                      <SelectItem value={stringify(item)} key={stringify(item)}>
+                        {item}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </RenderWithUpdate>
+          ) : isInputType(vSchema) ? (
+            <RenderWithUpdate state={child}>
+              {(value, update) => (
+                <Input
+                  readOnly={readonly}
+                  value={stringify(value) ?? ''}
+                  type={getInputType(vSchema?.type)}
+                  placeholder={placeholder?.value ?? 'Value'}
+                  onChange={({ target }) => update(target.value as T[typeof fieldKey])}
                 />
               )}
             </RenderWithUpdate>
-          </div>
-        ) : null}
-
-        {allowDelete && !required && !readonly && (
-          <Button
-            type={deleteType === 'delete' ? 'button' : 'reset'}
-            variant={deleteType === 'delete' ? 'destructive' : 'ghost'}
-            size={deleteType === 'delete' ? 'default' : 'icon'}
-            className={
-              deleteType === 'reset'
-                ? 'shrink-0 text-muted-foreground hover:bg-muted hover:text-foreground'
-                : undefined
-            }
-            title={deleteType === 'delete' ? 'Remove field' : 'Reset to default'}
-            aria-label={deleteType === 'delete' ? 'Remove field' : 'Reset to default'}
-            onClick={child.reset}
-          >
-            {deleteType === 'delete' ? <Trash2 /> : <RefreshCw className="size-4" />}
-            <span className="sr-only shrink-0 min-w-0">
-              {deleteType === 'delete' ? 'Delete' : 'Reset to default'}
-            </span>
-          </Button>
-        )}
+          ) : isToggleType(vSchema) ? (
+            <div className="w-full flex items-center">
+              <RenderWithUpdate state={child}>
+                {(value, update) => (
+                  <Checkbox
+                    readOnly={readonly}
+                    disabled={readonly}
+                    checked={Boolean(value)}
+                    onCheckedChange={checked => update(Boolean(checked) as T[typeof fieldKey])}
+                  />
+                )}
+              </RenderWithUpdate>
+            </div>
+          ) : null}
+        </FieldValueSlot>
       </div>
     </div>
   )

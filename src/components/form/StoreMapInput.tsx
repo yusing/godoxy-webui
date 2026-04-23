@@ -211,6 +211,7 @@ function StoreRecordInputItem<T extends FieldValues>({
       placeholder={placeholder}
       allowKeyChange={!readonly}
       allowDelete={!readonly}
+      grid={grid}
       readonly={readonly}
     />
   )
@@ -420,6 +421,7 @@ function StoreMapInputItem<T extends FieldValues>({
       allowKeyChange={!readonly && canRenameKey}
       allowDelete={!readonly && allowDelete}
       deleteType="reset"
+      grid={grid}
       readonly={readonly}
     />
   )

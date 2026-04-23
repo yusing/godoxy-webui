@@ -1,7 +1,8 @@
-import { Check, Pencil, Trash2 } from 'lucide-react'
+import { Check, Pencil } from 'lucide-react'
 import { type ReactNode, useMemo, useRef, useState } from 'react'
 import { FieldInput } from '@/components/form/FieldInput'
 import { ListInput } from '@/components/form/ListInput'
+import { FieldRemoveIconButton } from '@/components/form/delete-button'
 import { Button } from '@/components/ui/button'
 import { InputGroup, InputGroupButton, InputGroupInput } from '@/components/ui/input-group'
 import { Label } from '@/components/ui/label'
@@ -231,6 +232,7 @@ function RecordInput<T extends Record<string, unknown>>({
               fieldValue={v}
               readonly={readonly}
               allowDelete={!readonly}
+              grid={grid}
               schema={effSchema ? { properties: { [displayKey]: effSchema } } : undefined}
               placeholder={placeholder}
               onKeyChange={(newK, newV) => {
@@ -333,12 +335,7 @@ function ComplexEntryHeader({
           </div>
         )}
       </div>
-      {!readonly && (
-        <Button type="button" variant="destructive" onClick={onDelete}>
-          <Trash2 />
-          Delete
-        </Button>
-      )}
+      {!readonly && <FieldRemoveIconButton onClick={onDelete} title="Remove entry" />}
     </div>
   )
 }
@@ -611,6 +608,7 @@ function MapInputItem<T extends Record<string, unknown>>({
       placeholder={placeholder}
       allowDelete={allowDelete}
       deleteType="reset"
+      grid={grid}
       onKeyChange={
         !(schema.properties && k in (schema.properties ?? {}))
           ? e => {

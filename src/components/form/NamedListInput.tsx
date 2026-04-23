@@ -1,7 +1,6 @@
-import { Trash2 } from 'lucide-react'
 import { useCallback, useMemo } from 'react'
 import { MapInput } from '@/components/form/MapInput'
-import { Button } from '@/components/ui/button'
+import { FieldRemoveIconButton, FieldRemoveTextButton } from '@/components/form/delete-button'
 import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
 import { FormContainer } from './FormContainer'
 import { IndentedListBlock } from './IndentedListBlock'
@@ -57,16 +56,19 @@ function NamedListInputItem<IndexType extends string, T extends Record<IndexType
       title={title}
       headerEnd={
         !readonly ? (
-          <Button
-            type="button"
-            variant="destructive"
-            className="shrink-0"
-            aria-label={`Delete ${title}`}
-            onClick={() => onDelete(index)}
-          >
-            <Trash2 />
-            Delete
-          </Button>
+          grid ? (
+            <FieldRemoveIconButton
+              className="shrink-0"
+              title={`Remove ${title}`}
+              onClick={() => onDelete(index)}
+            />
+          ) : (
+            <FieldRemoveTextButton
+              className="shrink-0"
+              label={`Remove ${title}`}
+              onClick={() => onDelete(index)}
+            />
+          )
         ) : undefined
       }
     >
