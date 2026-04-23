@@ -1,12 +1,11 @@
-import { Trash2 } from 'lucide-react'
 import AutoHeight from 'embla-carousel-auto-height'
 import type { ArrayState, ObjectState } from 'juststore'
 import { Suspense, useEffect, useId, useRef } from 'react'
+import { FieldRemoveIconButton } from '@/components/form/delete-button'
 import { FormContainer } from '@/components/form/FormContainer'
 import { IndentedListBlock } from '@/components/form/IndentedListBlock'
 import { StoreFieldInput } from '@/components/form/StoreFieldInput'
 import { StoreMapInput, StoreObjectInput } from '@/components/form/StoreMapInput'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Carousel, CarouselNext, CarouselPrevious, useCarousel } from '@/components/ui/carousel'
 import { Label } from '@/components/ui/label'
@@ -136,15 +135,11 @@ function AutocertConfigContentExtra({ state }: { state: ArrayState<Autocert.Auto
       title={`Extra certificate ${index + 1}`}
       titleMono={false}
       headerEnd={
-        <Button
-          type="button"
-          variant="destructive"
-          size="icon"
-          aria-label={`Remove extra certificate ${index + 1}`}
+        <FieldRemoveIconButton
+          className="shrink-0"
+          title={`Remove extra certificate ${index + 1}`}
           onClick={() => state.splice(index, 1)}
-        >
-          <Trash2 />
-        </Button>
+        />
       }
     >
       <AutocertConfigForm state={state.at(index) as ObjectState<Autocert.AutocertConfig>} />
