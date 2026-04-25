@@ -76,6 +76,7 @@ export default function IconSearchField({ state: iconState, className }: IconSea
           const inputValue = getDisplayValue(value)
           return (
             <CommandInput
+              inputGroupClassName="border-none!"
               placeholder="Search icons... or paste an image URL"
               value={inputValue}
               onValueChange={v => {
