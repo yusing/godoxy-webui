@@ -256,6 +256,7 @@ const blockRulesShiki: LanguageRegistration = {
         },
         {
           // action keywords excluding log/notify/set/add/remove (handled by dedicated rules)
+          // includes in-process directives such as `handle`
           match: `\\b(?:${[...common.actionKeywords]
             .filter(k => !common.mutationActions.has(k) && k !== 'log' && k !== 'notify')
             .map(escRe)

@@ -37,6 +37,7 @@ const actionKeywords = new Set([
   'require_auth',
   'rewrite',
   'serve',
+  'handle',
   'proxy',
   'route',
   'redirect',
