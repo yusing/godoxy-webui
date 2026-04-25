@@ -22,7 +22,6 @@ Dockerfile
 # build output
 **/.output
 **/dist
-/public/wiki
 
 # misc
 .DS_Store
@@ -49,7 +48,4 @@ Dockerfile
 src/types/godoxy/*.deref.json
 
 # wiki
-**/.source
-**/.next
-
-src/app/docker-compose
+wiki/.*

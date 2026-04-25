@@ -8,15 +8,9 @@ import mdx from 'fumadocs-mdx/vite'
 import { nitro } from 'nitro/vite'
 import { defineConfig } from 'vite'
 
-const PRESET = process.env.PRESET
-const production = process.env.NODE_ENV === 'production'
+const isDemoSite = process.env.DEMO_SITE === 'true'
 
-console.log(process.env.NODE_ENV, production)
-
-const config = defineConfig({
-  server: {
-    allowedHosts: true,
-  },
+export default defineConfig({
   resolve: {
     tsconfigPaths: true,
   },
@@ -24,9 +18,42 @@ const config = defineConfig({
     mdx(await import('./source.config')),
     tailwindcss(),
     tanstackStart({
-      prerender: {
-        enabled: false,
-      },
+      spa: isDemoSite
+        ? undefined
+        : {
+            enabled: true,
+            prerender: {
+              enabled: true,
+              autoSubfolderIndex: true,
+              crawlLinks: true,
+            },
+          },
+      prerender: isDemoSite
+        ? undefined
+        : {
+            enabled: true,
+            autoSubfolderIndex: true,
+            autoStaticPathsDiscovery: true,
+            crawlLinks: true,
+            concurrency: 4,
+            retryCount: 2,
+            failOnError: true,
+            filter: ({ path }) => !path.startsWith('/api/'),
+          },
+      pages: [
+        {
+          path: '/docs',
+        },
+        {
+          path: '/docs/godoxy',
+        },
+        {
+          path: '/docs/impl',
+        },
+        {
+          path: '/docs/api/search',
+        },
+      ],
     }),
     viteReact(),
     babel({
@@ -37,12 +64,22 @@ const config = defineConfig({
         }),
       ],
     }),
-    nitro({
-      preset: PRESET,
-      minify: production,
-      sourcemap: !production,
-    }),
+    isDemoSite &&
+      nitro({
+        minify: true,
+        sourcemap: false,
+        preset: 'cloudflare_pages',
+        cloudflare: {
+          deployConfig: true,
+          nodeCompat: true,
+          wrangler: {
+            vars: {
+              API_HOST: 'demo.godoxy.dev',
+              API_SECURE: 'true',
+              DEMO_SITE: 'true',
+            },
+          },
+        },
+      }),
   ],
 })
-
-export default config

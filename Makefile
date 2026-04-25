@@ -12,9 +12,6 @@ export BUILDKIT_PROGRESS=plain
 dev:
 	docker compose up --build --pull=never
 
-dev-lite:
-	DOCKERFILE=lite.dev.Dockerfile docker compose up --build --pull=never
-
 commit-push:
 	bun format:write
 	git add .
@@ -39,9 +36,6 @@ build-wiki:
 
 test-run:
 	docker compose -f test-run.compose.yml up --build --pull=never
-
-test-run-lite:
-	docker compose -f test-run.lite.compose.yml up --build --pull=never
 
 gen-schema-single:
 	bunx --bun ts-json-schema-generator --minify --no-type-check -e export --no-ref-encode -f ./tsconfig.json -o "${SCHEMA_DIR}/${OUT}" -p "${SCHEMA_DIR}/${IN}" -t ${CLASS}

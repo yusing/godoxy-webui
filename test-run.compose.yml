@@ -7,8 +7,8 @@ services:
     env_file: .env
     read_only: true
     tmpfs:
-      - /tmp:rw
-      - /app/node_modules/.cache:rw
+      - /var/cache/nginx:uid=101,gid=101
+      - /run:uid=101,gid=101
     security_opt:
       - no-new-privileges:true
     cap_drop:

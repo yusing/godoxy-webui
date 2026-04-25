@@ -1,10 +1,12 @@
-FROM oven/bun:1.3.13-alpine AS base
+FROM oven/bun:1.3.13-slim AS base
 
 HEALTHCHECK NONE
 
 FROM base AS utils-deps
 WORKDIR /src
-RUN apk add --no-cache make=4.4.1-r3
+ENV DEBIAN_FRONTEND=noninteractive
+# nodejs: real /usr/bin/node for Vite prerender (Bun’s `node` shim cannot fetch the preview server).
+RUN apt update && apt install -y make nodejs && rm -rf /var/lib/apt/lists/*
 
 # install stage for webui deps
 FROM utils-deps AS install
@@ -22,31 +24,30 @@ RUN make gen-schema
 
 # copy node_modules from temp directory
 # then copy all (non-ignored) project files into the image
-FROM base AS prerelease
+FROM utils-deps AS prerelease
 WORKDIR /app
 COPY --from=install /temp/dev/node_modules node_modules
 COPY . .
-# staticFunctionMiddleware causes issues with non-static builds
-RUN sed -i 's/\.middleware(\[staticFunctionMiddleware\])//g' src/routes/docs/\$.tsx
 COPY --from=schema-gen /temp/dev/src/types/godoxy/*.json ./src/types/godoxy/
 
 ENV NODE_ENV=production
-RUN bun --bun vite build
+RUN /usr/bin/node ./node_modules/vite/bin/vite.js build
 
-# Production image, copy all the files and run bun
-FROM oven/bun:1.3.13-distroless AS release
+# Production image, copy all the files and run nginx
+FROM nginx:1-alpine
+
 ENV NODE_ENV=production
 
-USER 1001:1001
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+USER nginx
 
 WORKDIR /app
 
-COPY --from=prerelease --chown=1001:1001 /app/.output ./
+COPY --from=prerelease --chown=nginx:nginx /app/dist/client ./out
 
-EXPOSE 3000
-
-ENV PORT=3000
+EXPOSE 80
 
 LABEL "proxy.*.rule_file"="embed://webui.yml"
 
-CMD ["--bun", "server/index.mjs"]
+CMD ["nginx", "-g", "daemon off;"]
