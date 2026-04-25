@@ -1,44 +1,47 @@
-import type { HealthcheckConfig } from '../providers/healthcheck'
-import type { DomainName } from '../types'
-import type { ACLConfig } from './acl'
-import type { AutocertConfig } from './autocert'
-import type { EntrypointConfig } from './entrypoint'
-import type { HomepageConfig } from './homepage'
-import type { InboundMTLSProfiles } from './inbound_mtls'
-import type { Providers } from './providers'
+import type { HealthcheckConfig } from "../providers/healthcheck";
+import type { DomainName } from "../types";
+import type { ACLConfig } from "./acl";
+import type { AutocertConfig } from "./autocert";
+import type { EntrypointConfig } from "./entrypoint";
+import type { HomepageConfig } from "./homepage";
+import type { InboundMTLSProfiles } from "./inbound_mtls";
+import type { Providers } from "./providers";
+import type { WebUIConfig } from "./webui";
 
-export type { InboundMTLSProfile, InboundMTLSProfiles } from './inbound_mtls'
+export type { InboundMTLSProfile, InboundMTLSProfiles } from "./inbound_mtls";
 
 export type Config = {
   /** Optional access control configuration */
-  acl?: ACLConfig
+  acl?: ACLConfig;
   /** Optional autocert configuration */
-  autocert?: AutocertConfig
+  autocert?: AutocertConfig;
   /** Optional entrypoint configuration */
-  entrypoint?: EntrypointConfig
+  entrypoint?: EntrypointConfig;
   /** Named inbound mTLS trust profiles */
-  inbound_mtls_profiles?: InboundMTLSProfiles
+  inbound_mtls_profiles?: InboundMTLSProfiles;
   /** Providers configuration (include file, docker, notification) */
-  providers: Providers
+  providers: Providers;
   /** List of domains to match
    *
    * @minItems 1
    * @default []
    */
-  match_domains?: DomainName[]
-  /** Homepage configuration */
-  homepage?: HomepageConfig
+  match_domains?: DomainName[];
+  /** Homepage configurations */
+  homepage?: HomepageConfig;
+  /** WebUI configurations */
+  webui?: WebUIConfig;
   /**
    * Default values
    * @additionalProperties false
    */
   defaults?: {
-    healthcheck?: HealthcheckConfig
-  }
+    healthcheck?: HealthcheckConfig;
+  };
   /**
    * Optional timeout before shutdown
    * @default 3
    * @minimum 1
    */
-  timeout_shutdown?: number
-}
+  timeout_shutdown?: number;
+};
