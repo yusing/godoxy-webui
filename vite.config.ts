@@ -11,6 +11,9 @@ import { defineConfig } from 'vite'
 const isDemoSite = process.env.DEMO_SITE === 'true'
 
 export default defineConfig({
+  server: {
+    allowedHosts: true,
+  },
   resolve: {
     tsconfigPaths: true,
   },
