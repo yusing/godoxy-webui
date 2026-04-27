@@ -235,9 +235,9 @@ export interface ContainerPidsStats {
   limit: number;
 }
 
-export interface ContainerPortSummary {
+export interface ContainerPort {
   /** Host IP address that the container's port is mapped to */
-  IP: NetipAddr;
+  IP: string;
   /**
    * Port on the container
    * Required: true
@@ -248,7 +248,6 @@ export interface ContainerPortSummary {
   /**
    * type
    * Required: true
-   * Enum: ["tcp","udp","sctp"]
    */
   Type: string;
 }
@@ -278,68 +277,22 @@ export interface ContainerStats {
 }
 
 export interface ContainerStatsResponse {
-  /**
-   * BlkioStats stores all IO service stats for data read and write.
-   *
-   * This type is Linux-specific and holds many fields that are specific
-   * to cgroups v1.
-   *
-   * On a cgroup v2 host, all fields other than "io_service_bytes_recursive"
-   * are omitted or "null".
-   *
-   * This type is only populated on Linux and omitted for Windows containers.
-   */
   blkio_stats: ContainerBlkioStats;
-  /** CPUStats contains CPU related info of the container. */
+  /** Shared stats */
   cpu_stats: ContainerCPUStats;
-  /** ID is the ID of the container for which the stats were collected. */
   id: string;
-  /**
-   * MemoryStats aggregates all memory stats since container inception on Linux.
-   * Windows returns stats for commit and private working set only.
-   */
   memory_stats: ContainerMemoryStats;
-  /** Name is the name of the container for which the stats were collected. */
   name: string;
-  /**
-   * Networks contains Nntwork statistics for the container per interface.
-   *
-   * This field is omitted if the container has no networking enabled.
-   */
   networks: Record<string, ContainerNetworkStats>;
-  /**
-   * NumProcs is the number of processors on the system.
-   *
-   * This field is Windows-specific and always zero for Linux containers.
-   */
+  /** Windows specific stats, not populated on Linux. */
   num_procs: number;
-  /**
-   * OSType is the OS of the container ("linux" or "windows") to allow
-   * platform-specific handling of stats.
-   */
-  os_type: string;
-  /**
-   * PidsStats contains Linux-specific stats of a container's process-IDs (PIDs).
-   *
-   * This field is Linux-specific and omitted for Windows containers.
-   */
+  /** Linux specific stats, not populated on Windows. */
   pids_stats: ContainerPidsStats;
-  /** PreCPUStats contains the CPUStats of the previous sample. */
+  /** "Pre"="Previous" */
   precpu_stats: ContainerCPUStats;
-  /**
-   * PreRead is the date and time at which this first sample was collected.
-   * This field is not propagated if the "one-shot" option is set. If the
-   * "one-shot" option is set, this field may be omitted, empty, or set
-   * to a default date (`0001-01-01T00:00:00Z`).
-   */
   preread: string;
-  /** Read is the date and time at which this sample was collected. */
+  /** Common stats */
   read: string;
-  /**
-   * StorageStats is the disk I/O stats for read/write on Windows.
-   *
-   * This type is Windows-specific and omitted for Linux containers.
-   */
   storage_stats: ContainerStorageStats;
 }
 
@@ -416,7 +369,7 @@ export interface DockerapiRestartRequest {
   /**
    * Signal (optional) is the signal to send to the container to (gracefully)
    * stop it before forcibly terminating the container with SIGKILL after the
-   * timeout expires. If no value is set, the default (SIGTERM) is used.
+   * timeout expires. If not value is set, the default (SIGTERM) is used.
    */
   signal?: string;
   /**
@@ -443,7 +396,7 @@ export interface DockerapiStopRequest {
   /**
    * Signal (optional) is the signal to send to the container to (gracefully)
    * stop it before forcibly terminating the container with SIGKILL after the
-   * timeout expires. If no value is set, the default (SIGTERM) is used.
+   * timeout expires. If not value is set, the default (SIGTERM) is used.
    */
   signal?: string;
   /**
@@ -792,8 +745,6 @@ export interface NetIOCountersStat {
   upload_speed: number;
 }
 
-export type NetipAddr = string;
-
 export interface NewAgentRequest {
   /** @default "docker" */
   container_runtime?: "docker" | "podman";
@@ -919,13 +870,13 @@ export interface Route {
   homepage: HomepageItemConfig;
   host: string;
   idlewatcher?: IdlewatcherConfig | null;
+  /** HTTP-based routes only: must match a configured inbound_mtls_profiles entry and is ignored when entrypoint.inbound_mtls_profile is set */
   inbound_mtls_profile: string;
   /** Index file to serve for single-page app mode */
   index: string;
   load_balance?: LoadBalancerConfig | null;
-  /** private fields */
   lurl?: string | null;
-  middlewares?: Record<string, TypesLabelMap>;
+  middlewares?: Record<string, TypesLabelMap> | null;
   no_tls_verify: boolean;
   path_patterns?: string[] | null;
   port: Port;
@@ -1025,7 +976,7 @@ export interface StatusCodeRange {
 }
 
 export interface SuccessResponse {
-  details?: Record<string, any>;
+  details?: Record<string, any> | null;
   message: string;
 }
 
@@ -1072,7 +1023,7 @@ export type TimeDuration =
 
 export type TypesLabelMap = Record<string, any>;
 
-export type TypesPortMapping = Record<string, ContainerPortSummary>;
+export type TypesPortMapping = Record<string, ContainerPort>;
 
 export interface UptimeAggregate {
   data: RouteUptimeAggregate[];
@@ -1417,7 +1368,7 @@ export namespace Docker {
   /**
    * @description Get container stats by container id
    * @tags docker, websocket
-   * @name Stats
+   * @name StatsDetail
    * @summary Get container stats
    * @request GET:/docker/stats/{id}
    * @response `200` `ContainerStatsResponse` OK
@@ -1426,7 +1377,7 @@ export namespace Docker {
    * @response `404` `ErrorResponse` Container not found
    * @response `500` `ErrorResponse` Internal Server Error
    */
-  export namespace Stats {
+  export namespace StatsDetail {
     export type RequestParams = {
       /** Container ID or route alias */
       id: string;
@@ -3060,7 +3011,7 @@ export class Api<
      * @description Get container stats by container id
      *
      * @tags docker, websocket
-     * @name Stats
+     * @name StatsDetail
      * @summary Get container stats
      * @request GET:/docker/stats/{id}
      * @response `200` `ContainerStatsResponse` OK
@@ -3069,7 +3020,7 @@ export class Api<
      * @response `404` `ErrorResponse` Container not found
      * @response `500` `ErrorResponse` Internal Server Error
      */
-    stats: (id: string, params: RequestParams = {}) =>
+    statsDetail: (id: string, params: RequestParams = {}) =>
       this.request<ContainerStatsResponse, ErrorResponse>({
         path: `/docker/stats/${id}`,
         method: "GET",
