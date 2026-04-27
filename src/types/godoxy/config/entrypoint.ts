@@ -1,19 +1,19 @@
-import type { EntrypointMiddlewares } from "../middlewares/middleware_compose";
-import type { RouteRule } from "../providers/routes";
-import type { RequestLogConfig } from "./access_log";
+import type { EntrypointMiddlewares } from '../middlewares/middleware_compose'
+import type { RouteRule } from '../providers/routes'
+import type { RequestLogConfig } from './access_log'
 
 export type EntrypointConfig = {
   /** Enable support for proxy protocol */
-  support_proxy_protocol?: boolean;
+  support_proxy_protocol?: boolean
   /** Named inbound mTLS profile enforced for all HTTPS traffic on this entrypoint */
-  inbound_mtls_profile?: string;
+  inbound_mtls_profile?: string
   /** Entrypoint middleware configuration */
-  middlewares?: EntrypointMiddlewares;
+  middlewares?: EntrypointMiddlewares
   /** Entrypoint access log configuration */
-  access_log?: RequestLogConfig;
+  access_log?: RequestLogConfig
   /** Entrypoint rules */
   rules?: {
     /** Not found rules */
-    not_found?: RouteRule[];
-  };
-};
+    not_found?: RouteRule[]
+  }
+}
