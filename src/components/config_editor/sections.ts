@@ -1,4 +1,5 @@
 import {
+  AppWindow,
   Bell,
   Brain,
   Globe,
@@ -18,6 +19,7 @@ import AutocertConfigContent from './general_config/AutocertConfigContent'
 import DefaultValuesConfigContent from './general_config/DefaultValues'
 import DomainMatchingConfigContent from './general_config/DomainMatching'
 import EntrypointConfigContent from './general_config/EntrypointConfig'
+import WebUIConfigContent from './general_config/WebUIConfig'
 import MaxmindConfigContent from './general_config/Maxmind'
 import NotificationsConfigContent from './general_config/NotificationsConfig'
 import ProxmoxConfigContent from './general_config/ProxmoxConfig'
@@ -49,6 +51,13 @@ const configSections = [
     icon: Key,
     Content: AccessControlConfigContent,
     diffPaths: ['acl'],
+  },
+  {
+    id: 'webui',
+    label: 'Web UI',
+    icon: AppWindow,
+    Content: WebUIConfigContent,
+    diffPaths: ['webui'],
   },
   {
     id: 'entrypoint',
