@@ -9,7 +9,6 @@ import {
 } from 'juststore'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { parse as parseYAML, stringify as stringifyYAML } from 'yaml'
 import { StoreCheckboxField, StoreFormCheckboxField } from '@/components/store/Checkbox'
 import { StoreFormInputField } from '@/components/store/Input'
 import { StoreFormRadioField } from '@/components/store/Radio'
@@ -27,8 +26,8 @@ import {
 import type { NewAgentRequest, NewAgentResponse } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
+import { applyAgentStore } from './AllSystemInfoProvider'
 import { cn } from '@/lib/utils'
-import type { Config } from '@/types/godoxy'
 import Docker from '../svg/docker'
 import Linux from '../svg/linux'
 import { FieldGroup } from '../ui/field'
@@ -46,19 +45,27 @@ const agentTypes = [
   },
 ]
 
-async function addAgentToConfig(host: string, port: number) {
-  const data = await api.file.get({ filename: 'config.yml', type: 'config' }).then(res => res.data)
-  const config = parseYAML(data) as Config.Config
-  if (!config.providers) {
-    config.providers = {
-      agents: [],
-    }
-  }
-  if (!config.providers.agents) {
-    config.providers.agents = []
-  }
-  config.providers.agents.push(`${host}:${port}`)
-  await api.file.set({ filename: 'config.yml', type: 'config' }, stringifyYAML(config))
+type VerifyAndStoreAgentParams = {
+  request: Pick<NewAgentRequest, 'host' | 'port' | 'container_runtime'>
+  agent: NewAgentResponse
+  addToConfig: boolean
+}
+
+export async function verifyAndStoreAgent({
+  request,
+  agent,
+  addToConfig,
+}: VerifyAndStoreAgentParams) {
+  const response = await api.agent.verify({
+    host: `${request.host}:${request.port}`,
+    ca: agent.ca,
+    client: agent.client,
+    container_runtime: request.container_runtime ?? 'docker',
+    add_to_config: addToConfig,
+  })
+
+  applyAgentStore(response.data.agents)
+  return response.data
 }
 
 const minWidth = 'min-w-[120px]'
@@ -90,8 +97,8 @@ export function AddAgentDialogButton({ className }: { className?: string }) {
     form.type
   )
 
-  const handleCopyCompose = (form: NewAgentRequest) => {
-    const req = { ...form }
+  const handleCopyCompose = (request: NewAgentRequest) => {
+    const req = { ...request }
     if (states.explicitOnly.value) {
       req.name += '!'
     }
@@ -107,34 +114,33 @@ export function AddAgentDialogButton({ className }: { className?: string }) {
       .finally(() => states.copyLoading.set(false))
   }
 
-  const handleAddAgent = (form: NewAgentRequest) => {
+  const handleAddAgent = (request: NewAgentRequest) => {
     const agent = states.agent.value
     if (!agent) return
     states.addLoading.set(true)
-    api.agent
-      .verify({
-        host: `${form.host}:${form.port}`,
-        ca: agent.ca,
-        client: agent.client,
-        container_runtime: form.container_runtime ?? 'docker',
-      })
-      .then(async e => {
-        if (states.addToConfig.value) {
-          await addAgentToConfig(form.host, form.port)
-        }
-        return e
-      })
-      .then(async res => {
-        states.agent.reset()
+    verifyAndStoreAgent({
+      request,
+      agent,
+      addToConfig: states.addToConfig.value,
+    })
+      .then(res => {
         setOpen(false)
-        toast.success('Agent added', { description: res.data.message })
+        toast.success('Agent added', { description: res.message })
       })
       .catch(toastError)
       .finally(() => states.addLoading.set(false))
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={nextOpen => {
+        setOpen(nextOpen)
+        if (!nextOpen) {
+          states.agent.reset()
+        }
+      }}
+    >
       <DialogTrigger render={<Button variant={'outline'} size="sm" className={className} />}>
         <Plus />
         Add agent

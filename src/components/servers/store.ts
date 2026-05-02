@@ -11,7 +11,6 @@ import type {
 type Store = {
   temperatureUnit: 'celsius' | 'fahrenheit'
   metricsPeriod: MetricsPeriod
-  agentList: string[]
   agents: Record<string, Agent>
   systemInfo: Record<string, SystemInfo>
   systemInfoGraphs: Record<
@@ -24,7 +23,6 @@ type Store = {
 export const store = createStore<Store>('servers', {
   temperatureUnit: 'celsius',
   metricsPeriod: '1h',
-  agentList: [],
   agents: {},
   systemInfo: {},
   systemInfoGraphs: {},

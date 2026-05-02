@@ -6,6 +6,31 @@ import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
 import { store } from './store'
 
+export function applyAgentStore(agents: Agent[], selectedAgent?: string) {
+  if (
+    selectedAgent &&
+    typeof window !== 'undefined' &&
+    !agents.some(agent => agent.name === selectedAgent)
+  ) {
+    window.location.hash = ''
+  }
+
+  store.agents.set(
+    agents.reduce(
+      (acc, agent) => {
+        acc[agent.name] = agent
+        return acc
+      },
+      {} as Record<string, Agent>
+    )
+  )
+}
+
+export async function refreshAgentStore(selectedAgent?: string) {
+  const agents = await api.agent.list().then(res => res.data)
+  applyAgentStore(agents, selectedAgent)
+}
+
 export default function AllSystemInfoProvider() {
   const agent = useFragment()
 
@@ -16,8 +41,8 @@ export default function AllSystemInfoProvider() {
     },
     onMessage: data => {
       // server sends one agent at a time, so we need to set each one individually
-      for (const _agent in data) {
-        store.systemInfo[_agent]?.set(data[_agent]!)
+      for (const agentName in data) {
+        store.systemInfo[agentName]?.set(data[agentName]!)
       }
       store.readyState.set(true)
     },
@@ -26,24 +51,7 @@ export default function AllSystemInfoProvider() {
   })
 
   useEffect(() => {
-    api.agent
-      .list()
-      .then(res => {
-        if (!agent || !res.data.some(a => a.name === agent)) {
-          window.location.hash = ''
-        }
-        store.agents.set(
-          res.data.reduce(
-            (acc, _agent) => {
-              acc[_agent.name] = _agent
-              return acc
-            },
-            {} as Record<string, Agent>
-          )
-        )
-        store.agentList.set(res.data.map(a => a.name))
-      })
-      .catch(toastError)
+    refreshAgentStore(agent).catch(toastError)
   }, [agent])
   return null
 }

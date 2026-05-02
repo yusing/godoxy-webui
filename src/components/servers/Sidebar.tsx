@@ -17,7 +17,7 @@ import { AddAgentDialogButton } from './NewAgentButton'
 import { store, useSensorsInfo } from './store'
 
 export default function ServersSidebar() {
-  const agentList = store.agentList.use() ?? []
+  const agentList = store.agents.keys.use()
   const selectedAgent = useFragment()
   const selected = selectedAgent || undefined
   const selectedKey = selected || 'GoDoxy'
@@ -70,7 +70,7 @@ export default function ServersSidebar() {
   )
 }
 
-function ServerList({ agentList, selected }: { agentList: string[]; selected?: string }) {
+function ServerList({ agentList, selected }: { agentList: readonly string[]; selected?: string }) {
   return (
     <div className="space-y-3">
       <ServerItem isSelected={!selected} />
