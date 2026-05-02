@@ -875,6 +875,7 @@ export interface Route {
   /** Index file to serve for single-page app mode */
   index: string;
   load_balance?: LoadBalancerConfig | null;
+  /** private fields */
   lurl?: string | null;
   middlewares?: Record<string, TypesLabelMap> | null;
   no_tls_verify: boolean;
@@ -903,6 +904,8 @@ export interface Route {
   ssl_server_name: string;
   /** Path to trusted CA certificates */
   ssl_trusted_certificate: string;
+  /** TCP only: terminate inbound TLS on the shared HTTPS listener before proxying plaintext to the destination */
+  tls_termination: boolean;
 }
 
 export type RouteApiRoutesByProvider = Record<string, Route[]>;
@@ -1031,10 +1034,16 @@ export interface UptimeAggregate {
 }
 
 export interface VerifyNewAgentRequest {
+  add_to_config: boolean;
   ca: PEMPairResponse;
   client: PEMPairResponse;
   container_runtime: AgentContainerRuntime;
   host: string;
+}
+
+export interface VerifyNewAgentResponse {
+  agents: Agent[];
+  message: string;
 }
 
 export interface WidgetsConfig {
@@ -1086,7 +1095,7 @@ export namespace Agent {
    * @name Verify
    * @summary Verify a new agent
    * @request POST:/agent/verify
-   * @response `200` `SuccessResponse` OK
+   * @response `200` `VerifyNewAgentResponse` OK
    * @response `400` `ErrorResponse` Bad Request
    * @response `403` `ErrorResponse` Forbidden
    * @response `500` `ErrorResponse` Internal Server Error
@@ -1096,7 +1105,7 @@ export namespace Agent {
     export type RequestQuery = {};
     export type RequestBody = VerifyNewAgentRequest;
     export type RequestHeaders = {};
-    export type ResponseBody = SuccessResponse;
+    export type ResponseBody = VerifyNewAgentResponse;
   }
 }
 
@@ -2714,13 +2723,13 @@ export class Api<
      * @name Verify
      * @summary Verify a new agent
      * @request POST:/agent/verify
-     * @response `200` `SuccessResponse` OK
+     * @response `200` `VerifyNewAgentResponse` OK
      * @response `400` `ErrorResponse` Bad Request
      * @response `403` `ErrorResponse` Forbidden
      * @response `500` `ErrorResponse` Internal Server Error
      */
     verify: (request: VerifyNewAgentRequest, params: RequestParams = {}) =>
-      this.request<SuccessResponse, ErrorResponse>({
+      this.request<VerifyNewAgentResponse, ErrorResponse>({
         path: `/agent/verify`,
         method: "POST",
         body: request,
