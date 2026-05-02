@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as ServersRouteImport } from './routes/servers'
 import { Route as RoutesRouteImport } from './routes/routes'
 import { Route as PlaygroundRouteImport } from './routes/playground'
@@ -20,6 +21,11 @@ import { Route as DocsSplatRouteImport } from './routes/docs/$'
 import { Route as LlmsDotmdxDocsSplatRouteImport } from './routes/llms[.]mdx.docs.$'
 import { Route as DocsApiSearchRouteImport } from './routes/docs/api/search'
 
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServersRoute = ServersRouteImport.update({
   id: '/servers',
   path: '/servers',
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/playground': typeof PlaygroundRoute
   '/routes': typeof RoutesRoute
   '/servers': typeof ServersRoute
+  '/settings': typeof SettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/docs/': typeof DocsIndexRoute
   '/docs/api/search': typeof DocsApiSearchRoute
@@ -90,6 +97,7 @@ export interface FileRoutesByTo {
   '/playground': typeof PlaygroundRoute
   '/routes': typeof RoutesRoute
   '/servers': typeof ServersRoute
+  '/settings': typeof SettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/docs': typeof DocsIndexRoute
   '/docs/api/search': typeof DocsApiSearchRoute
@@ -103,6 +111,7 @@ export interface FileRoutesById {
   '/playground': typeof PlaygroundRoute
   '/routes': typeof RoutesRoute
   '/servers': typeof ServersRoute
+  '/settings': typeof SettingsRoute
   '/docs/$': typeof DocsSplatRoute
   '/docs/': typeof DocsIndexRoute
   '/docs/api/search': typeof DocsApiSearchRoute
@@ -117,6 +126,7 @@ export interface FileRouteTypes {
     | '/playground'
     | '/routes'
     | '/servers'
+    | '/settings'
     | '/docs/$'
     | '/docs/'
     | '/docs/api/search'
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/playground'
     | '/routes'
     | '/servers'
+    | '/settings'
     | '/docs/$'
     | '/docs'
     | '/docs/api/search'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/playground'
     | '/routes'
     | '/servers'
+    | '/settings'
     | '/docs/$'
     | '/docs/'
     | '/docs/api/search'
@@ -154,6 +166,7 @@ export interface RootRouteChildren {
   PlaygroundRoute: typeof PlaygroundRoute
   RoutesRoute: typeof RoutesRoute
   ServersRoute: typeof ServersRoute
+  SettingsRoute: typeof SettingsRoute
   DocsSplatRoute: typeof DocsSplatRoute
   DocsIndexRoute: typeof DocsIndexRoute
   DocsApiSearchRoute: typeof DocsApiSearchRoute
@@ -162,6 +175,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/servers': {
       id: '/servers'
       path: '/servers'
@@ -242,6 +262,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlaygroundRoute: PlaygroundRoute,
   RoutesRoute: RoutesRoute,
   ServersRoute: ServersRoute,
+  SettingsRoute: SettingsRoute,
   DocsSplatRoute: DocsSplatRoute,
   DocsIndexRoute: DocsIndexRoute,
   DocsApiSearchRoute: DocsApiSearchRoute,

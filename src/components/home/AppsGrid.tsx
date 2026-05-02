@@ -13,7 +13,6 @@ import { cn } from '@/lib/utils'
 import AppCategory from './AppCategory'
 import ArrowNavigation from './ArrowNavigation'
 import Searchbox from './Searchbox'
-import SettingsPopover from './SettingsPopover'
 import { store } from './store'
 export default function AppGrid() {
   const [activeCategoryValue, setActiveCategory] = store.navigation.activeCategory.useState()
@@ -108,7 +107,6 @@ export default function AppGrid() {
                 />
               )}
             </TabsList>
-            <SettingsPopover />
           </div>
           <Searchbox />
         </div>

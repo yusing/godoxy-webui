@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { BookOpenText, Code, FlaskConical, Grid3X3, Route, Server } from 'lucide-react'
+import { BookOpenText, Code, FlaskConical, Grid3X3, Route, Server, Settings } from 'lucide-react'
 import { ModeToggle } from '@/components/ui/theme-toggle'
 import { cn } from '@/lib/utils'
 import { siteConfig } from '@/site-config'
@@ -20,6 +20,7 @@ const pages: Page[] = [
   { href: '/routes', Icon: Route, label: 'Routes' },
   { href: '/playground', Icon: FlaskConical, label: 'Playground' },
   { href: '/servers', Icon: Server, label: 'Servers' },
+  { href: '/settings', Icon: Settings, label: 'Settings' },
   { href: '/docs', Icon: BookOpenText, label: 'Docs', pureLink: true },
 ] as const
 

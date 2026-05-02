@@ -236,6 +236,10 @@
   .scrollbar-hidden {
     scrollbar-width: none;
     scrollbar-gutter: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none;
   }
   .titlebar {
     height: var(--titlebar-height);
