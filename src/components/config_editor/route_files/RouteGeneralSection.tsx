@@ -53,10 +53,17 @@ export function RouteGeneralSection({ form, details }: RouteGeneralSectionProps)
       )}
 
       {isTCP && (
-        <StoreFormSwitchField
-          state={(form as FormStore<Routes.StreamRoute>).relay_proxy_protocol_header}
-          title="Relay PROXY Protocol Header"
-        />
+        <div className="flex flex-col gap-4">
+          <StoreFormSwitchField
+            state={(form as FormStore<Routes.StreamRoute>).relay_proxy_protocol_header}
+            title="Relay PROXY Protocol Header"
+          />
+          <StoreFormSwitchField
+            state={(form as FormStore<Routes.StreamRoute>).tls_termination}
+            title="TLS termination (HTTPS listener)"
+            description="Terminate TLS with autocert on HTTPS, proxy plaintext upstream. Off = SNI passthrough."
+          />
+        </div>
       )}
 
       {isHTTPOrStream && (
