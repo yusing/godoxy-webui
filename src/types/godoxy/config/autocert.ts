@@ -52,6 +52,11 @@ export interface AutocertConfigBase {
   resolvers?: string[]
   /** CA Directory URL */
   ca_dir_url?: string
+  /**
+   * Private key algorithm for the ACME-issued TLS certificate (server default: EC256).
+   * Examples: `EC256`, `RSA2048`, `RSA4096`. Use RSA when clients lack ECDSA (e.g. some IoT TLS).
+   */
+  certificate_key_type?: 'EC256' | 'EC384' | 'RSA2048' | 'RSA3072' | 'RSA4096' | 'RSA8192'
 }
 
 export interface LocalOptions {

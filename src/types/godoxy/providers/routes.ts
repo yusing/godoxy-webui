@@ -192,6 +192,12 @@ export type StreamRoute = {
   bind?: IPv4 | IPv6
   /** Relay incoming/effective client address to upstream via PROXY protocol (TCP only) */
   relay_proxy_protocol_header?: boolean
+  /** Terminate TLS on the shared HTTPS listener and proxy plaintext to the upstream (TCP only).
+   *
+   * Applies when this TCP route listens on `HTTPS_ADDR`. Requires a working `autocert` configuration.
+   * When `false` or omitted, TLS bytes are forwarded unchanged (SNI passthrough).
+   */
+  tls_termination?: boolean
   /** Agent */
   agent?: string
   /** Healthcheck config */
