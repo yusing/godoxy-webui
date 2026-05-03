@@ -1,0 +1,1775 @@
+{
+  "sections": [
+    {
+      "id": "matchers",
+      "title": "Conditions",
+      "entries": [
+        {
+          "id": "matcher-basic_auth",
+          "name": "basic_auth",
+          "kind": "matcher",
+          "summary": "Match HTTP Basic Authorization on the inbound request",
+          "description": [
+            "Match HTTP Basic Authorization on the inbound request",
+            "Decoded credentials must match the username and bcrypt password hash configured in the rule"
+          ],
+          "syntax": "basic_auth <username> <password>",
+          "examples": [
+            "basic_auth \"<user>\" \"<bcrypt-hash>\""
+          ],
+          "args": [
+            {
+              "name": "username",
+              "description": "expected plain-text username"
+            },
+            {
+              "name": "password",
+              "description": "bcrypt cost hash corresponding to that user"
+            }
+          ],
+          "tags": [
+            "matcher"
+          ]
+        },
+        {
+          "id": "matcher-cookie",
+          "name": "cookie",
+          "kind": "matcher",
+          "summary": "Value supports string, glob pattern, or regex pattern",
+          "description": [
+            "Value supports string, glob pattern, or regex pattern"
+          ],
+          "syntax": "cookie <key> [<value>]",
+          "examples": [
+            "cookie \"username\" \"user\"",
+            "cookie \"username\" glob(\"user*\")",
+            "cookie \"username\" regex(\"user.*\")"
+          ],
+          "args": [
+            {
+              "name": "key",
+              "description": "the cookie key"
+            },
+            {
+              "name": "[value]",
+              "description": "the cookie value"
+            }
+          ],
+          "tags": [
+            "matcher"
+          ]
+        },
+        {
+          "id": "matcher-default",
+          "name": "default",
+          "kind": "matcher",
+          "summary": "Select the default (fallback) rule",
+          "description": [
+            "Select the default (fallback) rule"
+          ],
+          "syntax": "default",
+          "tags": [
+            "matcher"
+          ]
+        },
+        {
+          "id": "matcher-form",
+          "name": "form",
+          "kind": "matcher",
+          "summary": "Value supports string, glob pattern, or regex pattern",
+          "description": [
+            "Value supports string, glob pattern, or regex pattern"
+          ],
+          "syntax": "form <key> [<value>]",
+          "examples": [
+            "form \"username\" \"user\"",
+            "form \"username\" glob(\"user*\")",
+            "form \"username\" regex(\"user.*\")"
+          ],
+          "args": [
+            {
+              "name": "key",
+              "description": "the form key"
+            },
+            {
+              "name": "[value]",
+              "description": "the form value"
+            }
+          ],
+          "tags": [
+            "matcher"
+          ]
+        },
+        {
+          "id": "matcher-header",
+          "name": "header",
+          "kind": "matcher",
+          "summary": "Value supports string, glob pattern, or regex pattern",
+          "description": [
+            "Value supports string, glob pattern, or regex pattern"
+          ],
+          "syntax": "header <key> [<value>]",
+          "examples": [
+            "header \"username\" \"user\"",
+            "header \"username\" glob(\"user*\")",
+            "header \"username\" regex(\"user.*\")"
+          ],
+          "args": [
+            {
+              "name": "key",
+              "description": "the header key"
+            },
+            {
+              "name": "[value]",
+              "description": "the header value"
+            }
+          ],
+          "tags": [
+            "matcher"
+          ]
+        },
+        {
+          "id": "matcher-host",
+          "name": "host",
+          "kind": "matcher",
+          "summary": "Supports string, glob pattern, or regex pattern",
+          "description": [
+            "Supports string, glob pattern, or regex pattern"
+          ],
+          "syntax": "host <host>",
+          "examples": [
+            "host \"example.com\"",
+            "host glob(\"example*.com\")",
+            "host regex(\"(example\\\\w+\\\\.com)\")",
+            "host regex(\"example\\\\.com$\")"
+          ],
+          "args": [
+            {
+              "name": "host",
+              "description": "the host name"
+            }
+          ],
+          "tags": [
+            "matcher"
+          ]
+        },
+        {
+          "id": "matcher-method",
+          "name": "method",
+          "kind": "matcher",
+          "summary": "Match inbound HTTP method (verb)",
+          "description": [
+            "Match inbound HTTP method (verb)"
+          ],
+          "syntax": "method <method>",
+          "examples": [
+            "method \"GET\"",
+            "method \"OPTIONS\""
+          ],
+          "args": [
+            {
+              "name": "method",
+              "description": "canonical method name such as GET, HEAD, POST, PUT, PATCH, DELETE, CONNECT, OPTIONS, TRACE"
+            }
+          ],
+          "tags": [
+            "matcher"
+          ]
+        },
+        {
+          "id": "matcher-path",
+          "name": "path",
+          "kind": "matcher",
+          "summary": "Supports string, glob pattern, or regex pattern",
+          "description": [
+            "Supports string, glob pattern, or regex pattern"
+          ],
+          "syntax": "path <path>",
+          "examples": [
+            "path \"/path/to\"",
+            "path glob(\"/path/to/*\")",
+            "path regex(\"^/path/to/.*$\")",
+            "path regex(\"/path/[A-Z]+/\")"
+          ],
+          "args": [
+            {
+              "name": "path",
+              "description": "the request path"
+            }
+          ],
+          "tags": [
+            "matcher"
+          ]
+        },
+        {
+          "id": "matcher-postform",
+          "name": "postform",
+          "kind": "matcher",
+          "summary": "Value supports string, glob pattern, or regex pattern",
+          "description": [
+            "Value supports string, glob pattern, or regex pattern"
+          ],
+          "syntax": "postform <key> [<value>]",
+          "examples": [
+            "postform \"username\" \"user\"",
+            "postform \"username\" glob(\"user*\")",
+            "postform \"username\" regex(\"user.*\")"
+          ],
+          "args": [
+            {
+              "name": "key",
+              "description": "the form key"
+            },
+            {
+              "name": "[value]",
+              "description": "the form value"
+            }
+          ],
+          "tags": [
+            "matcher"
+          ]
+        },
+        {
+          "id": "matcher-proto",
+          "name": "proto",
+          "kind": "matcher",
+          "summary": "Match inbound scheme or protocol family",
+          "description": [
+            "Match inbound scheme or protocol family",
+            "http/https match cleartext vs TLS regardless of HTTP version",
+            "h1 matches cleartext HTTP/1.x; h2 matches TLS HTTP/2; h2c matches cleartext HTTP/2; h3 matches TLS HTTP/3"
+          ],
+          "syntax": "proto <proto>",
+          "examples": [
+            "proto \"https\"",
+            "proto \"h2\""
+          ],
+          "args": [
+            {
+              "name": "proto",
+              "description": "http, https, h1 (cleartext HTTP/1.x), h2 (TLS HTTP/2), h2c (cleartext HTTP/2), or h3 (TLS HTTP/3)"
+            }
+          ],
+          "tags": [
+            "matcher"
+          ]
+        },
+        {
+          "id": "matcher-query",
+          "name": "query",
+          "kind": "matcher",
+          "summary": "Value supports string, glob pattern, or regex pattern",
+          "description": [
+            "Value supports string, glob pattern, or regex pattern"
+          ],
+          "syntax": "query <key> [<value>]",
+          "examples": [
+            "query \"username\" \"user\"",
+            "query \"username\" glob(\"user*\")",
+            "query \"username\" regex(\"user.*\")"
+          ],
+          "args": [
+            {
+              "name": "key",
+              "description": "the query key"
+            },
+            {
+              "name": "[value]",
+              "description": "the query value"
+            }
+          ],
+          "tags": [
+            "matcher"
+          ]
+        },
+        {
+          "id": "matcher-remote",
+          "name": "remote",
+          "kind": "matcher",
+          "summary": "Match remote client IP against an address or CIDR",
+          "description": [
+            "Match remote client IP against an address or CIDR",
+            "Bare IPv4 input is treated as /32 for an exact host match",
+            "Use /128 for an exact IPv6 host; bare IPv6 input expands to /32, and wider prefixes match the whole subnet"
+          ],
+          "syntax": "remote <ip|cidr>",
+          "examples": [
+            "remote \"203.0.113.42\"",
+            "remote \"192.168.0.0/16\"",
+            "remote \"2001:db8::1/128\"",
+            "remote \"2001:db8::/32\""
+          ],
+          "args": [
+            {
+              "name": "ip|cidr",
+              "description": "IPv4/IPv6 CIDR, or a bare IPv4 address for /32 exact match"
+            }
+          ],
+          "tags": [
+            "matcher"
+          ]
+        },
+        {
+          "id": "matcher-resp_header",
+          "name": "resp_header",
+          "kind": "matcher",
+          "summary": "Value supports string, glob pattern, or regex pattern",
+          "description": [
+            "Value supports string, glob pattern, or regex pattern"
+          ],
+          "syntax": "resp_header <key> [<value>]",
+          "examples": [
+            "resp_header \"username\" \"user\"",
+            "resp_header \"username\" glob(\"user*\")",
+            "resp_header \"username\" regex(\"user.*\")"
+          ],
+          "args": [
+            {
+              "name": "key",
+              "description": "the response header key"
+            },
+            {
+              "name": "[value]",
+              "description": "the response header value"
+            }
+          ],
+          "phase": "post",
+          "tags": [
+            "matcher",
+            "post"
+          ]
+        },
+        {
+          "id": "matcher-route",
+          "name": "route",
+          "kind": "matcher",
+          "summary": "Supports string, glob pattern, or regex pattern",
+          "description": [
+            "Supports string, glob pattern, or regex pattern"
+          ],
+          "syntax": "route <route>",
+          "examples": [
+            "route \"example\"",
+            "route glob(\"example*\")",
+            "route regex(\"example\\\\w+\")"
+          ],
+          "args": [
+            {
+              "name": "route",
+              "description": "the route name"
+            }
+          ],
+          "tags": [
+            "matcher"
+          ]
+        },
+        {
+          "id": "matcher-status",
+          "name": "status",
+          "kind": "matcher",
+          "summary": "Match current post-phase response status (exact, range, or class)",
+          "description": [
+            "Match current post-phase response status (exact, range, or class)",
+            "Evaluated after upstream responds; earlier post-phase rewrites can change the status seen here"
+          ],
+          "syntax": "status <status>",
+          "examples": [
+            "status \"<status>\"",
+            "status \"<status>-<status>\"",
+            "status \"1xx\"",
+            "status \"2xx\"",
+            "status \"3xx\"",
+            "status \"4xx\"",
+            "status \"5xx\""
+          ],
+          "args": [
+            {
+              "name": "status",
+              "description": "code (404), inclusive range (502-504), or class (4xx)"
+            }
+          ],
+          "phase": "post",
+          "tags": [
+            "matcher",
+            "post"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "commands",
+      "title": "Actions",
+      "entries": [
+        {
+          "id": "command-add",
+          "name": "add",
+          "kind": "command",
+          "summary": "Add a value to a field in the request or response",
+          "description": [
+            "Add a value to a field in the request or response"
+          ],
+          "syntax": "add <target> <field> <value>",
+          "examples": [
+            "add \"header\" \"X-Foo\" \"bar\""
+          ],
+          "args": [
+            {
+              "name": "target",
+              "description": "the target to add, can be"
+            },
+            {
+              "name": "field",
+              "description": "the field to add"
+            },
+            {
+              "name": "value",
+              "description": "the value to add"
+            }
+          ],
+          "tags": [
+            "command"
+          ]
+        },
+        {
+          "id": "command-error",
+          "name": "error",
+          "kind": "command",
+          "summary": "Send an HTTP error response and terminate processing",
+          "description": [
+            "Send an HTTP error response and terminate processing"
+          ],
+          "syntax": "error <code> <text>",
+          "examples": [
+            "error \"400\" \"bad request\""
+          ],
+          "args": [
+            {
+              "name": "code",
+              "description": "the http status code to return"
+            },
+            {
+              "name": "text",
+              "description": "the error message to return"
+            }
+          ],
+          "terminates": true,
+          "tags": [
+            "command"
+          ]
+        },
+        {
+          "id": "command-handle",
+          "name": "handle",
+          "kind": "command",
+          "summary": "Serve the request with a registered in-process HTTP handler",
+          "description": [
+            "Serve the request with a registered in-process HTTP handler"
+          ],
+          "syntax": "handle <name>",
+          "examples": [
+            "handle \"api\""
+          ],
+          "args": [
+            {
+              "name": "name",
+              "description": "the registered handler name"
+            }
+          ],
+          "terminates": true,
+          "tags": [
+            "command"
+          ]
+        },
+        {
+          "id": "command-log",
+          "name": "log",
+          "kind": "command",
+          "summary": "Write a log line from a template",
+          "description": [
+            "Write a log line from a template",
+            "The template supports the following variables:",
+            "Request: the request object",
+            "Response: the response object",
+            "Example:"
+          ],
+          "syntax": "log <level> <path> <template>",
+          "examples": [
+            "log \"info\" \"/dev/stdout\" \"$req_method $req_url $status_code\""
+          ],
+          "args": [
+            {
+              "name": "level",
+              "description": "the log level"
+            },
+            {
+              "name": "path",
+              "description": "the log path (/dev/stdout for stdout, /dev/stderr for stderr)"
+            },
+            {
+              "name": "template",
+              "description": "the template to log"
+            }
+          ],
+          "tags": [
+            "command"
+          ]
+        },
+        {
+          "id": "command-notify",
+          "name": "notify",
+          "kind": "command",
+          "summary": "Send a notification from templates",
+          "description": [
+            "Send a notification from templates",
+            "The template supports the following variables:",
+            "Request: the request object",
+            "Response: the response object",
+            "Example:"
+          ],
+          "syntax": "notify <level> <provider> <title> <body>",
+          "examples": [
+            "notify \"info\" \"ntfy\" \"Received request to $req_url\" \"$req_method $status_code\""
+          ],
+          "args": [
+            {
+              "name": "level",
+              "description": "the log level"
+            },
+            {
+              "name": "provider",
+              "description": "the notification provider (must be defined in config `providers.notification`)"
+            },
+            {
+              "name": "title",
+              "description": "the title of the notification"
+            },
+            {
+              "name": "body",
+              "description": "the body of the notification"
+            }
+          ],
+          "tags": [
+            "command"
+          ]
+        },
+        {
+          "id": "command-proxy",
+          "name": "proxy",
+          "kind": "command",
+          "summary": "Proxy the request to the specified absolute URL",
+          "description": [
+            "Proxy the request to the specified absolute URL"
+          ],
+          "syntax": "proxy <to>",
+          "examples": [
+            "proxy \"http://upstream:8080\""
+          ],
+          "args": [
+            {
+              "name": "to",
+              "description": "the url to proxy to, must be an absolute URL"
+            }
+          ],
+          "phase": "pre",
+          "terminates": true,
+          "tags": [
+            "command",
+            "pre"
+          ]
+        },
+        {
+          "id": "command-redirect",
+          "name": "redirect",
+          "kind": "command",
+          "summary": "Redirect request to another URL",
+          "description": [
+            "Redirect request to another URL"
+          ],
+          "syntax": "redirect <to>",
+          "examples": [
+            "redirect \"https://example.com\""
+          ],
+          "args": [
+            {
+              "name": "to",
+              "description": "the url to redirect to, can be relative or absolute URL"
+            }
+          ],
+          "phase": "pre",
+          "terminates": true,
+          "tags": [
+            "command",
+            "pre"
+          ]
+        },
+        {
+          "id": "command-remove",
+          "name": "remove",
+          "kind": "command",
+          "summary": "Remove a field from the request or response",
+          "description": [
+            "Remove a field from the request or response"
+          ],
+          "syntax": "remove <target> <field>",
+          "examples": [
+            "remove \"header\" \"User-Agent\""
+          ],
+          "args": [
+            {
+              "name": "target",
+              "description": "the target to remove, can be"
+            },
+            {
+              "name": "field",
+              "description": "the field to remove"
+            }
+          ],
+          "tags": [
+            "command"
+          ]
+        },
+        {
+          "id": "command-require_auth",
+          "name": "require_auth",
+          "kind": "command",
+          "summary": "Require HTTP authentication for incoming requests",
+          "description": [
+            "Require HTTP authentication for incoming requests"
+          ],
+          "syntax": "require_auth",
+          "tags": [
+            "command"
+          ]
+        },
+        {
+          "id": "command-require_basic_auth",
+          "name": "require_basic_auth",
+          "kind": "command",
+          "summary": "Require HTTP basic authentication for incoming requests",
+          "description": [
+            "Require HTTP basic authentication for incoming requests"
+          ],
+          "syntax": "require_basic_auth <realm>",
+          "examples": [
+            "require_basic_auth \"Restricted Area\""
+          ],
+          "args": [
+            {
+              "name": "realm",
+              "description": "the authentication realm"
+            }
+          ],
+          "terminates": true,
+          "tags": [
+            "command"
+          ]
+        },
+        {
+          "id": "command-rewrite",
+          "name": "rewrite",
+          "kind": "command",
+          "summary": "Rewrite a request path from one prefix to another",
+          "description": [
+            "Rewrite a request path from one prefix to another"
+          ],
+          "syntax": "rewrite <from> <to>",
+          "examples": [
+            "rewrite \"/foo\" \"/bar\""
+          ],
+          "args": [
+            {
+              "name": "from",
+              "description": "the path to rewrite, must start with /"
+            },
+            {
+              "name": "to",
+              "description": "the path to rewrite to, must start with /"
+            }
+          ],
+          "tags": [
+            "command"
+          ]
+        },
+        {
+          "id": "command-route",
+          "name": "route",
+          "kind": "command",
+          "summary": "Route the request to another route",
+          "description": [
+            "Route the request to another route"
+          ],
+          "syntax": "route <route>",
+          "examples": [
+            "route \"route1\""
+          ],
+          "args": [
+            {
+              "name": "route",
+              "description": "the route to route to"
+            }
+          ],
+          "terminates": true,
+          "tags": [
+            "command"
+          ]
+        },
+        {
+          "id": "command-serve",
+          "name": "serve",
+          "kind": "command",
+          "summary": "Serve static files from a local file system path",
+          "description": [
+            "Serve static files from a local file system path"
+          ],
+          "syntax": "serve <root>",
+          "examples": [
+            "serve \"/var/www\""
+          ],
+          "args": [
+            {
+              "name": "root",
+              "description": "the file system path to serve, must be an existing directory"
+            }
+          ],
+          "phase": "pre",
+          "terminates": true,
+          "tags": [
+            "command",
+            "pre"
+          ]
+        },
+        {
+          "id": "command-set",
+          "name": "set",
+          "kind": "command",
+          "summary": "Set a field in the request or response",
+          "description": [
+            "Set a field in the request or response"
+          ],
+          "syntax": "set <target> <field> <value>",
+          "examples": [
+            "set \"header\" \"User-Agent\" \"godoxy\""
+          ],
+          "args": [
+            {
+              "name": "target",
+              "description": "the target to set, can be"
+            },
+            {
+              "name": "field",
+              "description": "the field to set"
+            },
+            {
+              "name": "value",
+              "description": "the value to set"
+            }
+          ],
+          "tags": [
+            "command"
+          ]
+        },
+        {
+          "id": "command-upstream",
+          "name": "upstream",
+          "kind": "command",
+          "summary": "Pass the request to the upstream",
+          "description": [
+            "Pass the request to the upstream"
+          ],
+          "syntax": "upstream",
+          "terminates": true,
+          "tags": [
+            "command"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mutation-fields",
+      "title": "Mutation Targets",
+      "entries": [
+        {
+          "id": "field-body",
+          "name": "body",
+          "kind": "field",
+          "summary": "Override the request body that will be sent to the upstream",
+          "description": [
+            "Override the request body that will be sent to the upstream",
+            "The template supports the following variables:",
+            "Request: the request object",
+            "Example:"
+          ],
+          "syntax": "body <template>",
+          "examples": [
+            "body \"HTTP STATUS: $req_method $req_path\""
+          ],
+          "args": [
+            {
+              "name": "template",
+              "description": "the body template"
+            }
+          ],
+          "supportedActions": [
+            "set"
+          ],
+          "tags": [
+            "mutation-field",
+            "",
+            "set"
+          ]
+        },
+        {
+          "id": "field-cookie",
+          "name": "cookie",
+          "kind": "field",
+          "summary": "Rewrite cookies attached to the forwarded request",
+          "description": [
+            "Rewrite cookies attached to the forwarded request",
+            "Set updates an existing cookie or creates one with that name",
+            "Add appends another Cookie entry carrying the same or a new name"
+          ],
+          "syntax": "cookie <key> <value>",
+          "args": [
+            {
+              "name": "key",
+              "description": "cookie name"
+            },
+            {
+              "name": "value",
+              "description": "template evaluated to the cookie value forwarded upstream"
+            }
+          ],
+          "phase": "pre",
+          "supportedActions": [
+            "add",
+            "remove",
+            "set"
+          ],
+          "tags": [
+            "mutation-field",
+            "pre",
+            "add",
+            "remove",
+            "set"
+          ]
+        },
+        {
+          "id": "field-header",
+          "name": "header",
+          "kind": "field",
+          "summary": "Rewrite request headers forwarded upstream",
+          "description": [
+            "Rewrite request headers forwarded upstream",
+            "Set replaces all values for a name; add appends another value; remove deletes the header"
+          ],
+          "syntax": "header <key> <value>",
+          "args": [
+            {
+              "name": "key",
+              "description": "HTTP header field name"
+            },
+            {
+              "name": "value",
+              "description": "template evaluated to produce new header values"
+            }
+          ],
+          "phase": "pre",
+          "supportedActions": [
+            "add",
+            "remove",
+            "set"
+          ],
+          "tags": [
+            "mutation-field",
+            "pre",
+            "add",
+            "remove",
+            "set"
+          ]
+        },
+        {
+          "id": "field-query",
+          "name": "query",
+          "kind": "field",
+          "summary": "Rewrite query parameters on the forwarded request",
+          "description": [
+            "Rewrite query parameters on the forwarded request",
+            "Uses Set semantics for overwrite and Add semantics to append duplicates"
+          ],
+          "syntax": "query <key> <value>",
+          "args": [
+            {
+              "name": "key",
+              "description": "query parameter name"
+            },
+            {
+              "name": "value",
+              "description": "template evaluated to the parameter value passed upstream"
+            }
+          ],
+          "phase": "pre",
+          "supportedActions": [
+            "add",
+            "remove",
+            "set"
+          ],
+          "tags": [
+            "mutation-field",
+            "pre",
+            "add",
+            "remove",
+            "set"
+          ]
+        },
+        {
+          "id": "field-resp_body",
+          "name": "resp_body",
+          "kind": "field",
+          "summary": "Override the response body that will be sent to the client",
+          "description": [
+            "Override the response body that will be sent to the client",
+            "The template supports the following variables:",
+            "Request: the request object",
+            "Response: the response object",
+            "Example:"
+          ],
+          "syntax": "resp_body <template>",
+          "examples": [
+            "resp_body \"HTTP STATUS: $req_method $status_code\""
+          ],
+          "args": [
+            {
+              "name": "template",
+              "description": "the response body template"
+            }
+          ],
+          "supportedActions": [
+            "set"
+          ],
+          "tags": [
+            "mutation-field",
+            "",
+            "set"
+          ]
+        },
+        {
+          "id": "field-resp_header",
+          "name": "resp_header",
+          "kind": "field",
+          "summary": "Rewrite response headers after upstream returns",
+          "description": [
+            "Rewrite response headers after upstream returns",
+            "Applied in post phase to the outbound response envelope"
+          ],
+          "syntax": "resp_header <key> <value>",
+          "args": [
+            {
+              "name": "key",
+              "description": "HTTP response header field name"
+            },
+            {
+              "name": "value",
+              "description": "template evaluated to produce header values returned to clients"
+            }
+          ],
+          "phase": "post",
+          "supportedActions": [
+            "add",
+            "remove",
+            "set"
+          ],
+          "tags": [
+            "mutation-field",
+            "post",
+            "add",
+            "remove",
+            "set"
+          ]
+        },
+        {
+          "id": "field-status",
+          "name": "status",
+          "kind": "field",
+          "summary": "Override the status code that will be sent to the client",
+          "description": [
+            "Override the status code that will be sent to the client"
+          ],
+          "syntax": "status <code>",
+          "examples": [
+            "status \"200\""
+          ],
+          "args": [
+            {
+              "name": "code",
+              "description": "the status code"
+            }
+          ],
+          "supportedActions": [
+            "set"
+          ],
+          "tags": [
+            "mutation-field",
+            "",
+            "set"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "variables",
+      "title": "Template Variables",
+      "entries": [
+        {
+          "id": "var-arg",
+          "name": "$arg",
+          "kind": "variable",
+          "summary": "Query parameter value lookup",
+          "description": [
+            "Query parameter value lookup",
+            "Reads the current request query parameters, including earlier rule mutations"
+          ],
+          "syntax": "$arg(<name>[, <index>])",
+          "examples": [
+            "$arg(page)",
+            "$arg(filter, 1)"
+          ],
+          "args": [
+            {
+              "name": "name",
+              "description": "Query parameter name"
+            },
+            {
+              "name": "[index]",
+              "description": "Optional zero-based value index; defaults to 0"
+            }
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "dynamic"
+          ]
+        },
+        {
+          "id": "var-cookie",
+          "name": "$cookie",
+          "kind": "variable",
+          "summary": "Request cookie value lookup",
+          "description": [
+            "Request cookie value lookup",
+            "Reads parsed cookies from the current forwarded request state"
+          ],
+          "syntax": "$cookie(<name>[, <index>])",
+          "examples": [
+            "$cookie(session_id)",
+            "$cookie(preferences, 0)"
+          ],
+          "args": [
+            {
+              "name": "name",
+              "description": "Cookie name"
+            },
+            {
+              "name": "[index]",
+              "description": "Optional zero-based value index; defaults to 0"
+            }
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "dynamic"
+          ]
+        },
+        {
+          "id": "var-form",
+          "name": "$form",
+          "kind": "variable",
+          "summary": "Parsed form value lookup with query fallback",
+          "description": [
+            "Parsed form value lookup with query fallback",
+            "Reads req.Form after ParseForm, so body form values and query parameters are both visible here"
+          ],
+          "syntax": "$form(<name>[, <index>])",
+          "examples": [
+            "$form(username)",
+            "$form(tags, 1)"
+          ],
+          "args": [
+            {
+              "name": "name",
+              "description": "Form field name"
+            },
+            {
+              "name": "[index]",
+              "description": "Optional zero-based value index; defaults to 0"
+            }
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "dynamic"
+          ]
+        },
+        {
+          "id": "var-header",
+          "name": "$header",
+          "kind": "variable",
+          "summary": "Request header value lookup",
+          "description": [
+            "Request header value lookup",
+            "Uses the exact header key provided; header names are not canonicalized during lookup"
+          ],
+          "syntax": "$header(<name>[, <index>])",
+          "examples": [
+            "$header(User-Agent)",
+            "$header(X-Forwarded-For, 1)"
+          ],
+          "args": [
+            {
+              "name": "name",
+              "description": "Exact request header name"
+            },
+            {
+              "name": "[index]",
+              "description": "Optional zero-based value index; defaults to 0"
+            }
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "dynamic"
+          ]
+        },
+        {
+          "id": "var-postform",
+          "name": "$postform",
+          "kind": "variable",
+          "summary": "Parsed request-body form value lookup",
+          "description": [
+            "Parsed request-body form value lookup",
+            "Reads req.PostForm from body form data only; query parameters are excluded"
+          ],
+          "syntax": "$postform(<name>[, <index>])",
+          "examples": [
+            "$postform(action)",
+            "$postform(email, 0)"
+          ],
+          "args": [
+            {
+              "name": "name",
+              "description": "Request-body form field name"
+            },
+            {
+              "name": "[index]",
+              "description": "Optional zero-based value index; defaults to 0"
+            }
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "dynamic"
+          ]
+        },
+        {
+          "id": "var-redacted",
+          "name": "$redacted",
+          "kind": "variable",
+          "summary": "Mask a sensitive value for logs or notifications",
+          "description": [
+            "Mask a sensitive value for logs or notifications",
+            "Keeps only the edges of the input visible and replaces the middle with asterisks"
+          ],
+          "syntax": "$redacted(<value>)",
+          "examples": [
+            "$redacted($header(Authorization))",
+            "$redacted($cookie(session_id))"
+          ],
+          "args": [
+            {
+              "name": "value",
+              "description": "Literal text or the output of another variable expression"
+            }
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "dynamic"
+          ]
+        },
+        {
+          "id": "var-remote_addr",
+          "name": "$remote_addr",
+          "kind": "variable",
+          "summary": "Raw remote client address",
+          "description": [
+            "Raw remote client address",
+            "Usually the host:port string from the incoming request's RemoteAddr field"
+          ],
+          "syntax": "$remote_addr",
+          "examples": [
+            "$remote_addr"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-remote_host",
+          "name": "$remote_host",
+          "kind": "variable",
+          "summary": "Remote client IP from RemoteAddr",
+          "description": [
+            "Remote client IP from RemoteAddr",
+            "Split from the request remote address. Empty when the address cannot be parsed into host and port"
+          ],
+          "syntax": "$remote_host",
+          "examples": [
+            "$remote_host"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-remote_port",
+          "name": "$remote_port",
+          "kind": "variable",
+          "summary": "Remote client port from RemoteAddr",
+          "description": [
+            "Remote client port from RemoteAddr",
+            "Split from the request remote address. Empty when the address cannot be parsed into host and port"
+          ],
+          "syntax": "$remote_port",
+          "examples": [
+            "$remote_port"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-req_addr",
+          "name": "$req_addr",
+          "kind": "variable",
+          "summary": "Inbound request host as sent by the client",
+          "description": [
+            "Inbound request host as sent by the client",
+            "Includes the port when one is present in the Host or authority component"
+          ],
+          "syntax": "$req_addr",
+          "examples": [
+            "$req_addr"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-req_content_length",
+          "name": "$req_content_length",
+          "kind": "variable",
+          "summary": "Inbound request content length",
+          "description": [
+            "Inbound request content length",
+            "String form of the request body content length. May be -1 when unknown"
+          ],
+          "syntax": "$req_content_length",
+          "examples": [
+            "$req_content_length"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-req_content_type",
+          "name": "$req_content_type",
+          "kind": "variable",
+          "summary": "Inbound request Content-Type header",
+          "description": [
+            "Inbound request Content-Type header",
+            "Reads the current Content-Type header value from the request"
+          ],
+          "syntax": "$req_content_type",
+          "examples": [
+            "$req_content_type"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-req_host",
+          "name": "$req_host",
+          "kind": "variable",
+          "summary": "Inbound request host without port",
+          "description": [
+            "Inbound request host without port",
+            "Derived from the Host or authority component after stripping any explicit port"
+          ],
+          "syntax": "$req_host",
+          "examples": [
+            "$req_host"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-req_method",
+          "name": "$req_method",
+          "kind": "variable",
+          "summary": "Inbound HTTP method (verb)",
+          "description": [
+            "Inbound HTTP method (verb)",
+            "Reads the request method exactly as the current handler sees it"
+          ],
+          "syntax": "$req_method",
+          "examples": [
+            "$req_method"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-req_path",
+          "name": "$req_path",
+          "kind": "variable",
+          "summary": "Inbound request path",
+          "description": [
+            "Inbound request path",
+            "Uses the URL path that rule matching and upstream forwarding operate on"
+          ],
+          "syntax": "$req_path",
+          "examples": [
+            "$req_path"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-req_port",
+          "name": "$req_port",
+          "kind": "variable",
+          "summary": "Inbound request port",
+          "description": [
+            "Inbound request port",
+            "Split from the Host or authority component; empty when no explicit port was sent"
+          ],
+          "syntax": "$req_port",
+          "examples": [
+            "$req_port"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-req_query",
+          "name": "$req_query",
+          "kind": "variable",
+          "summary": "Raw inbound query string",
+          "description": [
+            "Raw inbound query string",
+            "Returns the query portion without the leading ?"
+          ],
+          "syntax": "$req_query",
+          "examples": [
+            "$req_query"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-req_scheme",
+          "name": "$req_scheme",
+          "kind": "variable",
+          "summary": "Inbound request scheme",
+          "description": [
+            "Inbound request scheme",
+            "Returns https when TLS is present on the request; otherwise returns http"
+          ],
+          "syntax": "$req_scheme",
+          "examples": [
+            "$req_scheme"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-req_uri",
+          "name": "$req_uri",
+          "kind": "variable",
+          "summary": "Request URI path plus query",
+          "description": [
+            "Request URI path plus query",
+            "Equivalent to the path and query string together, without any fragment"
+          ],
+          "syntax": "$req_uri",
+          "examples": [
+            "$req_uri"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-req_url",
+          "name": "$req_url",
+          "kind": "variable",
+          "summary": "Full inbound request URL",
+          "description": [
+            "Full inbound request URL",
+            "Includes scheme, host, path, and query when that information is available on the request URL"
+          ],
+          "syntax": "$req_url",
+          "examples": [
+            "$req_url"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-resp_content_length",
+          "name": "$resp_content_length",
+          "kind": "variable",
+          "summary": "Current response body length",
+          "description": [
+            "Current response body length",
+            "Uses the buffered body size after response rewrites, otherwise the original or header Content-Length value"
+          ],
+          "syntax": "$resp_content_length",
+          "examples": [
+            "$resp_content_length"
+          ],
+          "phase": "post",
+          "tags": [
+            "variable",
+            "response"
+          ]
+        },
+        {
+          "id": "var-resp_content_type",
+          "name": "$resp_content_type",
+          "kind": "variable",
+          "summary": "Current response Content-Type header",
+          "description": [
+            "Current response Content-Type header",
+            "Available in post phase after upstream response headers and any earlier response mutations"
+          ],
+          "syntax": "$resp_content_type",
+          "examples": [
+            "$resp_content_type"
+          ],
+          "phase": "post",
+          "tags": [
+            "variable",
+            "response"
+          ]
+        },
+        {
+          "id": "var-resp_header",
+          "name": "$resp_header",
+          "kind": "variable",
+          "summary": "Response header value lookup",
+          "description": [
+            "Response header value lookup",
+            "Reads the current response header map in post phase using the exact key provided"
+          ],
+          "syntax": "$resp_header(<name>[, <index>])",
+          "examples": [
+            "$resp_header(Content-Type)",
+            "$resp_header(Set-Cookie, 0)"
+          ],
+          "args": [
+            {
+              "name": "name",
+              "description": "Exact response header name"
+            },
+            {
+              "name": "[index]",
+              "description": "Optional zero-based value index; defaults to 0"
+            }
+          ],
+          "phase": "post",
+          "tags": [
+            "variable",
+            "dynamic"
+          ]
+        },
+        {
+          "id": "var-status_code",
+          "name": "$status_code",
+          "kind": "variable",
+          "summary": "Current response status code",
+          "description": [
+            "Current response status code",
+            "Available in post phase after upstream responds. Earlier post-phase rewrites can change the value seen here"
+          ],
+          "syntax": "$status_code",
+          "examples": [
+            "$status_code"
+          ],
+          "phase": "post",
+          "tags": [
+            "variable",
+            "response"
+          ]
+        },
+        {
+          "id": "var-upstream_addr",
+          "name": "$upstream_addr",
+          "kind": "variable",
+          "summary": "Selected upstream host and port",
+          "description": [
+            "Selected upstream host and port",
+            "Combines the chosen upstream host and port as a single address string"
+          ],
+          "syntax": "$upstream_addr",
+          "examples": [
+            "$upstream_addr"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-upstream_host",
+          "name": "$upstream_host",
+          "kind": "variable",
+          "summary": "Selected upstream host",
+          "description": [
+            "Selected upstream host",
+            "The host portion of the upstream target chosen for this request"
+          ],
+          "syntax": "$upstream_host",
+          "examples": [
+            "$upstream_host"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-upstream_name",
+          "name": "$upstream_name",
+          "kind": "variable",
+          "summary": "Selected upstream route name",
+          "description": [
+            "Selected upstream route name",
+            "Comes from route context after routing has selected the upstream target"
+          ],
+          "syntax": "$upstream_name",
+          "examples": [
+            "$upstream_name"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-upstream_port",
+          "name": "$upstream_port",
+          "kind": "variable",
+          "summary": "Selected upstream port",
+          "description": [
+            "Selected upstream port",
+            "The port portion of the upstream target chosen for this request"
+          ],
+          "syntax": "$upstream_port",
+          "examples": [
+            "$upstream_port"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-upstream_scheme",
+          "name": "$upstream_scheme",
+          "kind": "variable",
+          "summary": "Selected upstream scheme",
+          "description": [
+            "Selected upstream scheme",
+            "Examples include http, https, or h2c depending on the upstream target"
+          ],
+          "syntax": "$upstream_scheme",
+          "examples": [
+            "$upstream_scheme"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        },
+        {
+          "id": "var-upstream_url",
+          "name": "$upstream_url",
+          "kind": "variable",
+          "summary": "Selected upstream URL",
+          "description": [
+            "Selected upstream URL",
+            "Full upstream target URL resolved for the current request"
+          ],
+          "syntax": "$upstream_url",
+          "examples": [
+            "$upstream_url"
+          ],
+          "phase": "pre",
+          "tags": [
+            "variable",
+            "request"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "patterns",
+      "title": "Pattern Helpers",
+      "entries": [
+        {
+          "id": "pattern-glob",
+          "name": "glob",
+          "kind": "pattern",
+          "syntax": "glob(\"<pattern>\")",
+          "tags": [
+            "pattern"
+          ]
+        },
+        {
+          "id": "pattern-regex",
+          "name": "regex",
+          "kind": "pattern",
+          "syntax": "regex(\"<pattern>\")",
+          "tags": [
+            "pattern"
+          ]
+        },
+        {
+          "id": "pattern-string",
+          "name": "string",
+          "kind": "pattern",
+          "syntax": "<value>",
+          "tags": [
+            "pattern"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "control-flow",
+      "title": "Control Flow",
+      "description": "Conditional branches inside a rule do-block (inherits the parent rule's phase).",
+      "entries": [
+        {
+          "id": "control-default",
+          "name": "default",
+          "kind": "control",
+          "summary": "Select the default (fallback) rule",
+          "description": [
+            "Select the default (fallback) rule"
+          ],
+          "syntax": "default",
+          "phase": "pre/post",
+          "tags": [
+            "control",
+            "pre/post"
+          ]
+        },
+        {
+          "id": "control-inline-block",
+          "name": "if",
+          "kind": "control",
+          "summary": "Inline conditional block inside a do-body",
+          "description": [
+            "Semantics:",
+            "- Evaluated in the same phase the parent rule runs",
+            "- If <on-expr> matches, run the nested commands in-order",
+            "- Otherwise do nothing",
+            "NOTE: Per current design decision, we keep this permissive:",
+            "nested blocks may use response matchers and response commands; no extra phase validation is performed"
+          ],
+          "syntax": "<on-expr> { <do...> }",
+          "phase": "pre/post",
+          "tags": [
+            "control",
+            "pre/post"
+          ]
+        },
+        {
+          "id": "control-elif",
+          "name": "elif",
+          "kind": "control",
+          "summary": "Chained conditional block inside a do-body",
+          "description": [
+            "NOTE: `elif`/`else` must appear on the same line as the preceding closing brace (`}`)",
+            "e.g. `} elif ... {` and `} else {`"
+          ],
+          "syntax": "elif <on-expr> { <do...> } ... else { <do...> }",
+          "phase": "pre/post",
+          "tags": [
+            "control",
+            "pre/post"
+          ]
+        },
+        {
+          "id": "control-else",
+          "name": "else",
+          "kind": "control",
+          "summary": "Chained conditional block inside a do-body",
+          "description": [
+            "NOTE: `elif`/`else` must appear on the same line as the preceding closing brace (`}`)",
+            "e.g. `} elif ... {` and `} else {`"
+          ],
+          "syntax": "else { <do...> }",
+          "phase": "pre/post",
+          "tags": [
+            "control",
+            "pre/post"
+          ]
+        }
+      ]
+    }
+  ]
+}
