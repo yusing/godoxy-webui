@@ -20,6 +20,12 @@ export function RouteHTTPConfigSection({ form }: RouteHTTPConfigSectionProps) {
         description="Duration format: 30s, 5m, 1h, etc."
       />
 
+      <StoreFormInputField
+        state={form.max_conns_per_host}
+        title="Max Connections Per Host"
+        description="Optional cap for concurrent upstream connections. Leave empty for Go's default behavior."
+      />
+
       <StoreCheckboxField state={form.disable_compression} title="Disable Compression" />
 
       <StoreFormSelectField

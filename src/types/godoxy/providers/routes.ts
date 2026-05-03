@@ -112,6 +112,11 @@ export type HTTPConfig = {
    * @default 60s
    */
   response_header_timeout?: Duration
+  /** Maximum concurrent upstream connections per host
+   *
+   * @default unlimited
+   */
+  max_conns_per_host?: number
   /** Disable compression
    *
    * @default false
