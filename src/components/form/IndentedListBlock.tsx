@@ -8,7 +8,7 @@ export function IndentedListBody({
   className?: string
   children: ReactNode
 }) {
-  return <div className={cn('border-l-3 border-border pl-3', className)}>{children}</div>
+  return <div className={cn('border-l-3 border-foreground/85 pl-3', className)}>{children}</div>
 }
 
 type IndentedListBlockProps = {
