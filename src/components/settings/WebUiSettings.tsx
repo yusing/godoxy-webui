@@ -318,8 +318,8 @@ function GoDoxyWebUiRouteSection() {
       <CardHeader className="border-b border-border/50">
         <CardTitle>Web UI route</CardTitle>
         <CardDescription>
-          Hostnames, TLS profile, access log, and middlewares for how the proxy serves this UI. Full
-          YAML editing stays on the <Link to="/config">Config</Link> page.
+          Hostnames, TLS profile, access log, middlewares, and extra rules for how the proxy serves
+          this UI. Full YAML editing stays on the <Link to="/config">Config</Link> page.
         </CardDescription>
       </CardHeader>
 

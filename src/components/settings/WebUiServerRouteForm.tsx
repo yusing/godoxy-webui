@@ -5,6 +5,7 @@ import { StoreMapInput } from '@/components/form/StoreMapInput'
 import { StoreSelectField } from '@/components/store/Select'
 import { ConfigSchema, type Middlewares } from '@/types/godoxy'
 import { MiddlewareComposeSchema } from '@/types/godoxy'
+import { RouteRulesSection } from '../config_editor/route_files/RouteRulesSection'
 import type {
   MiddlewareComposeItem,
   MiddlewareFileRef,
@@ -44,6 +45,7 @@ export default function WebUiServerRouteForm() {
         state={webuiConfig.access_log.ensureObject()}
       />
       <WebUIMiddlewaresSection />
+      <WebUIRulesSection />
     </div>
   )
 }
@@ -78,5 +80,19 @@ function WebUIMiddlewaresSection() {
       value={workingValue}
       onChange={onChange}
     />
+  )
+}
+
+function WebUIRulesSection() {
+  return (
+    <div className="space-y-2">
+      <div>
+        <p className="text-sm font-medium">Rules</p>
+        <p className="text-xs text-muted-foreground">
+          Appended after the loaded rule file when set. Use block syntax or YAML rules.
+        </p>
+      </div>
+      <RouteRulesSection rules={webuiConfig.rules} />
+    </div>
   )
 }
