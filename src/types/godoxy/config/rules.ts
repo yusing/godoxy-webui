@@ -189,6 +189,7 @@ type RuleOnResponseHeader = OptionalPattern<`resp_header ${HTTPHeader}`>
  *   "require_auth",
  *   "rewrite / /index.html",
  *   "serve /static",
+ *   "serve_file /index.html",
  *   "handle api",
  *   "proxy http://localhost:8080",
  *   "redirect https://example.com",
@@ -207,6 +208,7 @@ export type RuleDo =
   | RuleDoRequireAuth
   | RuleDoRewrite
   | RuleDoServe
+  | RuleDoServeFile
   | RuleDoHandle
   | RuleDoProxy
   | RuleDoRedirect
@@ -240,11 +242,19 @@ type RuleDoRewrite = `rewrite ${URI} ${URI}`
 /**
  * serve {path_to}
  *
- * Serve the request from the given path.
+ * Serve the request from a directory rooted at the given path.
  *
  * @examples ["serve /static"]
  */
 type RuleDoServe = `serve ${URI}`
+/**
+ * serve_file {path_to}
+ *
+ * Serve the request from the given file path.
+ *
+ * @examples ["serve_file /index.html"]
+ */
+type RuleDoServeFile = `serve_file ${URI}`
 /**
  * handle {name}
  *

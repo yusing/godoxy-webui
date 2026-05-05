@@ -717,9 +717,9 @@
           "id": "command-serve",
           "name": "serve",
           "kind": "command",
-          "summary": "Serve static files from a local file system path",
+          "summary": "Serve static files from a local directory",
           "description": [
-            "Serve static files from a local file system path"
+            "Serve static files from a local directory"
           ],
           "syntax": "serve <root>",
           "examples": [
@@ -729,6 +729,31 @@
             {
               "name": "root",
               "description": "the file system path to serve, must be an existing directory"
+            }
+          ],
+          "phase": "pre",
+          "terminates": true,
+          "tags": [
+            "command",
+            "pre"
+          ]
+        },
+        {
+          "id": "command-serve_file",
+          "name": "serve_file",
+          "kind": "command",
+          "summary": "Serve a single local file",
+          "description": [
+            "Serve a single local file"
+          ],
+          "syntax": "serve_file <file>",
+          "examples": [
+            "serve_file \"/var/www/index.html\""
+          ],
+          "args": [
+            {
+              "name": "file",
+              "description": "the file system path to serve, must be an existing file"
             }
           ],
           "phase": "pre",
