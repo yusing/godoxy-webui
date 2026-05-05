@@ -8,7 +8,6 @@ import type {
   Hostname,
   IPv4,
   IPv6,
-  PathPattern,
   Port,
   StreamPort,
 } from '../types'
@@ -156,11 +155,6 @@ export type FileServerRoute = {
    * @default /index.html
    */
   index?: string
-  /** Path patterns (only patterns that match will be proxied).
-   *
-   * See https://pkg.go.dev/net/http#hdr-Patterns-ServeMux
-   */
-  path_patterns?: PathPattern[]
   /** Named inbound mTLS profile for this route.
    *
    * Only supported when no global entrypoint inbound mTLS profile is configured.

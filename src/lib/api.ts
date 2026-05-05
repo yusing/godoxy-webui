@@ -875,11 +875,10 @@ export interface Route {
   /** Index file to serve for single-page app mode */
   index: string;
   load_balance?: LoadBalancerConfig | null;
-  /** private fields */
   lurl?: string | null;
+  max_conns_per_host: number;
   middlewares?: Record<string, TypesLabelMap> | null;
   no_tls_verify: boolean;
-  path_patterns?: string[] | null;
   port: Port;
   /** for backward compatibility */
   provider?: string | null;

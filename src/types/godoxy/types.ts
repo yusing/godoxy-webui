@@ -144,13 +144,6 @@ export type URL = string & {}
 export type URI = string & {}
 
 /**
- * Path pattern
- * @pattern ^(?:([A-Z]+) )?(?:([a-zA-Z0-9.-]+)\\/)?(\\/[^\\s]*)$
- * @type string
- */
-export type PathPattern = string & {}
-
-/**
  * Duration
  * @pattern ^\d+(?:us|ms|s|m|h|d|w|M)$
  * @type string

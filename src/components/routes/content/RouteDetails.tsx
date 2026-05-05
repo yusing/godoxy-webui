@@ -304,23 +304,6 @@ export default function RouteDetails() {
           </CardContent>
         </Card>
       )}
-      {/* Path Patterns */}
-      {routeDetails.path_patterns && routeDetails.path_patterns.length > 0 && (
-        <Card size="sm" className="px-2">
-          <CardHeader>
-            <Title>Path Patterns</Title>
-          </CardHeader>
-          <CardContent>
-            <div className="flex flex-wrap gap-2">
-              {routeDetails.path_patterns.map(pattern => (
-                <Badge key={pattern} variant="outline" className="font-mono">
-                  {pattern}
-                </Badge>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
       {/* Container Information */}
       {routeDetails.container && (
         <div>
