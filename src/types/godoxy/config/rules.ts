@@ -200,6 +200,7 @@ type RuleOnResponseHeader = OptionalPattern<`resp_header ${HTTPHeader}`>
  *   "set headers Content-Type application/json",
  *   "add headers Content-Type application/json",
  *   "remove headers Content-Type",
+ *   "notify {\n  level: info\n  provider: ntfy\n  title: Request\n  body: $req_method $status_code\n}",
  *   "pass",
  *   "bypass"
  * ]
@@ -220,8 +221,39 @@ export type RuleDo =
   | RuleDoRemove
   | RuleDoLog
   | RuleDoNotify
+  | RuleDoOptionBlock
   | RuleDoPass
   | RuleDoBypass
+
+type RuleDoCommandName =
+  | 'upstream'
+  | 'pass'
+  | 'bypass'
+  | 'require_auth'
+  | 'rewrite'
+  | 'serve'
+  | 'serve_file'
+  | 'handle'
+  | 'proxy'
+  | 'route'
+  | 'redirect'
+  | 'error'
+  | 'require_basic_auth'
+  | 'set'
+  | 'add'
+  | 'remove'
+  | 'log'
+  | 'notify'
+
+/**
+ * Named option block for any `do` command.
+ *
+ * Each line names one scalar option, in the same positional order the command
+ * expects. Values use normal rule string parsing, so quotes and backticks work.
+ *
+ * @examples ["notify {\n  level: info\n  provider: ntfy\n  title: Request\n  body: $req_method $status_code\n}"]
+ */
+type RuleDoOptionBlock = `${RuleDoCommandName} {\n${string}\n}` | `${RuleDoCommandName} {${string}}`
 
 /**
  * require_auth
