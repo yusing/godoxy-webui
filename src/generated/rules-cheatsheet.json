@@ -415,7 +415,7 @@
           "args": [
             {
               "name": "target",
-              "description": "the target to add, can be"
+              "description": "the target to add, can be header, resp_header, query, cookie, body, resp_body, status"
             },
             {
               "name": "field",
@@ -617,7 +617,7 @@
           "args": [
             {
               "name": "target",
-              "description": "the target to remove, can be"
+              "description": "the target to remove, can be header, resp_header, query, cookie, body, resp_body, status"
             },
             {
               "name": "field",
@@ -778,7 +778,7 @@
           "args": [
             {
               "name": "target",
-              "description": "the target to set, can be"
+              "description": "the target to set, can be header, resp_header, query, cookie, body, resp_body, status"
             },
             {
               "name": "field",
