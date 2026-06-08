@@ -5,6 +5,7 @@ export const AUTOCERT_PROVIDERS = [
   'custom',
   'cloudflare',
   'clouddns',
+  'desec',
   'duckdns',
   'ovh',
   'porkbun',
@@ -17,6 +18,7 @@ export type AutocertExtra =
   | Partial<CustomOptions>
   | Partial<CloudflareOptions>
   | Partial<CloudDNSOptions>
+  | Partial<DeSECOptions>
   | Partial<DuckDNSOptions>
   | Partial<OVHOptionsWithAppKey>
   | Partial<OVHOptionsWithOAuth2Config>
@@ -28,6 +30,7 @@ export type AutocertConfigWithoutExtra =
   | CustomOptions
   | CloudflareOptions
   | CloudDNSOptions
+  | DeSECOptions
   | DuckDNSOptions
   | OVHOptionsWithAppKey
   | OVHOptionsWithOAuth2Config
@@ -88,6 +91,13 @@ export interface CloudDNSOptions extends AutocertConfigBase {
     client_id: string
     email: Email
     password: string
+  }
+}
+
+export interface DeSECOptions extends AutocertConfigBase {
+  provider: 'desec'
+  options: {
+    token: string
   }
 }
 

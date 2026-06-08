@@ -125,6 +125,9 @@ function useLabelAndSchema(provider: string): [string, JSONSchema | undefined] {
   if (provider === 'clouddns') {
     return ['CloudDNS', AutocertSchema.definitions.CloudDNSOptions]
   }
+  if (provider === 'desec') {
+    return ['deSEC', AutocertSchema.definitions.DeSECOptions]
+  }
   if (provider === 'duckdns') {
     return ['DuckDNS', AutocertSchema.definitions.DuckDNSOptions]
   }
