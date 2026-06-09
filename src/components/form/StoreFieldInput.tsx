@@ -92,7 +92,7 @@ export function StoreFieldInput<T extends FieldValues>({
     >
       <div className="flex w-full items-center gap-2">
         {allowKeyChange ? (
-          <div className="max-w-[220px] w-full @container">
+          <div className="max-w-55 w-full @container">
             <Input
               readOnly={readonly}
               value={fieldKey}
@@ -105,7 +105,7 @@ export function StoreFieldInput<T extends FieldValues>({
             />
           </div>
         ) : (
-          <div className="min-w-[150px] select-none max-w-min">
+          <div className="min-w-37.5 select-none max-w-min">
             <div className="flex items-center gap-2">
               <Label className="block capitalize">
                 {title ?? fieldKey}

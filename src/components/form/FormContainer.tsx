@@ -93,7 +93,7 @@ export function FormContainer({
         title
       )}
       {!hasChildren && canAdd && onAdd && (
-        <Button type="button" variant="ghost" size="icon" onClick={onAdd}>
+        <Button type="button" variant="ghost" size="icon-sm" onClick={onAdd}>
           <Plus />
         </Button>
       )}
@@ -105,7 +105,7 @@ export function FormContainer({
         <ChevronDown className="size-4 shrink-0 transition-transform group-data-open:rotate-180" />
       </CollapsibleTrigger>
       {!hasChildren && canAdd && onAdd && (
-        <Button type="button" variant="ghost" size="icon" onClick={onAdd} className="shrink-0">
+        <Button type="button" variant="ghost" size="icon-sm" onClick={onAdd} className="shrink-0">
           <Plus />
         </Button>
       )}
@@ -114,7 +114,7 @@ export function FormContainer({
     <div className="flex items-center gap-2">
       {label ? title : null}
       {!hasChildren && canAdd && onAdd && (
-        <Button type="button" variant="ghost" size="icon" onClick={onAdd}>
+        <Button type="button" variant="ghost" size="icon-sm" onClick={onAdd}>
           <Plus />
         </Button>
       )}
@@ -175,20 +175,13 @@ export function FormContainer({
     </>
   )
 
-  function Content(props: React.PropsWithChildren) {
-    if (collapsible) {
-      return <CollapsibleContent>{props.children}</CollapsibleContent>
-    }
-    return props.children
-  }
-
   const result = card ? (
     <Card aria-required={required || undefined} className={cn(readonly && 'opacity-60 grayscale')}>
       <CardHeader>
         {header}
         {desc}
       </CardHeader>
-      <Content>
+      <Content collapsible={collapsible}>
         {content}
         {foot}
       </Content>
@@ -196,10 +189,10 @@ export function FormContainer({
   ) : (
     <div
       aria-required={required || undefined}
-      className={cn('flex min-w-0 flex-col gap-4', readonly && 'opacity-60 grayscale')}
+      className={cn('flex min-w-0 flex-col', readonly && 'opacity-60 grayscale')}
     >
       {header}
-      <Content>
+      <Content collapsible={collapsible}>
         {collapsible ? null : desc}
         {content}
         {foot}
@@ -244,4 +237,11 @@ function FooterAddButton({
       <Plus /> {text}
     </Button>
   )
+}
+
+function Content({ collapsible, ...props }: React.PropsWithChildren & { collapsible: boolean }) {
+  if (collapsible) {
+    return <CollapsibleContent>{props.children}</CollapsibleContent>
+  }
+  return props.children
 }

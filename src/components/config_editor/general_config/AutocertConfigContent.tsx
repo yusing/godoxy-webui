@@ -76,7 +76,7 @@ function AutocertConfigForm({
   })
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-4">
       <StoreFieldInput
         state={state}
         fieldKey="provider"
@@ -86,7 +86,13 @@ function AutocertConfigForm({
       />
       <DnsProviderOptionsEditor state={state} />
       {onAddExtra && (
-        <FormContainer label="Extra certificates" card={false} canAdd onAdd={onAddExtra}>
+        <FormContainer
+          label="Extra certificates"
+          description={'extra'}
+          card={false}
+          canAdd
+          onAdd={onAddExtra}
+        >
           <AutocertConfigContentExtra state={state.extra.ensureArray()} />
         </FormContainer>
       )}
@@ -139,88 +145,14 @@ function useLabelAndSchema(provider: string): [string, JSONSchema | undefined] {
 
 function DnsProviderOptionsEditor({ state }: { state: ObjectState<Autocert.AutocertConfig> }) {
   const provider = state.useCompute(cfg => cfg?.provider ?? 'local')
-  const authMethodFieldId = useId()
   const [label, schema] = useLabelAndSchema(provider)
 
   if (schema) {
     return <StoreObjectInput label={label} card={false} schema={schema} state={state} hideUnknown />
   }
 
-  function OVHOptionsEditor() {
-    // derive auth mode
-    const stateWithAppKey = state as ObjectState<Autocert.OVHOptionsWithAppKey>
-    const stateWithOAuth2 = state as ObjectState<Autocert.OVHOptionsWithOAuth2Config>
-    const authMode = state.useCompute(opts =>
-      'options' in opts && opts.options && 'application_key' in opts.options
-        ? 'application_key'
-        : 'oauth2'
-    )
-
-    const setAuthMode = (mode: 'application_key' | 'oauth2') => {
-      if (mode === 'application_key') {
-        const value = stateWithAppKey.options.value
-        const next = {
-          application_secret: value.application_secret,
-          consumer_key: value.consumer_key,
-          application_key: value.application_key,
-          api_endpoint: value.api_endpoint,
-        }
-        stateWithAppKey.options.set(next)
-      } else {
-        const value = stateWithOAuth2.options.value
-        const next = {
-          application_secret: value.application_secret,
-          consumer_key: value.consumer_key,
-          api_endpoint: value.api_endpoint,
-          oauth2_config: {
-            client_id: value.oauth2_config?.client_id,
-            client_secret: value.oauth2_config?.client_secret,
-          },
-        }
-        stateWithOAuth2.options.set(next)
-      }
-    }
-
-    return (
-      <div className="flex flex-col gap-3">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor={authMethodFieldId}>Auth method</Label>
-          <Select
-            value={authMode}
-            onValueChange={v => setAuthMode(v as 'application_key' | 'oauth2')}
-          >
-            <SelectTrigger id={authMethodFieldId}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="application_key">Application Key</SelectItem>
-              <SelectItem value="oauth2">OAuth2</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-        {authMode === 'application_key' ? (
-          <StoreMapInput
-            label="OVH With Application Key"
-            card={false}
-            schema={AutocertSchema.definitions.OVHOptionsWithAppKey}
-            state={stateWithAppKey}
-            hideUnknown
-          />
-        ) : (
-          <StoreMapInput
-            label="OVH With OAuth2"
-            card={false}
-            schema={AutocertSchema.definitions.OVHOptionsWithOAuth2Config}
-            state={stateWithOAuth2}
-            hideUnknown
-          />
-        )}
-      </div>
-    )
-  }
-
   if (provider === 'ovh') {
-    return <OVHOptionsEditor />
+    return <OVHOptionsEditor state={state} />
   }
 
   return (
@@ -231,5 +163,80 @@ function DnsProviderOptionsEditor({ state }: { state: ObjectState<Autocert.Autoc
       state={state}
       hideUnknown
     />
+  )
+}
+
+function OVHOptionsEditor({ state }: { state: ObjectState<Autocert.AutocertConfig> }) {
+  const authMethodFieldId = useId()
+
+  // derive auth mode
+  const stateWithAppKey = state as ObjectState<Autocert.OVHOptionsWithAppKey>
+  const stateWithOAuth2 = state as ObjectState<Autocert.OVHOptionsWithOAuth2Config>
+  const authMode = state.useCompute(opts =>
+    'options' in opts && opts.options && 'application_key' in opts.options
+      ? 'application_key'
+      : 'oauth2'
+  )
+
+  const setAuthMode = (mode: 'application_key' | 'oauth2') => {
+    if (mode === 'application_key') {
+      const value = stateWithAppKey.options.value
+      const next = {
+        application_secret: value.application_secret,
+        consumer_key: value.consumer_key,
+        application_key: value.application_key,
+        api_endpoint: value.api_endpoint,
+      }
+      stateWithAppKey.options.set(next)
+    } else {
+      const value = stateWithOAuth2.options.value
+      const next = {
+        application_secret: value.application_secret,
+        consumer_key: value.consumer_key,
+        api_endpoint: value.api_endpoint,
+        oauth2_config: {
+          client_id: value.oauth2_config?.client_id,
+          client_secret: value.oauth2_config?.client_secret,
+        },
+      }
+      stateWithOAuth2.options.set(next)
+    }
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-2">
+        <Label htmlFor={authMethodFieldId}>Auth method</Label>
+        <Select
+          value={authMode}
+          onValueChange={v => setAuthMode(v as 'application_key' | 'oauth2')}
+        >
+          <SelectTrigger id={authMethodFieldId}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="application_key">Application Key</SelectItem>
+            <SelectItem value="oauth2">OAuth2</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      {authMode === 'application_key' ? (
+        <StoreMapInput
+          label="OVH With Application Key"
+          card={false}
+          schema={AutocertSchema.definitions.OVHOptionsWithAppKey}
+          state={stateWithAppKey}
+          hideUnknown
+        />
+      ) : (
+        <StoreMapInput
+          label="OVH With OAuth2"
+          card={false}
+          schema={AutocertSchema.definitions.OVHOptionsWithOAuth2Config}
+          state={stateWithOAuth2}
+          hideUnknown
+        />
+      )}
+    </div>
   )
 }

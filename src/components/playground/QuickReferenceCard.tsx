@@ -153,7 +153,7 @@ export default function QuickReferenceCard() {
           <ScrollArea
             className={cn(
               'min-h-0 shrink-0 rounded-md bg-muted/30',
-              'max-h-[min(38vh,20rem)] min-h-[9rem]',
+              'max-h-[min(38vh,20rem)] min-h-36',
               'lg:max-h-none lg:h-auto lg:min-h-0 lg:w-50 lg:min-w-50 lg:max-w-50'
             )}
           >
@@ -263,7 +263,7 @@ function QuickReferenceHoverRow({ entry }: { entry: CheatsheetEntry }) {
           <button
             type="button"
             className={cn(
-              'col-span-full grid w-full min-w-0 cursor-help [grid-template-columns:subgrid] items-baseline gap-x-2 rounded-md px-2 py-[5px] text-left outline-none ring-offset-background transition-colors',
+              'col-span-full grid w-full min-w-0 cursor-help grid-cols-subgrid items-baseline gap-x-2 rounded-md px-2 py-1.25 text-left outline-none ring-offset-background transition-colors',
               'hover:bg-muted/55 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
             )}
           />
