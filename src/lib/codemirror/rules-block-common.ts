@@ -1,3 +1,5 @@
+import rulesCheatsheet from '../../generated/rules-cheatsheet.json'
+
 export {
   controlKeywords,
   patternFunctions,
@@ -10,6 +12,17 @@ export {
   dynamicVariableFunctions,
   conditionKeywords,
   actionKeywords,
+  commandOptionFields,
+}
+
+type RulesCheatsheetEntry = {
+  kind?: string
+  name?: string
+  args?: { name: string; description?: string }[]
+}
+
+type RulesCheatsheet = {
+  sections: { entries: RulesCheatsheetEntry[] }[]
 }
 
 const conditionKeywords = new Set([
@@ -102,3 +115,12 @@ const dynamicVariableFunctions = [
   'postform',
   'redacted',
 ]
+
+const commandOptionFields = new Map<string, { name: string; description?: string }[]>()
+
+for (const section of (rulesCheatsheet as RulesCheatsheet).sections) {
+  for (const entry of section.entries) {
+    if (entry.kind !== 'command' || !entry.name || !entry.args) continue
+    commandOptionFields.set(entry.name, entry.args)
+  }
+}

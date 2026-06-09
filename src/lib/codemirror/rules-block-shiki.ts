@@ -18,6 +18,48 @@ const mutationFieldsRe = [...common.mutationFieldKeywords].map(escRe).join('|')
 const dynamicVarFnsRe = common.dynamicVariableFunctions.map(escRe).join('|')
 const staticVarsRe = common.staticVariables.map(escRe).join('|')
 
+const commandOptionBlockPatterns = [...common.commandOptionFields]
+  .filter(([, fields]) => fields.length > 0)
+  .map(([command, fields]) => {
+    const optionFieldsRe = fields.map(field => escRe(field.name)).join('|')
+    return {
+      begin: `\\b(${escRe(command)})\\s*(\\{)`,
+      end: '\\}',
+      beginCaptures: {
+        '1': { name: 'keyword.other.action.rules-block' },
+        '2': { name: 'punctuation.section.block.begin.rules-block' },
+      },
+      endCaptures: {
+        '0': { name: 'punctuation.section.block.end.rules-block' },
+      },
+      patterns: [
+        { include: '#block-comment' },
+        { include: '#line-comment-slash' },
+        { include: '#line-comment-hash' },
+        {
+          match: `(^|[\\s{])(${optionFieldsRe})(\\s*:)`,
+          captures: {
+            '2': { name: 'variable.other.property.rules-block' },
+            '3': { name: 'punctuation.separator.key-value.rules-block' },
+          },
+        },
+        {
+          match: `\\b(${logLevelsRe})\\b`,
+          name: 'entity.name.type.rules-block',
+        },
+        {
+          match: `\\b(${mutationFieldsRe})\\b`,
+          name: 'variable.parameter.rules-block',
+        },
+        { include: '#strings' },
+        { include: '#dynamic-variable' },
+        { include: '#variables' },
+        { include: '#constants' },
+        { include: '#numbers' },
+      ],
+    }
+  })
+
 const blockRulesShiki: LanguageRegistration = {
   name: 'rules-block',
   scopeName: 'source.rules-block',
@@ -25,6 +67,7 @@ const blockRulesShiki: LanguageRegistration = {
     { include: '#block-comment' },
     { include: '#line-comment-slash' },
     { include: '#line-comment-hash' },
+    { include: '#command-option-block' },
     { include: '#strings' },
     { include: '#log-statement' },
     { include: '#mutation-statement' },
@@ -92,6 +135,9 @@ const blockRulesShiki: LanguageRegistration = {
           ],
         },
       ],
+    },
+    'command-option-block': {
+      patterns: commandOptionBlockPatterns,
     },
     // log/notify <level> — level gets typeName treatment
     'log-statement': {

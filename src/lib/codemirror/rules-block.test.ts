@@ -74,6 +74,53 @@ describe('blockRulesCompletionSource', () => {
     expect(labels).toContain('$redacted')
   })
 
+  test('suggests command option names inside named option blocks', async () => {
+    const result = await completionAt('path /api {\n  rewrite {\n    ')
+    expect(result).not.toBeNull()
+
+    const labels = result?.options.map(option => option.label) ?? []
+    expect(labels).toContain('from')
+    expect(labels).toContain('to')
+    expect(labels).not.toContain('provider')
+    expect(result?.options.find(option => option.label === 'from')?.apply).toBe('from: ')
+  })
+
+  test('omits option names already set in named option blocks', async () => {
+    const result = await completionAt('path /api {\n  notify {\n    level: info\n    ')
+    expect(result).not.toBeNull()
+
+    const labels = result?.options.map(option => option.label) ?? []
+    expect(labels).not.toContain('level')
+    expect(labels).toContain('provider')
+    expect(labels).toContain('title')
+    expect(labels).toContain('body')
+  })
+
+  test('suggests remaining option names after inline option values', async () => {
+    const rewrite = await completionAt('path /api {\n  rewrite { from: /api ')
+    const rewriteLabels = rewrite?.options.map(option => option.label) ?? []
+    expect(rewriteLabels).not.toContain('from')
+    expect(rewriteLabels).toContain('to')
+    expect(rewriteLabels).not.toContain('provider')
+    expect(rewriteLabels).not.toContain('header')
+
+    const notify = await completionAt('path /api {\n  notify { level: info ')
+    const notifyLabels = notify?.options.map(option => option.label) ?? []
+    expect(notifyLabels).not.toContain('level')
+    expect(notifyLabels).toContain('provider')
+    expect(notifyLabels).toContain('title')
+    expect(notifyLabels).toContain('body')
+  })
+
+  test('suggests option values for named option block fields', async () => {
+    const result = await completionAt('path /api {\n  notify {\n    level: ')
+    expect(result).not.toBeNull()
+
+    const labels = result?.options.map(option => option.label) ?? []
+    expect(labels).toContain('info')
+    expect(labels).toContain('error')
+  })
+
   test('does not trigger implicitly without a word prefix', async () => {
     const result = await completionAt(' ', 1, false)
     expect(result).toBeNull()
@@ -88,5 +135,44 @@ describe('blockRulesLanguage variable highlighting', () => {
     expect(findTokenNames(doc, '$req_method')).toContain('variableName')
     expect(findTokenNames(doc, '$header')).toContain('variableName.standard')
     expect(findTokenNames(doc, '$redacted')).toContain('variableName.standard')
+  })
+
+  test('highlights named option block keys and values', () => {
+    const doc = `path /api {
+  rewrite {
+    from: /api
+    to: /backend
+  }
+
+  notify {
+    level: info
+    provider: ntfy
+    title: API request
+    body: "$req_method $req_url $status_code"
+  }
+}`
+
+    expect(findTokenNames(doc, 'from')).toContain('propertyName')
+    expect(findTokenNames(doc, 'to')).toContain('propertyName')
+    expect(findTokenNames(doc, 'level')).toContain('propertyName')
+    expect(findTokenNames(doc, 'info')).toContain('typeName')
+    expect(findTokenNames(doc, '$req_method')).toContain('variableName')
+    expect(findTokenNames(doc, '$status_code')).toContain('variableName')
+  })
+
+  test('highlights inline option block keys', () => {
+    const doc = 'path /api { rewrite { from: /api to: /backend } }'
+
+    expect(findTokenNames(doc, 'from')).toContain('propertyName')
+    expect(findTokenNames(doc, 'to')).toContain('propertyName')
+  })
+
+  test('does not highlight options from another command as valid keys', () => {
+    expect(findTokenNames('path /api { rewrite { provider: ntfy } }', 'provider')).not.toContain(
+      'propertyName'
+    )
+    expect(findTokenNames('path /api { notify { provider: ntfy } }', 'provider')).toContain(
+      'propertyName'
+    )
   })
 })
