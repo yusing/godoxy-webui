@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from '@tanstack/react-router'
-import { source } from '@/lib/wiki/source'
+import { getLLMText, source } from '@/lib/wiki/source'
 
 export const Route = createFileRoute('/llms.mdx/docs/$')({
   server: {
@@ -11,7 +11,7 @@ export const Route = createFileRoute('/llms.mdx/docs/$')({
         const page = source.getPage(slugs)
         if (!page) throw notFound()
 
-        return new Response(await page.data.getText('processed'), {
+        return new Response(await getLLMText(page), {
           headers: {
             'Content-Type': 'text/markdown',
           },

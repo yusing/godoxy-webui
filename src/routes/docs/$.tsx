@@ -5,7 +5,8 @@ import { staticFunctionMiddleware } from '@tanstack/start-static-server-function
 import { useFumadocsLoader } from 'fumadocs-core/source/client'
 import { DocsLayout } from 'fumadocs-ui/layouts/docs'
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/layouts/docs/page'
-import { Suspense } from 'react'
+import { Suspense, type ReactNode } from 'react'
+import { APIPage } from '@/components/wiki/APIPage'
 import RootProvider from '@/components/wiki/RootProvider'
 import { baseOptions, gitConfig } from '@/lib/wiki/layout.shared'
 import { source } from '@/lib/wiki/source'
@@ -17,7 +18,9 @@ export const Route = createFileRoute('/docs/$')({
   loader: async ({ params }) => {
     const slugs = params._splat?.split('/') ?? []
     const data = await loader({ data: slugs })
-    await clientLoader.preload(data.path)
+    if (data.type === 'docs') {
+      await clientLoader.preload(data.path)
+    }
     return data
   },
 })
@@ -25,17 +28,30 @@ export const Route = createFileRoute('/docs/$')({
 const loader = createServerFn({
   method: 'GET',
 })
-  .inputValidator((slugs: string[]) => slugs)
+  .validator((slugs: string[]) => slugs)
   .middleware([staticFunctionMiddleware])
   .handler(async ({ data: slugs }) => {
     const page = source.getPage(slugs)
     if (!page) throw notFound()
 
+    const pageTree = await source.serializePageTree(source.getPageTree())
+    if (page.data.type === 'openapi') {
+      return {
+        type: 'openapi',
+        title: page.data.title,
+        description: page.data.description,
+        toc: page.data.toc,
+        pageTree,
+        props: await page.data.getClientAPIPageProps(),
+      } as const
+    }
+
     return {
+      type: 'docs',
       slugs: page.slugs,
       path: page.path,
-      pageTree: await source.serializePageTree(source.getPageTree()),
-    }
+      pageTree,
+    } as const
   })
 
 const clientLoader = browserCollections.docs.createClientLoader({
@@ -73,14 +89,32 @@ const clientLoader = browserCollections.docs.createClientLoader({
 })
 
 function Page() {
-  const { pageTree, slugs, path } = useFumadocsLoader(Route.useLoaderData())
-  const markdownUrl = `/llms.mdx/docs/${[...slugs, 'index.mdx'].join('/')}`
+  const page = useFumadocsLoader(Route.useLoaderData())
+  let content: ReactNode
 
+  if (page.type === 'openapi') {
+    content = (
+      <DocsPage toc={page.toc} full>
+        <DocsTitle>{page.title}</DocsTitle>
+        <DocsDescription>{page.description}</DocsDescription>
+        <DocsBody className="max-w-none w-full">
+          <APIPage {...page.props} />
+        </DocsBody>
+      </DocsPage>
+    )
+  } else {
+    const markdownUrl = `/llms.mdx/docs/${[...page.slugs, 'index.mdx'].join('/')}`
+    content = (
+      <>
+        <Link to={markdownUrl} hidden />
+        <Suspense>{clientLoader.useContent(page.path, { markdownUrl, path: page.path })}</Suspense>
+      </>
+    )
+  }
   return (
     <RootProvider>
-      <DocsLayout {...baseOptions()} tree={pageTree}>
-        <Link to={markdownUrl} hidden />
-        <Suspense>{clientLoader.useContent(path, { markdownUrl, path })}</Suspense>
+      <DocsLayout {...baseOptions()} tree={page.pageTree}>
+        {content}
       </DocsLayout>
     </RootProvider>
   )

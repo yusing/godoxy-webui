@@ -54,6 +54,9 @@ export default defineConfig({
           path: '/docs/impl',
         },
         {
+          path: '/docs/openapi',
+        },
+        {
           path: '/docs/api/search',
         },
       ],
