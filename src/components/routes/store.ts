@@ -21,7 +21,6 @@ export type DockerStatsSummary = {
   networkTx: number
   blockRead: number
   blockWrite: number
-  running: boolean
 }
 
 type RouteState = {

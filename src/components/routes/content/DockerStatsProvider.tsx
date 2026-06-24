@@ -36,8 +36,6 @@ function summarizeStats(stats: ContainerStatsResponse): DockerStatsSummary {
     { blockRead: 0, blockWrite: 0 }
   )
 
-  const running = stats.cpu_stats.online_cpus > 0
-
   return {
     cpuPercent,
     memoryUsage,
@@ -47,7 +45,6 @@ function summarizeStats(stats: ContainerStatsResponse): DockerStatsSummary {
     networkTx,
     blockRead,
     blockWrite,
-    running,
   }
 }
 

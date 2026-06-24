@@ -35,16 +35,15 @@ const containerActions = [
 type ContainerAction = (typeof containerActions)[number]
 
 export default function ContainerControls({ routeKey }: { routeKey: RouteKey }) {
-  const containerId = store.routeDetails[routeKey]?.useCompute(
-    details => details?.container?.container_id
+  const [containerId, dockerRunning] = store.routeDetails[routeKey]!.useCompute(
+    details => [details?.container?.container_id, details?.container?.running]
   )
   const proxmoxConfig = store.routeDetails[routeKey]?.useCompute(details => details?.proxmox)
-  const dockerRunning = store.dockerStats[routeKey]?.useCompute(stats => stats?.running ?? false)
   const proxmoxStatus = store.proxmoxStats[routeKey]?.useCompute(line => line?.split('|')[0] ?? '')
   const [isLoading, setIsLoading] = useState<string | null>(null)
 
   const isDocker = containerId !== undefined
-  const isProxmoxLXC = proxmoxConfig && proxmoxConfig.vmid
+  const isProxmoxLXC = proxmoxConfig != null && proxmoxConfig.vmid
 
   if (!isDocker && !isProxmoxLXC) {
     return null

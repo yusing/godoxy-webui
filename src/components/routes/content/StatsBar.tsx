@@ -100,8 +100,8 @@ export function StatsBar({ cells, isVisible, splitAfter }: StatsBarProps) {
 }
 
 export function ContainerStatsBar({ routeKey }: { routeKey: RouteKey }) {
-  const isDocker = store.routeDetails[routeKey]?.useCompute(details => Boolean(details?.container))
-  const isProxmox = store.routeDetails[routeKey]?.useCompute(details => Boolean(details?.proxmox))
+  const [isDocker, dockerRunning] = store.routeDetails[routeKey]!.useCompute(details => [details?.container != null, details.container?.running])
+  const isProxmox = store.routeDetails[routeKey]?.useCompute(details => details?.proxmox != null)
 
   const dockerStats = store.dockerStats[routeKey]?.use()
   const lxcRawStats = store.proxmoxStats[routeKey]?.use()
@@ -116,8 +116,8 @@ export function ContainerStatsBar({ routeKey }: { routeKey: RouteKey }) {
     const cells: StatsCellConfig[] = [
       {
         label: 'RUNNING',
-        getValue: () => (dockerStats.running ? 'Yes' : 'No'),
-        className: dockerStats.running ? 'ds-running' : 'ds-running-no',
+        getValue: () => (dockerRunning ? 'Yes' : 'No'),
+        className: dockerRunning ? 'ds-running' : 'ds-running-no',
         minWidth: '3rem',
       },
       {
