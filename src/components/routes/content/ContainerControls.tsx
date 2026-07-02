@@ -12,21 +12,18 @@ const containerActions = [
   {
     label: 'Start',
     Icon: Play,
-    tone: 'start',
     enableIfDocker: (running: boolean) => !running,
     enableIfProxmox: (status: string) => status !== 'running',
   },
   {
     label: 'Stop',
     Icon: Square,
-    tone: 'stop',
     enableIfDocker: (running: boolean) => running,
     enableIfProxmox: (status: string) => status === 'running',
   },
   {
     label: 'Restart',
     Icon: RotateCw,
-    tone: 'restart',
     enableIfDocker: (running: boolean) => running,
     enableIfProxmox: (status: string) => status === 'running',
   },

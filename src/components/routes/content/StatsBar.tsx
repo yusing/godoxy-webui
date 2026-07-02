@@ -100,7 +100,10 @@ export function StatsBar({ cells, isVisible, splitAfter }: StatsBarProps) {
 }
 
 export function ContainerStatsBar({ routeKey }: { routeKey: RouteKey }) {
-  const [isDocker, dockerRunning] = store.routeDetails[routeKey]!.useCompute(details => [details?.container != null, details.container?.running])
+  const [isDocker, dockerRunning] = store.routeDetails[routeKey]!.useCompute(details => [
+    details?.container != null,
+    details?.container?.running,
+  ])
   const isProxmox = store.routeDetails[routeKey]?.useCompute(details => details?.proxmox != null)
 
   const dockerStats = store.dockerStats[routeKey]?.use()
