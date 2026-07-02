@@ -42,7 +42,7 @@
     "fumadocs-mdx": "^15.0.12",
     "fumadocs-openapi": "^11.0.3",
     "fumadocs-ui": "npm:@fumadocs/base-ui@^16.10.5",
-    "juststore": "^1.2.1",
+    "juststore": "^1.2.2",
     "lucide-react": "^1.21.0",
     "mermaid": "^11.15.0",
     "motion": "^12.41.0",

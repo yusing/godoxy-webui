@@ -33,7 +33,7 @@
         "fumadocs-mdx": "^15.0.12",
         "fumadocs-openapi": "^11.0.3",
         "fumadocs-ui": "npm:@fumadocs/base-ui@^16.10.5",
-        "juststore": "^1.2.1",
+        "juststore": "^1.2.2",
         "lucide-react": "^1.21.0",
         "mermaid": "^11.15.0",
         "motion": "^12.41.0",
@@ -1310,7 +1310,7 @@
 
     "jsonc-parser": ["jsonc-parser@3.3.1", "", {}, "sha512-HUgH65KyejrUFPvHFPbqOY0rsFip3Bo5wb4ngvdi1EpCYWUQDC5V+Y7mZws+DLkr4M//zQJoanu1SP+87Dv1oQ=="],
 
-    "juststore": ["juststore@1.2.1", "", { "dependencies": { "change-case": "^5.4.4", "react-fast-compare": "^3.2.2" }, "peerDependencies": { "react": ">=18.0.0" } }, "sha512-7FyKCrvsWzhR81bK4v2rJLmleZClUOfmqtlaTvMMaCU1rZdtsUzrK2iX0l1YzYZhhL8yZggBI2xxUwb+HB1Frg=="],
+    "juststore": ["juststore@1.2.2", "", { "dependencies": { "change-case": "^5.4.4", "react-fast-compare": "^3.2.2" }, "peerDependencies": { "react": ">=18.0.0" } }, "sha512-bpxuxY/ENys5RmvS2aYSZlVUvGeQHGiCNWn1JiFAVmoXlV/1Pg0Yjzmeef0Kx9iaG2otaAcqS3mOqJNeDLzSpQ=="],
 
     "katex": ["katex@0.16.47", "", { "dependencies": { "commander": "^8.3.0" }, "bin": { "katex": "cli.js" } }, "sha512-Eeo8Ys1doU1z+x8AZsPpQu+p/QcZBI5PeOo7QGQdy2x2m0MU/hYagBbGOmXwr5KVbEfVuWv9LpnQWeehogurjg=="],
 
