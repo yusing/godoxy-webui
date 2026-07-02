@@ -3,15 +3,20 @@ import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
 import { staticFunctionMiddleware } from '@tanstack/start-static-server-functions'
 import { useFumadocsLoader } from 'fumadocs-core/source/client'
+import type { TOCItemType } from 'fumadocs-core/toc'
 import { DocsLayout } from 'fumadocs-ui/layouts/docs'
 import { DocsBody, DocsDescription, DocsPage, DocsTitle } from 'fumadocs-ui/layouts/docs/page'
-import { Suspense, type ReactNode } from 'react'
+import { isValidElement, Suspense, type ComponentProps, type ReactNode } from 'react'
 import { APIPage } from '@/components/wiki/APIPage'
 import RootProvider from '@/components/wiki/RootProvider'
 import { baseOptions, gitConfig } from '@/lib/wiki/layout.shared'
 import { source } from '@/lib/wiki/source'
 import { getMDXComponents } from '@/mdx-components'
 import { LLMCopyButton, ViewOptions } from '@/wiki/components/ai/page-actions'
+
+type SerializableTOCItem = Omit<TOCItemType, 'title'> & {
+  title: string
+}
 
 export const Route = createFileRoute('/docs/$')({
   component: Page,
@@ -24,6 +29,25 @@ export const Route = createFileRoute('/docs/$')({
     return data
   },
 })
+
+function getTOCTitleText(title: ReactNode): string {
+  if (title == null || typeof title === 'boolean') return ''
+  if (typeof title === 'string' || typeof title === 'number' || typeof title === 'bigint') {
+    return String(title)
+  }
+  if (Array.isArray(title)) return title.map(getTOCTitleText).join('')
+  if (isValidElement<{ children?: ReactNode }>(title)) {
+    return getTOCTitleText(title.props.children)
+  }
+  return ''
+}
+
+function serializeTOC(toc: TOCItemType[]): SerializableTOCItem[] {
+  return toc.map(item => ({
+    ...item,
+    title: getTOCTitleText(item.title),
+  }))
+}
 
 const loader = createServerFn({
   method: 'GET',
@@ -40,7 +64,7 @@ const loader = createServerFn({
         type: 'openapi',
         title: page.data.title,
         description: page.data.description,
-        toc: page.data.toc,
+        toc: serializeTOC(page.data.toc),
         pageTree,
         props: await page.data.getClientAPIPageProps(),
       } as const
@@ -120,7 +144,7 @@ function Page() {
   )
 }
 
-function LinkComponent({ href, ...props }: React.ComponentProps<'a'>) {
+function LinkComponent({ href, ...props }: ComponentProps<'a'>) {
   if (!href) return <a {...props} />
   href = href.replace('/../..', '').replace('..', 'docs/godoxy')
   return <a href={href} {...props} />
