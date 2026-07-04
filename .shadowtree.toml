@@ -1,49 +1,10 @@
+profile = "node"
 shell = "sh"
 
 shell_prelude = '''
 webui_root=$(pwd)
 src_dir=src
 schema_dir=$src_dir/types/godoxy
-build_date=${BUILD_DATE:-$(date -u +'%Y%m%d-%H%M%S')}
-'''
-
-[env]
-BUILDKIT_PROGRESS="plain"
-
-[recipes.dev]
-help = "Start the WebUI development compose stack."
-sandboxed = false
-cmd = ["docker", "compose", "up", "--build", "--pull=never"]
-
-[recipes.commit-push]
-help = "Format, commit, and push WebUI changes."
-sandboxed = false
-cmd = '''
-bun format:write
-git add .
-git commit
-git push
-'''
-
-[recipes.update-wiki]
-help = "Pull the checked-out public wiki worktree."
-sandboxed = false
-cmd = ["git", "-C", "public/wiki", "pull"]
-
-[recipes.build-wiki]
-help = "Build wiki assets through a temporary worktree."
-sandboxed = false
-cmd = '''
-[ -d "$webui_root/public/wiki" ] && rm -r "$webui_root/public/wiki" || true
-git -C wiki worktree add "/tmp/wiki-$build_date" HEAD
-trap 'cd "$webui_root" && git -C wiki worktree remove "/tmp/wiki-'"$build_date"'" --force' EXIT
-cd "/tmp/wiki-$build_date"
-bun i -D --frozen-lockfile
-sed -i "s|srcDir: 'src',|srcDir: 'src', base: '/wiki',|" .vitepress/config.mts
-sed -i "s|link: '/'|link: '/../', rel: 'noopener noreferrer', target: '_self'|" .vitepress/config.mts
-head -n 10 .vitepress/config.mts
-bun --bun run docs:build
-cp -r .vitepress/dist "$webui_root/public/wiki"
 '''
 
 [recipes.gen-schema-single]
