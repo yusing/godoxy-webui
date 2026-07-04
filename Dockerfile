@@ -2,11 +2,18 @@ FROM oven/bun:1.3.13-slim AS base
 
 HEALTHCHECK NONE
 
+FROM golang:1.26.4-alpine AS shadowtree
+ARG SHADOWTREE_VERSION=latest
+RUN --mount=type=cache,target=/root/.cache/go-build \
+  --mount=type=cache,target=/root/go/pkg/mod \
+  CGO_ENABLED=0 go install github.com/yusing/shadowtree/cmd/shadowtree@${SHADOWTREE_VERSION}
+
 FROM base AS utils-deps
 WORKDIR /src
 ENV DEBIAN_FRONTEND=noninteractive
 # nodejs: real /usr/bin/node for Vite prerender (Bun’s `node` shim cannot fetch the preview server).
-RUN apt update && apt install -y make nodejs && rm -rf /var/lib/apt/lists/*
+RUN apt update && apt install -y nodejs && rm -rf /var/lib/apt/lists/*
+COPY --from=shadowtree /go/bin/shadowtree /usr/local/bin/shadowtree
 
 # install stage for webui deps
 FROM utils-deps AS install
@@ -18,9 +25,9 @@ RUN bun install --frozen-lockfile
 # schema-gen stage for generating schema
 FROM install AS schema-gen
 COPY src/types/godoxy/ ./src/types/godoxy/
-COPY Makefile ./Makefile
+COPY .shadowtree.toml ./.shadowtree.toml
 COPY tsconfig.json ./tsconfig.json
-RUN make gen-schema
+RUN shadowtree gen-schema
 
 # copy node_modules from temp directory
 # then copy all (non-ignored) project files into the image

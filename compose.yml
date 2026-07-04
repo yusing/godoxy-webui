@@ -6,7 +6,7 @@ services:
     image: oven/bun:1.3.13-alpine
     env_file: .env
     user: 1000:1000
-    working_dir: ${PWD:?PWD is not set, please run from make dev}
+    working_dir: ${PWD:?PWD is not set, please run from shadowtree dev}
     command: bun --bun vite dev --host 0.0.0.0 --port 3000
     expose:
       - 3000
