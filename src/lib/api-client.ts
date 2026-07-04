@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import {
   Api,
-  ContentType,
   type ErrorResponse,
   type FullRequestParams,
   type HttpResponse,
@@ -40,7 +39,7 @@ function createApi(): Api<unknown> {
   client.request = (async (params: FullRequestParams) => {
     const effective =
       params.type === undefined && typeof params.body === 'string'
-        ? { ...params, type: ContentType.Text }
+        ? { ...params, type: 'text/plain' as const }
         : params
     return request(effective)
   }) as typeof client.request

@@ -2,15 +2,7 @@ import type { IdlewatcherConfig } from '@/lib/api'
 import type { RequestLogConfig } from '../config/access_log'
 import type { RuleDo, RuleOn } from '../config/rules'
 import type { MiddlewaresMap } from '../middlewares/middlewares'
-import type {
-  Duration,
-  FileServerBindPort,
-  Hostname,
-  IPv4,
-  IPv6,
-  Port,
-  StreamPort,
-} from '../types'
+import type { Duration, FileServerBindPort, Hostname, IPv4, IPv6, Port, StreamPort } from '../types'
 import type { HealthcheckConfig } from './healthcheck'
 import type { HomepageConfig } from './homepage'
 import type { LoadBalanceConfig } from './loadbalance'

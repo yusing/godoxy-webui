@@ -85,17 +85,13 @@ export interface Container {
   is_excluded: boolean;
   is_explicit: boolean;
   is_host_network_mode: boolean;
-  /** for displaying in UI */
   labels: Record<string, string>;
-  /** source:destination */
   mounts: Record<string, string>;
   network: string;
   private_hostname: string;
-  /** privatePort:types.Port */
-  private_ports: TypesPortMapping;
+  private_ports: DockerPortMapping;
   public_hostname: string;
-  /** non-zero publicPort:types.Port */
-  public_ports: TypesPortMapping;
+  public_ports: DockerPortMapping;
   running: boolean;
   state: ContainerContainerState;
 }
@@ -352,6 +348,8 @@ export interface DiskUsageStat {
   used: number;
   used_percent: number;
 }
+
+export type DockerPortMapping = Record<string, ContainerPort>;
 
 export interface DockerProviderConfig {
   tls: DockerTLSConfig;
@@ -856,6 +854,18 @@ export interface RequestLoggerConfig {
 export interface Route {
   access_log?: RequestLoggerConfig | null;
   agent: string;
+  /**
+   * Alias is route lookup key.
+   *
+   * Supported HTTP host-match forms:
+   *   - short alias: "app"
+   *   - FQDN alias: "app.example.com"
+   *   - leading-label wildcard alias: "*.example.com"
+   *
+   * Wildcard aliases match exactly one leftmost label and are checked only
+   * after normal exact/domain lookup misses, preserving the fast path for
+   * exact routes.
+   */
   alias: string;
   bind?: string | null;
   /** Docker only */
@@ -1024,8 +1034,6 @@ export type TimeDuration =
   | 3600000000000;
 
 export type TypesLabelMap = Record<string, any>;
-
-export type TypesPortMapping = Record<string, ContainerPort>;
 
 export interface UptimeAggregate {
   data: RouteUptimeAggregate[];
@@ -2447,13 +2455,12 @@ export interface HttpResponse<D extends unknown, E extends unknown = unknown>
 
 type CancelToken = Symbol | string | number;
 
-export enum ContentType {
-  Json = "application/json",
-  JsonApi = "application/vnd.api+json",
-  FormData = "multipart/form-data",
-  UrlEncoded = "application/x-www-form-urlencoded",
-  Text = "text/plain",
-}
+export type ContentType =
+  | "application/json"
+  | "application/vnd.api+json"
+  | "multipart/form-data"
+  | "application/x-www-form-urlencoded"
+  | "text/plain";
 
 export class HttpClient<SecurityDataType = unknown> {
   public baseUrl: string = "/api/v1";
@@ -2512,19 +2519,19 @@ export class HttpClient<SecurityDataType = unknown> {
   }
 
   private contentFormatters: Record<ContentType, (input: any) => any> = {
-    [ContentType.Json]: (input: any) =>
+    ["application/json"]: (input: any) =>
       input !== null && (typeof input === "object" || typeof input === "string")
         ? JSON.stringify(input)
         : input,
-    [ContentType.JsonApi]: (input: any) =>
+    ["application/vnd.api+json"]: (input: any) =>
       input !== null && (typeof input === "object" || typeof input === "string")
         ? JSON.stringify(input)
         : input,
-    [ContentType.Text]: (input: any) =>
+    ["text/plain"]: (input: any) =>
       input !== null && typeof input !== "string"
         ? JSON.stringify(input)
         : input,
-    [ContentType.FormData]: (input: any) => {
+    ["multipart/form-data"]: (input: any) => {
       if (input instanceof FormData) {
         return input;
       }
@@ -2542,7 +2549,8 @@ export class HttpClient<SecurityDataType = unknown> {
         return formData;
       }, new FormData());
     },
-    [ContentType.UrlEncoded]: (input: any) => this.toQueryString(input),
+    ["application/x-www-form-urlencoded"]: (input: any) =>
+      this.toQueryString(input),
   };
 
   protected mergeRequestParams(
@@ -2604,7 +2612,7 @@ export class HttpClient<SecurityDataType = unknown> {
       {};
     const requestParams = this.mergeRequestParams(params, secureParams);
     const queryString = query && this.toQueryString(query);
-    const payloadFormatter = this.contentFormatters[type || ContentType.Json];
+    const payloadFormatter = this.contentFormatters[type || "application/json"];
     const responseFormat = format || requestParams.format;
 
     return this.customFetch(
@@ -2613,7 +2621,7 @@ export class HttpClient<SecurityDataType = unknown> {
         ...requestParams,
         headers: {
           ...(requestParams.headers || {}),
-          ...(type && type !== ContentType.FormData
+          ...(type && type !== "multipart/form-data"
             ? { "Content-Type": type }
             : {}),
         },
@@ -2691,7 +2699,7 @@ export class Api<
         path: `/agent/create`,
         method: "POST",
         body: request,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -2710,7 +2718,7 @@ export class Api<
       this.request<Agent[], ErrorResponse>({
         path: `/agent/list`,
         method: "GET",
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -2732,7 +2740,7 @@ export class Api<
         path: `/agent/verify`,
         method: "POST",
         body: request,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -2758,7 +2766,7 @@ export class Api<
         path: `/auth/callback`,
         method: "POST",
         body: body,
-        type: ContentType.Json,
+        type: "application/json",
         ...params,
       }),
 
@@ -2965,7 +2973,7 @@ export class Api<
         path: `/docker/logs/${id}`,
         method: "GET",
         query: query,
-        type: ContentType.Json,
+        type: "application/json",
         ...params,
       }),
 
@@ -2987,7 +2995,7 @@ export class Api<
         path: `/docker/restart`,
         method: "POST",
         body: request,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3010,7 +3018,7 @@ export class Api<
         path: `/docker/start`,
         method: "POST",
         body: request,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3054,7 +3062,7 @@ export class Api<
         path: `/docker/stop`,
         method: "POST",
         body: request,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3075,7 +3083,7 @@ export class Api<
       this.request<Event[], ErrorResponse>({
         path: `/events`,
         method: "GET",
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3107,7 +3115,7 @@ export class Api<
         path: `/favicon`,
         method: "GET",
         query: query,
-        type: ContentType.Json,
+        type: "application/json",
         format: "blob",
         ...params,
       }),
@@ -3137,7 +3145,7 @@ export class Api<
         path: `/file/content`,
         method: "GET",
         query: query,
-        type: ContentType.Json,
+        type: "application/json",
         ...params,
       }),
 
@@ -3168,7 +3176,7 @@ export class Api<
         method: "PUT",
         query: query,
         body: file,
-        type: ContentType.Text,
+        type: "text/plain",
         format: "json",
         ...params,
       }),
@@ -3188,7 +3196,7 @@ export class Api<
       this.request<ListFilesResponse, ErrorResponse>({
         path: `/file/list`,
         method: "GET",
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3239,7 +3247,7 @@ export class Api<
       this.request<HealthMap, ErrorResponse>({
         path: `/health`,
         method: "GET",
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3260,7 +3268,7 @@ export class Api<
       this.request<string[], ErrorResponse>({
         path: `/homepage/categories`,
         method: "GET",
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3286,7 +3294,7 @@ export class Api<
         path: `/homepage/item_click`,
         method: "POST",
         query: query,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3323,7 +3331,7 @@ export class Api<
         path: `/homepage/items`,
         method: "GET",
         query: query,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3347,7 +3355,7 @@ export class Api<
         path: `/homepage/set/category_order`,
         method: "POST",
         body: request,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3371,7 +3379,7 @@ export class Api<
         path: `/homepage/set/item`,
         method: "POST",
         body: request,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3395,7 +3403,7 @@ export class Api<
         path: `/homepage/set/item_all_sort_order`,
         method: "POST",
         body: request,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3419,7 +3427,7 @@ export class Api<
         path: `/homepage/set/item_fav_sort_order`,
         method: "POST",
         body: request,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3443,7 +3451,7 @@ export class Api<
         path: `/homepage/set/item_favorite`,
         method: "POST",
         body: request,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3467,7 +3475,7 @@ export class Api<
         path: `/homepage/set/item_sort_order`,
         method: "POST",
         body: request,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3491,7 +3499,7 @@ export class Api<
         path: `/homepage/set/item_visible`,
         method: "POST",
         body: request,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3515,7 +3523,7 @@ export class Api<
         path: `/homepage/set/items_batch`,
         method: "POST",
         body: request,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3545,7 +3553,7 @@ export class Api<
         path: `/icons`,
         method: "GET",
         query: query,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3706,7 +3714,7 @@ export class Api<
         path: `/proxmox/journalctl`,
         method: "GET",
         query: query,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3749,7 +3757,7 @@ export class Api<
         path: `/proxmox/journalctl/${node}`,
         method: "GET",
         query: query,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3793,7 +3801,7 @@ export class Api<
         path: `/proxmox/journalctl/${node}/${vmid}`,
         method: "GET",
         query: query,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3838,7 +3846,7 @@ export class Api<
         path: `/proxmox/journalctl/${node}/${vmid}/${service}`,
         method: "GET",
         query: query,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -3979,7 +3987,7 @@ export class Api<
         path: `/proxmox/tail`,
         method: "GET",
         query: query,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -4000,7 +4008,7 @@ export class Api<
       this.request<RouteApiRoutesByProvider, ErrorResponse>({
         path: `/route/by_provider`,
         method: "GET",
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -4026,7 +4034,7 @@ export class Api<
         path: `/route/list`,
         method: "GET",
         query: query,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -4047,7 +4055,7 @@ export class Api<
         path: `/route/playground`,
         method: "POST",
         body: request,
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -4067,7 +4075,7 @@ export class Api<
       this.request<RouteProvider[], ErrorResponse>({
         path: `/route/providers`,
         method: "GET",
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -4134,7 +4142,7 @@ export class Api<
       this.request<Route, ErrorResponse>({
         path: `/route/${which}`,
         method: "GET",
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -4155,7 +4163,7 @@ export class Api<
       this.request<StatsResponse, ErrorResponse>({
         path: `/stats`,
         method: "GET",
-        type: ContentType.Json,
+        type: "application/json",
         format: "json",
         ...params,
       }),
@@ -4174,7 +4182,7 @@ export class Api<
       this.request<string, any>({
         path: `/version`,
         method: "GET",
-        type: ContentType.Json,
+        type: "application/json",
         ...params,
       }),
   };
