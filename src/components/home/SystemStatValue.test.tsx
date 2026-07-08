@@ -5,6 +5,14 @@ import { JSDOM } from 'jsdom'
 import SystemStatValue from './SystemStatValue'
 import { store } from './store'
 
+function setGlobal<K extends keyof typeof globalThis>(key: K, value: (typeof globalThis)[K]) {
+  Object.defineProperty(globalThis, key, {
+    configurable: true,
+    writable: true,
+    value,
+  })
+}
+
 describe('SystemStatValue network speed rendering', () => {
   let root: Root | undefined
   let container: HTMLDivElement
@@ -14,13 +22,13 @@ describe('SystemStatValue network speed rendering', () => {
       url: 'http://localhost',
     })
     globalThis.IS_REACT_ACT_ENVIRONMENT = true
-    globalThis.window = dom.window as typeof globalThis.window
-    globalThis.document = dom.window.document
-    globalThis.HTMLElement = dom.window.HTMLElement
-    globalThis.SVGElement = dom.window.SVGElement
-    globalThis.Node = dom.window.Node
-    globalThis.navigator = dom.window.navigator
-    globalThis.localStorage = dom.window.localStorage
+    setGlobal('window', dom.window as typeof globalThis.window)
+    setGlobal('document', dom.window.document)
+    setGlobal('HTMLElement', dom.window.HTMLElement)
+    setGlobal('SVGElement', dom.window.SVGElement)
+    setGlobal('Node', dom.window.Node)
+    setGlobal('navigator', dom.window.navigator)
+    setGlobal('localStorage', dom.window.localStorage)
 
     container = dom.window.document.getElementById('root') as HTMLDivElement
     root = createRoot(container)

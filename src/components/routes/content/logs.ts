@@ -219,7 +219,7 @@ function tryFormatJsonLogLine(
   const levelBadge = levelInfo ? formatLevelBadge(levelInfo.value) : ''
 
   const timeInfo = !opts.hasExternalTimestamp ? extractTimestamp(obj) : null
-  const timestampPrefix = timeInfo ? `${formatLocalDateTimeColored(timeInfo)} ` : ''
+  const jsonTimestampPrefix = timeInfo ? `${formatLocalDateTimeColored(timeInfo)} ` : ''
 
   const excludeKeys = new Set<string>()
   if (levelInfo) excludeKeys.add(levelInfo.key)
@@ -234,7 +234,7 @@ function tryFormatJsonLogLine(
   const renderedSuffix = suffix.trim() ? ` ${ansi.dim}${suffix.trim()}${ansi.reset}` : ''
 
   const header = levelBadge ? `${levelBadge} ` : ''
-  return `${timestampPrefix}${renderedPrefix}${header}${kv}${renderedSuffix}`.trimEnd()
+  return `${jsonTimestampPrefix}${renderedPrefix}${header}${kv}${renderedSuffix}`.trimEnd()
 }
 
 function extractFirstJsonObject(

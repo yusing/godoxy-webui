@@ -1,5 +1,5 @@
 import { Conditional, type FieldPath, type FieldValues, type ObjectState } from 'juststore'
-import { Activity, useMemo } from 'react'
+import { Activity, type ReactNode, useMemo } from 'react'
 import { getDefaultValue, getPropertySchema, type JSONSchema } from '@/types/schema'
 import { Badge } from '../ui/badge'
 import { Separator } from '../ui/separator'
@@ -83,6 +83,44 @@ function StoreRecordInput<T extends FieldValues>({
   )
 }
 
+function RecordComplexEntryFrame({
+  fieldKey,
+  placeholderKey,
+  isKeyTaken,
+  onKeyChange,
+  onDelete,
+  readonly,
+  children,
+}: {
+  fieldKey: string
+  placeholderKey?: string
+  isKeyTaken: (candidate: string) => boolean
+  onKeyChange: (newKey: string) => void
+  onDelete: () => void
+  readonly: boolean
+  children: ReactNode
+}) {
+  'use memo'
+  const isNew = fieldKey === ''
+  return (
+    <div
+      className={`record-entry--complex col-span-full ${isNew ? 'mt-2 rounded-md border border-dashed border-border p-2' : ''}`}
+    >
+      <ComplexSeparator />
+      {isNew && <div className="mb-2 text-xs text-muted-foreground">New item</div>}
+      <ComplexEntryHeader
+        displayKey={fieldKey}
+        placeholderKey={placeholderKey}
+        isKeyTaken={isKeyTaken}
+        onKeyChange={onKeyChange}
+        onDelete={onDelete}
+        readonly={readonly}
+      />
+      {children}
+    </div>
+  )
+}
+
 function StoreRecordInputItem<T extends FieldValues>({
   grid = true,
   level,
@@ -114,30 +152,6 @@ function StoreRecordInputItem<T extends FieldValues>({
     [entrySchema, fieldKey]
   )
 
-  function RecordComplexEntryFrame({ children }: React.PropsWithChildren) {
-    'use memo'
-    const isNew = fieldKey === ''
-    return (
-      <div
-        className={`record-entry--complex col-span-full ${isNew ? 'mt-2 rounded-md border border-dashed border-border p-2' : ''}`}
-      >
-        <ComplexSeparator />
-        {isNew && <div className="mb-2 text-xs text-muted-foreground">New item</div>}
-        <ComplexEntryHeader
-          displayKey={fieldKey}
-          placeholderKey={placeholder?.key}
-          isKeyTaken={candidate => candidate in (state.value ?? {}) && candidate !== fieldKey}
-          onKeyChange={newK => {
-            state.rename(fieldKey, newK)
-          }}
-          onDelete={child.reset}
-          readonly={readonly}
-        />
-        {children}
-      </div>
-    )
-  }
-
   if (kind === 'array') {
     return (
       <div className="record-entry--complex flex flex-col gap-2">
@@ -168,9 +182,19 @@ function StoreRecordInputItem<T extends FieldValues>({
 
   if (kind === 'object') {
     const apSchema = entrySchema ? getAdditionalPropertiesSchema(entrySchema) : undefined
+    const frameProps = {
+      fieldKey,
+      placeholderKey: placeholder?.key,
+      isKeyTaken: (candidate: string) => candidate in (state.value ?? {}) && candidate !== fieldKey,
+      onKeyChange: (newK: string) => {
+        state.rename(fieldKey, newK)
+      },
+      onDelete: () => child.reset(),
+      readonly,
+    }
     if (apSchema) {
       return (
-        <RecordComplexEntryFrame>
+        <RecordComplexEntryFrame {...frameProps}>
           <StoreRecordInput
             level={level + 1}
             card={false}
@@ -187,7 +211,7 @@ function StoreRecordInputItem<T extends FieldValues>({
     }
 
     return (
-      <RecordComplexEntryFrame>
+      <RecordComplexEntryFrame {...frameProps}>
         <StoreMapInput
           level={level + 1}
           card={false}
@@ -286,6 +310,43 @@ function StoreObjectInput<T extends FieldValues>({
   )
 }
 
+function MapComplexEntryFrame({
+  canRenameKey,
+  fieldKey,
+  placeholderKey,
+  isKeyTaken,
+  onKeyChange,
+  onDelete,
+  readonly,
+  children,
+}: {
+  canRenameKey: boolean
+  fieldKey: string
+  placeholderKey?: string
+  isKeyTaken: (candidate: string) => boolean
+  onKeyChange: (newKey: string) => void
+  onDelete: () => void
+  readonly: boolean
+  children: ReactNode
+}) {
+  'use memo'
+  return (
+    <div className="flex flex-col gap-2 col-span-full">
+      <Activity mode={canRenameKey ? 'visible' : 'hidden'}>
+        <ComplexEntryHeader
+          displayKey={fieldKey}
+          placeholderKey={placeholderKey}
+          isKeyTaken={isKeyTaken}
+          onKeyChange={onKeyChange}
+          onDelete={onDelete}
+          readonly={readonly}
+        />
+      </Activity>
+      {children}
+    </div>
+  )
+}
+
 function StoreMapInputItem<T extends FieldValues>({
   grid = true,
   k: fieldKey,
@@ -316,26 +377,15 @@ function StoreMapInputItem<T extends FieldValues>({
 
   const nestedLabel = getLabel(effectiveSchema, fieldKey)
   const nestedDescription = getDescription(effectiveSchema, fieldKey)
-
-  function ComplexEntryFrame({ children }: Readonly<{ children: React.ReactNode }>) {
-    'use memo'
-    return (
-      <div className="flex flex-col gap-2 col-span-full">
-        <Activity mode={canRenameKey ? 'visible' : 'hidden'}>
-          <ComplexEntryHeader
-            displayKey={fieldKey}
-            placeholderKey={placeholder?.key}
-            isKeyTaken={candidate =>
-              candidate in (state.value ?? {}) && candidate !== String(fieldKey)
-            }
-            onKeyChange={newK => state.rename(fieldKey, newK)}
-            onDelete={child.reset}
-            readonly={readonly}
-          />
-        </Activity>
-        {children}
-      </div>
-    )
+  const frameProps = {
+    canRenameKey,
+    fieldKey: String(fieldKey),
+    placeholderKey: placeholder?.key,
+    isKeyTaken: (candidate: string) =>
+      candidate in (state.value ?? {}) && candidate !== String(fieldKey),
+    onKeyChange: (newK: string) => state.rename(fieldKey, newK),
+    onDelete: () => child.reset(),
+    readonly,
   }
 
   // Handle array type
@@ -343,7 +393,7 @@ function StoreMapInputItem<T extends FieldValues>({
     const headerShown = canRenameKey
     const childLabel = headerShown ? undefined : nestedLabel
     return (
-      <ComplexEntryFrame>
+      <MapComplexEntryFrame {...frameProps}>
         <StoreListInput
           card={false}
           grid={grid}
@@ -354,7 +404,7 @@ function StoreMapInputItem<T extends FieldValues>({
           description={nestedDescription}
           readonly={readonly}
         />
-      </ComplexEntryFrame>
+      </MapComplexEntryFrame>
     )
   }
 
@@ -365,7 +415,7 @@ function StoreMapInputItem<T extends FieldValues>({
     const apSchema = effectiveSchema && getAdditionalPropertiesSchema(effectiveSchema)
     if (apSchema) {
       return (
-        <ComplexEntryFrame>
+        <MapComplexEntryFrame {...frameProps}>
           <StoreRecordInput
             card={false}
             grid={grid}
@@ -376,11 +426,11 @@ function StoreMapInputItem<T extends FieldValues>({
             valueSchema={apSchema}
             readonly={readonly}
           />
-        </ComplexEntryFrame>
+        </MapComplexEntryFrame>
       )
     }
     return (
-      <ComplexEntryFrame>
+      <MapComplexEntryFrame {...frameProps}>
         <StoreMapInput
           card={false}
           grid={grid}
@@ -401,7 +451,7 @@ function StoreMapInputItem<T extends FieldValues>({
           }
           readonly={readonly}
         />
-      </ComplexEntryFrame>
+      </MapComplexEntryFrame>
     )
   }
 

@@ -31,10 +31,22 @@ const containerActions = [
 
 type ContainerAction = (typeof containerActions)[number]
 
+function actionToneClass(label: ContainerAction['label']) {
+  switch (label) {
+    case 'Start':
+      return 'text-emerald-500 hover:bg-emerald-500/10'
+    case 'Stop':
+      return 'text-rose-500 hover:bg-rose-500/10'
+    default:
+      return 'text-amber-500 hover:bg-amber-500/10'
+  }
+}
+
 export default function ContainerControls({ routeKey }: { routeKey: RouteKey }) {
-  const [containerId, dockerRunning] = store.routeDetails[routeKey]!.useCompute(
-    details => [details?.container?.container_id, details?.container?.running]
-  )
+  const [containerId, dockerRunning] = store.routeDetails[routeKey]!.useCompute(details => [
+    details?.container?.container_id,
+    details?.container?.running,
+  ])
   const proxmoxConfig = store.routeDetails[routeKey]?.useCompute(details => details?.proxmox)
   const proxmoxStatus = store.proxmoxStats[routeKey]?.useCompute(line => line?.split('|')[0] ?? '')
   const [isLoading, setIsLoading] = useState<string | null>(null)
@@ -105,17 +117,6 @@ export default function ContainerControls({ routeKey }: { routeKey: RouteKey }) 
       return action.enableIfProxmox(proxmoxStatus ?? '')
     }
     return false
-  }
-
-  const actionToneClass = (label: ContainerAction['label']) => {
-    switch (label) {
-      case 'Start':
-        return 'text-emerald-500 hover:bg-emerald-500/10'
-      case 'Stop':
-        return 'text-rose-500 hover:bg-rose-500/10'
-      default:
-        return 'text-amber-500 hover:bg-amber-500/10'
-    }
   }
 
   return (

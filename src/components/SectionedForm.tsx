@@ -1,4 +1,4 @@
-import { createAtom } from 'juststore'
+import { createAtom, type Atom } from 'juststore'
 import type { ComponentType, ReactNode, SVGProps } from 'react'
 import { useCallback, useEffect, useId, useRef } from 'react'
 import { cn } from '@/lib/utils'
@@ -23,6 +23,12 @@ type SectionedFormProps<T extends SectionId> = {
 function isScrollableY(el: HTMLElement, win: Window) {
   const style = win.getComputedStyle(el)
   return /(auto|scroll|overlay)/.test(style.overflowY) && el.scrollHeight > el.clientHeight
+}
+
+function escapeSectionId(value: string) {
+  return typeof CSS !== 'undefined' && CSS.escape
+    ? CSS.escape(value)
+    : value.replace(/([^\w-])/g, c => `\\${c.charCodeAt(0).toString(16)} `)
 }
 
 // Ignore outer wheel snapping when a nested scroll container is being interacted with.
@@ -54,6 +60,43 @@ export function shouldIgnoreOuterWheelSnap(
   }
 
   return false
+}
+
+function SectionButton<T extends SectionId>({
+  item,
+  activeSection,
+  getEffectiveActiveSection,
+  scrollToSection,
+}: {
+  item: SectionItem<T>
+  activeSection: Atom<T | undefined>
+  getEffectiveActiveSection: (current: T | undefined) => T | undefined
+  scrollToSection: (id: T) => void
+}) {
+  const activeSectionValue = activeSection.use()
+  const effectiveActive = getEffectiveActiveSection(activeSectionValue)
+  const isActive = item.id === effectiveActive
+  const Icon = item.Icon
+
+  return (
+    <button
+      type="button"
+      aria-current={isActive ? 'page' : undefined}
+      onClick={() => scrollToSection(item.id)}
+      className={cn(
+        'w-full text-left rounded-lg px-3 py-2 text-sm font-medium',
+        'transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring',
+        isActive
+          ? 'bg-muted text-foreground supports-backdrop-filter:bg-muted/45'
+          : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+      )}
+    >
+      <span className="flex items-center gap-2">
+        <Icon className="size-4 shrink-0" />
+        <span>{item.label}</span>
+      </span>
+    </button>
+  )
 }
 
 // Tracks the active section based on scroll position and manual navigation.
@@ -261,43 +304,11 @@ export function SectionedForm<T extends SectionId>({
 
   const visibleSections = sections.filter(s => s.show)
   const hiddenSections = sections.filter(s => !s.show)
-  const escapeSectionId = (value: string) =>
-    typeof CSS !== 'undefined' && CSS.escape
-      ? CSS.escape(value)
-      : value.replace(/([^\w-])/g, c => `\\${c.charCodeAt(0).toString(16)} `)
   const hiddenStyle = hiddenSections.length
     ? `${hiddenSections
         .map(section => `[data-section="${escapeSectionId(section.id)}"]`)
         .join(',')} { display: none; }`
     : ''
-
-  function SectionButton({ item }: { item: (typeof visibleSections)[number] }) {
-    const activeSectionValue = activeSection.use()
-    const effectiveActive = getEffectiveActiveSection(activeSectionValue)
-    const isActive = item.id === effectiveActive
-    const Icon = item.Icon
-
-    return (
-      <button
-        key={item.id}
-        type="button"
-        aria-current={isActive ? 'page' : undefined}
-        onClick={() => scrollToSection(item.id)}
-        className={cn(
-          'w-full text-left rounded-lg px-3 py-2 text-sm font-medium',
-          'transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring',
-          isActive
-            ? 'bg-muted text-foreground supports-backdrop-filter:bg-muted/45'
-            : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
-        )}
-      >
-        <span className="flex items-center gap-2">
-          <Icon className="size-4 shrink-0" />
-          <span>{item.label}</span>
-        </span>
-      </button>
-    )
-  }
 
   return (
     <div
@@ -312,7 +323,13 @@ export function SectionedForm<T extends SectionId>({
         className={cn('flex flex-col gap-1 self-start', dialog ? 'sticky top-14' : 'sticky top-2')}
       >
         {visibleSections.map(section => (
-          <SectionButton key={section.id} item={section} />
+          <SectionButton
+            key={section.id}
+            item={section}
+            activeSection={activeSection}
+            getEffectiveActiveSection={getEffectiveActiveSection}
+            scrollToSection={scrollToSection}
+          />
         ))}
       </nav>
       {children({ contentRef })}
