@@ -13,9 +13,9 @@ import {
 } from '@/components/ui/kibo-ui/tree'
 import { Alert, AlertDescription, AlertTitle } from './ui/alert'
 
-const convertANSI = new Convert()
+const convertANSI = new Convert({ escapeXML: true })
 /* eslint-disable-next-line no-control-regex */
-const ansiRegex = /(\x1b\[[0-9;]*m)/g
+const ansiRegex = /(\x1b\[[0-9;]*m)/
 
 export type GoDoxyError = string | Record<string, unknown> | WithSubject | NestedError
 type WithSubject = { subjects: string[]; err: GoDoxyError }
@@ -303,7 +303,7 @@ function SubjectText({
 function SpanWithANSI({ text }: { text?: string }) {
   if (!text) return null
   if (ansiRegex.test(text)) {
-    // biome-ignore lint/security/noDangerouslySetInnerHtml: ANSI escape codes are safe
+    // biome-ignore lint/security/noDangerouslySetInnerHtml: ANSI text is escaped before injection
     return <span dangerouslySetInnerHTML={{ __html: convertANSI.toHtml(text) }} />
   }
   return <span>{text}</span>

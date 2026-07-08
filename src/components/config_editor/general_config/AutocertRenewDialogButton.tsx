@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog'
 import { useWebSocketApi } from '@/hooks/websocket'
 
-const convert = new Convert()
+const convert = new Convert({ escapeXML: true })
 
 export default function AutocertRenewDialogButton() {
   const [open, setOpen] = useState(false)
@@ -55,7 +55,7 @@ export default function AutocertRenewDialogButton() {
                 <pre
                   key={i}
                   className="whitespace-pre-wrap text-xs font-mono font-medium"
-                  // biome-ignore lint/security/noDangerouslySetInnerHtml: ANSI escape codes are safe
+                  // biome-ignore lint/security/noDangerouslySetInnerHtml: ANSI text is escaped before injection
                   dangerouslySetInnerHTML={{ __html: convert.toHtml(line) }}
                 />
               ))}
