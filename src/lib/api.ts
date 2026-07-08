@@ -1175,7 +1175,7 @@ export namespace Auth {
    * @tags auth
    * @name Logout
    * @summary Logout
-   * @request GET:/auth/logout
+   * @request POST:/auth/logout
    * @response `302` `string` Redirects to home page
    */
   export namespace Logout {
@@ -1186,23 +1186,6 @@ export namespace Auth {
     export type ResponseBody = any;
   }
 
-  /**
-   * @description Logs out the user by invalidating the token
-   * @tags auth
-   * @name Logout2
-   * @summary Logout
-   * @request POST:/auth/logout
-   * @originalName logout
-   * @duplicate
-   * @response `302` `string` Redirects to home page
-   */
-  export namespace Logout2 {
-    export type RequestParams = {};
-    export type RequestQuery = {};
-    export type RequestBody = never;
-    export type RequestHeaders = {};
-    export type ResponseBody = any;
-  }
 }
 
 export namespace Cert {
@@ -2810,28 +2793,10 @@ export class Api<
      * @tags auth
      * @name Logout
      * @summary Logout
-     * @request GET:/auth/logout
+     * @request POST:/auth/logout
      * @response `302` `string` Redirects to home page
      */
     logout: (params: RequestParams = {}) =>
-      this.request<any, string>({
-        path: `/auth/logout`,
-        method: "GET",
-        ...params,
-      }),
-
-    /**
-     * @description Logs out the user by invalidating the token
-     *
-     * @tags auth
-     * @name Logout2
-     * @summary Logout
-     * @request POST:/auth/logout
-     * @originalName logout
-     * @duplicate
-     * @response `302` `string` Redirects to home page
-     */
-    logout2: (params: RequestParams = {}) =>
       this.request<any, string>({
         path: `/auth/logout`,
         method: "POST",
