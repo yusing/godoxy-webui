@@ -1,8 +1,8 @@
-FROM oven/bun:1.3.13-slim AS base
+FROM oven/bun:1.3.4-slim AS base
 
 HEALTHCHECK NONE
 
-FROM golang:1.26.4-alpine AS shadowtree
+FROM golang:1.26.5-alpine AS shadowtree
 ARG SHADOWTREE_VERSION=latest
 RUN --mount=type=cache,target=/root/.cache/go-build \
   --mount=type=cache,target=/root/go/pkg/mod \
