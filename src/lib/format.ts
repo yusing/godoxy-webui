@@ -26,6 +26,26 @@ export function formatGoDuration(dur: number): string {
   return formatDuration(dur / 1000, { unit: 'us' })
 }
 
+const SECOND_IN_NANOSECONDS = 1e9
+const MINUTE_IN_NANOSECONDS = 60 * SECOND_IN_NANOSECONDS
+const HOUR_IN_NANOSECONDS = 60 * MINUTE_IN_NANOSECONDS
+const DAY_IN_NANOSECONDS = 24 * HOUR_IN_NANOSECONDS
+
+export function formatRoundedGoDuration(duration?: number): string {
+  if (duration === undefined || !Number.isFinite(duration) || duration <= 0) return ''
+
+  if (duration >= DAY_IN_NANOSECONDS - HOUR_IN_NANOSECONDS / 2) {
+    return `${Math.round(duration / DAY_IN_NANOSECONDS)}d`
+  }
+  if (duration >= HOUR_IN_NANOSECONDS - MINUTE_IN_NANOSECONDS / 2) {
+    return `${Math.round(duration / HOUR_IN_NANOSECONDS)}h`
+  }
+  if (duration >= MINUTE_IN_NANOSECONDS - SECOND_IN_NANOSECONDS / 2) {
+    return `${Math.round(duration / MINUTE_IN_NANOSECONDS)}m`
+  }
+  return `${Math.max(1, Math.round(duration / SECOND_IN_NANOSECONDS))}s`
+}
+
 export function formatDuration(dur: number, options?: { unit?: 'us' | 'ms' | 's' }): string {
   const { unit = 's' } = options ?? {}
   if (dur < 0) {

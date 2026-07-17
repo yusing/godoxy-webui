@@ -465,6 +465,7 @@ export interface HealthExtra {
 
 export interface HealthInfoWithoutDetail {
   latency: number;
+  sleep_in: number;
   status:
     | "healthy"
     | "unhealthy"
@@ -1185,7 +1186,6 @@ export namespace Auth {
     export type RequestHeaders = {};
     export type ResponseBody = any;
   }
-
 }
 
 export namespace Cert {

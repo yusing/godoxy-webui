@@ -1,13 +1,15 @@
 import { Link } from '@tanstack/react-router'
 import { type ObjectState, Render, type ValueState } from 'juststore'
+import { Gauge, Moon } from 'lucide-react'
 import { forwardRef, useMemo } from 'react'
 import type { HomepageItem } from '@/lib/api'
 import { api } from '@/lib/api-client'
-import { formatGoDuration } from '@/lib/format'
+import { formatGoDuration, formatRoundedGoDuration } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { AppIcon } from '../AppIcon'
 import { ContextMenu, ContextMenuTrigger } from '../ui/context-menu'
 import AppItemContextMenuContent from './AppitemContextMenuContent'
+import { CategoryIcon } from './CategoryIcon'
 import HealthBadge from './HealthBadge'
 import { store } from './store'
 
@@ -113,22 +115,24 @@ const AppItemInner = forwardRef<
             }
           </Render>
 
-          {/* Row 3: Category · Latency · Widgets */}
-          <div className="flex flex-wrap items-center gap-1 text-xs text-muted-foreground pt-0.5">
-            <span className="truncate max-w-[100px]">{category}</span>
+          {/* Row 3: Category, latency, time until sleep, widgets */}
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground pt-0.5">
+            <span className="inline-flex min-w-0 max-w-[100px] items-center gap-1">
+              <span className="shrink-0" aria-hidden>
+                <CategoryIcon category={category} className="size-3" />
+              </span>
+              <span className="truncate">{category}</span>
+            </span>
             <LatencyText latency={store.state(`health.${alias}.latency`)} />
+            <SleepCountdown sleepIn={store.state(`health.${alias}.sleep_in`)} />
 
-            {hasWidgets && (
-              <>
-                <span aria-hidden>·</span>
-                {widgets.map((widget, i) => (
-                  <span key={i} className="flex items-center gap-1">
-                    <span className="font-medium text-primary/90">{widget.value}</span>
-                    <span className="opacity-70">{widget.label}</span>
-                  </span>
-                ))}
-              </>
-            )}
+            {hasWidgets &&
+              widgets.map((widget, i) => (
+                <span key={i} className="flex items-center gap-1">
+                  <span className="font-medium text-primary/90">{widget.value}</span>
+                  <span className="opacity-70">{widget.label}</span>
+                </span>
+              ))}
           </div>
         </div>
       </div>
@@ -144,10 +148,26 @@ function LatencyText({ latency }: { latency: ValueState<number> }) {
     return null
   }
   return (
-    <>
-      <span aria-hidden>·</span>
-      <span className="tabular-nums">{formatted}</span>
-    </>
+    <span className="inline-flex items-center gap-1 tabular-nums">
+      <Gauge className="size-3" aria-hidden />
+      <span>{formatted}</span>
+    </span>
+  )
+}
+
+function SleepCountdown({ sleepIn }: { sleepIn: ValueState<number> }) {
+  const formatted = sleepIn.useCompute(formatRoundedGoDuration)
+  if (!formatted) {
+    return null
+  }
+  return (
+    <span
+      className="inline-flex items-center gap-1 tabular-nums"
+      aria-label={`Sleeps in ${formatted}`}
+    >
+      <Moon className="size-3" aria-hidden />
+      <span>{formatted}</span>
+    </span>
   )
 }
 
