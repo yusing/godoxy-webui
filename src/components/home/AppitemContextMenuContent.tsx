@@ -14,8 +14,14 @@ import { Link } from '@tanstack/react-router'
 import { type ObjectState, Render } from 'juststore'
 import { type KeyboardEvent, useState } from 'react'
 import { toast } from 'sonner'
+import { useWebSocketApi } from '@/hooks/websocket'
 import type { HomepageItem } from '@/lib/api'
 import { api } from '@/lib/api-client'
+import {
+  getContainerControlTarget,
+  isProxmoxActionEnabled,
+  runContainerAction,
+} from '@/lib/container-control'
 import { toastError } from '@/lib/toast'
 import { cn } from '@/lib/utils'
 import type { HealthStatusType } from '@/types/health'
@@ -168,7 +174,7 @@ export default function AppItemContextMenuContent({
             Details
           </ContextMenuItem>
         </Link>
-        <DockerOnlyMenuItems state={state} />
+        <ContainerMenuItems state={state} />
       </ContextMenuContent>
       <NewCategoryDialog
         open={newCategoryDialogOpen}
@@ -287,36 +293,55 @@ function NewCategoryDialog({
 
 const containerItems = [
   {
+    action: 'start',
     label: 'Start',
     Icon: Play,
-    api: api.docker.start,
     className: 'text-success',
-    enableIf: (status: HealthStatusType) => status !== 'healthy',
+    enableIfDocker: (status: HealthStatusType) => status !== 'healthy',
   },
   {
+    action: 'stop',
     label: 'Stop',
     Icon: Square,
-    api: api.docker.stop,
     className: 'text-error',
-    enableIf: (status: HealthStatusType) => status !== 'napping',
+    enableIfDocker: (status: HealthStatusType) => status !== 'napping',
   },
   {
+    action: 'restart',
     label: 'Restart',
     Icon: RotateCw,
-    api: api.docker.restart,
     className: 'text-warning',
-    enableIf: (status: HealthStatusType) => status !== 'napping',
+    enableIfDocker: (status: HealthStatusType) => status !== 'napping',
   },
 ] as const
 
-function DockerOnlyMenuItems({ state }: { state: ObjectState<HomepageItem> }) {
-  const alias = state.alias.use()
-  const containerID = state.container_id?.use()
+function ContainerMenuItems({ state }: { state: ObjectState<HomepageItem> }) {
+  const [alias, containerID, proxmox] = state.useCompute(
+    item => [item.alias, item.container_id, item.proxmox] as const
+  )
   const health = store.health[alias]?.use()
   const [isLoading, setIsLoading] = useState(false)
+  const [proxmoxStatus, setProxmoxStatus] = useState('')
+  const control = getContainerControlTarget(containerID, proxmox)
+  const isProxmox = control?.type === 'proxmox'
 
-  if (!containerID) {
+  useWebSocketApi<string>({
+    endpoint: isProxmox ? `/proxmox/stats/${control.node}/${control.vmid}` : '',
+    shouldConnect: isProxmox,
+    json: false,
+    onMessage: data => setProxmoxStatus(data.split('|')[0] ?? ''),
+  })
+
+  if (!control) {
     return null
+  }
+
+  const isActionEnabled = (item: (typeof containerItems)[number]) => {
+    if (isLoading) return false
+    if (control.type === 'docker') {
+      return item.enableIfDocker(health?.status ?? 'unknown')
+    }
+    return isProxmoxActionEnabled(item.action, proxmoxStatus)
   }
 
   return (
@@ -326,11 +351,10 @@ function DockerOnlyMenuItems({ state }: { state: ObjectState<HomepageItem> }) {
         <ContextMenuItem
           key={item.label}
           className={item.className}
-          disabled={isLoading || !item.enableIf(health?.status ?? 'unknown')}
+          disabled={!isActionEnabled(item)}
           onClick={() => {
             setIsLoading(true)
-            item
-              .api({ id: containerID })
+            runContainerAction(item.action, control)
               .then(res => toast.success(res.data.message))
               .catch(toastError)
               .finally(() => setIsLoading(false))

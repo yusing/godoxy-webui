@@ -524,6 +524,7 @@ export interface HomepageItem {
   name: string;
   origin_url: string;
   provider: string;
+  proxmox?: HomepageProxmoxContainer | null;
   show: boolean;
   /** sort order in category */
   sort_order: number;
@@ -586,6 +587,11 @@ export interface HomepageOverrideItemVisibleParams {
 
 export interface HomepageOverrideItemsBatchParams {
   value: Record<string, HomepageItemConfig>;
+}
+
+export interface HomepageProxmoxContainer {
+  node: string;
+  vmid: number;
 }
 
 export interface IconFetchResult {

@@ -4,28 +4,32 @@ import { toast } from 'sonner'
 import { type RouteKey, store } from '@/components/routes/store'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { api } from '@/lib/api-client'
+import {
+  getContainerControlTarget,
+  isProxmoxActionEnabled,
+  runContainerAction,
+} from '@/lib/container-control'
 import { toastError } from '@/lib/toast'
 import { cn } from '@/lib/utils'
 
 const containerActions = [
   {
+    action: 'start',
     label: 'Start',
     Icon: Play,
     enableIfDocker: (running: boolean) => !running,
-    enableIfProxmox: (status: string) => status !== 'running',
   },
   {
+    action: 'stop',
     label: 'Stop',
     Icon: Square,
     enableIfDocker: (running: boolean) => running,
-    enableIfProxmox: (status: string) => status === 'running',
   },
   {
+    action: 'restart',
     label: 'Restart',
     Icon: RotateCw,
     enableIfDocker: (running: boolean) => running,
-    enableIfProxmox: (status: string) => status === 'running',
   },
 ] as const
 
@@ -51,10 +55,9 @@ export default function ContainerControls({ routeKey }: { routeKey: RouteKey }) 
   const proxmoxStatus = store.proxmoxStats[routeKey]?.useCompute(line => line?.split('|')[0] ?? '')
   const [isLoading, setIsLoading] = useState<string | null>(null)
 
-  const isDocker = containerId !== undefined
-  const isProxmoxLXC = proxmoxConfig != null && proxmoxConfig.vmid
+  const control = getContainerControlTarget(containerId, proxmoxConfig)
 
-  if (!isDocker && !isProxmoxLXC) {
+  if (!control) {
     return null
   }
 
@@ -63,42 +66,7 @@ export default function ContainerControls({ routeKey }: { routeKey: RouteKey }) 
 
     setIsLoading(action.label)
     try {
-      let promise: Promise<{ data: { message: string } }>
-
-      if (isDocker && containerId) {
-        switch (action.label) {
-          case 'Start':
-            promise = api.docker.start({ id: containerId })
-            break
-          case 'Stop':
-            promise = api.docker.stop({ id: containerId })
-            break
-          case 'Restart':
-            promise = api.docker.restart({ id: containerId })
-            break
-          default:
-            return
-        }
-      } else if (isProxmoxLXC && proxmoxConfig) {
-        const { node, vmid } = proxmoxConfig
-        switch (action.label) {
-          case 'Start':
-            promise = api.proxmox.lxcStart(node, vmid)
-            break
-          case 'Stop':
-            promise = api.proxmox.lxcStop(node, vmid)
-            break
-          case 'Restart':
-            promise = api.proxmox.lxcRestart(node, vmid)
-            break
-          default:
-            return
-        }
-      } else {
-        return
-      }
-
-      const res = await promise
+      const res = await runContainerAction(action.action, control)
       toast.success(res.data.message)
     } catch (error) {
       toastError(error as Error)
@@ -110,13 +78,10 @@ export default function ContainerControls({ routeKey }: { routeKey: RouteKey }) 
   const isActionEnabled = (action: ContainerAction) => {
     if (isLoading !== null) return false
 
-    if (isDocker) {
+    if (control.type === 'docker') {
       return action.enableIfDocker(dockerRunning ?? false)
     }
-    if (isProxmoxLXC) {
-      return action.enableIfProxmox(proxmoxStatus ?? '')
-    }
-    return false
+    return isProxmoxActionEnabled(action.action, proxmoxStatus ?? '')
   }
 
   return (
