@@ -1922,6 +1922,7 @@ export namespace Proxmox {
    * @response `400` `ErrorResponse` Invalid request
    * @response `403` `ErrorResponse` Unauthorized
    * @response `404` `ErrorResponse` Node not found
+   * @response `409` `ErrorResponse` Node name is ambiguous
    * @response `500` `ErrorResponse` Internal server error
    */
   export namespace Journalctl {
@@ -1958,6 +1959,7 @@ export namespace Proxmox {
    * @response `400` `ErrorResponse` Invalid request
    * @response `403` `ErrorResponse` Unauthorized
    * @response `404` `ErrorResponse` Node not found
+   * @response `409` `ErrorResponse` Node name is ambiguous
    * @response `500` `ErrorResponse` Internal server error
    */
   export namespace Journalctl2 {
@@ -1997,6 +1999,7 @@ export namespace Proxmox {
    * @response `400` `ErrorResponse` Invalid request
    * @response `403` `ErrorResponse` Unauthorized
    * @response `404` `ErrorResponse` Node not found
+   * @response `409` `ErrorResponse` Node name is ambiguous
    * @response `500` `ErrorResponse` Internal server error
    */
   export namespace Journalctl3 {
@@ -2038,6 +2041,7 @@ export namespace Proxmox {
    * @response `400` `ErrorResponse` Invalid request
    * @response `403` `ErrorResponse` Unauthorized
    * @response `404` `ErrorResponse` Node not found
+   * @response `409` `ErrorResponse` Node name is ambiguous
    * @response `500` `ErrorResponse` Internal server error
    */
   export namespace Journalctl4 {
@@ -2078,6 +2082,7 @@ export namespace Proxmox {
    * @response `200` `SuccessResponse` OK
    * @response `400` `ErrorResponse` Invalid request
    * @response `404` `ErrorResponse` Node not found
+   * @response `409` `ErrorResponse` Node name is ambiguous
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace LxcRestart {
@@ -2100,6 +2105,7 @@ export namespace Proxmox {
    * @response `200` `SuccessResponse` OK
    * @response `400` `ErrorResponse` Invalid request
    * @response `404` `ErrorResponse` Node not found
+   * @response `409` `ErrorResponse` Node name is ambiguous
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace LxcStart {
@@ -2122,6 +2128,7 @@ export namespace Proxmox {
    * @response `200` `SuccessResponse` OK
    * @response `400` `ErrorResponse` Invalid request
    * @response `404` `ErrorResponse` Node not found
+   * @response `409` `ErrorResponse` Node name is ambiguous
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace LxcStop {
@@ -2145,6 +2152,7 @@ export namespace Proxmox {
    * @response `400` `ErrorResponse` Invalid request
    * @response `403` `ErrorResponse` Unauthorized
    * @response `404` `ErrorResponse` Node not found
+   * @response `409` `ErrorResponse` Node name is ambiguous
    * @response `500` `ErrorResponse` Internal server error
    */
   export namespace NodeStats {
@@ -2168,6 +2176,7 @@ export namespace Proxmox {
    * @response `400` `ErrorResponse` Invalid request
    * @response `403` `ErrorResponse` Unauthorized
    * @response `404` `ErrorResponse` Node not found
+   * @response `409` `ErrorResponse` Node name is ambiguous
    * @response `500` `ErrorResponse` Internal server error
    */
   export namespace VmStats {
@@ -2191,6 +2200,7 @@ export namespace Proxmox {
    * @response `400` `ErrorResponse` Invalid request
    * @response `403` `ErrorResponse` Unauthorized
    * @response `404` `ErrorResponse` Node not found
+   * @response `409` `ErrorResponse` Node name is ambiguous
    * @response `500` `ErrorResponse` Internal server error
    */
   export namespace Tail {
@@ -3655,6 +3665,7 @@ export class Api<
      * @response `400` `ErrorResponse` Invalid request
      * @response `403` `ErrorResponse` Unauthorized
      * @response `404` `ErrorResponse` Node not found
+     * @response `409` `ErrorResponse` Node name is ambiguous
      * @response `500` `ErrorResponse` Internal server error
      */
     journalctl: (
@@ -3697,6 +3708,7 @@ export class Api<
      * @response `400` `ErrorResponse` Invalid request
      * @response `403` `ErrorResponse` Unauthorized
      * @response `404` `ErrorResponse` Node not found
+     * @response `409` `ErrorResponse` Node name is ambiguous
      * @response `500` `ErrorResponse` Internal server error
      */
     journalctl2: (
@@ -3740,6 +3752,7 @@ export class Api<
      * @response `400` `ErrorResponse` Invalid request
      * @response `403` `ErrorResponse` Unauthorized
      * @response `404` `ErrorResponse` Node not found
+     * @response `409` `ErrorResponse` Node name is ambiguous
      * @response `500` `ErrorResponse` Internal server error
      */
     journalctl3: (
@@ -3784,6 +3797,7 @@ export class Api<
      * @response `400` `ErrorResponse` Invalid request
      * @response `403` `ErrorResponse` Unauthorized
      * @response `404` `ErrorResponse` Node not found
+     * @response `409` `ErrorResponse` Node name is ambiguous
      * @response `500` `ErrorResponse` Internal server error
      */
     journalctl4: (
@@ -3826,6 +3840,7 @@ export class Api<
      * @response `200` `SuccessResponse` OK
      * @response `400` `ErrorResponse` Invalid request
      * @response `404` `ErrorResponse` Node not found
+     * @response `409` `ErrorResponse` Node name is ambiguous
      * @response `500` `ErrorResponse` Internal Server Error
      */
     lxcRestart: (node: string, vmid: number, params: RequestParams = {}) =>
@@ -3846,6 +3861,7 @@ export class Api<
      * @response `200` `SuccessResponse` OK
      * @response `400` `ErrorResponse` Invalid request
      * @response `404` `ErrorResponse` Node not found
+     * @response `409` `ErrorResponse` Node name is ambiguous
      * @response `500` `ErrorResponse` Internal Server Error
      */
     lxcStart: (node: string, vmid: number, params: RequestParams = {}) =>
@@ -3866,6 +3882,7 @@ export class Api<
      * @response `200` `SuccessResponse` OK
      * @response `400` `ErrorResponse` Invalid request
      * @response `404` `ErrorResponse` Node not found
+     * @response `409` `ErrorResponse` Node name is ambiguous
      * @response `500` `ErrorResponse` Internal Server Error
      */
     lxcStop: (node: string, vmid: number, params: RequestParams = {}) =>
@@ -3887,6 +3904,7 @@ export class Api<
      * @response `400` `ErrorResponse` Invalid request
      * @response `403` `ErrorResponse` Unauthorized
      * @response `404` `ErrorResponse` Node not found
+     * @response `409` `ErrorResponse` Node name is ambiguous
      * @response `500` `ErrorResponse` Internal server error
      */
     nodeStats: (node: string, params: RequestParams = {}) =>
@@ -3908,6 +3926,7 @@ export class Api<
      * @response `400` `ErrorResponse` Invalid request
      * @response `403` `ErrorResponse` Unauthorized
      * @response `404` `ErrorResponse` Node not found
+     * @response `409` `ErrorResponse` Node name is ambiguous
      * @response `500` `ErrorResponse` Internal server error
      */
     vmStats: (node: string, vmid: number, params: RequestParams = {}) =>
@@ -3928,6 +3947,7 @@ export class Api<
      * @response `400` `ErrorResponse` Invalid request
      * @response `403` `ErrorResponse` Unauthorized
      * @response `404` `ErrorResponse` Node not found
+     * @response `409` `ErrorResponse` Node name is ambiguous
      * @response `500` `ErrorResponse` Internal server error
      */
     tail: (
