@@ -236,11 +236,16 @@ export default function RouteDetails() {
         <Card size="sm" className="px-2">
           <CardHeader>
             <CardTitle>Health Check</CardTitle>
+            <CardDescription>
+              {routeDetails.container
+                ? 'Docker health is preferred; these settings control GoDoxy fallback probing.'
+                : 'GoDoxy probes the configured route target.'}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <DataList>
               <DataListRow
-                label="Enabled"
+                label={routeDetails.container ? 'Fallback Probe' : 'Enabled'}
                 value={routeDetails.healthcheck.disable ? 'No' : 'Yes'}
               />
               <DataListRow label="Retries" value={routeDetails.healthcheck.retries} />
