@@ -449,6 +449,7 @@ export interface HTTPHeader {
 }
 
 export interface HealthCheckConfig {
+  /** Disable the route-specific probe; Docker health remains active. */
   disable: boolean;
   interval: number;
   path: string;
