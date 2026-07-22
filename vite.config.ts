@@ -13,6 +13,7 @@ const isDemoSite = process.env.DEMO_SITE === 'true'
 export default defineConfig({
   server: {
     allowedHosts: true,
+    host: '127.0.0.1',
   },
   resolve: {
     tsconfigPaths: true,
