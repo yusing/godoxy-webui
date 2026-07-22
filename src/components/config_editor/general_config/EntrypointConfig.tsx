@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { NamedListInput } from '@/components/form/NamedListInput'
 import { StoreListInput } from '@/components/form/StoreListInput'
 import { StoreMapInput } from '@/components/form/StoreMapInput'
@@ -31,10 +31,13 @@ export default function EntrypointConfigContent() {
 function EntrypointNetworkConfig() {
   const profileNames = configStore.configObject.inbound_mtls_profiles.keys.use()
 
-  proxyProtocolConfig.mode.subscribe(mode => {
-    if (mode == 'disabled') {
-      proxyProtocolConfig.trusted_proxies.reset()
-    }
+  useEffect(() => {
+    const unsubscribe = proxyProtocolConfig.mode.subscribe(mode => {
+      if (mode == 'disabled') {
+        proxyProtocolConfig.trusted_proxies.reset()
+      }
+    })
+    return unsubscribe
   })
 
   return (
