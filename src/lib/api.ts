@@ -73,6 +73,40 @@ export interface CertInfo {
   subject: string;
 }
 
+export interface ConfigAPIActivationReport {
+  local: ConfigComponentActivation;
+  main: ConfigComponentActivation;
+}
+
+export type ConfigActivationHealth = "healthy" | "degraded" | "failed";
+
+export interface ConfigActivationReport {
+  api: ConfigAPIActivationReport;
+  metrics: ConfigComponentActivation;
+  providers: RoutingProviderActivationReport;
+}
+
+export interface ConfigComponentActivation {
+  configured: boolean;
+  error?: any | null;
+  ready: boolean;
+  required: boolean;
+}
+
+export interface ConfigRuntimeSnapshot {
+  activation: ConfigActivationReport;
+  health?: ConfigActivationHealth | null;
+  status: ConfigRuntimeStatus;
+}
+
+export type ConfigRuntimeStatus =
+  | "preparing"
+  | "activating"
+  | "healthy"
+  | "degraded"
+  | "failed"
+  | "stopping";
+
 export interface Container {
   agent: AgentpoolAgent;
   aliases: string[];
@@ -962,6 +996,32 @@ export interface RouteUptimeAggregate {
   uptime: number;
 }
 
+export interface RoutingProviderActivation {
+  active_routes: number;
+  attempted_routes: number;
+  desired_routes: number;
+  event_loop_ready: boolean;
+  failed_routes?: RoutingRouteActivationIssue[] | null;
+  infrastructure_error?: any | null;
+  provider: string;
+}
+
+export interface RoutingProviderActivationReport {
+  active_routes: number;
+  attempted_routes: number;
+  degraded_providers: number;
+  desired_routes: number;
+  failed_providers: number;
+  failed_routes: number;
+  providers: RoutingProviderActivation[];
+  ready_providers: number;
+}
+
+export interface RoutingRouteActivationIssue {
+  error: any;
+  route: string;
+}
+
 export interface RulesRule {
   do: string;
   name: string;
@@ -987,6 +1047,7 @@ export interface ServerInfo {
 
 export interface StatsResponse {
   proxies: ProxyStats;
+  runtime: ConfigRuntimeSnapshot;
   uptime: number;
 }
 
@@ -1049,7 +1110,7 @@ export interface UptimeAggregate {
 }
 
 export interface VerifyNewAgentRequest {
-  add_to_config: boolean;
+  add_to_config?: boolean | null;
   ca: PEMPairResponse;
   client: PEMPairResponse;
   container_runtime: AgentContainerRuntime;
@@ -1057,6 +1118,7 @@ export interface VerifyNewAgentRequest {
 }
 
 export interface VerifyNewAgentResponse {
+  activation: RoutingProviderActivation;
   agents: Agent[];
   message: string;
 }
@@ -1113,6 +1175,7 @@ export namespace Agent {
    * @response `200` `VerifyNewAgentResponse` OK
    * @response `400` `ErrorResponse` Bad Request
    * @response `403` `ErrorResponse` Forbidden
+   * @response `409` `ErrorResponse` Conflict
    * @response `500` `ErrorResponse` Internal Server Error
    */
   export namespace Verify {
@@ -2733,6 +2796,7 @@ export class Api<
      * @response `200` `VerifyNewAgentResponse` OK
      * @response `400` `ErrorResponse` Bad Request
      * @response `403` `ErrorResponse` Forbidden
+     * @response `409` `ErrorResponse` Conflict
      * @response `500` `ErrorResponse` Internal Server Error
      */
     verify: (request: VerifyNewAgentRequest, params: RequestParams = {}) =>

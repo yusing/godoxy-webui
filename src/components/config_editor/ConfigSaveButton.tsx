@@ -12,17 +12,20 @@ export default function ConfigSaveButton(props: React.ComponentProps<typeof Butt
   const [isSaving, setIsSaving] = useState(false)
   const [isSaved, setIsSaved] = useState(false)
 
-  const handleSave = () => {
-    if (content) {
-      setIsSaving(true)
-      api.file
-        .set(activeFile, content)
-        .catch(toastError)
-        .finally(() => {
-          setIsSaving(false)
-          setIsSaved(true)
-          resetDiffs()
-        })
+  const handleSave = async () => {
+    if (!content) return
+
+    setIsSaved(false)
+    setIsSaving(true)
+    try {
+      await api.file.set(activeFile, content)
+      setIsSaved(true)
+      resetDiffs()
+    } catch (error) {
+      setIsSaved(false)
+      toastError(error)
+    } finally {
+      setIsSaving(false)
     }
   }
 
