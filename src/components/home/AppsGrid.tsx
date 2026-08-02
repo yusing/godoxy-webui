@@ -9,7 +9,7 @@ import { Kbd, KbdGroup } from '@/components/ui/kbd'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { HealthMap, HomepageCategory } from '@/lib/api'
-import { cn } from '@/lib/utils'
+import { cn, sanitizeAlias } from '@/lib/utils'
 import AppCategory from './AppCategory'
 import ArrowNavigation from './ArrowNavigation'
 import Searchbox from './Searchbox'
@@ -229,7 +229,13 @@ function HomepageItemsProvider({
 function HealthWatcher() {
   useWebSocketApi<HealthMap>({
     endpoint: '/health',
-    onMessage: data => store.health.set(data),
+    onMessage: data => {
+      const safeData: typeof data = {}
+      for (const key in data) {
+        safeData[sanitizeAlias(key)] = data[key]
+      }
+      store.health.set(safeData)
+    },
   })
 
   return null

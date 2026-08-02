@@ -5,7 +5,7 @@ import { forwardRef, useMemo } from 'react'
 import type { HomepageItem } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { formatGoDuration, formatRoundedGoDuration } from '@/lib/format'
-import { cn } from '@/lib/utils'
+import { cn, sanitizeAlias } from '@/lib/utils'
 import { AppIcon } from '../AppIcon'
 import { ContextMenu, ContextMenuTrigger } from '../ui/context-menu'
 import AppItemContextMenuContent from './AppitemContextMenuContent'
@@ -64,6 +64,11 @@ const AppItemInner = forwardRef<
     item.category,
   ])
 
+  const safeAlias = sanitizeAlias(alias)
+  const statusState = useMemo(() => store.state('health').derived(h => h[safeAlias]?.status), [safeAlias])
+  const latencyState = useMemo(() => store.state('health').derived(h => h[safeAlias]?.latency), [safeAlias])
+  const sleepInState = useMemo(() => store.state('health').derived(h => h[safeAlias]?.sleep_in), [safeAlias])
+
   return (
     <button
       ref={ref}
@@ -101,7 +106,7 @@ const AppItemInner = forwardRef<
             <Render state={state.name}>
               {name => <span className="truncate text-sm font-medium">{name || alias}</span>}
             </Render>
-            <Render state={store.state(`health.${alias}.status`)}>
+            <Render state={statusState}>
               {status => <HealthBadge status={status} compact />}
             </Render>
           </div>
@@ -123,8 +128,8 @@ const AppItemInner = forwardRef<
               </span>
               <span className="truncate">{category}</span>
             </span>
-            <LatencyText latency={store.state(`health.${alias}.latency`)} />
-            <SleepCountdown sleepIn={store.state(`health.${alias}.sleep_in`)} />
+            <LatencyText latency={latencyState} />
+            <SleepCountdown sleepIn={sleepInState} />
 
             {hasWidgets &&
               widgets.map((widget, i) => (
