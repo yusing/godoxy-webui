@@ -1,7 +1,5 @@
 import { createStore } from "juststore";
+import assert from "assert";
+
 const store = createStore("test", { health: { "a.b": { status: "ok" } } });
-try {
-  console.log("Array path:", store.state(["health", "a.b", "status"]).value);
-} catch (e) {
-  console.log("Array path error:", e.message);
-}
+assert.strictEqual(store.state(["health", "a.b", "status"]).value, "ok");

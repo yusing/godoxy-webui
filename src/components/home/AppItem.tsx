@@ -5,7 +5,7 @@ import { forwardRef, useMemo } from 'react'
 import type { HomepageItem } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { formatGoDuration, formatRoundedGoDuration } from '@/lib/format'
-import { cn, sanitizeAlias } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { AppIcon } from '../AppIcon'
 import { ContextMenu, ContextMenuTrigger } from '../ui/context-menu'
 import AppItemContextMenuContent from './AppitemContextMenuContent'
@@ -64,10 +64,9 @@ const AppItemInner = forwardRef<
     item.category,
   ])
 
-  const safeAlias = sanitizeAlias(alias)
-  const statusState = useMemo(() => store.state('health').derived(h => h[safeAlias]?.status), [safeAlias])
-  const latencyState = useMemo(() => store.state('health').derived(h => h[safeAlias]?.latency), [safeAlias])
-  const sleepInState = useMemo(() => store.state('health').derived(h => h[safeAlias]?.sleep_in), [safeAlias])
+  const statusState = useMemo(() => store.state(['health', alias, 'status']), [alias])
+  const latencyState = useMemo(() => store.state(['health', alias, 'latency']), [alias])
+  const sleepInState = useMemo(() => store.state(['health', alias, 'sleep_in']), [alias])
 
   return (
     <button
