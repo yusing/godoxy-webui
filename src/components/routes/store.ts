@@ -10,8 +10,6 @@ export type RouteDisplaySettings = {
   hideUptimebar: boolean
 }
 
-export type RouteKey = string & { __brand: 'RouteKey' }
-
 export type DockerStatsSummary = {
   cpuPercent: number
   memoryUsage: number
@@ -24,12 +22,12 @@ export type DockerStatsSummary = {
 }
 
 type RouteState = {
-  routeKeys: RouteKey[]
-  uptime: Record<RouteKey, RouteUptimeAggregate>
-  routeDetails: Record<RouteKey, Route>
-  dockerStats: Record<RouteKey, DockerStatsSummary | null>
-  proxmoxStats: Record<RouteKey, string | null>
-  proxmoxNodeStats: Record<RouteKey, ProxmoxNodeStats | null>
+  routeKeys: string[]
+  uptime: Record<string, RouteUptimeAggregate>
+  routeDetails: Record<string, Route>
+  dockerStats: Record<string, DockerStatsSummary | null>
+  proxmoxStats: Record<string, string | null>
+  proxmoxNodeStats: Record<string, ProxmoxNodeStats | null>
   displaySettings: RouteDisplaySettings
   logsAutoScroll: boolean
   mobileDialogOpen: boolean
@@ -53,12 +51,12 @@ export const store = createStore<RouteState>('routes', {
   mobileDialogOpen: false,
 })
 
-export function useSelectedRoute(): RouteKey {
-  return (useFragment() || '') as RouteKey
+export function useSelectedRoute(): string {
+  return useFragment() || ''
 }
 
 // setSelectedRoute changes the active route item in the sidebar
-export function setSelectedRoute(key: RouteKey) {
+export function setSelectedRoute(key: string) {
   const prevActive = document.querySelector('.route-item[data-active="true"]') as HTMLElement | null
   if (prevActive) {
     prevActive.removeAttribute('data-active')

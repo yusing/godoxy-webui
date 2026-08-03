@@ -4,13 +4,12 @@ import { formatLineForTerminal } from '@/components/routes/content/logs'
 import { store } from '@/components/routes/store'
 import { useWebSocketApi } from '@/hooks/websocket'
 import { Query } from '@/lib/query'
-import type { RouteKey } from '../store'
 
 export default function LogProvider({
   routeKey,
   termRef,
 }: {
-  routeKey: RouteKey
+  routeKey: string
   termRef: React.RefObject<Terminal | null>
 }) {
   const proxmox = store.routeDetails[routeKey]?.proxmox.use()

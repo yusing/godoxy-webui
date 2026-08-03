@@ -1,4 +1,4 @@
-import { type RouteKey, store } from '@/components/routes/store'
+import { store } from '@/components/routes/store'
 import { formatBytes } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { parseProxmoxStatsLine } from './proxmox_stats'
@@ -99,7 +99,7 @@ export function StatsBar({ cells, isVisible, splitAfter }: StatsBarProps) {
   )
 }
 
-export function ContainerStatsBar({ routeKey }: { routeKey: RouteKey }) {
+export function ContainerStatsBar({ routeKey }: { routeKey: string }) {
   const [isDocker, dockerRunning] = store.routeDetails[routeKey]!.useCompute(details => [
     details?.container != null,
     details?.container?.running,

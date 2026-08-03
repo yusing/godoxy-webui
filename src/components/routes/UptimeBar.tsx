@@ -1,6 +1,6 @@
 import { isEqual } from 'juststore'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { type RouteKey, store } from '@/components/routes/store'
+import { store } from '@/components/routes/store'
 import type { RouteStatus } from '@/lib/api'
 import { formatTimestamp } from '@/lib/format'
 import { cn } from '@/lib/utils'
@@ -9,7 +9,7 @@ export default function RouteUptimeBar({
   routeKey,
   className,
 }: {
-  routeKey: RouteKey
+  routeKey: string
   className?: string
 }) {
   const statuses = store.uptime[routeKey]?.statuses.use() ?? []

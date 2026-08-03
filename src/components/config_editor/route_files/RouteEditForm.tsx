@@ -15,7 +15,6 @@ import type { VariantProps } from 'class-variance-authority'
 import type { FormState } from 'juststore'
 import { type FormStore, Render, useForm } from 'juststore'
 import { useEffect, useMemo } from 'react'
-import { encodeRouteKey } from '@/components/routes/utils'
 import { FormSection, SectionedForm, type SectionItem } from '@/components/SectionedForm'
 import { Button, type buttonVariants } from '@/components/ui/button'
 import { DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -88,7 +87,7 @@ export default function RouteEditForm({
   secondActionButtonVariant = 'ghost',
   secondActionButtonClassName,
 }: RouteEditFormProps) {
-  const details = configStore.routeDetails[encodeRouteKey(alias)]?.use()
+  const details = configStore.routeDetails[alias]?.use()
   const scheme = route.scheme ?? details?.scheme
   const host = 'host' in route ? route.host : undefined
   const port = 'port' in route ? route.port : undefined

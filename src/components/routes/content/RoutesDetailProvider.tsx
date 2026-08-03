@@ -1,7 +1,6 @@
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { Route } from '@/lib/api'
-import { type RouteKey, store } from '../store'
-import { encodeRouteKey } from '../utils'
+import { store } from '../store'
 
 export default function RoutesDetailProvider() {
   useWebSocketApi<Route[]>({
@@ -10,10 +9,10 @@ export default function RoutesDetailProvider() {
       store.routeDetails.set(
         data.reduce(
           (acc, route) => {
-            acc[encodeRouteKey(route.alias)] = route
+            acc[route.alias] = route
             return acc
           },
-          {} as Record<RouteKey, Route>
+          {} as Record<string, Route>
         )
       )
     },

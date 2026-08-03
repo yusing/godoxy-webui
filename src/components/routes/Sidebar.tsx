@@ -3,7 +3,6 @@ import { type FieldPath, Render } from 'juststore'
 import { Suspense, useEffect } from 'react'
 import {
   type RouteDisplaySettings,
-  type RouteKey,
   setSelectedRoute,
   store,
   useSelectedRoute,
@@ -21,7 +20,6 @@ import { Switch } from '../ui/switch'
 import RoutePercentageText from './PercentageText'
 import RoutesSidebarSearchBox from './SearchBox'
 import RouteUptimeBar from './UptimeBar'
-import { decodeRouteKey, encodeRouteKey } from './utils'
 
 export default function RoutesSidebar({ className }: { className?: string }) {
   return (
@@ -122,7 +120,7 @@ function handleRouteKeyDown(e: KeyboardEvent) {
       const routeId = active.id.replace('route-', '')
       if (!routeId) return
 
-      setSelectedRoute(routeId as RouteKey)
+      setSelectedRoute(routeId)
       store.mobileDialogOpen.set(true)
       break
     }
@@ -191,14 +189,14 @@ function RoutesSidebarItemList() {
     <ScrollArea className="min-h-0 flex-1">
       <div className="sidebar-item-list space-y-2 px-2 py-2">
         {keys.map(key => {
-          return <RoutesSidebarItem key={key} routeKey={key} alias={decodeRouteKey(key)} />
+          return <RoutesSidebarItem key={key} routeKey={key} alias={key} />
         })}
       </div>
     </ScrollArea>
   )
 }
 
-function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: RouteKey }) {
+function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: string }) {
   const [hideUnknown, hideExcluded, dockerOnly, proxmoxOnly] = store.displaySettings.useCompute(
     settings => [
       settings.hideUnknown,
@@ -269,7 +267,7 @@ function RoutesUptimeProvider() {
   useWebSocketApi<RouteStatusesByAlias>({
     endpoint: '/metrics/uptime',
     onMessage: uptime => {
-      const keys = Object.keys(uptime.statuses ?? {}).map(k => encodeRouteKey(k))
+      const keys = Object.keys(uptime.statuses ?? {})
       store.set('routeKeys', keys.toSorted())
     },
     onError: toastError,
@@ -285,10 +283,10 @@ function RoutesUptimeProvider() {
         'uptime',
         uptime.data.reduce(
           (acc, route) => {
-            acc[encodeRouteKey(route.alias)] = route
+            acc[route.alias] = route
             return acc
           },
-          {} as Record<RouteKey, RouteUptimeAggregate>
+          {} as Record<string, RouteUptimeAggregate>
         )
       )
     },

@@ -7,7 +7,6 @@ import { Suspense, useEffect, useId, useLayoutEffect, useRef, useState } from 'r
 import { createPortal } from 'react-dom'
 import { useTheme } from '@/components/ThemeProvider'
 import { Button } from '@/components/ui/button'
-import type { RouteKey } from '../store'
 
 import '@xterm/xterm/css/xterm.css'
 
@@ -17,7 +16,7 @@ import { resolveForegroundColorAsync } from './logs'
 
 const fontFamily = 'Cascadia Code Variable'
 
-export default function Logs({ routeKey }: { routeKey: RouteKey }) {
+export default function Logs({ routeKey }: { routeKey: string }) {
   const logsRef = useRef<HTMLDivElement>(null)
   const termRef = useRef<Terminal | null>(null)
   const fitAddonRef = useRef<FitAddon | null>(null)

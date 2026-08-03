@@ -4,7 +4,6 @@ import type { Route } from '@/lib/api'
 import { getDiffs } from '@/lib/diff'
 import type { ConfigFile, ConfigFiles } from '@/types/file'
 import type { Config, MiddlewareCompose, Routes } from '@/types/godoxy'
-import type { RouteKey } from '../routes/store'
 
 type ConfigState<
   T extends Config.Config | Routes.Routes | MiddlewareCompose.MiddlewareCompose,
@@ -19,7 +18,7 @@ type ConfigState<
   configObject: T | undefined
   originalConfig: T | undefined
   validateError: GoDoxyError | undefined
-  routeDetails: Record<RouteKey, Route>
+  routeDetails: Record<string, Route>
 }
 
 const defaultConfig: ConfigFile = {

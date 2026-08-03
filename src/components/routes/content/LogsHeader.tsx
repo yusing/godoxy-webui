@@ -1,7 +1,7 @@
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import type { Container, ContainerImage, ProxmoxNodeConfig } from '@/lib/api'
-import { type RouteKey, store } from '../store'
+import { store } from '../store'
 
 function formatContainerName(
   container?: Container | null,
@@ -43,7 +43,7 @@ export function getLogSourceBadgeText(
   return 'Services or files not set'
 }
 
-export default function LogsHeader({ routeKey }: { routeKey: RouteKey }) {
+export default function LogsHeader({ routeKey }: { routeKey: string }) {
   const container = store.routeDetails[routeKey]?.container.use()
   const proxmox = store.routeDetails[routeKey]?.proxmox.use()
   const proxmoxStatus = store.proxmoxStats[routeKey]?.useCompute(line =>

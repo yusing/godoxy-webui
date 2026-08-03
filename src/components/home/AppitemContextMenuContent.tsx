@@ -26,7 +26,6 @@ import { toastError } from '@/lib/toast'
 import { cn } from '@/lib/utils'
 import type { HealthStatusType } from '@/types/health'
 import { setSelectedRoute } from '../routes/store'
-import { encodeRouteKey } from '../routes/utils'
 import { Button } from '../ui/button'
 import {
   ContextMenuContent,
@@ -59,7 +58,6 @@ export default function AppItemContextMenuContent({
   itemIndex: number
 }) {
   const alias = state.alias.use()
-  const routeKey = encodeRouteKey(alias)
   const [newCategoryDialogOpen, setNewCategoryDialogOpen] = useState(false)
   const [isMoving, setIsMoving] = useState(false)
 
@@ -163,12 +161,7 @@ export default function AppItemContextMenuContent({
             </>
           )}
         </Render>
-        <Link
-          to="/routes"
-          hash={routeKey}
-          preload={false}
-          onClick={() => setSelectedRoute(routeKey)}
-        >
+        <Link to="/routes" hash={alias} preload={false} onClick={() => setSelectedRoute(alias)}>
           <ContextMenuItem>
             <Info className="size-4" />
             Details

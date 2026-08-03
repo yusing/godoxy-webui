@@ -1,7 +1,7 @@
 import { Loader2, Play, RotateCw, Square } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { type RouteKey, store } from '@/components/routes/store'
+import { store } from '@/components/routes/store'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import {
@@ -46,7 +46,7 @@ function actionToneClass(label: ContainerAction['label']) {
   }
 }
 
-export default function ContainerControls({ routeKey }: { routeKey: RouteKey }) {
+export default function ContainerControls({ routeKey }: { routeKey: string }) {
   const [containerId, dockerRunning] = store.routeDetails[routeKey]!.useCompute(details => [
     details?.container?.container_id,
     details?.container?.running,

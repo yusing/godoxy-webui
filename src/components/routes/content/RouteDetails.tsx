@@ -24,14 +24,12 @@ import type { HealthJSON, IdlewatcherConfig } from '@/lib/api'
 import { blockRulesHighlightShiki } from '@/lib/codemirror/rules-block-shiki'
 import { formatDuration, formatGoDuration, formatRelTime } from '@/lib/format'
 import { cn } from '@/lib/utils'
-import { decodeRouteKey } from '../utils'
 import Logs from './Logs'
 import LogsHeader, { getLogSourceBadgeText } from './LogsHeader'
 import RouteResponseTimeChart from './ResponseTimeChart'
 
 export default function RouteDetails() {
   const routeKey = useSelectedRoute()
-  const activeRoute = decodeRouteKey(routeKey)
   const routeDetails = store.routeDetails[routeKey]?.use()
 
   const isStream = routeDetails?.scheme === 'tcp' || routeDetails?.scheme === 'udp'
@@ -57,7 +55,7 @@ export default function RouteDetails() {
     }
   }, [routeKey, routeDetails])
 
-  if (!activeRoute) {
+  if (!routeKey) {
     return (
       <InlineEmpty
         title="No route selected"

@@ -1,7 +1,5 @@
 import { useMemo, useState } from 'react'
 import RoutesSidebarSearchBox from '@/components/routes/SearchBox'
-import type { RouteKey } from '@/components/routes/store'
-import { encodeRouteKey } from '@/components/routes/utils'
 import { Card, CardContent } from '@/components/ui/card'
 import { Dialog } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
@@ -123,10 +121,10 @@ function RouteDetailsProvider() {
       configStore.routeDetails.set(
         data.reduce(
           (acc, route) => {
-            acc[encodeRouteKey(route.alias)] = route
+            acc[route.alias] = route
             return acc
           },
-          {} as Record<RouteKey, Route>
+          {} as Record<string, Route>
         )
       )
     },

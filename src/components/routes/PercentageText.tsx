@@ -1,8 +1,8 @@
-import { type RouteKey, store } from '@/components/routes/store'
+import { store } from '@/components/routes/store'
 import { formatPercent } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
-export default function RoutePercentageText({ routeKey }: { routeKey: RouteKey }) {
+export default function RoutePercentageText({ routeKey }: { routeKey: string }) {
   const health = store.uptime[routeKey]
   const uptime = health?.uptime.use() ?? 0
   const downtime = health?.downtime.use() ?? 0
