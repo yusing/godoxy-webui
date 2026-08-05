@@ -4,6 +4,7 @@ import {
   type ChartConfig,
   ChartContainer,
   ChartLegend,
+  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart'
@@ -146,7 +147,12 @@ function ChartInner({
           ticks={timestampTicks}
         />
         <YAxis tickFormatter={yAxisFormatter} axisLine={true} />
-        {keys.length > 1 && <ChartLegend verticalAlign="bottom" className="flex-wrap flex" />}
+        {keys.length > 1 && (
+          <ChartLegend
+            verticalAlign="bottom"
+            content={<ChartLegendContent className="flex flex-wrap" />}
+          />
+        )}
         {keys.map(name => (
           <Area
             key={name}

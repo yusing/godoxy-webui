@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { type ObjectState, Render, type ValueState, encodeKey } from 'juststore'
+import { type ObjectState, Render, type ValueState } from 'juststore'
 import { Gauge, Moon } from 'lucide-react'
 import { forwardRef, useMemo } from 'react'
 import type { HomepageItem } from '@/lib/api'
