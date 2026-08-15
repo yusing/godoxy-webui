@@ -355,37 +355,19 @@ export interface ContainerThrottlingData {
 
 export interface DiskIOCountersStat {
   iops: number;
-  /**
-   * ReadCount        uint64 `json:"readCount"`
-   * MergedReadCount  uint64 `json:"mergedReadCount"`
-   * WriteCount       uint64 `json:"writeCount"`
-   * MergedWriteCount uint64 `json:"mergedWriteCount"`
-   * ReadBytes        uint64 `json:"readBytes"`
-   * WriteBytes       uint64 `json:"writeBytes"`
-   * ReadTime         uint64 `json:"readTime"`
-   * WriteTime        uint64 `json:"writeTime"`
-   * IopsInProgress   uint64 `json:"iopsInProgress"`
-   * IoTime           uint64 `json:"ioTime"`
-   * WeightedIO       uint64 `json:"weightedIO"`
-   */
   name: string;
-  /**
-   * SerialNumber     string `json:"serialNumber"`
-   * Label            string `json:"label"`
-   */
-  read_bytes: number;
-  read_count: number;
-  read_speed: number;
-  write_bytes: number;
-  write_count: number;
-  write_speed: number;
+  readBytes: number;
+  readCount: number;
+  readSpeed: number;
+  writeBytes: number;
+  writeCount: number;
+  writeSpeed: number;
 }
 
 export interface DiskUsageStat {
   free: number;
-  /** interned */
   fstype: string;
-  /** interned */
+  inodesUsedPercent: number;
   path: string;
   total: number;
   used: number;
@@ -786,7 +768,7 @@ export interface MockResponse {
 export interface NetIOCountersStat {
   /** number of bytes received */
   bytes_recv: number;
-  /** Name      string `json:"name"`       // interface name */
+  /** number of bytes sent */
   bytes_sent: number;
   /** godoxy */
   download_speed: number;
@@ -1040,7 +1022,6 @@ export interface RulesRule {
 export interface SensorsTemperatureStat {
   critical: number;
   high: number;
-  /** interned */
   name: string;
   temperature: number;
 }
