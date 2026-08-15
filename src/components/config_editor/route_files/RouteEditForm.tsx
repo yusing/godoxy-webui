@@ -235,14 +235,16 @@ export default function RouteEditForm({
               <RouteGeneralSection form={form} details={details} />
             </FormSection>
 
-            <FormSection
-              id="fileserver"
-              title="File Server"
-              description="Serve static files from a directory"
-              className={formSectionCN}
-            >
-              <RouteFileServerSection form={form as FormStore<Routes.FileServerRoute>} />
-            </FormSection>
+            {showFileServer && (
+              <FormSection
+                id="fileserver"
+                title="File Server"
+                description="Serve static files from a directory"
+                className={formSectionCN}
+              >
+                <RouteFileServerSection form={form as FormStore<Routes.FileServerRoute>} />
+              </FormSection>
+            )}
 
             <FormSection
               id="http"
