@@ -1,13 +1,11 @@
-import { X } from 'lucide-react'
-import { type FormState, type FormStore, RenderWithUpdate } from 'juststore'
+import { type FormState, type FormStore } from 'juststore'
 import { useEffect } from 'react'
 import { useAsync } from 'react-use'
 import { StoreFormInputField } from '@/components/store/Input'
 import { StoreFormSelectField } from '@/components/store/Select'
 import { StoreFormSwitchField } from '@/components/store/Switch'
-import { Button } from '@/components/ui/button'
 import { FieldSet } from '@/components/ui/field'
-import type { Route as RouteResponse } from '@/lib/api'
+import type { Agent, Route as RouteResponse } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import type { Routes } from '@/types/godoxy'
 import type { FileServerBindPort } from '@/types/godoxy/types'
@@ -163,6 +161,9 @@ function AgentSelect({ state }: { state: FormState<string | undefined> }) {
     loading,
   } = useAsync(async () => await api.agent.list().then(res => res.data))
 
+  const hasOptions = (agentList?.length ?? 0) > 0
+  const options = agentList ? [undefined, ...agentList] : []
+
   useEffect(() => {
     if (error) {
       state.setError(error.message)
@@ -173,42 +174,33 @@ function AgentSelect({ state }: { state: FormState<string | undefined> }) {
     <div className="flex items-end gap-2">
       <StoreFormSelectField
         state={state}
-        placeholder={
-          loading ? 'Loading...' : (agentList?.length ?? 0) > 0 ? 'Select Agent' : 'No agents found'
-        }
-        options={(agentList ?? []).map(agent => ({
-          value: agent.addr,
-          label: (
-            <div className="flex flex-col">
-              <span className="font-medium">
-                {agent.name}@{agent.addr}
-              </span>
-              <div className="flex gap-1">
-                <span className="text-xs text-muted-foreground">
-                  <span className="font-semibold">Version:</span> {agent.version}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  <span className="font-semibold">Runtime:</span> {agent.runtime}
-                </span>
-              </div>
-            </div>
-          ),
+        placeholder={loading ? 'Loading...' : hasOptions ? 'Select Agent' : 'No agents found'}
+        options={options.map(agent => ({
+          value: agent?.addr,
+          label: <AgentSelectItem agent={agent} />,
         }))}
       />
-      <RenderWithUpdate state={state}>
-        {(value, setValue) => (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="shrink-0"
-            onClick={() => setValue(undefined)}
-            disabled={!value}
-          >
-            <X className="size-4" />
-          </Button>
-        )}
-      </RenderWithUpdate>
+    </div>
+  )
+}
+
+function AgentSelectItem({ agent }: { agent: Agent | undefined }) {
+  if (!agent) {
+    return <span className="font-medium">None</span>
+  }
+  return (
+    <div className="flex flex-col">
+      <span className="font-medium">
+        {agent.name}@{agent.addr}
+      </span>
+      <div className="flex gap-1">
+        <span className="text-xs text-muted-foreground">
+          <span className="font-semibold">Version:</span> {agent.version}
+        </span>
+        <span className="text-xs text-muted-foreground">
+          <span className="font-semibold">Runtime:</span> {agent.runtime}
+        </span>
+      </div>
     </div>
   )
 }
