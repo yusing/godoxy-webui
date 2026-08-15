@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Suspense } from 'react'
 import AllSystemInfoProvider from '@/components/servers/AllSystemInfoProvider'
+import WebUISettingsProvider from '@/components/servers/WebUIConfigProvider'
 import ServerContent from '@/components/servers/content/Content'
 import ServersSidebar from '@/components/servers/Sidebar'
 import '@/stats_bar.css'
@@ -15,6 +16,7 @@ function ServersPage() {
       <ServersSidebar />
       <ServerContent />
       <Suspense>
+        <WebUISettingsProvider />
         <AllSystemInfoProvider />
       </Suspense>
     </div>

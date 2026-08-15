@@ -53,8 +53,9 @@ export default function ServerContent() {
 
 function SystemInfoGraphsPage() {
   const selectedAgent = useFragment()
+  const mainDisplayName = store.config.display_name.use()
   const agent = useMemo(() => selectedAgent || 'Main Server', [selectedAgent])
-  const displayName = selectedAgent?.replaceAll('%20', ' ') || 'GoDoxy'
+  const displayName = selectedAgent?.replaceAll('%20', ' ') || mainDisplayName || 'GoDoxy'
 
   const period = store.metricsPeriod.use()
   const temperatureUnit = store.temperatureUnit.use()

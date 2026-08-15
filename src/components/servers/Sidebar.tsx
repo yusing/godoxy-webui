@@ -17,6 +17,7 @@ import { AddAgentDialogButton } from './NewAgentButton'
 import { store, useSensorsInfo } from './store'
 
 export default function ServersSidebar() {
+  const mainDisplayName = store.config.display_name.use()
   const agentList = store.agents.keys.use()
   const selectedAgent = useFragment()
   const selected = selectedAgent || undefined
@@ -30,7 +31,9 @@ export default function ServersSidebar() {
           <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-2.5">
             <div className="flex min-w-0 items-center gap-2.5">
               <Server className="size-4 text-primary" />
-              <span className="truncate text-lg font-semibold">{selected ?? 'GoDoxy'}</span>
+              <span className="truncate text-lg font-semibold">
+                {selected ?? mainDisplayName ?? 'GoDoxy'}
+              </span>
               <span
                 className={cn(
                   'size-2.5 rounded-full',
@@ -82,7 +85,8 @@ function ServerList({ agentList, selected }: { agentList: readonly string[]; sel
 }
 
 function ServerItem({ agent, isSelected }: { agent?: string; isSelected?: boolean }) {
-  const agentKey = agent || 'GoDoxy'
+  const mainDisplayName = store.config.display_name.use()
+  const agentKey = agent || mainDisplayName || 'GoDoxy'
   const temperatureUnit = store.temperatureUnit.use()
   const { cpuTemp, diskTemp, cpuTempStatus, diskTempStatus } = useSensorsInfo(agentKey)
   const cpu = store.useCompute(`systemInfo.${agentKey}.cpu_average`, value => formatPercent(value))

@@ -107,6 +107,15 @@ export type ConfigRuntimeStatus =
   | "failed"
   | "stopping";
 
+export interface ConfigWebUIConfig {
+  access_log?: RequestLoggerConfig | null;
+  aliases: string[];
+  display_name: string;
+  inbound_mtls_profile: string;
+  middlewares?: Record<string, TypesLabelMap> | null;
+  rules?: RulesRule[] | null;
+}
+
 export interface Container {
   agent: AgentpoolAgent;
   aliases: string[];
@@ -2474,6 +2483,27 @@ export namespace Version {
   }
 }
 
+export namespace Webui {
+  /**
+   * @description Get WebUI config
+   * @tags webui
+   * @name Config
+   * @summary Get WebUI config
+   * @request GET:/webui/config
+   * @response `200` `ConfigWebUIConfig` WebUI Config
+   * @response `400` `ErrorResponse` Bad Request
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Config {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ConfigWebUIConfig;
+  }
+}
+
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 
@@ -4239,6 +4269,27 @@ export class Api<
         path: `/version`,
         method: "GET",
         type: "application/json",
+        ...params,
+      }),
+  };
+  webui = {
+    /**
+     * @description Get WebUI config
+     *
+     * @tags webui
+     * @name Config
+     * @summary Get WebUI config
+     * @request GET:/webui/config
+     * @response `200` `ConfigWebUIConfig` WebUI Config
+     * @response `400` `ErrorResponse` Bad Request
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    config: (params: RequestParams = {}) =>
+      this.request<ConfigWebUIConfig, ErrorResponse>({
+        path: `/webui/config`,
+        method: "GET",
+        format: "json",
         ...params,
       }),
   };
