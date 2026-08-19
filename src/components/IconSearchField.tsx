@@ -29,8 +29,15 @@ function iconURLVariant(metadata: IconMetaSearch, variant: 'light' | 'dark') {
   return `${metadata.Source}/${metadata.Ref}-${variant}.${metadata.SVG ? 'svg' : metadata.WebP ? 'webp' : 'png'}`
 }
 
-function asSearchValue(fullValue: string) {
-  return fullValue.replace(/\.(svg|webp|png)$/, '').replace(/-light|-dark$/, '')
+const catalogRefPattern = /^@(?:selfhst|walkxcode)\/(.+?)(?:-(?:light|dark))?\.(?:svg|webp|png)$/i
+
+/**
+ * Turns a saved icon value into the keyword the search API understands: catalog
+ * icons search by their bare reference, everything else stays untouched so a
+ * pasted URL is not rewritten.
+ */
+export function asSearchValue(fullValue: string) {
+  return catalogRefPattern.exec(fullValue)?.[1] ?? fullValue
 }
 
 type IconSearchFieldProps = {
