@@ -10,6 +10,14 @@ import { AppIcon } from './AppIcon'
 import LoadingRing from './LoadingRing'
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from './ui/command'
 
+export function isIconURL(value: string | undefined | null): value is string {
+  if (!value) return false
+  if (value.startsWith('http://') || value.startsWith('https://') || value.startsWith('/')) {
+    return value.length > 1
+  }
+  return /^@(?:selfhst|walkxcode|target)\/.+\.(?:svg|png|webp)$/i.test(value)
+}
+
 // Utilities to construct icon URLs similar to the old Chakra version
 function iconURL(metadata: IconMetaSearch) {
   if (metadata.SVG) return `${metadata.Source}/${metadata.Ref}.svg`
@@ -109,14 +117,17 @@ function IconItems({
   state: MemoryStore<IconSearchFieldState>
   iconState: FormState<string>
 }) {
+  const currentIcon = state.currentIcon.use()
   const debouncedSearchValue = state.searchValue.useDebounce(300)
   useEffect(() => {
-    // Propagate only the debounced value to parent so external consumers
-    // don't trigger requests on every keystroke.
-    if (debouncedSearchValue !== undefined) {
+    // Only write a typed/pasted value back when it is already a real icon URL.
+    // Search keywords like "immich" or "@selfhst/immich" must not replace a
+    // selected or previously saved icon.
+    if (currentIcon) return
+    if (isIconURL(debouncedSearchValue)) {
       iconState.set(debouncedSearchValue)
     }
-  }, [debouncedSearchValue, iconState])
+  }, [debouncedSearchValue, currentIcon, iconState])
 
   const {
     value: icons,

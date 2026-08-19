@@ -6,7 +6,7 @@ import type { HomepageItem } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { toastError } from '@/lib/toast'
 import { AppIcon } from '../AppIcon'
-import IconSearchField from '../IconSearchField'
+import IconSearchField, { isIconURL } from '../IconSearchField'
 import { Button } from '../ui/button'
 import {
   Dialog,
@@ -52,7 +52,13 @@ function AppEditDialog_({ state }: { state: ObjectState<HomepageItem> }) {
   const onSubmit = useCallback(
     async (value: HomepageItem) => {
       const newItem: HomepageItem = { ...value }
-      if (!newItem.icon) newItem.icon = app.icon
+      if (!isIconURL(newItem.icon)) {
+        if (isIconURL(app.icon)) {
+          newItem.icon = app.icon
+        } else {
+          delete (newItem as { icon?: string }).icon
+        }
+      }
 
       await api.homepage
         .setItem({ which: newItem.alias, value: newItem })
