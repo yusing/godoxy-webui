@@ -196,6 +196,11 @@ export type ModifyResponse = {
 export type OIDC = {
   /** Middleware */
   use: LooseUse<'oidc'>
+  /** OIDC issuer URL
+   *
+   * Falls back to GODOXY_OIDC_ISSUER_URL when omitted.
+   */
+  issuer_url?: string
   /** Allowed users
    *
    * @minItems 1
@@ -206,6 +211,23 @@ export type OIDC = {
    * @minItems 1
    */
   allowed_groups?: string[]
+  /** OIDC client ID
+   *
+   * Falls back to GODOXY_OIDC_CLIENT_ID when omitted.
+   */
+  client_id?: string
+  /** OIDC client secret
+   *
+   * Falls back to GODOXY_OIDC_CLIENT_SECRET when omitted.
+   */
+  client_secret?: string
+  /** OIDC scopes
+   *
+   * Falls back to GODOXY_OIDC_SCOPES when omitted.
+   * @minItems 1
+   * @default ["openid", "profile", "email", "groups"]
+   */
+  scopes?: string[]
 }
 
 export type ForwardAuth = {

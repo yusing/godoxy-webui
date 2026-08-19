@@ -1,6 +1,11 @@
 import type { FileServerRoute, RouteRule } from '../providers/routes'
 
 export type WebUIConfig = {
+  /** Name shown for this GoDoxy instance in the WebUI server list and headings
+   *
+   * @default "GoDoxy"
+   */
+  display_name?: string
   /** WebUI aliases
    *
    * @default ["godoxy"]
