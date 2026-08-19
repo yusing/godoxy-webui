@@ -1,4 +1,4 @@
-import { Activity, Box, FileQuestionMark, RouteIcon, Shield } from 'lucide-react'
+import { Activity, Box, FileQuestionMark, Moon, RouteIcon, Shield } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { Event as ApiEvent, EventsLevel, HealthJSON, Route } from '@/lib/api'
@@ -43,6 +43,17 @@ type HomeEvent = EventCommon &
           request_url: string
           source: string
           reason: string
+        }
+      }
+    | {
+        category: 'idle_event'
+        action: string
+        data: {
+          container: string
+          route?: string
+          status?: string
+          message?: string
+          error?: string
         }
       }
     | {
@@ -156,6 +167,7 @@ function levelClassname(level: EventsLevel) {
 
 function EventRow({ event }: { event: HomeEvent }) {
   const isHealthServiceDown = event.category === 'health' && event.action === 'service_down'
+  const isIdleError = event.category === 'idle_event' && event.action === 'error'
 
   let icon: React.ReactNode
   let label: string
@@ -183,6 +195,10 @@ function EventRow({ event }: { event: HomeEvent }) {
       icon = <Shield className="size-3.5" />
       label = 'http'
       break
+    case 'idle_event':
+      icon = <Moon className="size-3.5" />
+      label = 'idle'
+      break
     default:
       icon = <FileQuestionMark className="size-3.5" />
       label = 'unknown'
@@ -202,7 +218,7 @@ function EventRow({ event }: { event: HomeEvent }) {
           <RelTimeBadge
             timestamp={new Date(event.timestamp)}
             level={event.level}
-            destructive={isHealthServiceDown}
+            destructive={isHealthServiceDown || isIdleError}
           />
         </div>
         <div className="text-sm leading-snug">
@@ -250,6 +266,33 @@ function RelTimeBadge({
       {formatRelTime(timestamp, now)}
     </Badge>
   )
+}
+
+function idleEventSummary(action: string, status?: string, message?: string) {
+  switch (action) {
+    case 'starting':
+      return 'is starting'
+    case 'ready':
+      return 'is ready'
+    case 'napping':
+    case 'sleep':
+      return status === 'paused' ? 'was paused' : 'went to sleep'
+    case 'awaken':
+      return 'woke up'
+    case 'waking_dep':
+      return message?.replace(/^Waking dependency:\s*/i, 'is waking ') || 'is waking a dependency'
+    case 'dep_ready':
+      return message?.replace(/^Dependency woke:\s*/i, 'dependency ready: ') || 'dependency is ready'
+    case 'container_woke':
+      return 'started'
+    case 'waiting_ready':
+      return 'is waiting to become ready'
+    case 'error':
+    case 'sleep_error':
+      return 'failed'
+    default:
+      return message || action.replaceAll('_', ' ')
+  }
 }
 
 function EventData({ event }: { event: HomeEvent }) {
@@ -333,6 +376,22 @@ function EventData({ event }: { event: HomeEvent }) {
             </span>
           )
       }
+    }
+    case 'idle_event': {
+      const name = event.data.route || event.data.container
+      const summary = idleEventSummary(event.action, event.data.status, event.data.message)
+      return (
+        <div className="space-y-0.5">
+          <span>
+            <strong>{name}</strong> {summary}
+          </span>
+          {event.data.error ? (
+            <div className="text-xs text-muted-foreground wrap-break-word">
+              {event.data.error}
+            </div>
+          ) : null}
+        </div>
+      )
     }
   }
 }
