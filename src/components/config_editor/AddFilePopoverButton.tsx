@@ -8,7 +8,7 @@ import { Button } from '../ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Separator } from '../ui/separator'
 import { sectionsByFileType } from './sections'
-import { configStore } from './store'
+import { configStore, confirmDiscardActiveConfigChanges } from './store'
 import { fileTypeLabels } from './types'
 
 type FormValues = {
@@ -63,8 +63,13 @@ export default function AddFilePopoverButton(props: React.ComponentProps<typeof 
         <form
           className="flex flex-col gap-2"
           onSubmit={form.handleSubmit(value => {
-            handleAddFile(value)
-            setIsOpen(false)
+            if (
+              addConfigFile(value, () =>
+                window.confirm('Discard your unsaved configuration changes and create a new file?')
+              )
+            ) {
+              setIsOpen(false)
+            }
           })}
         >
           <StoreFormRadioField
@@ -94,22 +99,24 @@ export default function AddFilePopoverButton(props: React.ComponentProps<typeof 
   )
 }
 
-function handleAddFile({ type, filename }: FormValues) {
-  configStore.files[type].sortedInsert((a, b) => a.filename.localeCompare(b.filename), {
+export function addConfigFile({ type, filename }: FormValues, confirmDiscard: () => boolean) {
+  if (!confirmDiscardActiveConfigChanges(confirmDiscard)) {
+    return false
+  }
+
+  const newFile = {
     type,
     filename: `${filename}.yml`,
     isNewFile: true,
-  })
+  }
+  configStore.files[type].sortedInsert((a, b) => a.filename.localeCompare(b.filename), newFile)
 
   const hasTypeChanged = configStore.activeFile.value?.type !== type
-  configStore.activeFile.set({
-    type,
-    filename: `${filename}.yml`,
-    isNewFile: true,
-  })
+  configStore.activeFile.set(newFile)
 
   // if the type has changed, set the active section to the first section of the new type
   if (hasTypeChanged) {
     configStore.activeSection.set(sectionsByFileType[type].sections[0].id)
   }
+  return true
 }

@@ -1,4 +1,5 @@
 import { isEqual } from 'juststore'
+import { useBlocker } from '@tanstack/react-router'
 import { useEffect } from 'react'
 import { useMount } from 'react-use'
 import { parse as parseYAML, stringify as stringifyYAML } from 'yaml'
@@ -6,10 +7,20 @@ import { api, formatErrorString, isFetchApiError, useEndpoint } from '@/lib/api-
 import type { ConfigFile } from '@/types/file'
 import type { Config } from '@/types/godoxy'
 import type { GoDoxyError } from '../GoDoxyError'
-import { configStore } from './store'
+import { configStore, shouldBlockUnsavedNavigation, useHasUnsavedConfigChanges } from './store'
 
 export default function ConfigStateSyncronizer() {
   const endpoint = useEndpoint(api.file.get)
+  const hasUnsavedChanges = useHasUnsavedConfigChanges()
+
+  useBlocker({
+    shouldBlockFn: () =>
+      shouldBlockUnsavedNavigation(hasUnsavedChanges, () =>
+        window.confirm('Discard your unsaved configuration changes and leave this page?')
+      ),
+    enableBeforeUnload: hasUnsavedChanges,
+    disabled: !hasUnsavedChanges,
+  })
 
   useMount(() => {
     endpoint

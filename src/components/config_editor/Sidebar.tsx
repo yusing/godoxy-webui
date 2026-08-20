@@ -19,7 +19,7 @@ import AddFilePopoverButton from './AddFilePopoverButton'
 import ConfigReloadButton from './ConfigReloadButton'
 import ConfigSaveButton from './ConfigSaveButton'
 import { type Section, sectionsByFileType } from './sections'
-import { configStore, useDiffs } from './store'
+import { configStore, selectConfigFile, useDiffs } from './store'
 import { fileTypeLabels } from './types'
 
 export default function ConfigSidebar() {
@@ -87,10 +87,9 @@ function FileList() {
                 key={`${type}:${file.filename}`}
                 value={`${type}:${file.filename}`}
                 onSelect={() =>
-                  configStore.activeFile.set({
-                    type: type as FileType,
-                    filename: file.filename,
-                  })
+                  selectConfigFile(file, () =>
+                    window.confirm('Discard your unsaved configuration changes and switch files?')
+                  )
                 }
                 className={cn('data-selected:bg-inherit', selected && 'text-info-foreground')}
                 data-checked={selected ? 'true' : 'false'}
