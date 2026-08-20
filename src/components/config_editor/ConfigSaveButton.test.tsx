@@ -74,6 +74,86 @@ describe('ConfigSaveButton', () => {
     expect(toastErrorMock).not.toHaveBeenCalled()
   })
 
+  test('promotes a new file only after persistence succeeds', async () => {
+    const newFile = { type: 'provider' as const, filename: 'routes.yml', isNewFile: true }
+    configStore.files.set({
+      config: [{ type: 'config', filename: 'config.yml' }],
+      provider: [newFile],
+      middleware: [],
+    })
+    configStore.activeFile.set(newFile)
+    setMock.mockImplementation(async () => ({}))
+    await act(async () => {
+      root.render(<ConfigSaveButton />)
+    })
+
+    await act(async () => {
+      container.querySelector('button')?.click()
+    })
+
+    expect(configStore.activeFile.value).toEqual({ type: 'provider', filename: 'routes.yml' })
+    expect(configStore.files.provider.value).toEqual([{ type: 'provider', filename: 'routes.yml' }])
+  })
+
+  test('keeps a new file marked as a draft when persistence fails', async () => {
+    const newFile = { type: 'provider' as const, filename: 'routes.yml', isNewFile: true }
+    configStore.files.set({
+      config: [{ type: 'config', filename: 'config.yml' }],
+      provider: [newFile],
+      middleware: [],
+    })
+    configStore.activeFile.set(newFile)
+    setMock.mockImplementation(async () => Promise.reject(new Error('disk full')))
+    await act(async () => {
+      root.render(<ConfigSaveButton />)
+    })
+
+    await act(async () => {
+      container.querySelector('button')?.click()
+    })
+
+    expect(configStore.activeFile.value).toBe(newFile)
+    expect(configStore.files.provider.value).toEqual([newFile])
+  })
+
+  test('does not attribute a late save completion to another active file', async () => {
+    let resolveSave: (() => void) | undefined
+    setMock.mockImplementation(
+      () =>
+        new Promise(resolve => {
+          resolveSave = () => resolve({})
+        })
+    )
+    await act(async () => {
+      root.render(<ConfigSaveButton />)
+    })
+
+    await act(async () => {
+      container.querySelector('button')?.click()
+      await Promise.resolve()
+    })
+    expect(container.querySelector('.animate-spin')).not.toBeNull()
+
+    const otherFile = { type: 'provider' as const, filename: 'other.yml' }
+    const otherConfig = { providers: { files: ['other.yml'] } } as Config.Config
+    act(() => {
+      configStore.activeFile.set(otherFile)
+      configStore.originalConfig.set(otherConfig)
+    })
+
+    expect(container.querySelector('.animate-spin')).toBeNull()
+    expect(container.querySelector('button')?.disabled).toBe(true)
+
+    await act(async () => {
+      resolveSave?.()
+      await Promise.resolve()
+    })
+
+    expect(configStore.originalConfig.value).toBe(otherConfig)
+    expect(container.querySelector('.text-green-500')).toBeNull()
+    expect(container.querySelector('button')?.disabled).toBe(false)
+  })
+
   test('retains the unsaved diff and existing error feedback when persistence fails', async () => {
     const persistenceError = new Error('disk full')
     setMock.mockImplementation(async () => Promise.reject(persistenceError))

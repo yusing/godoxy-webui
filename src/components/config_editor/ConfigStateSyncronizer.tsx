@@ -7,7 +7,12 @@ import { api, formatErrorString, isFetchApiError, useEndpoint } from '@/lib/api-
 import type { ConfigFile } from '@/types/file'
 import type { Config } from '@/types/godoxy'
 import type { GoDoxyError } from '../GoDoxyError'
-import { configStore, shouldBlockUnsavedNavigation, useHasUnsavedConfigChanges } from './store'
+import {
+  configStore,
+  isConfigFilePersistencePromotion,
+  shouldBlockUnsavedNavigation,
+  useHasUnsavedConfigChanges,
+} from './store'
 
 export default function ConfigStateSyncronizer() {
   const endpoint = useEndpoint(api.file.get)
@@ -43,7 +48,17 @@ export default function ConfigStateSyncronizer() {
   })
 
   useEffect(() => {
+    let previousActiveFile = configStore.activeFile.value
     const unsubscribe = configStore.activeFile.subscribe(activeFile => {
+      const isPersistencePromotion = isConfigFilePersistencePromotion(
+        previousActiveFile,
+        activeFile
+      )
+      previousActiveFile = activeFile
+      if (isPersistencePromotion) {
+        return
+      }
+
       configStore.originalConfig.reset()
       if (activeFile.isNewFile) {
         configStore.content.set('')

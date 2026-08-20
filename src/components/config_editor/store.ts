@@ -109,6 +109,42 @@ export function selectConfigFile(nextFile: ConfigFile, confirmDiscard: () => boo
   return true
 }
 
+export function isConfigFilePersistencePromotion(previousFile: ConfigFile, nextFile: ConfigFile) {
+  return (
+    previousFile.type === nextFile.type &&
+    previousFile.filename === nextFile.filename &&
+    previousFile.isNewFile === true &&
+    nextFile.isNewFile !== true
+  )
+}
+
+export function markConfigFileSaved(savedFile: ConfigFile, savedConfig: Config.Config | undefined) {
+  if (savedFile.isNewFile === true) {
+    const persistedFile: ConfigFile = {
+      type: savedFile.type,
+      filename: savedFile.filename,
+    }
+    configStore.files[savedFile.type].set(
+      configStore.files[savedFile.type].value.map(file =>
+        file.filename === savedFile.filename ? persistedFile : file
+      )
+    )
+    if (
+      configStore.activeFile.value.type === savedFile.type &&
+      configStore.activeFile.value.filename === savedFile.filename
+    ) {
+      configStore.activeFile.set(persistedFile)
+    }
+  }
+
+  if (
+    configStore.activeFile.value.type === savedFile.type &&
+    configStore.activeFile.value.filename === savedFile.filename
+  ) {
+    configStore.originalConfig.set(savedConfig)
+  }
+}
+
 export function resetDiffs() {
   configStore.originalConfig.set(configStore.configObject.value)
 }

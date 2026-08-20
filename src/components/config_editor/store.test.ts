@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, test } from 'bun:test'
+import type { Config } from '@/types/godoxy'
 import {
   configStore,
   hasUnsavedConfigChanges,
+  isConfigFilePersistencePromotion,
+  markConfigFileSaved,
   selectConfigFile,
   shouldBlockUnsavedNavigation,
 } from './store'
@@ -97,5 +100,64 @@ describe('selectConfigFile', () => {
     expect(selectConfigFile(draftFile, () => false)).toBe(true)
     expect(configStore.activeFile.value).toBe(draftFile)
     expect(configStore.activeFile.value.isNewFile).toBe(true)
+  })
+})
+
+describe('markConfigFileSaved', () => {
+  const draftFile = { type: 'provider' as const, filename: 'draft.yml', isNewFile: true }
+
+  test('promotes a new file in both the active state and file list', () => {
+    const savedConfig = { providers: {} } as Config.Config
+    configStore.files.set({
+      config: [{ type: 'config', filename: 'config.yml' }],
+      provider: [draftFile],
+      middleware: [],
+    })
+    configStore.activeFile.set(draftFile)
+    configStore.configObject.set(savedConfig)
+    configStore.originalConfig.reset()
+
+    markConfigFileSaved(draftFile, savedConfig)
+
+    expect(configStore.activeFile.value).toEqual({ type: 'provider', filename: 'draft.yml' })
+    expect(configStore.files.provider.value).toEqual([{ type: 'provider', filename: 'draft.yml' }])
+    expect(configStore.originalConfig.value).toBe(savedConfig)
+  })
+
+  test('does not replace the baseline of a file selected while saving', () => {
+    const otherFile = { type: 'provider' as const, filename: 'other.yml' }
+    const otherConfig = { providers: { files: ['other.yml'] } } as Config.Config
+    configStore.files.set({
+      config: [{ type: 'config', filename: 'config.yml' }],
+      provider: [draftFile, otherFile],
+      middleware: [],
+    })
+    configStore.activeFile.set(otherFile)
+    configStore.originalConfig.set(otherConfig)
+
+    markConfigFileSaved(draftFile, { providers: {} } as Config.Config)
+
+    expect(configStore.activeFile.value).toBe(otherFile)
+    expect(configStore.originalConfig.value).toBe(otherConfig)
+    expect(configStore.files.provider.value).toEqual([
+      { type: 'provider', filename: 'draft.yml' },
+      otherFile,
+    ])
+  })
+})
+
+describe('isConfigFilePersistencePromotion', () => {
+  const newFile = { type: 'provider' as const, filename: 'draft.yml', isNewFile: true }
+  const persistedFile = { type: 'provider' as const, filename: 'draft.yml' }
+
+  test('recognizes only removal of the new-file marker for the same file', () => {
+    expect(isConfigFilePersistencePromotion(newFile, persistedFile)).toBe(true)
+    expect(isConfigFilePersistencePromotion(persistedFile, persistedFile)).toBe(false)
+    expect(
+      isConfigFilePersistencePromotion(newFile, {
+        type: 'provider',
+        filename: 'other.yml',
+      })
+    ).toBe(false)
   })
 })
