@@ -136,6 +136,7 @@ export default function LogProvider({
   useWebSocketApi<string>({
     endpoint,
     json: false,
+    deduplicate: false,
     query: {
       limit: 100,
     },

@@ -175,7 +175,7 @@ export default function Logs({ routeKey }: { routeKey: string }) {
       term.reset()
       term.clear()
     }
-  })
+  }, [routeKey])
 
   useEffect(() => {
     const unsubscribe = maximizedAtom.subscribe(maximized => {
