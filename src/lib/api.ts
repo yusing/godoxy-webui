@@ -1204,7 +1204,7 @@ export namespace Auth {
    * @summary Check authentication status
    * @request HEAD:/auth/check
    * @response `200` `string` OK
-   * @response `302` `string` Redirects to login page or IdP
+   * @response `401` `string` Authentication is required
    */
   export namespace Check {
     export type RequestParams = {};
@@ -2853,7 +2853,7 @@ export class Api<
      * @summary Check authentication status
      * @request HEAD:/auth/check
      * @response `200` `string` OK
-     * @response `302` `string` Redirects to login page or IdP
+     * @response `401` `string` Authentication is required
      */
     check: (params: RequestParams = {}) =>
       this.request<string, string>({
