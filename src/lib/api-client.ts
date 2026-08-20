@@ -1,11 +1,7 @@
 import { useEffect, useRef } from 'react'
-import {
-  Api,
-  type ErrorResponse,
-  type FullRequestParams,
-  type HttpResponse,
-} from '@/lib/api'
+import { Api, type ErrorResponse, type FullRequestParams, type HttpResponse } from '@/lib/api'
 import { withCSRFHeader } from '@/lib/csrf'
+import { sessionFetch } from '@/lib/session-recovery'
 
 // this is for server side only, on client side we use relative path for middleware to handle
 const apiAddr = process.env.GODOXY_API_ADDR ? `http://${process.env.GODOXY_API_ADDR}` : ''
@@ -15,15 +11,15 @@ const csrfFetch: typeof fetch = Object.assign(
     const method = (init?.method ?? 'GET').toUpperCase()
     const extra = withCSRFHeader({}, method)
     if (Object.keys(extra).length === 0) {
-      return fetch(input, init)
+      return sessionFetch(input, init)
     }
     const headers = new Headers(init?.headers ?? undefined)
     for (const [key, value] of Object.entries(extra)) {
       headers.set(key, value)
     }
-    return fetch(input, { ...init, headers })
+    return sessionFetch(input, { ...init, headers })
   },
-  fetch
+  sessionFetch
 )
 
 function createApi(): Api<unknown> {

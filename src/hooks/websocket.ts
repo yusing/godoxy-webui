@@ -4,6 +4,10 @@ import { useLocation } from 'react-use'
 import { CSRF_HEADER_NAME, getCSRFToken, getCSRFWebSocketProtocol } from '@/lib/csrf'
 import { logger } from '@/lib/logger'
 import { ReadyState, useWebSocket } from '@/lib/react-use-websocket'
+import {
+  probeSessionAfterConnectionFailure,
+  shouldProbeSessionAfterWebSocketClose,
+} from '@/lib/session-recovery'
 
 // Generic WebSocket API hook
 export type WebSocketApiOptions<TMessage, TSubscription = unknown> = {
@@ -113,9 +117,15 @@ export function useWebSocketApi<TMessage, TSubscription = any>({
         handleErrorRef.current?.(`Connection closed: ${event.reason || 'Unknown reason'}`)
       }
 
+      if (shouldProbeSessionAfterWebSocketClose(shouldConnect, event.code)) {
+        void probeSessionAfterConnectionFailure().catch(error => {
+          logger.debug('WebSocket authentication probe failed', error)
+        })
+      }
+
       onClose?.(event)
     },
-    [endpoint, onClose]
+    [endpoint, onClose, shouldConnect]
   )
 
   // Handle errors
