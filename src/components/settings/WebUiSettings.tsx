@@ -1,6 +1,6 @@
 import { Conditional } from 'juststore'
 import { Link } from '@tanstack/react-router'
-import { Moon, Sun } from 'lucide-react'
+import { Globe, LayoutGrid, ListFilter, Moon, Palette, Sun } from 'lucide-react'
 import { Suspense } from 'react'
 import { type UserTheme, useTheme } from '@/components/ThemeProvider'
 import ConfigReloadButton from '@/components/config_editor/ConfigReloadButton'
@@ -10,66 +10,31 @@ import { configStore } from '@/components/config_editor/store'
 import { GoDoxyErrorAlert } from '@/components/GoDoxyError'
 import SystemStatsProvider from '@/components/home/SystemStatsProvider'
 import { store } from '@/components/home/store'
+import { FormSection, SectionedForm, type SectionItem } from '@/components/SectionedForm'
 import { StoreSelectField } from '@/components/store/Select'
 import { StoreSwitchField } from '@/components/store/Switch'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
 import { Field, FieldDescription, FieldError, FieldGroup, FieldTitle } from '@/components/ui/field'
 import { RadioGroup, RadioGroupField } from '@/components/ui/radio-group'
 import { store as routesStore } from '@/components/routes/store'
-import { cn } from '@/lib/utils'
 
-const SETTINGS_NAV = [
-  { id: 'settings-appearance', label: 'Appearance' },
-  { id: 'settings-apps', label: 'Apps dashboard' },
-  { id: 'settings-routes-list', label: 'Routes list' },
-  { id: 'settings-webui-route', label: 'Web UI route' },
-] as const
+type SettingsSectionId =
+  | 'settings-appearance'
+  | 'settings-apps'
+  | 'settings-routes-list'
+  | 'settings-webui-route'
 
-/** In-page anchor offset so section titles aren’t flush under the mobile pill nav. */
-const scrollSection = 'scroll-mt-20 border-border/40 shadow-none md:scroll-mt-24'
-
-function SettingsSection({
-  id,
-  title,
-  description,
-  children,
-  className,
-  span,
-}: {
-  id: string
-  title: string
-  description: React.ReactNode
-  children: React.ReactNode
-  className?: string
-  /** Full-width row on md+ (e.g. dense lists, nested forms). */
-  span?: 'full'
-}) {
-  return (
-    <Card id={id} className={cn(scrollSection, span === 'full' && 'md:col-span-2', className)}>
-      <CardHeader className="border-b border-border/50">
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>{children}</CardContent>
-    </Card>
-  )
-}
-
-const navLinkClass =
-  'rounded-md px-2.5 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground'
+const SETTINGS_SECTIONS: SectionItem<SettingsSectionId>[] = [
+  { id: 'settings-appearance', label: 'Appearance', Icon: Palette, show: true },
+  { id: 'settings-apps', label: 'Apps dashboard', Icon: LayoutGrid, show: true },
+  { id: 'settings-routes-list', label: 'Routes list', Icon: ListFilter, show: true },
+  { id: 'settings-webui-route', label: 'Web UI route', Icon: Globe, show: true },
+]
 
 export default function WebUiSettings() {
   return (
-    <div className="mx-auto w-full max-w-2xl px-4 pb-16 pt-2 sm:px-5 md:max-w-none lg:max-w-7xl lg:px-8 lg:pb-24 lg:pt-4">
-      <header className="mb-3 border-b border-border/60 px-0 py-4 lg:mb-4">
+    <div className="mx-auto flex h-full min-h-0 w-full max-w-7xl flex-col px-4 pt-2 sm:px-5 lg:px-8 lg:pt-4">
+      <header className="mb-3 shrink-0 border-b border-border/60 px-0 py-4 lg:mb-4">
         <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">Settings</h1>
         <p className="mt-1.5 max-w-3xl text-sm text-muted-foreground lg:mt-2 lg:text-[0.9375rem] lg:leading-relaxed">
           Browser preferences and the GoDoxy Web UI route (
@@ -88,40 +53,23 @@ export default function WebUiSettings() {
         <SystemStatsProvider />
       </Suspense>
 
-      <nav
-        aria-label="Settings sections"
-        className="scrollbar-hidden -mx-4 mb-3 flex gap-1.5 overflow-x-auto px-4 pb-0.5 pt-0.5 sm:-mx-5 sm:px-5 md:hidden"
+      <SectionedForm<SettingsSectionId>
+        sections={SETTINGS_SECTIONS}
+        defaultSection="settings-appearance"
+        className="min-h-0 pr-2 snap-y snap-mandatory scroll-smooth"
       >
-        {SETTINGS_NAV.map(({ id, label }) => (
-          <a
-            key={id}
-            href={`#${id}`}
-            className="shrink-0 rounded-full border border-border/50 bg-muted/30 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+        {({ contentRef }) => (
+          <div
+            ref={contentRef}
+            className="flex min-h-0 min-w-0 flex-col gap-4 overflow-y-auto pb-8"
           >
-            {label}
-          </a>
-        ))}
-      </nav>
-
-      <div className="flex flex-col gap-6 md:flex-row md:gap-8 lg:gap-10">
-        <nav
-          aria-label="Settings sections"
-          className="sticky top-6 z-20 hidden h-fit w-44 shrink-0 flex-col gap-0.5 md:flex lg:top-8 lg:w-52"
-        >
-          {SETTINGS_NAV.map(({ id, label }) => (
-            <a key={id} href={`#${id}`} className={navLinkClass}>
-              {label}
-            </a>
-          ))}
-        </nav>
-
-        <div className="grid min-w-0 flex-1 grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 lg:gap-8">
-          <AppearanceSection />
-          <AppsDashboardSection />
-          <RoutesListSection />
-          <GoDoxyWebUiRouteSection />
-        </div>
-      </div>
+            <AppearanceSection />
+            <AppsDashboardSection />
+            <RoutesListSection />
+            <GoDoxyWebUiRouteSection />
+          </div>
+        )}
+      </SectionedForm>
     </div>
   )
 }
@@ -130,7 +78,7 @@ function AppearanceSection() {
   const { userTheme, setTheme } = useTheme()
 
   return (
-    <SettingsSection
+    <FormSection
       id="settings-appearance"
       title="Appearance"
       description="Color theme applies across the apps grid, routes, config, and other Web UI pages."
@@ -177,7 +125,7 @@ function AppearanceSection() {
           }
         />
       </FieldGroup>
-    </SettingsSection>
+    </FormSection>
   )
 }
 
@@ -186,7 +134,7 @@ function AppsDashboardSection() {
   const secondDriveOptions = store.settings.secondDriveOptions.use()
 
   return (
-    <SettingsSection
+    <FormSection
       id="settings-apps"
       title="Apps dashboard"
       description="Homepage grid, sorting, and storage stats shown in the dock bar."
@@ -244,7 +192,7 @@ function AppsDashboardSection() {
           </Field>
         </Conditional>
       </FieldGroup>
-    </SettingsSection>
+    </FormSection>
   )
 }
 
@@ -282,9 +230,8 @@ const routesListToggles: {
 
 function RoutesListSection() {
   return (
-    <SettingsSection
+    <FormSection
       id="settings-routes-list"
-      span="full"
       title="Routes list"
       description="Filters for the sidebar on the Routes page. They apply immediately."
     >
@@ -300,7 +247,7 @@ function RoutesListSection() {
           />
         ))}
       </FieldGroup>
-    </SettingsSection>
+    </FormSection>
   )
 }
 
@@ -314,25 +261,23 @@ function GoDoxyWebUiRouteSection() {
   const validateError = configStore.validateError.use()
 
   return (
-    <Card id="settings-webui-route" className={cn(scrollSection, 'md:col-span-2')}>
-      <CardHeader className="border-b border-border/50">
-        <CardTitle>Web UI route</CardTitle>
-        <CardDescription>
+    <FormSection
+      id="settings-webui-route"
+      title="Web UI route"
+      description={
+        <>
           Hostnames, TLS profile, access log, middlewares, and extra rules for how the proxy serves
           this UI. Full YAML editing stays on the <Link to="/config">Config</Link> page.
-        </CardDescription>
-      </CardHeader>
-
-      <CardContent className="space-y-3 md:space-y-4">
-        {(!onMainConfig || isLoading) && (
-          <p className="text-sm text-muted-foreground">Loading configuration…</p>
-        )}
-        {loadError && <FieldError>{loadError}</FieldError>}
-        {onMainConfig && !isLoading && !loadError && <WebUiServerRouteForm />}
-        {validateError && <GoDoxyErrorAlert title="Validation" err={validateError} />}
-      </CardContent>
-
-      <CardFooter className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+        </>
+      }
+    >
+      {(!onMainConfig || isLoading) && (
+        <p className="text-sm text-muted-foreground">Loading configuration…</p>
+      )}
+      {loadError && <FieldError>{loadError}</FieldError>}
+      {onMainConfig && !isLoading && !loadError && <WebUiServerRouteForm />}
+      {validateError && <GoDoxyErrorAlert title="Validation" err={validateError} />}
+      <div className="flex flex-col gap-3 border-t border-border/50 pt-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
         <p className="text-xs text-muted-foreground">
           Saves the whole active configuration file ({activeFilename}).
         </p>
@@ -350,7 +295,7 @@ function GoDoxyWebUiRouteSection() {
             title="Save configuration"
           />
         </div>
-      </CardFooter>
-    </Card>
+      </div>
+    </FormSection>
   )
 }

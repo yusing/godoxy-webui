@@ -21,7 +21,7 @@ function SettingsPage() {
     <>
       <ConfigFilesListProvider />
       <ConfigStateSyncronizer />
-      <div className="h-full min-h-0 overflow-y-auto scrollbar-default">
+      <div className="h-full min-h-0 overflow-hidden">
         <WebUiSettings />
       </div>
     </>
