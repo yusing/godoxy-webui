@@ -22,7 +22,7 @@ export default function ServersSidebar() {
   const selectedAgent = useFragment()
   const selected = selectedAgent || undefined
   const selectedKey = selected || 'GoDoxy'
-  const selectedTimestamp = store.use(`systemInfo.${selectedKey}.timestamp`)
+  const selectedTimestamp = store.systemInfo[selectedKey]!.timestamp.use()
 
   return (
     <aside className="flex w-full flex-col border-b border-border/60 xl:h-full xl:w-[382px] xl:min-w-[340px] xl:max-w-[420px] xl:border-r xl:border-b-0">
@@ -86,19 +86,21 @@ function ServerList({ agentList, selected }: { agentList: readonly string[]; sel
 
 function ServerItem({ agent, isSelected }: { agent?: string; isSelected?: boolean }) {
   const mainDisplayName = store.config.display_name.use()
-  const agentKey = agent || mainDisplayName || 'GoDoxy'
+  const agentKey = agent || 'GoDoxy'
+  const displayName = agent || mainDisplayName || 'GoDoxy'
+  const systemInfo = store.systemInfo[agentKey]!
   const temperatureUnit = store.temperatureUnit.use()
   const { cpuTemp, diskTemp, cpuTempStatus, diskTempStatus } = useSensorsInfo(agentKey)
-  const cpu = store.useCompute(`systemInfo.${agentKey}.cpu_average`, value => formatPercent(value))
-  const memory = store.useCompute(`systemInfo.${agentKey}.memory`, value => formatMemory(value))
-  const disk = store.useCompute(`systemInfo.${agentKey}.disks`, value => formatTopDiskShort(value))
-  const upload = store.useCompute(`systemInfo.${agentKey}.network.upload_speed`, value =>
+  const cpu = systemInfo.cpu_average.useCompute(value => formatPercent(value))
+  const memory = systemInfo.memory.useCompute(value => formatMemory(value))
+  const disk = systemInfo.disks.useCompute(value => formatTopDiskShort(value))
+  const upload = systemInfo.network.upload_speed.useCompute(value =>
     value === undefined || value === null ? '—' : formatBytes(value, { precision: 0, unit: '/s' })
   )
-  const download = store.useCompute(`systemInfo.${agentKey}.network.download_speed`, value =>
+  const download = systemInfo.network.download_speed.useCompute(value =>
     value === undefined || value === null ? '—' : formatBytes(value, { precision: 0, unit: '/s' })
   )
-  const timestamp = store.use(`systemInfo.${agentKey}.timestamp`)
+  const timestamp = systemInfo.timestamp.use()
 
   const temperatureValue =
     cpuTemp === null && diskTemp === null
@@ -130,7 +132,7 @@ function ServerItem({ agent, isSelected }: { agent?: string; isSelected?: boolea
                 timestamp ? 'bg-(--ds-running-bg)' : 'bg-(--ds-status-stopped-bg)'
               )}
             />
-            <span className="truncate text-md leading-none font-semibold">{agentKey}</span>
+            <span className="truncate text-md leading-none font-semibold">{displayName}</span>
           </div>
           <span className="rounded-md bg-card/70 supports-backdrop-filter:bg-card/45 px-2 py-0.5 text-xs text-muted-foreground text-nowrap">
             {timestamp ? `@ ${formatShortTime(timestamp)}` : '—'}
