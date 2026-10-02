@@ -1,7 +1,7 @@
-import { createClientAPIPage } from 'fumadocs-openapi/ui/create-client'
+import { createOpenAPIPage } from 'fumadocs-openapi/ui'
 import { mediaAdapters } from '@/lib/wiki/media-adapter'
 
-export const APIPage = createClientAPIPage({
+export const APIPage = createOpenAPIPage({
   shikiOptions: {
     themes: {
       dark: 'vesper',
