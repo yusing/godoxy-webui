@@ -1,4 +1,4 @@
-import { pascalCase } from 'change-case'
+import { capitalCase } from 'change-case'
 
 export {
   getAllowedValues,
@@ -202,7 +202,7 @@ function getTitle(schema: JSONSchema | undefined, field: string): string | undef
   if (!vSchema) return undefined
   if (vSchema.title) return vSchema.title
   if (vSchema.description) return vSchema.description
-  return pascalCase(field)
+  return capitalCase(field)
 }
 
 function getRequired(schema: JSONSchema | undefined): string[] {

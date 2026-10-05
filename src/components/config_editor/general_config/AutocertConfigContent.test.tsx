@@ -87,7 +87,7 @@ test('primary and extra certificates use the complete finite provider schema', a
 test('concrete DNS provider credentials render and edits reach configuration state', async () => {
   await act(async () => root.render(<AutocertConfigContent />))
   expect(Array.from(container.querySelectorAll('label'), label => label.textContent)).toContain(
-    'ApiKey'
+    'Api Key'
   )
   expect(Array.from(container.querySelectorAll('code'), key => key.textContent)).toContain(
     'api_key'
@@ -192,8 +192,8 @@ test('nested credentials and array options render for main and extra providers',
     extra: [{ provider: 'acmedns', options: { allow_list: ['192.0.2.1', '198.51.100.1'] } }],
   })
   await act(async () => root.render(<AutocertConfigContent />))
-  expect(container.textContent).toContain('Oauth2Config')
-  expect(container.textContent).toContain('AllowList')
+  expect(container.textContent).toContain('Oauth2 Config')
+  expect(container.textContent).toContain('Allow List')
   for (const key of ['oauth2_config', 'allow_list']) {
     const trigger = Array.from(
       container.querySelectorAll<HTMLButtonElement>('[data-slot="collapsible-trigger"]')
@@ -244,7 +244,7 @@ for (const value of [undefined, false, true, 'false', 'true'] as const) {
     })
     await act(async () => root.render(<AutocertConfigContent />))
     const checkboxes = container.querySelectorAll<HTMLElement>(
-      '[data-slot="checkbox"][aria-label="PrivateZone"]'
+      '[data-slot="checkbox"][aria-label="Private Zone"]'
     )
     expect(checkboxes).toHaveLength(2)
     const checked = value === true || value === 'true'
@@ -257,7 +257,7 @@ for (const value of [undefined, false, true, 'false', 'true'] as const) {
     })
 
     const labels = Array.from(container.querySelectorAll<HTMLLabelElement>('label')).filter(
-      label => label.textContent === 'PrivateZone'
+      label => label.textContent === 'Private Zone'
     )
     expect(labels).toHaveLength(2)
     expect(labels[0]!.control).not.toBeNull()
@@ -278,6 +278,22 @@ for (const value of [undefined, false, true, 'false', 'true'] as const) {
     })
   })
 }
+
+test('duration labels use field names while other descriptions remain unchanged', async () => {
+  configStore.configObject.autocert.set({
+    provider: 'cloudflare',
+    email: 'admin@example.com',
+    domains: ['example.com'],
+    extra: [{ provider: 'cloudflare' }],
+  })
+  await act(async () => root.render(<AutocertConfigContent />))
+  const labels = Array.from(container.querySelectorAll('label'), label => label.textContent)
+  for (const title of ['Polling Interval', 'Propagation Timeout']) {
+    expect(labels.filter(label => label === title)).toHaveLength(2)
+  }
+  expect(labels).toContain('ACME email*')
+  expect(container.textContent).not.toContain('Go duration, for example 30s or 1m30s.')
+})
 
 test('controlled boolean fields use checkboxes and preserve readonly behavior', async () => {
   const schema = {

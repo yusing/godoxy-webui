@@ -23,7 +23,7 @@ test('unrestricted mixed primitives and string enums keep their controls', () =>
   expect(isToggleType(undefined)).toBe(false)
 })
 
-test('inferred field labels use PascalCase without changing explicit titles', () => {
+test('inferred field labels have spaces without changing titles or descriptions', () => {
   const schema: JSONSchema = {
     properties: {
       client_secret: { type: 'string' },
@@ -32,8 +32,8 @@ test('inferred field labels use PascalCase without changing explicit titles', ()
       propagation_timeout: { type: 'string', description: 'Go duration, for example 30s.' },
     },
   }
-  expect(getTitle(schema, 'client_secret')).toBe('ClientSecret')
-  expect(getTitle(schema, 'oidc_request_url')).toBe('OidcRequestUrl')
+  expect(getTitle(schema, 'client_secret')).toBe('Client Secret')
+  expect(getTitle(schema, 'oidc_request_url')).toBe('Oidc Request Url')
   expect(getTitle(schema, 'zone_name')).toBe('DNS zone name')
   expect(getTitle(schema, 'propagation_timeout')).toBe('Go duration, for example 30s.')
   expect(getTitle(schema, 'unknown_key')).toBeUndefined()

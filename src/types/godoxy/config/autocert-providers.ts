@@ -35,7 +35,7 @@ export type AutocertProvider =
   | 'vultr'
 import type { AutocertConfigBase, LocalOptions, CustomOptions } from './autocert'
 
-/** Go duration, for example 30s or 1m30s. */
+// Go duration, for example 30s or 1m30s.
 export type ProviderDuration = string
 
 export interface AcmednsOptions extends AutocertConfigBase {
