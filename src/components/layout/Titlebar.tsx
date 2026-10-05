@@ -35,16 +35,16 @@ export default function Titlebar() {
       inset-x-0 items-center px-4 border-b surface z-40 backdrop-blur-sm sticky top-0"
     >
       <div className="flex items-center gap-2">
-        <a href="/docs" aria-label="GoDoxy documentation" className="text-inherit no-underline">
-          <img src="/icon0.svg" alt="GoDoxy" width={24} height={24} />
-        </a>
         <a
           href={siteConfig.links.github}
           target="_blank"
           rel="noopener noreferrer"
           className="text-sm sm:text-base font-semibold tracking-tight leading-none whitespace-nowrap text-inherit no-underline"
         >
-          {siteConfig.metadata.title}
+          <div className="flex items-center gap-2">
+            <img src="/icon0.svg" alt="GoDoxy" width={24} height={24} />
+            {siteConfig.metadata.title}
+          </div>
         </a>
         <a
           href={`${siteConfig.links.github}/releases`}
