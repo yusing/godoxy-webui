@@ -1,30 +1,6 @@
 import type { DomainOrWildcard, Email } from '../types'
-import type { AutocertProvider } from './autocert-providers'
-export type { AutocertProvider } from './autocert-providers'
-
-export type AutocertExtra =
-  | Partial<LocalOptions>
-  | Partial<CustomOptions>
-  | Partial<CloudflareOptions>
-  | Partial<CloudDNSOptions>
-  | Partial<DeSECOptions>
-  | Partial<DuckDNSOptions>
-  | Partial<OVHOptionsWithAppKey>
-  | Partial<OVHOptionsWithOAuth2Config>
-  | Partial<PorkbunOptions>
-  | Partial<OtherOptions>
-
-export type AutocertConfigWithoutExtra =
-  | LocalOptions
-  | CustomOptions
-  | CloudflareOptions
-  | CloudDNSOptions
-  | DeSECOptions
-  | DuckDNSOptions
-  | OVHOptionsWithAppKey
-  | OVHOptionsWithOAuth2Config
-  | PorkbunOptions
-  | OtherOptions
+import type { AutocertConfigWithoutExtra, AutocertExtra } from './autocert-providers'
+export type * from './autocert-providers'
 
 export type AutocertConfig = AutocertConfigWithoutExtra & {
   /** Extra certificates */
@@ -68,82 +44,4 @@ export interface CustomOptions extends AutocertConfigBase {
   eab_kid?: string
   /** EAB HMAC base64 */
   eab_hmac?: string
-}
-
-export interface CloudflareOptions extends AutocertConfigBase {
-  provider: 'cloudflare'
-  options: { auth_token: string }
-}
-
-export interface CloudDNSOptions extends AutocertConfigBase {
-  provider: 'clouddns'
-  options: {
-    client_id: string
-    email: Email
-    password: string
-  }
-}
-
-export interface DeSECOptions extends AutocertConfigBase {
-  provider: 'desec'
-  options: {
-    token: string
-  }
-}
-
-export interface DuckDNSOptions extends AutocertConfigBase {
-  provider: 'duckdns'
-  options: {
-    token: string
-  }
-}
-
-export interface PorkbunOptions extends AutocertConfigBase {
-  provider: 'porkbun'
-  options: {
-    api_key: string
-    secret_api_key: string
-  }
-}
-export const OVH_ENDPOINTS = [
-  'ovh-eu',
-  'ovh-ca',
-  'ovh-us',
-  'kimsufi-eu',
-  'kimsufi-ca',
-  'soyoustart-eu',
-  'soyoustart-ca',
-] as const
-
-export type OVHEndpoint = (typeof OVH_ENDPOINTS)[number]
-
-export interface OVHOptionsWithAppKey extends AutocertConfigBase {
-  provider: 'ovh'
-  options: {
-    application_secret: string
-    consumer_key: string
-    api_endpoint?: OVHEndpoint
-    application_key: string
-  }
-}
-
-export interface OVHOptionsWithOAuth2Config extends AutocertConfigBase {
-  provider: 'ovh'
-  options: {
-    application_secret: string
-    consumer_key: string
-    api_endpoint?: OVHEndpoint
-    oauth2_config: {
-      client_id: string
-      client_secret: string
-    }
-  }
-}
-
-export interface OtherOptions extends AutocertConfigBase {
-  provider: Exclude<
-    AutocertProvider,
-    'local' | 'custom' | 'cloudflare' | 'clouddns' | 'desec' | 'duckdns' | 'ovh' | 'porkbun'
-  >
-  options: Record<string, string>
 }

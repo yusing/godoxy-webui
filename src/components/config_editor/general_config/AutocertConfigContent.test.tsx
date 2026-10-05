@@ -83,7 +83,7 @@ test('primary and extra certificates use the complete finite provider schema', a
   expect(extraOptions.toSorted()).toEqual(providers.toSorted())
 })
 
-test('generic DNS provider credentials render and edits reach configuration state', async () => {
+test('concrete DNS provider credentials render and edits reach configuration state', async () => {
   await act(async () => root.render(<AutocertConfigContent />))
   const input = Array.from(container.querySelectorAll<HTMLInputElement>('input')).find(
     item => item.value === 'test-key'
@@ -119,4 +119,55 @@ test('changing the main provider keeps extra certificates and clears old DNS cre
     extra: [{ provider: 'local' }],
   })
   expect(configStore.configObject.autocert.value?.options).toBeUndefined()
+})
+
+test('nested credentials and array options render for main and extra providers', async () => {
+  configStore.configObject.autocert.set({
+    provider: 'ovh',
+    email: 'admin@example.com',
+    domains: ['example.com'],
+    options: {
+      oauth2_config: { client_id: 'ovh-client-id', client_secret: 'ovh-client-secret' },
+      ttl: 120,
+      propagation_timeout: '1m30s',
+    },
+    extra: [{ provider: 'acmedns', options: { allow_list: ['192.0.2.1', '198.51.100.1'] } }],
+  })
+  await act(async () => root.render(<AutocertConfigContent />))
+  for (const key of ['oauth2_config', 'allow_list']) {
+    const trigger = Array.from(
+      container.querySelectorAll<HTMLButtonElement>('[data-slot="collapsible-trigger"]')
+    ).find(item => item.textContent?.includes(key))!
+    expect(trigger).toBeDefined()
+    await act(async () => trigger.click())
+  }
+  const inputs = Array.from(container.querySelectorAll<HTMLInputElement>('input'))
+  expect(inputs.map(input => input.value)).toEqual(
+    expect.arrayContaining([
+      'ovh-client-id',
+      'ovh-client-secret',
+      '120',
+      '1m30s',
+      '192.0.2.1',
+      '198.51.100.1',
+    ])
+  )
+  const input = inputs.find(item => item.value === 'ovh-client-secret')!
+  await act(async () => {
+    const setValue = Object.getOwnPropertyDescriptor(
+      dom.window.HTMLInputElement.prototype,
+      'value'
+    )!.set!
+    setValue.call(input, 'updated-secret')
+    input.dispatchEvent(new dom.window.Event('input', { bubbles: true }))
+  })
+  expect(configStore.configObject.autocert.value).toMatchObject({
+    provider: 'ovh',
+    options: {
+      oauth2_config: { client_id: 'ovh-client-id', client_secret: 'updated-secret' },
+      ttl: 120,
+      propagation_timeout: '1m30s',
+    },
+    extra: [{ provider: 'acmedns', options: { allow_list: ['192.0.2.1', '198.51.100.1'] } }],
+  })
 })

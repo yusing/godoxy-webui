@@ -1,21 +1,12 @@
 import type { ArrayState, ObjectState } from 'juststore'
-import { useEffect, useId } from 'react'
+import { useEffect, useMemo } from 'react'
 import { FieldRemoveIconButton } from '@/components/form/delete-button'
 import { FormContainer } from '@/components/form/FormContainer'
 import { IndentedListBlock } from '@/components/form/IndentedListBlock'
 import { StoreFieldInput } from '@/components/form/StoreFieldInput'
 import { StoreMapInput, StoreObjectInput } from '@/components/form/StoreMapInput'
 import { Card, CardContent } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { type Autocert, AutocertSchema, ConfigSchema } from '@/types/godoxy'
-import type { JSONSchema } from '@/types/schema'
 import { configStore } from '../store'
 import AutocertInfo from './AutocertInfo'
 
@@ -125,126 +116,19 @@ function AutocertConfigContentExtra({ state }: { state: ArrayState<Autocert.Auto
   ))
 }
 
-function useLabelAndSchema(provider: string): [string, JSONSchema | undefined] {
-  if (provider === 'local') {
-    return ['Local', AutocertSchema.definitions.LocalOptions]
-  }
-  if (provider === 'cloudflare') {
-    return ['Cloudflare', AutocertSchema.definitions.CloudflareOptions]
-  }
-  if (provider === 'clouddns') {
-    return ['CloudDNS', AutocertSchema.definitions.CloudDNSOptions]
-  }
-  if (provider === 'desec') {
-    return ['deSEC', AutocertSchema.definitions.DeSECOptions]
-  }
-  if (provider === 'duckdns') {
-    return ['DuckDNS', AutocertSchema.definitions.DuckDNSOptions]
-  }
-  if (provider === 'porkbun') {
-    return ['Porkbun', AutocertSchema.definitions.PorkbunOptions]
-  }
-  return ['', undefined]
-}
-
 function DnsProviderOptionsEditor({ state }: { state: ObjectState<Autocert.AutocertConfig> }) {
   const provider = state.useCompute(cfg => cfg?.provider ?? 'local')
-  const [label, schema] = useLabelAndSchema(provider)
-
-  if (schema) {
-    return <StoreObjectInput label={label} card={false} schema={schema} state={state} hideUnknown />
-  }
-
-  if (provider === 'ovh') {
-    return <OVHOptionsEditor state={state} />
-  }
-
-  return (
-    <StoreMapInput
-      label={provider === 'custom' ? 'Custom' : provider}
-      card={false}
-      schema={
-        provider === 'custom'
-          ? AutocertSchema.definitions.CustomOptions
-          : AutocertSchema.definitions.OtherOptions
-      }
-      state={state}
-      hideUnknown
-    />
-  )
-}
-
-function OVHOptionsEditor({ state }: { state: ObjectState<Autocert.AutocertConfig> }) {
-  const authMethodFieldId = useId()
-
-  // derive auth mode
-  const stateWithAppKey = state as ObjectState<Autocert.OVHOptionsWithAppKey>
-  const stateWithOAuth2 = state as ObjectState<Autocert.OVHOptionsWithOAuth2Config>
-  const authMode = state.useCompute(opts =>
-    'options' in opts && opts.options && 'application_key' in opts.options
-      ? 'application_key'
-      : 'oauth2'
-  )
-
-  const setAuthMode = (mode: 'application_key' | 'oauth2') => {
-    if (mode === 'application_key') {
-      const value = stateWithAppKey.options.value
-      const next = {
-        application_secret: value.application_secret,
-        consumer_key: value.consumer_key,
-        application_key: value.application_key,
-        api_endpoint: value.api_endpoint,
-      }
-      stateWithAppKey.options.set(next)
-    } else {
-      const value = stateWithOAuth2.options.value
-      const next = {
-        application_secret: value.application_secret,
-        consumer_key: value.consumer_key,
-        api_endpoint: value.api_endpoint,
-        oauth2_config: {
-          client_id: value.oauth2_config?.client_id,
-          client_secret: value.oauth2_config?.client_secret,
-        },
-      }
-      stateWithOAuth2.options.set(next)
-    }
-  }
+  const schema = useMemo(() => {
+    const branch = AutocertSchema.definitions.AutocertConfigWithoutExtra.anyOf.find(
+      candidate => candidate.properties.provider.const === provider
+    )
+    if (!branch) return undefined
+    const { provider: _provider, ...properties } = branch.properties
+    return { ...branch, properties }
+  }, [provider])
+  if (!schema) return null
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-2">
-        <Label htmlFor={authMethodFieldId}>Auth method</Label>
-        <Select
-          value={authMode}
-          onValueChange={v => setAuthMode(v as 'application_key' | 'oauth2')}
-        >
-          <SelectTrigger id={authMethodFieldId}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="application_key">Application Key</SelectItem>
-            <SelectItem value="oauth2">OAuth2</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      {authMode === 'application_key' ? (
-        <StoreMapInput
-          label="OVH With Application Key"
-          card={false}
-          schema={AutocertSchema.definitions.OVHOptionsWithAppKey}
-          state={stateWithAppKey}
-          hideUnknown
-        />
-      ) : (
-        <StoreMapInput
-          label="OVH With OAuth2"
-          card={false}
-          schema={AutocertSchema.definitions.OVHOptionsWithOAuth2Config}
-          state={stateWithOAuth2}
-          hideUnknown
-        />
-      )}
-    </div>
+    <StoreObjectInput label={provider} card={false} schema={schema} state={state} hideUnknown />
   )
 }
