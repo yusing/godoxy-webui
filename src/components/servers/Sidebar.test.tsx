@@ -157,4 +157,69 @@ describe('ServersSidebar metrics', () => {
     expect(mainCard?.querySelector('.bg-\\(--ds-status-stopped-bg\\)')).toBeNull()
     expect(agentCard?.querySelector('.bg-\\(--ds-status-stopped-bg\\)')).toBeNull()
   })
+
+  test('keeps a bounded, independently scrollable server list for long agent sets', () => {
+    const extraAgents = Object.fromEntries(
+      Array.from({ length: 23 }, (_, index) => {
+        const name = `agent-${index + 1}`
+        return [
+          name,
+          {
+            addr: `${name}:8890`,
+            name,
+            runtime: 'docker',
+            supports_tcp_stream: true,
+            supports_udp_stream: true,
+            version: 'test',
+          },
+        ]
+      })
+    )
+    const extraSystemInfo = Object.fromEntries(
+      Object.keys(extraAgents).map(name => [
+        name,
+        systemInfo({
+          cpu: 1,
+          disk: 2,
+          download: 3,
+          memoryTotal: 1024 ** 3,
+          memoryUsed: 1024 ** 3,
+          upload: 4,
+        }),
+      ])
+    )
+    store.agents.set({
+      'agent.example': {
+        addr: 'agent.example:8890',
+        name: 'agent.example',
+        runtime: 'docker',
+        supports_tcp_stream: true,
+        supports_udp_stream: true,
+        version: 'test',
+      },
+      ...extraAgents,
+    })
+    store.systemInfo.set({
+      ...store.systemInfo.value,
+      ...extraSystemInfo,
+    })
+
+    act(() => {
+      root?.render(<ServersSidebar />)
+    })
+
+    const lists = container.querySelectorAll('[data-testid="server-list"]')
+    expect(lists.length).toBeGreaterThan(0)
+
+    for (const list of lists) {
+      expect(list.className).toContain('min-h-0')
+      expect(list.className).toContain('flex-1')
+      expect(list.querySelectorAll('a[href^="#"]').length).toBe(25)
+    }
+
+    const sidebar = container.querySelector('aside')
+    expect(sidebar?.className).toContain('overflow-hidden')
+    expect(sidebar?.className).toContain('min-h-0')
+    expect(container.querySelector('a[href="#agent-23"]')).not.toBeNull()
+  })
 })

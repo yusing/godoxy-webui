@@ -6,11 +6,11 @@ import AppCategorySegmented from './AppCategorySegmented'
 import AppItem from './AppItem'
 import { type ItemState, store } from './store'
 
-function getItemState(items: HomepageItem[], searchQuery: string, category: string) {
+export function getItemState(items: HomepageItem[], searchQuery: string, category: string) {
   let isEmpty = true
   let visibleIndex = 0
   const state = items.reduce((acc, item, itemIndex) => {
-    if (searchQuery && !match(item.name, searchQuery)) {
+    if (searchQuery && !match(item.name || item.alias, searchQuery)) {
       // acc[item.alias] = itemIndex
       return acc
     }

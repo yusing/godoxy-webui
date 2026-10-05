@@ -15,6 +15,7 @@ import { store } from './store'
 export { EventsList, EventsWatcher }
 
 type PoolAction = 'added' | 'removed' | 'reloaded'
+type RemovedPoolData = { name: string; display: string; removed_at: string }
 
 type EventCommon = {
   level: EventsLevel
@@ -63,13 +64,22 @@ type HomeEvent = EventCommon &
       }
     | {
         category: 'pool.proxmox_nodes'
-        action: PoolAction
+        action: Exclude<PoolAction, 'removed'>
         data: { name: string; id: string }
       }
     | {
         category: 'pool.http_routes' | 'pool.stream_routes' | 'pool.excluded_routes'
-        action: PoolAction
+        action: Exclude<PoolAction, 'removed'>
         data: Route
+      }
+    | {
+        category:
+          | 'pool.proxmox_nodes'
+          | 'pool.http_routes'
+          | 'pool.stream_routes'
+          | 'pool.excluded_routes'
+        action: 'removed'
+        data: RemovedPoolData
       }
   )
 
@@ -282,7 +292,9 @@ function idleEventSummary(action: string, status?: string, message?: string) {
     case 'waking_dep':
       return message?.replace(/^Waking dependency:\s*/i, 'is waking ') || 'is waking a dependency'
     case 'dep_ready':
-      return message?.replace(/^Dependency woke:\s*/i, 'dependency ready: ') || 'dependency is ready'
+      return (
+        message?.replace(/^Dependency woke:\s*/i, 'dependency ready: ') || 'dependency is ready'
+      )
     case 'container_woke':
       return 'started'
     case 'waiting_ready':
@@ -298,6 +310,13 @@ function idleEventSummary(action: string, status?: string, message?: string) {
 function EventData({ event }: { event: HomeEvent }) {
   switch (event.category) {
     case 'pool.proxmox_nodes': {
+      if (event.action === 'removed') {
+        return (
+          <span>
+            <strong>{event.data.display || event.data.name}</strong> removed
+          </span>
+        )
+      }
       return (
         <span>
           {event.data.name} <strong>({event.data.id})</strong> {event.action}
@@ -315,7 +334,11 @@ function EventData({ event }: { event: HomeEvent }) {
       const type = names[event.category]
       return (
         <span>
-          {type} <strong>{event.data.alias}</strong> {event.action}
+          {type}{' '}
+          <strong>
+            {event.action === 'removed' ? event.data.display || event.data.name : event.data.alias}
+          </strong>{' '}
+          {event.action}
         </span>
       )
     }
@@ -386,9 +409,7 @@ function EventData({ event }: { event: HomeEvent }) {
             <strong>{name}</strong> {summary}
           </span>
           {event.data.error ? (
-            <div className="text-xs text-muted-foreground wrap-break-word">
-              {event.data.error}
-            </div>
+            <div className="text-xs text-muted-foreground wrap-break-word">{event.data.error}</div>
           ) : null}
         </div>
       )

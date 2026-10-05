@@ -9,6 +9,7 @@ import {
   Thermometer,
 } from 'lucide-react'
 import type { ElementType, ReactNode } from 'react'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { useFragment } from '@/hooks/fragment'
 import type { DiskUsageStat } from '@/lib/api'
 import { formatBytes, formatShortTime, formatTemperature } from '@/lib/format'
@@ -25,10 +26,10 @@ export default function ServersSidebar() {
   const selectedTimestamp = store.systemInfo[selectedKey]!.timestamp.use()
 
   return (
-    <aside className="flex w-full flex-col border-b border-border/60 xl:h-full xl:w-[382px] xl:min-w-[340px] xl:max-w-[420px] xl:border-r xl:border-b-0">
-      <div className="border-b border-border/60 p-3 xl:hidden">
-        <details className="group rounded-xl border border-border/70 bg-card/40">
-          <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-2.5">
+    <aside className="flex min-h-0 w-full flex-col overflow-hidden border-b border-border/60 xl:h-full xl:w-[382px] xl:min-w-[340px] xl:max-w-[420px] xl:border-r xl:border-b-0">
+      <div className="min-h-0 border-b border-border/60 p-3 xl:hidden">
+        <details className="group flex max-h-[min(70svh,32rem)] flex-col overflow-hidden rounded-xl border border-border/70 bg-card/40">
+          <summary className="flex shrink-0 cursor-pointer list-none items-center justify-between px-4 py-2.5">
             <div className="flex min-w-0 items-center gap-2.5">
               <Server className="size-4 text-primary" />
               <span className="truncate text-lg font-semibold">
@@ -43,8 +44,8 @@ export default function ServersSidebar() {
             </div>
             <ChevronDown className="size-4 text-muted-foreground transition-transform duration-200 group-open:rotate-180" />
           </summary>
-          <div className="space-y-2 border-t border-border/60 px-2 pb-2 pt-2">
-            <div className="flex items-center justify-between rounded-lg bg-card/40 px-2 py-1.5">
+          <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden border-t border-border/60 px-2 pb-2 pt-2">
+            <div className="flex shrink-0 items-center justify-between rounded-lg bg-card/40 px-2 py-1.5">
               <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Controls
               </span>
@@ -58,7 +59,7 @@ export default function ServersSidebar() {
         </details>
       </div>
 
-      <div className="hidden items-center justify-between border-b border-border/60 px-4 py-3 xl:flex">
+      <div className="hidden shrink-0 items-center justify-between border-b border-border/60 px-4 py-3 xl:flex">
         <h2 className="text-lg font-semibold tracking-tight">Servers</h2>
         <div className="flex items-center gap-2">
           <CpuTemperatureToggle />
@@ -66,7 +67,7 @@ export default function ServersSidebar() {
         </div>
       </div>
 
-      <div className="hidden px-3 py-3 xl:block">
+      <div className="hidden min-h-0 flex-1 overflow-hidden px-3 py-3 xl:flex xl:flex-col">
         <ServerList agentList={agentList} selected={selected} />
       </div>
     </aside>
@@ -75,12 +76,14 @@ export default function ServersSidebar() {
 
 function ServerList({ agentList, selected }: { agentList: readonly string[]; selected?: string }) {
   return (
-    <div className="space-y-3">
-      <ServerItem isSelected={!selected} />
-      {agentList.map(agent => (
-        <ServerItem key={agent} agent={agent} isSelected={selected === agent} />
-      ))}
-    </div>
+    <ScrollArea className="min-h-0 flex-1" data-testid="server-list">
+      <div className="space-y-3 pr-2">
+        <ServerItem isSelected={!selected} />
+        {agentList.map(agent => (
+          <ServerItem key={agent} agent={agent} isSelected={selected === agent} />
+        ))}
+      </div>
+    </ScrollArea>
   )
 }
 

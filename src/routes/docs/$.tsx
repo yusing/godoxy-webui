@@ -66,7 +66,7 @@ const loader = createServerFn({
         description: page.data.description,
         toc: serializeTOC(page.data.toc),
         pageTree,
-        props: await page.data.getClientAPIPageProps(),
+        props: page.data.getOpenAPIPageProps(),
       } as const
     }
 
