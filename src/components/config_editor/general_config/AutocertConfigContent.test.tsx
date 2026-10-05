@@ -27,6 +27,7 @@ const { default: AutocertConfigContent } = await import('./AutocertConfigContent
 const { configStore } = await import('../store')
 const { AutocertSchema, ConfigSchema } = await import('@/types/godoxy')
 const { getAllowedValues } = await import('@/types/schema')
+const { FieldInput } = await import('@/components/form/FieldInput')
 
 let root: Root
 let container: HTMLDivElement
@@ -170,4 +171,91 @@ test('nested credentials and array options render for main and extra providers',
     },
     extra: [{ provider: 'acmedns', options: { allow_list: ['192.0.2.1', '198.51.100.1'] } }],
   })
+})
+
+for (const value of [undefined, false, true, 'false', 'true'] as const) {
+  test(`boolean provider options render as checkboxes for ${typeof value} ${String(value)}`, async () => {
+    const options = value === undefined ? {} : { private_zone: value }
+    configStore.configObject.autocert.set({
+      provider: 'azuredns',
+      email: 'admin@example.com',
+      domains: ['example.com'],
+      options,
+      extra: [{ provider: 'azuredns', options }],
+    })
+    await act(async () => root.render(<AutocertConfigContent />))
+    const checkboxes = container.querySelectorAll<HTMLElement>(
+      '[data-slot="checkbox"][aria-label="private_zone"]'
+    )
+    expect(checkboxes).toHaveLength(2)
+    const checked = value === true || value === 'true'
+    for (const checkbox of checkboxes) {
+      expect(checkbox.getAttribute('aria-checked')).toBe(String(checked))
+    }
+    expect(configStore.configObject.autocert.value).toMatchObject({
+      options,
+      extra: [{ options }],
+    })
+
+    const labels = Array.from(container.querySelectorAll<HTMLLabelElement>('label')).filter(
+      label => label.textContent === 'private_zone'
+    )
+    expect(labels).toHaveLength(2)
+    expect(labels[0]!.control).not.toBeNull()
+    await act(async () => labels[0]!.click())
+    expect(configStore.configObject.autocert.value).toMatchObject({
+      options: { private_zone: !checked },
+      extra: [{ options }],
+    })
+    await act(async () => checkboxes[1]!.click())
+    expect(configStore.configObject.autocert.value).toMatchObject({
+      options: { private_zone: !checked },
+      extra: [{ options: { private_zone: !checked } }],
+    })
+    await act(async () => checkboxes[0]!.click())
+    expect(configStore.configObject.autocert.value).toMatchObject({
+      options: { private_zone: checked },
+      extra: [{ options: { private_zone: !checked } }],
+    })
+  })
+}
+
+test('controlled boolean fields use checkboxes and preserve readonly behavior', async () => {
+  const schema = {
+    properties: {
+      private_zone: {
+        title: 'Private zone',
+        anyOf: [
+          { type: 'boolean' },
+          { type: 'string', const: 'true' },
+          { type: 'string', const: 'false' },
+        ],
+      },
+    },
+  }
+  const onChange = mock((value: unknown) => value)
+  const renderField = (readonly: boolean) => (
+    <FieldInput
+      fieldKey="private_zone"
+      fieldValue="false"
+      schema={schema}
+      placeholder={undefined}
+      onChange={onChange}
+      allowDelete={false}
+      readonly={readonly}
+    />
+  )
+  await act(async () => root.render(renderField(false)))
+  const checkbox = container.querySelector<HTMLElement>('[data-slot="checkbox"]')!
+  expect(checkbox.getAttribute('aria-label')).toBe('Private zone')
+  expect(checkbox.getAttribute('aria-checked')).toBe('false')
+  const label = container.querySelector<HTMLLabelElement>('label')!
+  expect(label.control).not.toBeNull()
+  await act(async () => label.click())
+  expect(onChange).toHaveBeenCalledWith(true)
+
+  onChange.mockClear()
+  await act(async () => root.render(renderField(true)))
+  await act(async () => checkbox.click())
+  expect(onChange).not.toHaveBeenCalled()
 })

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useId, useMemo } from 'react'
 
 import { FieldValueSlot } from '@/components/form/delete-button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -61,6 +61,7 @@ function FieldInput<T>({
 
   const vSchema = schema?.properties?.[fieldKey]
   const title = useMemo(() => getTitle(schema, fieldKey), [schema, fieldKey])
+  const checkboxId = useId()
 
   const canAct = allowDelete && !required && !readonly
   const showDelete = canAct && deleteType === 'delete'
@@ -86,7 +87,7 @@ function FieldInput<T>({
         ) : title ? (
           <div className="min-w-[150px] select-none max-w-min">
             <div className="flex items-center gap-2">
-              <Label className="block">
+              <Label className="block" htmlFor={isToggleType(vSchema) ? checkboxId : undefined}>
                 {title}
                 {required && <span className="text-destructive text-xs ml-1">*</span>}
               </Label>
@@ -96,7 +97,7 @@ function FieldInput<T>({
         ) : (
           <div className="min-w-[150px] max-w-min">
             <div className="flex items-center gap-2">
-              <Label>{fieldKey}</Label>
+              <Label htmlFor={isToggleType(vSchema) ? checkboxId : undefined}>{fieldKey}</Label>
               {required && <span className="text-destructive text-xs">*</span>}
             </div>
           </div>
@@ -109,7 +110,17 @@ function FieldInput<T>({
           onRemove={() => onChange(undefined)}
           onReset={() => onChange(undefined)}
         >
-          {allowedValues && allowedValues.length > 1 ? (
+          {isToggleType(vSchema) ? (
+            <div className="w-full flex items-center">
+              <Checkbox
+                id={checkboxId}
+                aria-label={title ?? fieldKey}
+                disabled={readonly}
+                checked={fieldValue === true || fieldValue === 'true'}
+                onCheckedChange={checked => onChange(Boolean(checked))}
+              />
+            </div>
+          ) : allowedValues && allowedValues.length > 1 ? (
             <Select readOnly={readonly} value={stringify(fieldValue)} onValueChange={onChange}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder={placeholder?.value ?? 'Value'} />
@@ -130,14 +141,6 @@ function FieldInput<T>({
               placeholder={placeholder?.value ?? 'Value'}
               onChange={({ target: { value } }) => onChange(value)}
             />
-          ) : isToggleType(vSchema) ? (
-            <div className="w-full flex items-center">
-              <Checkbox
-                disabled={readonly}
-                checked={Boolean(fieldValue)}
-                onCheckedChange={checked => onChange(Boolean(checked))}
-              />
-            </div>
           ) : null}
         </FieldValueSlot>
       </div>

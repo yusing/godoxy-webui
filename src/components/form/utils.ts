@@ -1,4 +1,4 @@
-import { getUnionSchemas, isUnionType, type JSONSchema } from '@/types/schema'
+import { getUnionSchemas, isToggleType, isUnionType, type JSONSchema } from '@/types/schema'
 
 export {
   canAddKey,
@@ -141,7 +141,7 @@ function getEffectiveValueSchema(
   vSchema: JSONSchema | undefined,
   value: unknown
 ): JSONSchema | undefined {
-  if (!vSchema) return vSchema
+  if (!vSchema || isToggleType(vSchema)) return vSchema
 
   // Check if this is a union type schema
   if (isUnionType(vSchema)) {

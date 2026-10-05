@@ -5,7 +5,7 @@ import {
   RenderWithUpdate,
   type State,
 } from 'juststore'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useId, useMemo } from 'react'
 import { FieldValueSlot } from '@/components/form/delete-button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
@@ -73,6 +73,7 @@ export function StoreFieldInput<T extends FieldValues>({
   const required = useMemo(() => getRequired(schema).includes(fieldKey), [schema, fieldKey])
 
   const title = useMemo(() => getTitle(schema, fieldKey), [schema, fieldKey])
+  const checkboxId = useId()
 
   useEffect(() => {
     if (vSchema?.const === undefined) return
@@ -107,7 +108,10 @@ export function StoreFieldInput<T extends FieldValues>({
         ) : (
           <div className="min-w-37.5 select-none max-w-min">
             <div className="flex items-center gap-2">
-              <Label className="block capitalize">
+              <Label
+                className="block capitalize"
+                htmlFor={isToggleType(vSchema) ? checkboxId : undefined}
+              >
                 {title ?? fieldKey}
                 {required && <span className="text-destructive text-xs ml-1">*</span>}
               </Label>
@@ -123,7 +127,22 @@ export function StoreFieldInput<T extends FieldValues>({
           onRemove={child.reset}
           onReset={child.reset}
         >
-          {allowedValues && allowedValues.length > 1 ? (
+          {isToggleType(vSchema) ? (
+            <div className="w-full flex items-center">
+              <RenderWithUpdate state={child}>
+                {(value, update) => (
+                  <Checkbox
+                    id={checkboxId}
+                    aria-label={title ?? fieldKey}
+                    readOnly={readonly}
+                    disabled={readonly}
+                    checked={value === true || value === 'true'}
+                    onCheckedChange={checked => update(Boolean(checked) as T[typeof fieldKey])}
+                  />
+                )}
+              </RenderWithUpdate>
+            </div>
+          ) : allowedValues && allowedValues.length > 1 ? (
             <RenderWithUpdate state={child}>
               {(value, update) => (
                 <Select
@@ -156,19 +175,6 @@ export function StoreFieldInput<T extends FieldValues>({
                 />
               )}
             </RenderWithUpdate>
-          ) : isToggleType(vSchema) ? (
-            <div className="w-full flex items-center">
-              <RenderWithUpdate state={child}>
-                {(value, update) => (
-                  <Checkbox
-                    readOnly={readonly}
-                    disabled={readonly}
-                    checked={Boolean(value)}
-                    onCheckedChange={checked => update(Boolean(checked) as T[typeof fieldKey])}
-                  />
-                )}
-              </RenderWithUpdate>
-            </div>
           ) : null}
         </FieldValueSlot>
       </div>
