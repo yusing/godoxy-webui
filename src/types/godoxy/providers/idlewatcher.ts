@@ -1,4 +1,3 @@
-import type { IdlewatcherNotifyConfig } from '@/lib/api'
 import type { Duration, URI } from '../types'
 
 export const STOP_METHODS = ['pause', 'stop', 'kill'] as const
@@ -18,9 +17,6 @@ export const STOP_SIGNALS = [
   'QUIT',
 ] as const
 export type Signal = (typeof STOP_SIGNALS)[number]
-
-// Config input fields are optional, unlike the API response fields.
-export type IdleWatcherNotifyConfig = Partial<IdlewatcherNotifyConfig>
 
 export type IdleWatcherConfig = {
   /** Idle timeout */
@@ -47,8 +43,6 @@ export type IdleWatcherConfig = {
    * @title Start Endpoint
    */
   start_endpoint?: URI
-  /** Send sleep/wake notifications (proxy.idle_notify) */
-  idle_notify?: boolean
-  /** Notification provider names, comma separated (proxy.idle_notify_to) */
+  /** Notification provider names, comma separated; empty disables (proxy.idle_notify_to) */
   idle_notify_to?: string
 }

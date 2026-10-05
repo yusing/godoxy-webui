@@ -652,7 +652,7 @@ export interface IdlewatcherConfig {
    * base so it survives the config copy done on reload in
    * idlewatcher.NewWatcher.
    */
-  notify: IdlewatcherNotifyConfig;
+  notify?: IdlewatcherNotifyConfig | null;
   proxmox: IdlewatcherProxmoxNodeConfig;
   /** Optional path that must be hit to start container */
   start_endpoint: string;
@@ -669,13 +669,7 @@ export interface IdlewatcherDockerConfig {
 }
 
 export interface IdlewatcherNotifyConfig {
-  /**
-   * Opt in or out explicitly. Unset inherits `defaults.idlewatcher.notify`,
-   * then falls back to len(To) > 0.
-   */
-  enabled: boolean;
-  /** `providers.notification` names to send to. Empty means all of them. */
-  to: string[];
+  to?: string[] | null;
 }
 
 export interface IdlewatcherProxmoxNodeConfig {

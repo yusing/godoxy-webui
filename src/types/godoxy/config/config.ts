@@ -1,5 +1,5 @@
 import type { HealthcheckConfig } from '../providers/healthcheck'
-import type { IdleWatcherNotifyConfig } from '../providers/idlewatcher'
+import type { IdlewatcherNotifyConfig } from '@/lib/api'
 import type { DomainName } from '../types'
 import type { ACLConfig } from './acl'
 import type { AutocertConfig } from './autocert'
@@ -43,7 +43,7 @@ export type Config = {
      * @additionalProperties false
      */
     idlewatcher?: {
-      notify?: IdleWatcherNotifyConfig
+      notify?: IdlewatcherNotifyConfig
     }
   }
   /**

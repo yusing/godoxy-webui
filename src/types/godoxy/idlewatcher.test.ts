@@ -23,17 +23,17 @@ const idlewatcher = {
 } satisfies NonNullable<ReverseProxyRoute['idlewatcher']>
 
 const notifications = [
-  ['enabled only', { enabled: true }],
+  ['broadcast', {}],
   ['recipients only', { to: ['discord'] }],
-  ['explicit opt-out', { enabled: false }],
+  ['explicit opt-out', { to: [] }],
 ] as const
 
 const invalidNotifications = [
   ['non-object notify', false],
-  ['non-boolean enabled', { enabled: 'false' }],
+  ['removed enabled flag', { enabled: true }],
   ['non-array recipients', { to: 'discord' }],
   ['non-string recipient', { to: [123] }],
-  ['unknown notification field', { enabled: true, unknown: true }],
+  ['unknown notification field', { to: [], unknown: true }],
 ] as const
 
 describe('global idle notification defaults', () => {
@@ -71,15 +71,14 @@ for (const scheme of ['http', 'tcp'] as const) {
 
 describe('Docker idle notification labels', () => {
   test.each([
-    ['enabled only', { idle_notify: true }],
     ['recipients only', { idle_notify_to: 'discord,email' }],
-    ['explicit opt-out with recipients', { idle_notify: false, idle_notify_to: 'discord' }],
+    ['explicit opt-out', { idle_notify_to: '' }],
   ])('accepts %s', (_, labels) => {
     expect(docker.validate({ app: { scheme: 'http', ...labels } }).errors).toEqual([])
   })
 
   test.each([
-    ['non-boolean enabled', { idle_notify: 'false' }],
+    ['removed enabled label', { idle_notify: true }],
     ['non-string recipients', { idle_notify_to: ['discord'] }],
     ['unknown notification field', { idle_notify_unknown: true }],
   ])('rejects %s', (_, labels) => {
