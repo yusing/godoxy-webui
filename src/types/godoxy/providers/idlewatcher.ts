@@ -43,4 +43,6 @@ export type IdleWatcherConfig = {
    * @title Start Endpoint
    */
   start_endpoint?: URI
+  /** Notification provider names, comma separated; empty disables (proxy.idle_notify_to) */
+  idle_notify_to?: string
 }
