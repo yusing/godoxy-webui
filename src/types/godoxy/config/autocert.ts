@@ -1,17 +1,6 @@
 import type { DomainOrWildcard, Email } from '../types'
-
-export const AUTOCERT_PROVIDERS = [
-  'local',
-  'custom',
-  'cloudflare',
-  'clouddns',
-  'desec',
-  'duckdns',
-  'ovh',
-  'porkbun',
-] as const
-
-export type AutocertProvider = (typeof AUTOCERT_PROVIDERS)[number]
+import type { AutocertProvider } from './autocert-providers'
+export type { AutocertProvider } from './autocert-providers'
 
 export type AutocertExtra =
   | Partial<LocalOptions>
@@ -152,6 +141,9 @@ export interface OVHOptionsWithOAuth2Config extends AutocertConfigBase {
 }
 
 export interface OtherOptions extends AutocertConfigBase {
-  provider: string
-  options: object
+  provider: Exclude<
+    AutocertProvider,
+    'local' | 'custom' | 'cloudflare' | 'clouddns' | 'desec' | 'duckdns' | 'ovh' | 'porkbun'
+  >
+  options: Record<string, string>
 }

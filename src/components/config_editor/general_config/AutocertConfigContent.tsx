@@ -57,8 +57,12 @@ function AutocertConfigForm({
     const unsubscribe = state.provider.subscribe(v => {
       if (v === undefined) return
 
-      let next: Partial<Autocert.AutocertConfig> = {
+      let next: Partial<Autocert.AutocertConfigBase> & {
+        provider: Autocert.AutocertProvider
+        extra?: Autocert.AutocertExtra[]
+      } = {
         provider: v,
+        extra: state.extra.value,
       }
       if (v !== 'local') {
         next = {
@@ -157,9 +161,13 @@ function DnsProviderOptionsEditor({ state }: { state: ObjectState<Autocert.Autoc
 
   return (
     <StoreMapInput
-      label="Custom"
+      label={provider === 'custom' ? 'Custom' : provider}
       card={false}
-      schema={AutocertSchema.definitions.CustomOptions}
+      schema={
+        provider === 'custom'
+          ? AutocertSchema.definitions.CustomOptions
+          : AutocertSchema.definitions.OtherOptions
+      }
       state={state}
       hideUnknown
     />
