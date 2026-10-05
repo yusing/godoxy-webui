@@ -1,3 +1,4 @@
+import type { IdlewatcherNotifyConfig } from '@/lib/api'
 import type { Duration, URI } from '../types'
 
 export const STOP_METHODS = ['pause', 'stop', 'kill'] as const
@@ -18,20 +19,8 @@ export const STOP_SIGNALS = [
 ] as const
 export type Signal = (typeof STOP_SIGNALS)[number]
 
-export type IdleWatcherNotifyConfig = {
-  /** Send sleep/wake notifications for this route
-   *
-   * Naming providers in `to` is enough to opt in. Set this explicitly to notify
-   * every configured provider without naming them, or to opt out of
-   * `defaults.idlewatcher.notify`.
-   */
-  enabled?: boolean
-  /** Notification provider names, as configured under `providers.notification`
-   *
-   * Omit to send to every configured provider.
-   */
-  to?: string[]
-}
+// Config input fields are optional, unlike the API response fields.
+export type IdleWatcherNotifyConfig = Partial<IdlewatcherNotifyConfig>
 
 export type IdleWatcherConfig = {
   /** Idle timeout */
@@ -58,14 +47,8 @@ export type IdleWatcherConfig = {
    * @title Start Endpoint
    */
   start_endpoint?: URI
-  /** Send sleep/wake notifications for this container
-   *
-   * Docker label: `proxy.idle_notify`
-   */
+  /** Send sleep/wake notifications (proxy.idle_notify) */
   idle_notify?: boolean
-  /** Notification provider names, comma separated
-   *
-   * Docker label: `proxy.idle_notify_to`
-   */
+  /** Notification provider names, comma separated (proxy.idle_notify_to) */
   idle_notify_to?: string
 }
