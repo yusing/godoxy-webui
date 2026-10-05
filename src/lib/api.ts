@@ -1269,6 +1269,23 @@ export namespace Cert {
   }
 
   /**
+   * @description List available DNS certificate provider IDs
+   * @tags cert
+   * @name Providers
+   * @summary List certificate providers
+   * @request GET:/cert/providers
+   * @response `200` `(string)[]` OK
+   * @response `403` `ErrorResponse` Unauthorized
+   */
+  export namespace Providers {
+    export type RequestParams = {};
+    export type RequestQuery = {};
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = string[];
+  }
+
+  /**
    * @description Renew cert
    * @tags cert, websocket
    * @name Renew
@@ -2911,6 +2928,24 @@ export class Api<
     info: (params: RequestParams = {}) =>
       this.request<CertInfo[], ErrorResponse>({
         path: `/cert/info`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description List available DNS certificate provider IDs
+     *
+     * @tags cert
+     * @name Providers
+     * @summary List certificate providers
+     * @request GET:/cert/providers
+     * @response `200` `(string)[]` OK
+     * @response `403` `ErrorResponse` Unauthorized
+     */
+    providers: (params: RequestParams = {}) =>
+      this.request<string[], ErrorResponse>({
+        path: `/cert/providers`,
         method: "GET",
         format: "json",
         ...params,

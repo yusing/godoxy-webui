@@ -1,11 +1,11 @@
 import type { ArrayState, ObjectState } from 'juststore'
-import { useEffect, useId } from 'react'
+import { useEffect, useId, useMemo, useState } from 'react'
 import { FieldRemoveIconButton } from '@/components/form/delete-button'
 import { FormContainer } from '@/components/form/FormContainer'
 import { IndentedListBlock } from '@/components/form/IndentedListBlock'
-import { StoreFieldInput } from '@/components/form/StoreFieldInput'
 import { StoreMapInput, StoreObjectInput } from '@/components/form/StoreMapInput'
 import { Card, CardContent } from '@/components/ui/card'
+import { CustomCombobox } from '@/components/ui/custom-combobox'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -14,12 +14,28 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { api } from '@/lib/api-client'
 import { type Autocert, AutocertSchema, ConfigSchema } from '@/types/godoxy'
+import { AUTOCERT_PROVIDERS } from '@/types/godoxy/config/autocert'
 import type { JSONSchema } from '@/types/schema'
 import { configStore } from '../store'
 import AutocertInfo from './AutocertInfo'
 
 const autocertConfig = configStore.configObject.autocert.ensureObject()
+let providersRequest: Promise<string[]> | undefined
+
+function getAutocertProviders() {
+  if (!providersRequest) {
+    providersRequest = api.cert
+      .providers()
+      .then(({ data }) => data)
+      .catch(() => {
+        providersRequest = undefined
+        return [...AUTOCERT_PROVIDERS]
+      })
+  }
+  return providersRequest
+}
 
 export default function AutocertConfigContent() {
   return (
@@ -47,44 +63,19 @@ export default function AutocertConfigContent() {
 function AutocertConfigForm({
   state,
   onAddExtra = undefined,
+  inheritedProvider,
 }: {
   state: ObjectState<Autocert.AutocertConfig>
   onAddExtra?: (() => void) | undefined
+  inheritedProvider?: string | undefined
 }) {
-  const base = state as unknown as ObjectState<Autocert.AutocertConfigBase>
-  // remove email, domains, cert_path, key_path, resolvers when provider is local
-  useEffect(() => {
-    const unsubscribe = state.provider.subscribe(v => {
-      if (v === undefined) return
-
-      let next: Partial<Autocert.AutocertConfig> = {
-        provider: v,
-      }
-      if (v !== 'local') {
-        next = {
-          ...next,
-          email: base.email.value,
-          domains: base.domains.value,
-          cert_path: base.cert_path.value,
-          key_path: base.key_path.value,
-          resolvers: base.resolvers.value,
-        }
-      }
-      state.set(next as Autocert.AutocertConfig)
-    })
-    return unsubscribe
-  })
+  const configuredProvider = state.provider.use()
+  const provider = configuredProvider ?? inheritedProvider ?? 'local'
 
   return (
     <div className="flex flex-col gap-4">
-      <StoreFieldInput
-        state={state}
-        fieldKey="provider"
-        schema={AutocertSchema.definitions.AutocertConfigWithoutExtra}
-        allowKeyChange={false}
-        allowDelete={false}
-      />
-      <DnsProviderOptionsEditor state={state} />
+      <AutocertProviderPicker state={state} provider={provider} />
+      <DnsProviderOptionsEditor state={state} provider={provider} />
       {onAddExtra && (
         <FormContainer
           label="Extra certificates"
@@ -93,14 +84,80 @@ function AutocertConfigForm({
           canAdd
           onAdd={onAddExtra}
         >
-          <AutocertConfigContentExtra state={state.extra.ensureArray()} />
+          <AutocertConfigContentExtra
+            state={state.extra.ensureArray()}
+            inheritedProvider={provider}
+          />
         </FormContainer>
       )}
     </div>
   )
 }
 
-function AutocertConfigContentExtra({ state }: { state: ArrayState<Autocert.AutocertExtra> }) {
+function AutocertProviderPicker({
+  state,
+  provider,
+}: {
+  state: ObjectState<Autocert.AutocertConfig>
+  provider: string
+}) {
+  const [providers, setProviders] = useState<string[]>([...AUTOCERT_PROVIDERS])
+  const providerFieldId = useId()
+
+  useEffect(() => {
+    let active = true
+    getAutocertProviders().then(value => {
+      if (active) setProviders(value)
+    })
+    return () => {
+      active = false
+    }
+  }, [])
+
+  const options = useMemo(() => {
+    const values = new Set(['local', 'custom', ...providers])
+    values.add(provider)
+    return [...values]
+  }, [providers, provider])
+
+  return (
+    <div className="flex flex-col gap-2">
+      <Label htmlFor={providerFieldId}>DNS provider</Label>
+      <CustomCombobox
+        triggerClassName="w-full max-w-none"
+        triggerProps={{ id: providerFieldId }}
+        value={provider}
+        items={options}
+        placeholder="Select DNS provider"
+        emptyMessage="No DNS provider found"
+        onValueChange={value => {
+          if (typeof value === 'string') setAutocertProvider(state, value, provider)
+        }}
+      />
+    </div>
+  )
+}
+
+function setAutocertProvider(
+  state: ObjectState<Autocert.AutocertConfig>,
+  provider: string,
+  currentProvider: string
+) {
+  if (state.provider.value === provider) return
+
+  const next = { ...state.value } as Record<string, unknown>
+  if (currentProvider !== provider) delete next.options
+  next.provider = provider
+  state.set(next as unknown as Autocert.AutocertConfig)
+}
+
+function AutocertConfigContentExtra({
+  state,
+  inheritedProvider,
+}: {
+  state: ArrayState<Autocert.AutocertExtra>
+  inheritedProvider: string
+}) {
   const numItems = state.useCompute(value => value?.length ?? 0)
 
   return Array.from({ length: numItems }).map((_, index) => (
@@ -116,7 +173,10 @@ function AutocertConfigContentExtra({ state }: { state: ArrayState<Autocert.Auto
         />
       }
     >
-      <AutocertConfigForm state={state.at(index) as ObjectState<Autocert.AutocertConfig>} />
+      <AutocertConfigForm
+        state={state.at(index) as ObjectState<Autocert.AutocertConfig>}
+        inheritedProvider={inheritedProvider}
+      />
     </IndentedListBlock>
   ))
 }
@@ -124,6 +184,9 @@ function AutocertConfigContentExtra({ state }: { state: ArrayState<Autocert.Auto
 function useLabelAndSchema(provider: string): [string, JSONSchema | undefined] {
   if (provider === 'local') {
     return ['Local', AutocertSchema.definitions.LocalOptions]
+  }
+  if (provider === 'custom') {
+    return ['Custom', AutocertSchema.definitions.CustomOptions]
   }
   if (provider === 'cloudflare') {
     return ['Cloudflare', AutocertSchema.definitions.CloudflareOptions]
@@ -143,12 +206,23 @@ function useLabelAndSchema(provider: string): [string, JSONSchema | undefined] {
   return ['', undefined]
 }
 
-function DnsProviderOptionsEditor({ state }: { state: ObjectState<Autocert.AutocertConfig> }) {
-  const provider = state.useCompute(cfg => cfg?.provider ?? 'local')
+function DnsProviderOptionsEditor({
+  state,
+  provider,
+}: {
+  state: ObjectState<Autocert.AutocertConfig>
+  provider: string
+}) {
   const [label, schema] = useLabelAndSchema(provider)
+  const formSchema = useMemo(
+    () => withoutProviderField(schema ?? AutocertSchema.definitions.OtherOptions),
+    [schema]
+  )
 
   if (schema) {
-    return <StoreObjectInput label={label} card={false} schema={schema} state={state} hideUnknown />
+    return (
+      <StoreObjectInput label={label} card={false} schema={formSchema} state={state} hideUnknown />
+    )
   }
 
   if (provider === 'ovh') {
@@ -157,13 +231,23 @@ function DnsProviderOptionsEditor({ state }: { state: ObjectState<Autocert.Autoc
 
   return (
     <StoreMapInput
-      label="Custom"
+      label="DNS provider options"
       card={false}
-      schema={AutocertSchema.definitions.CustomOptions}
+      schema={formSchema}
       state={state}
       hideUnknown
     />
   )
+}
+
+function withoutProviderField(schema: JSONSchema): JSONSchema {
+  const properties = { ...schema.properties }
+  delete properties.provider
+  return {
+    ...schema,
+    properties,
+    required: schema.required?.filter(key => key !== 'provider'),
+  }
 }
 
 function OVHOptionsEditor({ state }: { state: ObjectState<Autocert.AutocertConfig> }) {
@@ -224,7 +308,7 @@ function OVHOptionsEditor({ state }: { state: ObjectState<Autocert.AutocertConfi
         <StoreMapInput
           label="OVH With Application Key"
           card={false}
-          schema={AutocertSchema.definitions.OVHOptionsWithAppKey}
+          schema={withoutProviderField(AutocertSchema.definitions.OVHOptionsWithAppKey)}
           state={stateWithAppKey}
           hideUnknown
         />
@@ -232,7 +316,7 @@ function OVHOptionsEditor({ state }: { state: ObjectState<Autocert.AutocertConfi
         <StoreMapInput
           label="OVH With OAuth2"
           card={false}
-          schema={AutocertSchema.definitions.OVHOptionsWithOAuth2Config}
+          schema={withoutProviderField(AutocertSchema.definitions.OVHOptionsWithOAuth2Config)}
           state={stateWithOAuth2}
           hideUnknown
         />

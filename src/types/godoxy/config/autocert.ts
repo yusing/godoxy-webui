@@ -55,6 +55,12 @@ export interface AutocertConfigBase {
   resolvers?: string[]
   /** CA Directory URL */
   ca_dir_url?: string
+  /** CA Certs */
+  ca_certs?: string[]
+  /** EAB Key ID */
+  eab_kid?: string
+  /** EAB HMAC base64 */
+  eab_hmac?: string
   /**
    * Private key algorithm
    *
@@ -73,12 +79,6 @@ export interface LocalOptions {
 
 export interface CustomOptions extends AutocertConfigBase {
   provider: 'custom'
-  /** CA Certs */
-  ca_certs?: string[]
-  /** EAB Key ID */
-  eab_kid?: string
-  /** EAB HMAC base64 */
-  eab_hmac?: string
 }
 
 export interface CloudflareOptions extends AutocertConfigBase {
@@ -153,5 +153,5 @@ export interface OVHOptionsWithOAuth2Config extends AutocertConfigBase {
 
 export interface OtherOptions extends AutocertConfigBase {
   provider: string
-  options: object
+  options?: Record<string, string>
 }

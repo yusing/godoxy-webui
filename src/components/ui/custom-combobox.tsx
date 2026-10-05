@@ -10,6 +10,7 @@ type ComboboxProps<V, Multiple extends boolean | undefined = false> = {
   placeholder?: string
   emptyMessage?: string
   triggerClassName?: string
+  triggerProps?: React.ComponentProps<typeof BaseCombobox.Trigger>
 } & ComboboxRootProps<V, Multiple>
 
 export function CustomCombobox<V, Multiple extends boolean | undefined = false>({
@@ -18,15 +19,18 @@ export function CustomCombobox<V, Multiple extends boolean | undefined = false>(
   placeholder,
   emptyMessage,
   triggerClassName,
+  triggerProps,
   ...props
 }: ComboboxProps<V, Multiple>) {
   return (
     <BaseCombobox.Root {...props}>
       <BaseCombobox.Trigger
+        {...triggerProps}
         className={cn(
           buttonVariants({ variant: 'outline', size: 'default' }),
           'max-w-[200px] justify-between',
-          triggerClassName
+          triggerClassName,
+          triggerProps?.className
         )}
       >
         <div className="flex-1 text-left text-sm">
