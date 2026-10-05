@@ -1,3 +1,5 @@
+import { capitalCase } from 'change-case'
+
 export {
   getAllowedValues,
   getDefaultValue,
@@ -200,7 +202,7 @@ function getTitle(schema: JSONSchema | undefined, field: string): string | undef
   if (!vSchema) return undefined
   if (vSchema.title) return vSchema.title
   if (vSchema.description) return vSchema.description
-  return undefined
+  return capitalCase(field)
 }
 
 function getRequired(schema: JSONSchema | undefined): string[] {
@@ -228,9 +230,19 @@ function isInputType(schema?: JSONSchema): boolean {
 }
 
 function isToggleType(schema?: JSONSchema): boolean {
-  if (!schema || !schema.type) return false
+  if (!schema) return false
+  if (schema.anyOf) {
+    return (
+      schema.anyOf.some(branch => branch.type === 'boolean') &&
+      schema.anyOf.every(
+        branch =>
+          branch.type === 'boolean' ||
+          (branch.type === 'string' && (branch.const === 'true' || branch.const === 'false'))
+      )
+    )
+  }
   if (Array.isArray(schema.type)) {
-    return schema.type.some(t => isToggleType({ type: t }))
+    return schema.type.includes('boolean') && !isInputType(schema)
   }
   return schema.type === 'boolean'
 }
