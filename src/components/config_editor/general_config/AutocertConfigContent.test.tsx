@@ -86,6 +86,12 @@ test('primary and extra certificates use the complete finite provider schema', a
 
 test('concrete DNS provider credentials render and edits reach configuration state', async () => {
   await act(async () => root.render(<AutocertConfigContent />))
+  expect(Array.from(container.querySelectorAll('label'), label => label.textContent)).toContain(
+    'ApiKey'
+  )
+  expect(Array.from(container.querySelectorAll('code'), key => key.textContent)).toContain(
+    'api_key'
+  )
   const input = Array.from(container.querySelectorAll<HTMLInputElement>('input')).find(
     item => item.value === 'test-key'
   )
@@ -120,6 +126,57 @@ test('changing the main provider keeps extra certificates and clears old DNS cre
     extra: [{ provider: 'local' }],
   })
   expect(configStore.configObject.autocert.value?.options).toBeUndefined()
+  const keys = Array.from(container.querySelectorAll('code'), item => item.textContent)
+  expect(keys).toContain('auth_token')
+  expect(keys).not.toContain('api_key')
+  expect(keys).not.toContain('api_secret')
+
+  await act(async () => trigger.click())
+  const local = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]')).find(
+    item => item.textContent === 'local'
+  )!
+  await act(async () => local.click())
+  expect(configStore.configObject.autocert.value).toMatchObject({
+    provider: 'local',
+    extra: [{ provider: 'local' }],
+  })
+  const localKeys = Array.from(container.querySelectorAll('code'), item => item.textContent)
+  expect(localKeys).not.toContain('auth_token')
+  expect(localKeys).not.toContain('email')
+})
+
+test('extra certificate provider changes replace options without changing the main provider', async () => {
+  await act(async () => root.render(<AutocertConfigContent />))
+  const trigger = Array.from(
+    container.querySelectorAll<HTMLButtonElement>('[data-slot="select-trigger"]')
+  ).find(item => item.textContent?.includes('local'))!
+  await act(async () => trigger.click())
+  const azure = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]')).find(
+    item => item.textContent === 'azuredns'
+  )!
+  await act(async () => azure.click())
+  const checkbox = container.querySelector<HTMLElement>('[data-slot="checkbox"]')!
+  expect(checkbox).not.toBeNull()
+  await act(async () => checkbox.click())
+  expect(configStore.configObject.autocert.value).toMatchObject({
+    provider: 'spaceship',
+    options: { api_key: 'test-key', api_secret: 'test-secret' },
+    extra: [{ provider: 'azuredns', options: { private_zone: true } }],
+  })
+
+  await act(async () => trigger.click())
+  const acmedns = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]')).find(
+    item => item.textContent === 'acmedns'
+  )!
+  await act(async () => acmedns.click())
+  expect(configStore.configObject.autocert.value?.extra?.[0]).toMatchObject({
+    provider: 'acmedns',
+  })
+  expect(configStore.configObject.autocert.value?.extra?.[0]?.options).toBeUndefined()
+  expect(container.querySelector('[data-slot="checkbox"]')).toBeNull()
+  const keys = Array.from(container.querySelectorAll('code'), item => item.textContent)
+  expect(keys).toContain('allow_list')
+  expect(keys).not.toContain('private_zone')
 })
 
 test('nested credentials and array options render for main and extra providers', async () => {
@@ -135,6 +192,8 @@ test('nested credentials and array options render for main and extra providers',
     extra: [{ provider: 'acmedns', options: { allow_list: ['192.0.2.1', '198.51.100.1'] } }],
   })
   await act(async () => root.render(<AutocertConfigContent />))
+  expect(container.textContent).toContain('Oauth2Config')
+  expect(container.textContent).toContain('AllowList')
   for (const key of ['oauth2_config', 'allow_list']) {
     const trigger = Array.from(
       container.querySelectorAll<HTMLButtonElement>('[data-slot="collapsible-trigger"]')
@@ -185,7 +244,7 @@ for (const value of [undefined, false, true, 'false', 'true'] as const) {
     })
     await act(async () => root.render(<AutocertConfigContent />))
     const checkboxes = container.querySelectorAll<HTMLElement>(
-      '[data-slot="checkbox"][aria-label="private_zone"]'
+      '[data-slot="checkbox"][aria-label="PrivateZone"]'
     )
     expect(checkboxes).toHaveLength(2)
     const checked = value === true || value === 'true'
@@ -198,7 +257,7 @@ for (const value of [undefined, false, true, 'false', 'true'] as const) {
     })
 
     const labels = Array.from(container.querySelectorAll<HTMLLabelElement>('label')).filter(
-      label => label.textContent === 'private_zone'
+      label => label.textContent === 'PrivateZone'
     )
     expect(labels).toHaveLength(2)
     expect(labels[0]!.control).not.toBeNull()

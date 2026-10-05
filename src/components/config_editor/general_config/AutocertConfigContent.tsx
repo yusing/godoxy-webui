@@ -117,7 +117,7 @@ function AutocertConfigContentExtra({ state }: { state: ArrayState<Autocert.Auto
 }
 
 function DnsProviderOptionsEditor({ state }: { state: ObjectState<Autocert.AutocertConfig> }) {
-  const provider = state.useCompute(cfg => cfg?.provider ?? 'local')
+  const provider = state.provider.use() ?? 'local'
   const schema = useMemo(() => {
     const branch = AutocertSchema.definitions.AutocertConfigWithoutExtra.anyOf.find(
       candidate => candidate.properties.provider.const === provider
@@ -129,6 +129,13 @@ function DnsProviderOptionsEditor({ state }: { state: ObjectState<Autocert.Autoc
   if (!schema) return null
 
   return (
-    <StoreObjectInput label={provider} card={false} schema={schema} state={state} hideUnknown />
+    <StoreObjectInput
+      key={provider}
+      label={provider}
+      card={false}
+      schema={schema}
+      state={state}
+      hideUnknown
+    />
   )
 }

@@ -1,3 +1,4 @@
+import { pascalCase } from 'change-case'
 import { getUnionSchemas, isToggleType, isUnionType, type JSONSchema } from '@/types/schema'
 
 export {
@@ -183,15 +184,15 @@ function getEffectiveValueSchema(
   return vSchema
 }
 
-/** Primary label: matches schema getTitle / StoreFieldInput (title, then description, then key). */
+/** Primary label: matches schema getTitle / StoreFieldInput. */
 function getLabel(schema: JSONSchema | undefined, field: string): string {
   if (!schema) return field
-  return schema.title ?? schema.description ?? field
+  return schema.title ?? schema.description ?? pascalCase(field)
 }
 
-/** Secondary line: field key (render as code) when schema defines title or description. */
+/** Secondary line: preserve the configuration key when its label is different. */
 function getDescription(schema: JSONSchema | undefined, field: string): string | undefined {
   if (!schema) return undefined
-  if (schema.title != null || schema.description != null) return field
+  if (getLabel(schema, field) !== field) return field
   return undefined
 }
