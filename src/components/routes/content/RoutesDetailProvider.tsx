@@ -1,5 +1,5 @@
 import { useWebSocketApi } from '@/hooks/websocket'
-import type { Route } from '@/lib/api'
+import type { RouteWithPublicURLs as Route } from '@/lib/api'
 import { store } from '../store'
 
 export default function RoutesDetailProvider() {

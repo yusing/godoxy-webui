@@ -997,6 +997,74 @@ export interface RouteUptimeAggregate {
   uptime: number;
 }
 
+export interface RouteWithPublicURLs {
+  access_log?: RequestLoggerConfig | null;
+  agent: string;
+  /**
+   * Alias is route lookup key.
+   *
+   * Supported HTTP host-match forms:
+   *   - short alias: "app"
+   *   - FQDN alias: "app.example.com"
+   *   - leading-label wildcard alias: "*.example.com"
+   *
+   * Wildcard aliases match exactly one leftmost label and are checked only
+   * after normal exact/domain lookup misses, preserving the fast path for
+   * exact routes.
+   */
+  alias: string;
+  bind?: string | null;
+  /** Docker only */
+  container?: Container | null;
+  disable_compression: boolean;
+  excluded?: boolean | null;
+  excluded_reason?: string | null;
+  /** for swagger */
+  health: HealthJSON;
+  /** null on load-balancer routes */
+  healthcheck?: HealthCheckConfig | null;
+  homepage: HomepageItemConfig;
+  host: string;
+  idlewatcher?: IdlewatcherConfig | null;
+  /** HTTP-based routes only: must match a configured inbound_mtls_profiles entry and is ignored when entrypoint.inbound_mtls_profile is set */
+  inbound_mtls_profile: string;
+  /** Index file to serve for single-page app mode */
+  index: string;
+  load_balance?: LoadBalancerConfig | null;
+  lurl?: string | null;
+  max_conns_per_host: number;
+  middlewares?: Record<string, TypesLabelMap> | null;
+  no_tls_verify: boolean;
+  port: Port;
+  /** for backward compatibility */
+  provider?: string | null;
+  proxmox?: ProxmoxNodeConfig | null;
+  /** Public HTTP URLs derived from runtime domains and listeners */
+  public_urls?: string[] | null;
+  purl: string;
+  /** TCP only: relay PROXY protocol header to the destination */
+  relay_proxy_protocol_header: boolean;
+  response_header_timeout: number;
+  root: string;
+  rule_file?: string | null;
+  rules?: RulesRule[] | null;
+  scheme: "http" | "https" | "h2c" | "tcp" | "udp" | "fileserver";
+  /** Single-page app mode: serves index for non-existent paths */
+  spa: boolean;
+  /** Path to client certificate */
+  ssl_certificate: string;
+  /** Path to client certificate key */
+  ssl_certificate_key: string;
+  /** Allowed TLS protocols */
+  ssl_protocols: string[];
+  /** SSL/TLS proxy options (nginx-like) */
+  ssl_server_name: string;
+  /** Path to trusted CA certificates */
+  ssl_trusted_certificate: string;
+  /** TCP only: terminate inbound TLS on the shared HTTPS listener before proxying plaintext to the destination */
+  tls_termination: boolean;
+}
+
 export interface RoutingProviderActivation {
   active_routes: number;
   attempted_routes: number;
@@ -2321,7 +2389,7 @@ export namespace Route {
    * @name List
    * @summary List routes
    * @request GET:/route/list
-   * @response `200` `(Route)[]` OK
+   * @response `200` `(RouteWithPublicURLs)[]` OK
    * @response `403` `ErrorResponse` Forbidden
    */
   export namespace List {
@@ -2332,7 +2400,7 @@ export namespace Route {
     };
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = Route[];
+    export type ResponseBody = RouteWithPublicURLs[];
   }
 
   /**
@@ -2419,7 +2487,7 @@ export namespace Route {
    * @name Route
    * @summary List route
    * @request GET:/route/{which}
-   * @response `200` `Route` OK
+   * @response `200` `RouteWithPublicURLs` OK
    * @response `400` `ErrorResponse` Bad Request
    * @response `403` `ErrorResponse` Forbidden
    * @response `404` `ErrorResponse` Not Found
@@ -2432,7 +2500,7 @@ export namespace Route {
     export type RequestQuery = {};
     export type RequestBody = never;
     export type RequestHeaders = {};
-    export type ResponseBody = Route;
+    export type ResponseBody = RouteWithPublicURLs;
   }
 }
 
@@ -4097,7 +4165,7 @@ export class Api<
      * @name List
      * @summary List routes
      * @request GET:/route/list
-     * @response `200` `(Route)[]` OK
+     * @response `200` `(RouteWithPublicURLs)[]` OK
      * @response `403` `ErrorResponse` Forbidden
      */
     list: (
@@ -4107,7 +4175,7 @@ export class Api<
       },
       params: RequestParams = {},
     ) =>
-      this.request<Route[], ErrorResponse>({
+      this.request<RouteWithPublicURLs[], ErrorResponse>({
         path: `/route/list`,
         method: "GET",
         query: query,
@@ -4210,13 +4278,13 @@ export class Api<
      * @name Route
      * @summary List route
      * @request GET:/route/{which}
-     * @response `200` `Route` OK
+     * @response `200` `RouteWithPublicURLs` OK
      * @response `400` `ErrorResponse` Bad Request
      * @response `403` `ErrorResponse` Forbidden
      * @response `404` `ErrorResponse` Not Found
      */
     route: (which: string, params: RequestParams = {}) =>
-      this.request<Route, ErrorResponse>({
+      this.request<RouteWithPublicURLs, ErrorResponse>({
         path: `/route/${which}`,
         method: "GET",
         type: "application/json",
