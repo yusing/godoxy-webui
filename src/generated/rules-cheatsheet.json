@@ -487,9 +487,8 @@
           "summary": "Write a log line from a template",
           "description": [
             "Write a log line from a template",
-            "The template supports the following variables:",
-            "Request: the request object",
-            "Response: the response object",
+            "Use request and response variables such as $req_method, $req_url and $status_code",
+            "For response logging with proxy or route, put log in a separate matching rule before the terminating action",
             "Example:"
           ],
           "syntax": "log <level> <path> <template>",
@@ -653,7 +652,8 @@
           "kind": "command",
           "summary": "Require HTTP authentication for incoming requests",
           "description": [
-            "Require HTTP authentication for incoming requests"
+            "Require HTTP authentication for incoming requests",
+            "Request-phase only; cannot run in response-phase rules or nested blocks"
           ],
           "syntax": "require_auth",
           "tags": [
@@ -664,9 +664,11 @@
           "id": "command-require_basic_auth",
           "name": "require_basic_auth",
           "kind": "command",
-          "summary": "Require HTTP basic authentication for incoming requests",
+          "summary": "Send a 401 Basic authentication challenge and terminate processing",
           "description": [
-            "Require HTTP basic authentication for incoming requests"
+            "Send a 401 Basic authentication challenge and terminate processing",
+            "Use with a basic_auth matcher to check credentials before challenging",
+            "Request-phase only; cannot run in response-phase rules or nested blocks"
           ],
           "syntax": "require_basic_auth <realm>",
           "examples": [
@@ -1744,7 +1746,7 @@
     {
       "id": "control-flow",
       "title": "Control Flow",
-      "description": "Conditional branches inside a rule do-block (inherits the parent rule's phase).",
+      "description": "Conditional branches inside a rule do-block; response matchers or actions promote the whole nested block or branch chain to the response phase.",
       "entries": [
         {
           "id": "control-default",
@@ -1768,11 +1770,10 @@
           "summary": "Inline conditional block inside a do-body",
           "description": [
             "Semantics:",
-            "- Evaluated in the same phase the parent rule runs",
+            "- Evaluated in post phase if any nested matcher or command requires it",
             "- If <on-expr> matches, run the nested commands in-order",
             "- Otherwise do nothing",
-            "NOTE: Per current design decision, we keep this permissive:",
-            "nested blocks may use response matchers and response commands; no extra phase validation is performed"
+            "Request-only authentication and middleware actions are rejected in post-phase blocks"
           ],
           "syntax": "<on-expr> { <do...> }",
           "phase": "pre/post",

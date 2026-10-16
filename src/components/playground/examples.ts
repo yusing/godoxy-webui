@@ -45,7 +45,7 @@ export const examples: PlaygroundExample[] = [
   },
   {
     name: 'Header-Based Routing',
-    description: 'Requires Authorization header or returns 401',
+    description: 'Checks only that Authorization is present; it does not validate credentials.',
     rules: `header Authorization {
   pass
 }
@@ -85,21 +85,28 @@ default {
   },
   {
     name: 'CORS Preflight',
-    description: 'Handles OPTIONS preflight and sets CORS headers',
+    description:
+      'Allows credentialed CORS from https://example.com. Replace it with your trusted origin.',
     rules: `method OPTIONS &
-header Origin &
+header Origin https://example.com &
 header Access-Control-Request-Method {
   set resp_header Access-Control-Allow-Origin $header(Origin)
   set resp_header Access-Control-Allow-Methods GET,POST,PUT,PATCH,DELETE,OPTIONS
   set resp_header Access-Control-Allow-Headers $header(Access-Control-Request-Headers)
   set resp_header Access-Control-Allow-Credentials true
+  add resp_header Vary Origin
+}
+
+method OPTIONS &
+header Origin https://example.com &
+header Access-Control-Request-Method {
   error 204 ""
 }
 
-header Origin {
+header Origin https://example.com {
   set resp_header Access-Control-Allow-Origin $header(Origin)
   set resp_header Access-Control-Allow-Credentials true
-  pass
+  add resp_header Vary Origin
 }`,
     mockRequest: {
       method: 'OPTIONS',
@@ -118,7 +125,8 @@ header Origin {
   },
   {
     name: 'A/B Routing via Cookie',
-    description: 'Routes to backend-b if exp_group=B cookie is present',
+    description:
+      'Makes a real request to backend-b for exp_group=B, otherwise backend-a. Replace both targets with reachable backends.',
     rules: `cookie exp_group B {
   proxy http://backend-b:8080
 }
@@ -130,11 +138,9 @@ default {
       method: 'GET',
       path: '/feature',
       host: 'localhost',
-      headers: {
-        Cookie: ['exp_group=B'],
-      },
+      headers: {},
       query: {},
-      cookies: [],
+      cookies: [{ name: 'exp_group', value: 'B' }],
       body: '',
       remoteIP: '127.0.0.1',
     },
@@ -162,7 +168,8 @@ default {
   },
   {
     name: 'Request Mutations',
-    description: 'Mutates headers, query and cookies before proxy',
+    description:
+      'Mutates headers, query and cookies, then contacts api-server:8080. Replace the target with a reachable backend.',
     rules: `path glob("/api/**") {
   set header X-Request-Id $header(X-Request-Id)
   add header X-Forwarded-For $remote_host
@@ -177,6 +184,7 @@ default {
       host: 'localhost',
       headers: {
         'X-Request-Id': ['req-123'],
+        'X-Secret': ['remove-me'],
       },
       query: {},
       cookies: [],
@@ -186,9 +194,13 @@ default {
   },
   {
     name: 'Log then Proxy',
-    description: 'Logs status and content-type after upstream response',
+    description:
+      'Logs the real backend response to the GoDoxy server console. Replace api-server:8080 with a reachable backend.',
     rules: `path glob("/api/**") {
   log info /dev/stdout "Status=$status_code CT=$resp_header(Content-Type)"
+}
+
+path glob("/api/**") {
   proxy http://api-server:8080
 }`,
     mockRequest: {
@@ -204,7 +216,8 @@ default {
   },
   {
     name: 'Env-based Upstream',
-    description: 'Uses ${SERVICE_HOST}:${SERVICE_PORT} for proxy target',
+    description:
+      'Requires SERVICE_HOST and SERVICE_PORT in the GoDoxy server environment and makes a real HTTPS request to that target.',
     rules: `path glob("/service/**") {
   proxy https://\${SERVICE_HOST}:\${SERVICE_PORT}
 }`,
@@ -221,14 +234,15 @@ default {
   },
   {
     name: 'WebSocket Upgrade',
-    description: 'Passes upgrade requests through to upstream',
+    description:
+      'Matches WebSocket upgrade headers and calls the mock upstream; it does not simulate a WebSocket handshake.',
     rules: `header Connection Upgrade &
 header Upgrade websocket {
   pass
 }
 
 default {
-  proxy http://ws-backend:8080
+  error 400 "Expected WebSocket upgrade"
 }`,
     mockRequest: {
       method: 'GET',
