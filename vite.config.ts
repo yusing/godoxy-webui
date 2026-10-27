@@ -19,8 +19,8 @@ export default defineConfig({
     tsconfigPaths: true,
   },
   ssr: {
-    // These packages publish extensionless ESM imports that Node cannot resolve.
-    noExternal: ['juststore', 'codemirror-json-schema-refined'],
+    // Bundle packages whose Node entry points cannot be used directly for SSR.
+    noExternal: ['juststore', 'codemirror-json-schema-refined', '@xterm/xterm'],
   },
   plugins: [
     mdx(await import('./source.config')),

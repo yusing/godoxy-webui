@@ -35,7 +35,7 @@ test('renders an OpenAPI operation after its page props cross the server boundar
 
   expect(html).toContain('/example')
   expect(html).toContain('POST')
-  expect(html).toContain('Send')
-  expect(html).toContain('curl -X POST')
+  expect(html).toContain('Try in Playground')
+  expect(html.replace(/<[^>]*>/g, '')).toContain('curl -X POST')
   expect(html).toContain('application/yaml')
 })
