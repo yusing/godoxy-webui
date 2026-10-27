@@ -12,7 +12,7 @@ import '@xterm/xterm/css/xterm.css'
 
 import { type Atom, createAtom } from 'juststore'
 import LogProvider from './LogProvider'
-import { resolveForegroundColorAsync } from './logs'
+import { resolveForegroundColorAsync } from './logs.js'
 
 const fontFamily = 'Cascadia Code Variable'
 
@@ -34,6 +34,7 @@ export default function Logs({ routeKey }: { routeKey: string }) {
     let raf: number | null = null
     let resizeObserver: ResizeObserver | null = null
     let touchListenersAbort: AbortController | null = null
+    let terminal: Terminal | null = null
 
     const updateScrollDirection = () => {
       const term = termRef.current
@@ -56,7 +57,7 @@ export default function Logs({ routeKey }: { routeKey: string }) {
       touchListenersAbort?.abort()
       touchListenersAbort = null
       fitAddonRef.current = null
-      termRef.current?.dispose()
+      terminal?.dispose()
       termRef.current = null
     }
 
@@ -85,7 +86,7 @@ export default function Logs({ routeKey }: { routeKey: string }) {
         disableStdin: true,
         scrollback: 5000,
         allowTransparency: true,
-        fontFamily: fontFamily,
+        fontFamily: `${fontFamily}, monospace`,
         fontSize: 12,
         fontWeight: '500',
         fontWeightBold: '700',
@@ -95,6 +96,7 @@ export default function Logs({ routeKey }: { routeKey: string }) {
           foreground,
         },
       })
+      terminal = term
 
       const fitAddon = new FitAddon()
       term.loadAddon(fitAddon)
@@ -104,11 +106,15 @@ export default function Logs({ routeKey }: { routeKey: string }) {
 
       // Use the official xterm web fonts addon to ensure fonts are loaded
       // before xterm measures character widths. This prevents spacing artifacts.
-      const webFontsAddon = new WebFontsAddon()
-      term.loadAddon(webFontsAddon)
-
-      // Wait for fonts to be fully loaded before opening the terminal
-      await webFontsAddon.loadFonts([fontFamily])
+      // Prefer the custom font, but keep logs usable if optional loading fails.
+      try {
+        // Loading here also handles failure instead of starting a second relayout.
+        const webFontsAddon = new WebFontsAddon(false)
+        term.loadAddon(webFontsAddon)
+        await webFontsAddon.loadFonts([fontFamily])
+      } catch {
+        if (!cancelled) term.options.fontFamily = 'monospace'
+      }
       if (cancelled) return
 
       term.open(container)

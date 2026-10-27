@@ -1,7 +1,7 @@
 import { getOwnValue } from '@/lib/utils'
 import type { Terminal } from '@xterm/xterm'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react'
-import { formatLineForTerminal } from '@/components/routes/content/logs'
+import { formatLineForTerminal } from '@/components/routes/content/logs.js'
 import { store } from '@/components/routes/store'
 import { useWebSocketApi } from '@/hooks/websocket'
 import { Query } from '@/lib/query'
