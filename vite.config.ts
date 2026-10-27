@@ -23,7 +23,7 @@ export default defineConfig({
     noExternal: ['juststore', 'codemirror-json-schema-refined', '@xterm/xterm'],
   },
   plugins: [
-    mdx(await import('./source.config')),
+    mdx(await import('./source.config.ts')),
     tailwindcss(),
     tanstackStart({
       spa: isDemoSite
