@@ -10,7 +10,7 @@
     "lint": "oxlint $(git ls-files '*.ts' '*.tsx' '*.mts' '*.cts')",
     "lint:fix": "oxlint --fix $(git ls-files '*.ts' '*.tsx' '*.mts' '*.cts')",
     "start": "bun --bun .output/server/index.mjs",
-    "test": "bun test",
+    "test": "bun test --isolate",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
