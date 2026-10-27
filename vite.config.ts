@@ -1,14 +1,22 @@
 /// <reference types="vite/client" />
 
+import { globSync } from 'node:fs'
 import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact, { reactCompilerPreset } from '@vitejs/plugin-react'
+import { getSlugs } from 'fumadocs-core/source'
 import mdx from 'fumadocs-mdx/vite'
 import { nitro } from 'nitro/vite'
 import { defineConfig } from 'vite'
 
 const isDemoSite = process.env.DEMO_SITE === 'true'
+const sourceConfig = await import('./source.config.ts')
+const docSlugs = globSync('**/*.{md,mdx}', {
+  cwd: new URL(`${sourceConfig.docs.dir}/`, import.meta.url),
+})
+  .toSorted()
+  .map(path => getSlugs(path.replaceAll('\\', '/')))
 
 export default defineConfig({
   server: {
@@ -23,7 +31,7 @@ export default defineConfig({
     noExternal: ['juststore', 'codemirror-json-schema-refined', '@xterm/xterm'],
   },
   plugins: [
-    mdx(await import('./source.config.ts')),
+    mdx(sourceConfig),
     tailwindcss(),
     tanstackStart({
       spa: isDemoSite
@@ -44,7 +52,8 @@ export default defineConfig({
             autoStaticPathsDiscovery: true,
             crawlLinks: true,
             concurrency: 4,
-            retryCount: 2,
+            // Retries skip already-seen paths in the current prerenderer, hiding failures.
+            retryCount: 0,
             failOnError: true,
             filter: ({ path }) => !path.startsWith('/api/'),
           },
@@ -52,15 +61,14 @@ export default defineConfig({
         {
           path: '/docs',
         },
-        {
-          path: '/docs/godoxy',
-        },
-        {
-          path: '/docs/impl',
-        },
-        {
-          path: '/docs/openapi',
-        },
+        ...docSlugs.flatMap(slugs => [
+          { path: `/${['docs', ...slugs].join('/')}` },
+          {
+            path: `/llms.mdx/docs/${[...slugs, 'index.mdx'].join('/')}`,
+            // Markdown contains example anchors, not rendered navigation links.
+            prerender: { crawlLinks: false },
+          },
+        ]),
         {
           path: '/docs/api/search',
         },
