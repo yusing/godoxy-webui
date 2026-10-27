@@ -3,7 +3,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { store } from '@/components/routes/store'
 import type { RouteStatus } from '@/lib/api'
 import { formatTimestamp } from '@/lib/format'
-import { cn } from '@/lib/utils'
+import { cn, getOwnValue } from '@/lib/utils'
 
 export default function RouteUptimeBar({
   routeKey,
@@ -12,7 +12,8 @@ export default function RouteUptimeBar({
   routeKey: string
   className?: string
 }) {
-  const statuses = store.useCompute('uptime', data => data[routeKey]?.statuses, [routeKey]) ?? []
+  const statuses =
+    store.useCompute('uptime', data => getOwnValue(data, routeKey)?.statuses, [routeKey]) ?? []
   const hideUptimeBar = store.displaySettings.hideUptimebar.use()
 
   if (hideUptimeBar) return null

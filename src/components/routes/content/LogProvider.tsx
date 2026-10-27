@@ -1,3 +1,4 @@
+import { getOwnValue } from '@/lib/utils'
 import type { Terminal } from '@xterm/xterm'
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react'
 import { formatLineForTerminal } from '@/components/routes/content/logs'
@@ -12,10 +13,12 @@ export default function LogProvider({
   routeKey: string
   termRef: React.RefObject<Terminal | null>
 }) {
-  const proxmox = store.useCompute('routeDetails', data => data[routeKey]?.proxmox, [routeKey])
+  const proxmox = store.useCompute('routeDetails', data => getOwnValue(data, routeKey)?.proxmox, [
+    routeKey,
+  ])
   const containerId = store.useCompute(
     'routeDetails',
-    data => data[routeKey]?.container?.container_id,
+    data => getOwnValue(data, routeKey)?.container?.container_id,
     [routeKey]
   )
 

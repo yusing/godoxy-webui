@@ -1,3 +1,4 @@
+import { getOwnValue } from '@/lib/utils'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import type { Container, ContainerImage, ProxmoxNodeConfig } from '@/lib/api'
@@ -44,12 +45,18 @@ export function getLogSourceBadgeText(
 }
 
 export default function LogsHeader({ routeKey }: { routeKey: string }) {
-  const container = store.useCompute('routeDetails', data => data[routeKey]?.container, [routeKey])
-  const proxmox = store.useCompute('routeDetails', data => data[routeKey]?.proxmox, [routeKey])
+  const container = store.useCompute(
+    'routeDetails',
+    data => getOwnValue(data, routeKey)?.container,
+    [routeKey]
+  )
+  const proxmox = store.useCompute('routeDetails', data => getOwnValue(data, routeKey)?.proxmox, [
+    routeKey,
+  ])
   const proxmoxStatus = store.useCompute(
     'proxmoxStats',
     data => {
-      const line = data[routeKey]
+      const line = getOwnValue(data, routeKey)
       return line
         ? (line.slice(0, line.indexOf('|')) as 'stopped' | 'running' | 'suspended')
         : undefined

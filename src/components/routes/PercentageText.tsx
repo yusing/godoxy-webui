@@ -1,11 +1,15 @@
 import { store } from '@/components/routes/store'
 import { formatPercent } from '@/lib/format'
-import { cn } from '@/lib/utils'
+import { cn, getOwnValue } from '@/lib/utils'
 
 export default function RoutePercentageText({ routeKey }: { routeKey: string }) {
   const [uptime, downtime, idle] = store.useCompute(
     'uptime',
-    data => [data[routeKey]?.uptime ?? 0, data[routeKey]?.downtime ?? 0, data[routeKey]?.idle ?? 0],
+    data => [
+      getOwnValue(data, routeKey)?.uptime ?? 0,
+      getOwnValue(data, routeKey)?.downtime ?? 0,
+      getOwnValue(data, routeKey)?.idle ?? 0,
+    ],
     [routeKey]
   )
   if (uptime > 0) {

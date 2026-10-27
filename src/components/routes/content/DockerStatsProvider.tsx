@@ -1,3 +1,4 @@
+import { getOwnValue } from '@/lib/utils'
 import { useEffect } from 'react'
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { ContainerStatsResponse } from '@/lib/api'
@@ -52,7 +53,7 @@ export default function DockerStatsProvider() {
   const routeKey = useSelectedRoute()
   const containerId = store.useCompute(
     'routeDetails',
-    data => data[routeKey]?.container?.container_id,
+    data => getOwnValue(data, routeKey)?.container?.container_id,
     [routeKey]
   )
   const shouldConnect = containerId !== undefined

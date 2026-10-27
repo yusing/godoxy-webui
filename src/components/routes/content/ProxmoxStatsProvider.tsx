@@ -1,3 +1,4 @@
+import { getOwnValue } from '@/lib/utils'
 import { useEffect } from 'react'
 import { useWebSocketApi } from '@/hooks/websocket'
 import type { ProxmoxNodeStats } from '@/lib/api'
@@ -5,7 +6,9 @@ import { store, useSelectedRoute } from '../store'
 
 export default function ProxmoxStatsProvider() {
   const routeKey = useSelectedRoute()
-  const proxmox = store.useCompute('routeDetails', data => data[routeKey]?.proxmox, [routeKey])
+  const proxmox = store.useCompute('routeDetails', data => getOwnValue(data, routeKey)?.proxmox, [
+    routeKey,
+  ])
   const isProxmox = proxmox !== undefined
 
   useWebSocketApi<string>({

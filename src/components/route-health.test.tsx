@@ -16,6 +16,7 @@ import { store as home } from './home/store'
 import RoutePercentageText from './routes/PercentageText'
 import RoutesSidebar from './routes/Sidebar'
 import RoutePageHeader from './routes/content/Header'
+import RoutesDetailProvider from './routes/content/RoutesDetailProvider'
 import { store as routes } from './routes/store'
 
 let root: Root
@@ -35,6 +36,12 @@ const browserGlobals = [
 let previousGlobals: Map<string, PropertyDescriptor | undefined>
 
 class PendingWebSocket extends EventTarget {
+  static instances: PendingWebSocket[] = []
+  onmessage: ((event: MessageEvent) => void) | null = null
+  constructor(readonly url: string) {
+    super()
+    PendingWebSocket.instances.push(this)
+  }
   readyState = WebSocket.CONNECTING
   static readonly CONNECTING = 0
   static readonly OPEN = 1
@@ -47,6 +54,7 @@ class PendingWebSocket extends EventTarget {
 }
 
 beforeEach(() => {
+  PendingWebSocket.instances = []
   previousGlobals = new Map(
     browserGlobals.map(key => [key, Object.getOwnPropertyDescriptor(globalThis, key)])
   )
@@ -86,66 +94,87 @@ afterEach(() => {
   }
 })
 
-test.each(['missing', 'keys', 'value', 'subscribe', 'app.example.com'])(
-  'Apps and Routes render and recover metrics for %s',
-  async alias => {
-    const item: HomepageItem = {
-      alias,
-      name: alias,
-      category: 'Tests',
-      description: '',
-      icon: '',
-      url: 'https://example.com',
-      origin_url: '',
-      provider: 'test',
-      show: true,
-      favorite: false,
-      clicks: 0,
-      sort_order: 0,
-      all_sort_order: 0,
-      fav_sort_order: 0,
-      widgets: [],
-    }
-    home.homepageCategories.set([{ name: 'Tests', items: [item] }])
-    routes.routeKeys.set([alias])
-    const router = createRouter({ routeTree: createRootRoute(), history: createMemoryHistory() })
-    await act(async () => {
-      root.render(
-        <RouterContextProvider router={router}>
-          <ThemeProvider>
-            <AppItem categoryIndex={0} appIndex={0} visibleIndex={0} />
-            <RoutesSidebar />
-          </ThemeProvider>
-        </RouterContextProvider>
-      )
-    })
-    expect(container.textContent).toContain('???')
-    expect(container.textContent).toContain('UNKNOWN')
-    const uptime: RouteUptimeAggregate = {
-      alias,
-      uptime: 0.99,
-      downtime: 0.01,
-      idle: 0,
-      avg_latency: 10,
-      current_status: 'healthy',
-      statuses: [],
-    }
-    await act(async () => {
-      home.health.set({
-        [alias]: { status: 'healthy', latency: 1_000_000, sleep_in: 0, uptime: 1 },
-      })
-      routes.uptime.set({ [alias]: uptime })
-    })
-    expect(container.textContent).toContain('OK')
-    expect(container.textContent).toContain('99% UP')
-    await act(async () => {
-      home.health.set({})
-      routes.uptime.set({})
-    })
-    expect(container.textContent).toContain('???')
-    expect(container.textContent).toContain('UNKNOWN')
+test.each([
+  'missing',
+  'keys',
+  'value',
+  'subscribe',
+  'app.example.com',
+  'constructor',
+  'toString',
+  '__proto__',
+])('Apps and Routes render and recover metrics for %s', async alias => {
+  const item: HomepageItem = {
+    alias,
+    name: alias,
+    category: 'Tests',
+    description: '',
+    icon: '',
+    url: 'https://example.com',
+    origin_url: '',
+    provider: 'test',
+    show: true,
+    favorite: false,
+    clicks: 0,
+    sort_order: 0,
+    all_sort_order: 0,
+    fav_sort_order: 0,
+    widgets: [],
   }
-)
+  home.homepageCategories.set([{ name: 'Tests', items: [item] }])
+  routes.routeKeys.set([alias])
+  const router = createRouter({ routeTree: createRootRoute(), history: createMemoryHistory() })
+  await act(async () => {
+    root.render(
+      <RouterContextProvider router={router}>
+        <ThemeProvider>
+          <AppItem categoryIndex={0} appIndex={0} visibleIndex={0} />
+          <RoutesSidebar />
+          <RoutesDetailProvider />
+        </ThemeProvider>
+      </RouterContextProvider>
+    )
+  })
+  expect(container.textContent).toContain('???')
+  expect(container.textContent).toContain('UNKNOWN')
+  const uptime: RouteUptimeAggregate = {
+    alias,
+    uptime: 0.99,
+    downtime: 0.01,
+    idle: 0,
+    avg_latency: 10,
+    current_status: 'healthy',
+    statuses: [],
+  }
+  await act(async () => {
+    home.health.set({
+      [alias]: { status: 'healthy', latency: 1_000_000, sleep_in: 0, uptime: 1 },
+    })
+    const uptimeSocket = PendingWebSocket.instances.find(socket =>
+      socket.url.includes('period=1h')
+    )!
+    uptimeSocket.onmessage!(
+      new dom.window.MessageEvent('message', { data: JSON.stringify({ data: [uptime] }) })
+    )
+    const routeSocket = PendingWebSocket.instances.find(socket =>
+      socket.url.includes('/route/list')
+    )!
+    routeSocket.onmessage!(
+      new dom.window.MessageEvent('message', {
+        data: JSON.stringify([{ alias, homepage: { name: `${alias} app` } }]),
+      })
+    )
+  })
+  expect(container.textContent).toContain('OK')
+  expect(container.textContent).toContain('99% UP')
+  expect(document.getElementById(`route-${alias}`)?.textContent).toContain(`${alias} app`)
+  await act(async () => {
+    home.health.set({})
+    routes.uptime.set({})
+  })
+  expect(container.textContent).toContain('???')
+  expect(container.textContent).toContain('UNKNOWN')
+})
 
 test('changing selection refreshes metadata, uptime, and the container action target', async () => {
   routes.set('routeDetails.keys.homepage.name', 'First app')

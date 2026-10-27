@@ -23,7 +23,7 @@ import {
   runContainerAction,
 } from '@/lib/container-control'
 import { toastError } from '@/lib/toast'
-import { cn } from '@/lib/utils'
+import { cn, getOwnValue } from '@/lib/utils'
 import type { HealthStatusType } from '@/types/health'
 import { setSelectedRoute } from '../routes/store'
 import { Button } from '../ui/button'
@@ -312,7 +312,7 @@ function ContainerMenuItems({ state }: { state: ObjectState<HomepageItem> }) {
   const [alias, containerID, proxmox] = state.useCompute(
     item => [item.alias, item.container_id, item.proxmox] as const
   )
-  const health = store.useCompute('health', data => data[alias], [alias])
+  const health = store.useCompute('health', data => getOwnValue(data, alias), [alias])
   const [isLoading, setIsLoading] = useState(false)
   const [proxmoxStatus, setProxmoxStatus] = useState('')
   const control = getContainerControlTarget(containerID, proxmox)

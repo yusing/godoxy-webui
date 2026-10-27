@@ -1,3 +1,4 @@
+import { getOwnValue } from '@/lib/utils'
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 import { store, useSelectedRoute } from '@/components/routes/store'
 import { type ChartConfig, ChartContainer } from '@/components/ui/chart'
@@ -40,7 +41,8 @@ function formatChartTimestamp(d: number, period: MetricsPeriod) {
 
 function RouteResponseTimeChart() {
   const selected = useSelectedRoute()
-  const statuses = store.useCompute('uptime', data => data[selected]?.statuses, [selected]) ?? []
+  const statuses =
+    store.useCompute('uptime', data => getOwnValue(data, selected)?.statuses, [selected]) ?? []
 
   if (!selected) {
     return null

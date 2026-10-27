@@ -10,7 +10,7 @@ import {
   runContainerAction,
 } from '@/lib/container-control'
 import { toastError } from '@/lib/toast'
-import { cn } from '@/lib/utils'
+import { cn, getOwnValue } from '@/lib/utils'
 
 const containerActions = [
   {
@@ -49,15 +49,20 @@ function actionToneClass(label: ContainerAction['label']) {
 export default function ContainerControls({ routeKey }: { routeKey: string }) {
   const [containerId, dockerRunning] = store.useCompute(
     'routeDetails',
-    data => [data[routeKey]?.container?.container_id, data[routeKey]?.container?.running],
+    data => [
+      getOwnValue(data, routeKey)?.container?.container_id,
+      getOwnValue(data, routeKey)?.container?.running,
+    ],
     [routeKey]
   )
-  const proxmoxConfig = store.useCompute('routeDetails', data => data[routeKey]?.proxmox, [
-    routeKey,
-  ])
+  const proxmoxConfig = store.useCompute(
+    'routeDetails',
+    data => getOwnValue(data, routeKey)?.proxmox,
+    [routeKey]
+  )
   const proxmoxStatus = store.useCompute(
     'proxmoxStats',
-    data => data[routeKey]?.split('|')[0] ?? '',
+    data => getOwnValue(data, routeKey)?.split('|')[0] ?? '',
     [routeKey]
   )
   const [isLoading, setIsLoading] = useState<string | null>(null)

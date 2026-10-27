@@ -1,3 +1,4 @@
+import { getOwnValue } from '@/lib/utils'
 import { store, useSelectedRoute } from '@/components/routes/store'
 import { Label } from '@/components/ui/label'
 import { formatPercent } from '@/lib/format'
@@ -6,13 +7,15 @@ import { ContainerStatsBar } from './StatsBar'
 
 export default function RoutePageHeader() {
   const selected = useSelectedRoute()
-  const displayName = store.useCompute('routeDetails', data => data[selected]?.homepage.name, [
-    selected,
-  ])
+  const displayName = store.useCompute(
+    'routeDetails',
+    data => getOwnValue(data, selected)?.homepage.name,
+    [selected]
+  )
   const percentage = store.useCompute(
     'uptime',
     data => {
-      const uptime = data[selected]?.uptime
+      const uptime = getOwnValue(data, selected)?.uptime
       return uptime ? formatPercent(uptime) : undefined
     },
     [selected]

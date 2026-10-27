@@ -1,6 +1,6 @@
 import { store } from '@/components/routes/store'
 import { formatBytes } from '@/lib/format'
-import { cn } from '@/lib/utils'
+import { cn, getOwnValue } from '@/lib/utils'
 import { parseProxmoxStatsLine } from './proxmox_stats'
 import '@/stats_bar.css'
 
@@ -102,16 +102,27 @@ export function StatsBar({ cells, isVisible, splitAfter }: StatsBarProps) {
 export function ContainerStatsBar({ routeKey }: { routeKey: string }) {
   const [isDocker, dockerRunning] = store.useCompute(
     'routeDetails',
-    data => [data[routeKey]?.container != null, data[routeKey]?.container?.running],
+    data => [
+      getOwnValue(data, routeKey)?.container != null,
+      getOwnValue(data, routeKey)?.container?.running,
+    ],
     [routeKey]
   )
-  const isProxmox = store.useCompute('routeDetails', data => data[routeKey]?.proxmox != null, [
+  const isProxmox = store.useCompute(
+    'routeDetails',
+    data => getOwnValue(data, routeKey)?.proxmox != null,
+    [routeKey]
+  )
+
+  const dockerStats = store.useCompute('dockerStats', data => getOwnValue(data, routeKey), [
     routeKey,
   ])
-
-  const dockerStats = store.useCompute('dockerStats', data => data[routeKey], [routeKey])
-  const lxcRawStats = store.useCompute('proxmoxStats', data => data[routeKey], [routeKey])
-  const nodeStats = store.useCompute('proxmoxNodeStats', data => data[routeKey], [routeKey])
+  const lxcRawStats = store.useCompute('proxmoxStats', data => getOwnValue(data, routeKey), [
+    routeKey,
+  ])
+  const nodeStats = store.useCompute('proxmoxNodeStats', data => getOwnValue(data, routeKey), [
+    routeKey,
+  ])
 
   // Lazy import to avoid circular dependency
   const lxcStats = lxcRawStats ? parseProxmoxStatsLine(lxcRawStats) : null

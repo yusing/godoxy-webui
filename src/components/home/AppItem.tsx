@@ -5,7 +5,7 @@ import { forwardRef, useMemo } from 'react'
 import type { HomepageItem } from '@/lib/api'
 import { api } from '@/lib/api-client'
 import { formatGoDuration, formatRoundedGoDuration } from '@/lib/format'
-import { cn } from '@/lib/utils'
+import { cn, getOwnValue } from '@/lib/utils'
 import { AppIcon } from '../AppIcon'
 import { ContextMenu, ContextMenuTrigger } from '../ui/context-menu'
 import AppItemContextMenuContent from './AppitemContextMenuContent'
@@ -63,7 +63,7 @@ const AppItemInner = forwardRef<
     Array.isArray(item.widgets) && item.widgets.length > 0,
     item.category,
   ])
-  const health = store.useCompute('health', data => data[alias], [alias])
+  const health = store.useCompute('health', data => getOwnValue(data, alias), [alias])
   return (
     <button
       ref={ref}

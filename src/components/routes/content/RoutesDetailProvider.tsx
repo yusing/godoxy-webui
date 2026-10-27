@@ -6,15 +6,7 @@ export default function RoutesDetailProvider() {
   useWebSocketApi<Route[]>({
     endpoint: '/route/list',
     onMessage: data => {
-      store.routeDetails.set(
-        data.reduce(
-          (acc, route) => {
-            acc[route.alias] = route
-            return acc
-          },
-          {} as Record<string, Route>
-        )
-      )
+      store.routeDetails.set(Object.fromEntries(data.map(route => [route.alias, route])))
     },
   })
   return null

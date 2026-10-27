@@ -8,9 +8,9 @@ import {
   useSelectedRoute,
 } from '@/components/routes/store'
 import { useWebSocketApi } from '@/hooks/websocket'
-import type { RouteStatusesByAlias, RouteUptimeAggregate, UptimeAggregate } from '@/lib/api'
+import type { RouteStatusesByAlias, UptimeAggregate } from '@/lib/api'
 import { toastError } from '@/lib/toast'
-import { cn } from '@/lib/utils'
+import { cn, getOwnValue } from '@/lib/utils'
 import { AppIcon } from '../AppIcon'
 import { Kbd } from '../ui/kbd'
 import { Label } from '../ui/label'
@@ -205,13 +205,15 @@ function RoutesSidebarItem({ alias, routeKey }: { alias: string; routeKey: strin
       settings.proxmoxOnly,
     ]
   )
-  const currentStatus = store.useCompute('uptime', data => data[routeKey]?.current_status, [
-    routeKey,
-  ])
+  const currentStatus = store.useCompute(
+    'uptime',
+    data => getOwnValue(data, routeKey)?.current_status,
+    [routeKey]
+  )
   const [isDocker, isProxmox, displayName, excluded] = store.useCompute(
     'routeDetails',
     data => {
-      const details = data[routeKey]
+      const details = getOwnValue(data, routeKey)
       if (!details) return [false, false, '', false]
       return [
         Boolean(details.container),
@@ -284,16 +286,7 @@ function RoutesUptimeProvider() {
       period: '1h',
     },
     onMessage: uptime => {
-      store.set(
-        'uptime',
-        uptime.data.reduce(
-          (acc, route) => {
-            acc[route.alias] = route
-            return acc
-          },
-          {} as Record<string, RouteUptimeAggregate>
-        )
-      )
+      store.set('uptime', Object.fromEntries(uptime.data.map(route => [route.alias, route])))
     },
     onError: toastError,
   })
