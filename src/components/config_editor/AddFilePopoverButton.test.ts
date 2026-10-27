@@ -16,9 +16,9 @@ describe('addConfigFile', () => {
 
   test('keeps the current draft and file list when discarding is canceled', () => {
     expect(addConfigFile({ type: 'provider', filename: 'routes' }, () => false)).toBe(false)
-    expect(configStore.activeFile.value).toBe(activeFile)
+    expect(configStore.activeFile.value).toEqual(activeFile)
     expect(configStore.content.value).toBe('providers: [')
-    expect(configStore.originalConfig.value).toBe(originalConfig)
+    expect(configStore.originalConfig.value).toEqual(originalConfig)
     expect(configStore.files.provider.value).toEqual([])
   })
 

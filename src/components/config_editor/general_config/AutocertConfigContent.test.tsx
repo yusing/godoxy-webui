@@ -4,7 +4,7 @@ import { act } from 'react'
 import type { Root } from 'react-dom/client'
 
 const dom = new JSDOM('<!doctype html><html><body></body></html>', { url: 'http://localhost' })
-Object.assign(globalThis, {
+const browserGlobals = {
   IS_REACT_ACT_ENVIRONMENT: true,
   window: dom.window,
   document: dom.window.document,
@@ -17,7 +17,8 @@ Object.assign(globalThis, {
   getComputedStyle: dom.window.getComputedStyle,
   requestAnimationFrame: (callback: FrameRequestCallback) => setTimeout(() => callback(0), 0),
   cancelAnimationFrame: clearTimeout,
-})
+}
+Object.assign(globalThis, browserGlobals)
 
 // Certificate status is independent of the schema-backed configuration form.
 mock.module('./AutocertInfo', () => ({ default: () => null }))
@@ -33,6 +34,7 @@ let root: Root
 let container: HTMLDivElement
 
 beforeEach(() => {
+  Object.assign(globalThis, browserGlobals)
   document.body.innerHTML = '<div id="root"></div>'
   container = document.getElementById('root') as HTMLDivElement
   root = createRoot(container)

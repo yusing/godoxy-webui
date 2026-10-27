@@ -55,7 +55,7 @@ describe('refreshAgentStore', () => {
     await refreshAgentStore('missing-agent')
 
     expect(listMock).toHaveBeenCalledTimes(1)
-    expect(store.agents.value).toMatchObject({
+    expect(store.agents.value).toEqual({
       'agent-1': expect.objectContaining({ name: 'agent-1' }),
     })
     expect(location.hash).toBe('')

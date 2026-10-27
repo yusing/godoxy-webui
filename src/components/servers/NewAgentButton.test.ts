@@ -80,7 +80,7 @@ describe('verifyAndStoreAgent', () => {
       add_to_config: true,
     })
     expect(Object.keys(store.agents.value)).toEqual(['agent-1', 'agent-2'])
-    expect(store.agents.value).toMatchObject({
+    expect(store.agents.value).toEqual({
       'agent-1': expect.objectContaining({ addr: '10.0.0.1:8890' }),
       'agent-2': expect.objectContaining({ addr: '10.0.0.2:8890' }),
     })
