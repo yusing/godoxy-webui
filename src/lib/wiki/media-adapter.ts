@@ -1,19 +1,20 @@
 import type { MediaAdapter } from 'fumadocs-openapi'
 import { stringify as stringifyYAML } from 'yaml'
 
+function encodeYAML({ body }: { body: unknown }): string {
+  return typeof body === 'string' ? body : stringifyYAML(body)
+}
+
 export const mediaAdapters = {
   'application/yaml': {
-    encode: data => stringifyYAML(data),
+    encode: encodeYAML,
     generateExample: (data, ctx) => {
-      if (ctx.lang === 'js') {
-        return `const body = \`${stringifyYAML(data.body)}\``
-      }
-      if (ctx.lang === 'python') {
-        return `body = """${stringifyYAML(data.body)}"""`
-      }
+      const body = JSON.stringify(encodeYAML(data))
+      if (ctx.lang === 'js') return `const body = ${body}`
+      if (ctx.lang === 'python') return `body = ${body}`
       if (ctx.lang === 'go' && 'addImport' in ctx) {
         ctx.addImport('strings')
-        return `body := strings.NewReader(\`${stringifyYAML(data.body)}\`)`
+        return `body := strings.NewReader(${body})`
       }
       return undefined
     },
