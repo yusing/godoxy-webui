@@ -5,7 +5,7 @@ import { store, useSelectedRoute } from '../store'
 
 export default function ProxmoxStatsProvider() {
   const routeKey = useSelectedRoute()
-  const proxmox = store.routeDetails[routeKey]?.useCompute(details => details?.proxmox)
+  const proxmox = store.useCompute('routeDetails', data => data[routeKey]?.proxmox, [routeKey])
   const isProxmox = proxmox !== undefined
 
   useWebSocketApi<string>({
@@ -14,7 +14,7 @@ export default function ProxmoxStatsProvider() {
     json: false,
     onMessage: data => {
       if (!routeKey) return
-      store.proxmoxStats[routeKey]!.set(data)
+      store.proxmoxStats.set(stats => ({ ...stats, [routeKey]: data }))
     },
   })
 
@@ -23,15 +23,23 @@ export default function ProxmoxStatsProvider() {
     shouldConnect: isProxmox && !proxmox?.vmid,
     onMessage: data => {
       if (!routeKey) return
-      store.proxmoxNodeStats[routeKey]!.set(data)
+      store.proxmoxNodeStats.set(stats => ({ ...stats, [routeKey]: data }))
     },
   })
 
   useEffect(() => {
     if (!routeKey) return
     if (!isProxmox) {
-      store.proxmoxStats[routeKey]!.reset()
-      store.proxmoxNodeStats[routeKey]!.reset()
+      store.proxmoxStats.set(stats => {
+        const next = { ...stats }
+        delete next[routeKey]
+        return next
+      })
+      store.proxmoxNodeStats.set(stats => {
+        const next = { ...stats }
+        delete next[routeKey]
+        return next
+      })
     }
   }, [routeKey, isProxmox])
   return null

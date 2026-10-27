@@ -47,12 +47,19 @@ function actionToneClass(label: ContainerAction['label']) {
 }
 
 export default function ContainerControls({ routeKey }: { routeKey: string }) {
-  const [containerId, dockerRunning] = store.routeDetails[routeKey]!.useCompute(details => [
-    details?.container?.container_id,
-    details?.container?.running,
+  const [containerId, dockerRunning] = store.useCompute(
+    'routeDetails',
+    data => [data[routeKey]?.container?.container_id, data[routeKey]?.container?.running],
+    [routeKey]
+  )
+  const proxmoxConfig = store.useCompute('routeDetails', data => data[routeKey]?.proxmox, [
+    routeKey,
   ])
-  const proxmoxConfig = store.routeDetails[routeKey]?.useCompute(details => details?.proxmox)
-  const proxmoxStatus = store.proxmoxStats[routeKey]?.useCompute(line => line?.split('|')[0] ?? '')
+  const proxmoxStatus = store.useCompute(
+    'proxmoxStats',
+    data => data[routeKey]?.split('|')[0] ?? '',
+    [routeKey]
+  )
   const [isLoading, setIsLoading] = useState<string | null>(null)
 
   const control = getContainerControlTarget(containerId, proxmoxConfig)

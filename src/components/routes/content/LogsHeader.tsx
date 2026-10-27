@@ -44,10 +44,17 @@ export function getLogSourceBadgeText(
 }
 
 export default function LogsHeader({ routeKey }: { routeKey: string }) {
-  const container = store.routeDetails[routeKey]?.container.use()
-  const proxmox = store.routeDetails[routeKey]?.proxmox.use()
-  const proxmoxStatus = store.proxmoxStats[routeKey]?.useCompute(line =>
-    line ? (line.slice(0, line.indexOf('|')) as 'stopped' | 'running' | 'suspended') : undefined
+  const container = store.useCompute('routeDetails', data => data[routeKey]?.container, [routeKey])
+  const proxmox = store.useCompute('routeDetails', data => data[routeKey]?.proxmox, [routeKey])
+  const proxmoxStatus = store.useCompute(
+    'proxmoxStats',
+    data => {
+      const line = data[routeKey]
+      return line
+        ? (line.slice(0, line.indexOf('|')) as 'stopped' | 'running' | 'suspended')
+        : undefined
+    },
+    [routeKey]
   )
 
   if (!container && !proxmox) {

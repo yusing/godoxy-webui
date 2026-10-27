@@ -12,7 +12,7 @@ export default function RouteUptimeBar({
   routeKey: string
   className?: string
 }) {
-  const statuses = store.uptime[routeKey]?.statuses.use() ?? []
+  const statuses = store.useCompute('uptime', data => data[routeKey]?.statuses, [routeKey]) ?? []
   const hideUptimeBar = store.displaySettings.hideUptimebar.use()
 
   if (hideUptimeBar) return null

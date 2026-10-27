@@ -100,15 +100,18 @@ export function StatsBar({ cells, isVisible, splitAfter }: StatsBarProps) {
 }
 
 export function ContainerStatsBar({ routeKey }: { routeKey: string }) {
-  const [isDocker, dockerRunning] = store.routeDetails[routeKey]!.useCompute(details => [
-    details?.container != null,
-    details?.container?.running,
+  const [isDocker, dockerRunning] = store.useCompute(
+    'routeDetails',
+    data => [data[routeKey]?.container != null, data[routeKey]?.container?.running],
+    [routeKey]
+  )
+  const isProxmox = store.useCompute('routeDetails', data => data[routeKey]?.proxmox != null, [
+    routeKey,
   ])
-  const isProxmox = store.routeDetails[routeKey]?.useCompute(details => details?.proxmox != null)
 
-  const dockerStats = store.dockerStats[routeKey]?.use()
-  const lxcRawStats = store.proxmoxStats[routeKey]?.use()
-  const nodeStats = store.proxmoxNodeStats[routeKey]?.use()
+  const dockerStats = store.useCompute('dockerStats', data => data[routeKey], [routeKey])
+  const lxcRawStats = store.useCompute('proxmoxStats', data => data[routeKey], [routeKey])
+  const nodeStats = store.useCompute('proxmoxNodeStats', data => data[routeKey], [routeKey])
 
   // Lazy import to avoid circular dependency
   const lxcStats = lxcRawStats ? parseProxmoxStatsLine(lxcRawStats) : null

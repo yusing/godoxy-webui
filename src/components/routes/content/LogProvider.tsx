@@ -12,9 +12,11 @@ export default function LogProvider({
   routeKey: string
   termRef: React.RefObject<Terminal | null>
 }) {
-  const proxmox = store.routeDetails[routeKey]?.proxmox.use()
-  const containerId = store.routeDetails[routeKey]?.container.useCompute(
-    container => container?.container_id
+  const proxmox = store.useCompute('routeDetails', data => data[routeKey]?.proxmox, [routeKey])
+  const containerId = store.useCompute(
+    'routeDetails',
+    data => data[routeKey]?.container?.container_id,
+    [routeKey]
   )
 
   const endpoint = useMemo(() => {

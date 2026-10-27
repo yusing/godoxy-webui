@@ -312,7 +312,7 @@ function ContainerMenuItems({ state }: { state: ObjectState<HomepageItem> }) {
   const [alias, containerID, proxmox] = state.useCompute(
     item => [item.alias, item.container_id, item.proxmox] as const
   )
-  const health = store.health[alias]?.use()
+  const health = store.useCompute('health', data => data[alias], [alias])
   const [isLoading, setIsLoading] = useState(false)
   const [proxmoxStatus, setProxmoxStatus] = useState('')
   const control = getContainerControlTarget(containerID, proxmox)

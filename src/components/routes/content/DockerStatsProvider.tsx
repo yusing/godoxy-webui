@@ -50,8 +50,10 @@ function summarizeStats(stats: ContainerStatsResponse): DockerStatsSummary {
 
 export default function DockerStatsProvider() {
   const routeKey = useSelectedRoute()
-  const containerId = store.routeDetails[routeKey]?.useCompute(
-    details => details?.container?.container_id
+  const containerId = store.useCompute(
+    'routeDetails',
+    data => data[routeKey]?.container?.container_id,
+    [routeKey]
   )
   const shouldConnect = containerId !== undefined
 
@@ -60,14 +62,18 @@ export default function DockerStatsProvider() {
     shouldConnect,
     onMessage: data => {
       if (!routeKey) return
-      store.dockerStats[routeKey]?.set(summarizeStats(data))
+      store.dockerStats.set(stats => ({ ...stats, [routeKey]: summarizeStats(data) }))
     },
   })
 
   useEffect(() => {
     if (!routeKey) return
     if (!shouldConnect) {
-      store.dockerStats[routeKey]?.reset()
+      store.dockerStats.set(stats => {
+        const next = { ...stats }
+        delete next[routeKey]
+        return next
+      })
     }
   }, [routeKey, shouldConnect])
 

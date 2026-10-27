@@ -40,7 +40,7 @@ function formatChartTimestamp(d: number, period: MetricsPeriod) {
 
 function RouteResponseTimeChart() {
   const selected = useSelectedRoute()
-  const statuses = store.uptime[selected]?.statuses.use() ?? []
+  const statuses = store.useCompute('uptime', data => data[selected]?.statuses, [selected]) ?? []
 
   if (!selected) {
     return null

@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { type ObjectState, Render, type ValueState } from 'juststore'
+import { type ObjectState, Render } from 'juststore'
 import { Gauge, Moon } from 'lucide-react'
 import { forwardRef, useMemo } from 'react'
 import type { HomepageItem } from '@/lib/api'
@@ -63,7 +63,7 @@ const AppItemInner = forwardRef<
     Array.isArray(item.widgets) && item.widgets.length > 0,
     item.category,
   ])
-  const health = store.health[alias]! // store handle is NEVER null
+  const health = store.useCompute('health', data => data[alias], [alias])
   return (
     <button
       ref={ref}
@@ -101,9 +101,7 @@ const AppItemInner = forwardRef<
             <Render state={state.name}>
               {name => <span className="truncate text-sm font-medium">{name || alias}</span>}
             </Render>
-            <Render state={health?.status}>
-              {status => <HealthBadge status={status} compact />}
-            </Render>
+            <HealthBadge status={health?.status} compact />
           </div>
 
           {/* Row 2: Description */}
@@ -123,8 +121,8 @@ const AppItemInner = forwardRef<
               </span>
               <span className="truncate">{category}</span>
             </span>
-            <LatencyText latency={health.latency} />
-            <SleepCountdown sleepIn={health.sleep_in} />
+            <LatencyText latency={health?.latency} />
+            <SleepCountdown sleepIn={health?.sleep_in} />
 
             {hasWidgets &&
               widgets.map((widget, i) => (
@@ -142,8 +140,8 @@ const AppItemInner = forwardRef<
 
 AppItemInner.displayName = 'AppItem'
 
-function LatencyText({ latency }: { latency: ValueState<number | undefined> }) {
-  const formatted = latency.useCompute(value => formatGoDuration(value ?? 0))
+function LatencyText({ latency }: { latency: number | undefined }) {
+  const formatted = formatGoDuration(latency ?? 0)
   if (!formatted) {
     return null
   }
@@ -155,8 +153,8 @@ function LatencyText({ latency }: { latency: ValueState<number | undefined> }) {
   )
 }
 
-function SleepCountdown({ sleepIn }: { sleepIn: ValueState<number | undefined> }) {
-  const formatted = sleepIn.useCompute(formatRoundedGoDuration)
+function SleepCountdown({ sleepIn }: { sleepIn: number | undefined }) {
+  const formatted = formatRoundedGoDuration(sleepIn)
   if (!formatted) {
     return null
   }

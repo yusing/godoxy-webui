@@ -1,6 +1,6 @@
 import { yaml } from '@codemirror/lang-yaml'
 import { ArrowRight, Info } from 'lucide-react'
-import { Fragment, useEffect } from 'react'
+import { Fragment } from 'react'
 import { stringify as stringifyYAML } from 'yaml'
 import { CodeBlock } from '@/components/CodeBlock'
 import { CodeMirror } from '@/components/CodeMirror'
@@ -30,7 +30,7 @@ import RouteResponseTimeChart from './ResponseTimeChart'
 
 export default function RouteDetails() {
   const routeKey = useSelectedRoute()
-  const routeDetails = store.routeDetails[routeKey]?.use()
+  const routeDetails = store.useCompute('routeDetails', data => data[routeKey], [routeKey])
 
   const isStream = routeDetails?.scheme === 'tcp' || routeDetails?.scheme === 'udp'
   const isExcluded = routeDetails?.excluded
@@ -46,14 +46,6 @@ export default function RouteDetails() {
         ? 'Proxmox VM'
         : 'Proxmox Node'
       : 'Unknown'
-
-  useEffect(() => {
-    if (routeKey) {
-      if (!routeDetails) {
-        store.routeDetails[routeKey]!.reset()
-      }
-    }
-  }, [routeKey, routeDetails])
 
   if (!routeKey) {
     return (

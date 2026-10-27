@@ -6,9 +6,16 @@ import { ContainerStatsBar } from './StatsBar'
 
 export default function RoutePageHeader() {
   const selected = useSelectedRoute()
-  const displayName = store.routeDetails[selected]?.homepage.name.use()
-  const percentage = store.uptime[selected]?.uptime.useCompute(uptime =>
-    uptime ? formatPercent(uptime) : undefined
+  const displayName = store.useCompute('routeDetails', data => data[selected]?.homepage.name, [
+    selected,
+  ])
+  const percentage = store.useCompute(
+    'uptime',
+    data => {
+      const uptime = data[selected]?.uptime
+      return uptime ? formatPercent(uptime) : undefined
+    },
+    [selected]
   )
   if (!selected) {
     return null

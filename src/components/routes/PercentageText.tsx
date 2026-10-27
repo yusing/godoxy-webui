@@ -3,10 +3,11 @@ import { formatPercent } from '@/lib/format'
 import { cn } from '@/lib/utils'
 
 export default function RoutePercentageText({ routeKey }: { routeKey: string }) {
-  const health = store.uptime[routeKey]
-  const uptime = health?.uptime.use() ?? 0
-  const downtime = health?.downtime.use() ?? 0
-  const idle = health?.idle.use() ?? 0
+  const [uptime, downtime, idle] = store.useCompute(
+    'uptime',
+    data => [data[routeKey]?.uptime ?? 0, data[routeKey]?.downtime ?? 0, data[routeKey]?.idle ?? 0],
+    [routeKey]
+  )
   if (uptime > 0) {
     return <span className={cn('text-emerald-500')}>{formatPercent(uptime)} UP</span>
   }
