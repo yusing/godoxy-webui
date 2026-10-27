@@ -18,6 +18,10 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
   },
+  ssr: {
+    // These packages publish extensionless ESM imports that Node cannot resolve.
+    noExternal: ['juststore', 'codemirror-json-schema-refined'],
+  },
   plugins: [
     mdx(await import('./source.config')),
     tailwindcss(),
