@@ -17,6 +17,7 @@ const MODES: SystemInfoAggregateMode[] = [
   'network_speed',
   'network_transfer',
   'sensor_temperature',
+  'gpu_usage',
 ]
 
 export default function SystemInfoGraphsProvider({ agent, period }: Props) {

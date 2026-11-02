@@ -71,6 +71,7 @@ export default function MetricChart({
   description,
   agent,
   yAxisFormatter,
+  hideWhenEmpty = false,
 }: {
   period: MetricsPeriod
   type: SystemInfoAggregateMode
@@ -78,10 +79,12 @@ export default function MetricChart({
   description: string
   agent: string
   yAxisFormatter: (value: number) => string
+  hideWhenEmpty?: boolean
 }) {
   const agg = store.use(`systemInfoGraphs.${agent}.${period}.${type}.data`) ?? []
 
   const hasData = agg && agg.length > 0
+  if (!hasData && hideWhenEmpty) return null
 
   return (
     <div className="rounded-2xl border border-border/60 bg-card supports-backdrop-filter:bg-card/45 p-4">
