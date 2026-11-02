@@ -1,4 +1,6 @@
 import { Conditional, type FormStore } from 'juststore'
+import { useEffect } from 'react'
+import { StoreListInput } from '@/components/form/StoreListInput'
 import { StoreFormCheckboxField } from '@/components/store/Checkbox'
 import { StoreFormInputField } from '@/components/store/Input'
 import { FieldGroup } from '@/components/ui/field'
@@ -9,6 +11,16 @@ type RouteHealthcheckSectionProps = {
 }
 
 export function RouteHealthcheckSection({ form }: RouteHealthcheckSectionProps) {
+  // An empty list would opt the route out of defaults.healthcheck.silence, so
+  // removing the last window drops the key instead.
+  useEffect(
+    () =>
+      form.healthcheck.silence.subscribe(windows => {
+        if (windows?.length === 0) form.healthcheck.silence.reset()
+      }),
+    [form]
+  )
+
   return (
     <FieldGroup className="gap-4">
       <StoreFormCheckboxField state={form.healthcheck.disable} title="Disable" />
@@ -30,6 +42,12 @@ export function RouteHealthcheckSection({ form }: RouteHealthcheckSectionProps) 
           />
         </div>
       </Conditional>
+      <StoreListInput
+        label="Silence windows"
+        description="Daily local-time windows (HH:MM-HH:MM) without service down alerts; replaces the default windows when set"
+        placeholder="02:00-04:30"
+        state={form.healthcheck.silence.ensureArray()}
+      />
     </FieldGroup>
   )
 }
