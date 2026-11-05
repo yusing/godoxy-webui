@@ -145,7 +145,7 @@ export type HideXForwarded = {
 export type CIDRWhitelist = {
   /** Middleware */
   use: LooseUse<'cidr_whitelist'>
-  /** Allowed CIDRs, IPs, or host:<name> sources. An omitted or empty list denies requests unless bypassed. */
+  /** Allowed address sources. An omitted or empty list denies requests unless bypassed. */
   allow?: AddressSource[]
   /** HTTP status code
    *

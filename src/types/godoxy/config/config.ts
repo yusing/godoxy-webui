@@ -1,6 +1,6 @@
 import type { HealthcheckConfig } from '../providers/healthcheck'
 import type { IdlewatcherNotifyConfig } from '@/lib/api'
-import type { DomainName } from '../types'
+import type { CIDR, DomainName, HostAddressSource } from '../types'
 import type { ACLConfig } from './acl'
 import type { AutocertConfig } from './autocert'
 import type { EntrypointConfig } from './entrypoint'
@@ -11,6 +11,13 @@ import type { WebUIConfig } from './webui'
 
 export type { InboundMTLSProfile, InboundMTLSProfiles } from './inbound_mtls'
 
+/**
+ * A single address source, excluding nested set references.
+ * @type string
+ * @pattern ^(?!set:).+$
+ */
+export type AddressSetEntry = CIDR | HostAddressSource
+
 export type Config = {
   /** Optional access control configuration */
   acl?: ACLConfig
@@ -20,6 +27,8 @@ export type Config = {
   entrypoint?: EntrypointConfig
   /** Named inbound mTLS trust profiles */
   inbound_mtls_profiles?: InboundMTLSProfiles
+  /** Named address lists, referenced as set:<name>. Nested sets are not supported. */
+  address_sets?: Record<string, AddressSetEntry[]>
   /** Providers configuration (include file, docker, notification) */
   providers: Providers
   /** List of domains to match

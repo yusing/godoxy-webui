@@ -136,9 +136,9 @@ type RuleOnHost = `host ${RulePattern}`
  */
 type RuleOnPath = `path ${RulePattern}`
 /**
- * remote {ip|cidr|host:<name>}
+ * remote {ip|cidr|host:<name>|set:<name>}
  *
- * Match the request remote address with the given IP, CIDR, or host:<name> source.
+ * Match the request remote address against an IP, CIDR, hostname, or named address set.
  *
  * @examples ["remote 127.0.0.1"]
  */
