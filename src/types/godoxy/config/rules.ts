@@ -1,5 +1,5 @@
 import type {
-  CIDR,
+  AddressSource,
   HTTPCookie,
   HTTPHeader,
   HTTPMethod,
@@ -136,13 +136,13 @@ type RuleOnHost = `host ${RulePattern}`
  */
 type RuleOnPath = `path ${RulePattern}`
 /**
- * remote {ip|cidr}
+ * remote {ip|cidr|host:<name>}
  *
- * Match the request remote address with the given IP or CIDR.
+ * Match the request remote address with the given IP, CIDR, or host:<name> source.
  *
  * @examples ["remote 127.0.0.1"]
  */
-type RuleOnRemote = `remote ${CIDR}`
+type RuleOnRemote = `remote ${AddressSource}`
 /**
  * route {alias}
  *

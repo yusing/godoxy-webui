@@ -1,7 +1,7 @@
-import type { CIDR, Duration, IPv4, IPv6 } from '../types'
+import type { CIDR, Duration, HostAddressSource, IPv4, IPv6 } from '../types'
 import type { ACLLogConfig } from './access_log'
 
-export type ACLMatcher = IPMatcher | CIDRMatcher | CountryISOMatcher | TimezoneMatcher
+export type ACLMatcher = IPMatcher | CIDRMatcher | HostMatcher | CountryISOMatcher | TimezoneMatcher
 
 /**
  * IP matcher
@@ -18,6 +18,12 @@ export type IPMatcher = `ip:${IPv4 | IPv6}`
  * @examples ["cidr:192.168.1.0/24"]
  */
 export type CIDRMatcher = `cidr:${CIDR}`
+
+/**
+ * Hostname matcher, refreshed every minute.
+ * @examples ["host:home.dyndns.example"]
+ */
+export type HostMatcher = HostAddressSource
 
 /**
  * Country ISO matcher
