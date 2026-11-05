@@ -1,5 +1,5 @@
 import type {
-  CIDR,
+  AddressSource,
   Duration,
   Hostname,
   HTTPHeader,
@@ -101,8 +101,8 @@ export type RequestLogFilters = {
   host?: RequestAccessLogFilter<Hostname>
   /** Header filter*/
   headers?: RequestAccessLogFilter<HTTPHeader>
-  /** CIDR filter*/
-  cidr?: RequestAccessLogFilter<CIDR>
+  /** IP, CIDR, or host:<name> filter */
+  cidr?: RequestAccessLogFilter<AddressSource>
 }
 
 export const LOG_FIELD_MODES = ['keep', 'drop', 'redact'] as const

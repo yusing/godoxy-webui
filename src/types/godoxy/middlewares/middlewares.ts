@@ -1,5 +1,5 @@
 import type { RuleOn } from '../config/rules'
-import type { CIDR, Duration, HTTPHeader, StatusCode, Stringable } from '../types'
+import type { AddressSource, Duration, HTTPHeader, StatusCode, Stringable } from '../types'
 
 export const ALL_MIDDLEWARES = [
   'ErrorPage',
@@ -145,8 +145,8 @@ export type HideXForwarded = {
 export type CIDRWhitelist = {
   /** Middleware */
   use: LooseUse<'cidr_whitelist'>
-  /** Allowed CIDRs/IPs. An omitted or empty list denies requests unless bypassed. */
-  allow?: CIDR[]
+  /** Allowed CIDRs, IPs, or host:<name> sources. An omitted or empty list denies requests unless bypassed. */
+  allow?: AddressSource[]
   /** HTTP status code
    *
    * @default 403
@@ -325,7 +325,7 @@ export type RealIP = {
    * @default "X-Real-IP"
    */
   header?: HTTPHeader
-  from: CIDR[]
+  from: AddressSource[]
   /** Recursive resolve the IP
    *
    * @default false

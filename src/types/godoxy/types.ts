@@ -94,9 +94,13 @@ export type CIDR =
   | `${number}.${number}.${number}.${number}`
   | `${string}:${string}:${string}:${string}:${string}:${string}:${string}:${string}`
   | `${number}.${number}.${number}.${number}/${number}`
-  | `::${number}`
-  | `${string}::/${number}`
-  | `${string}:${string}::/${number}`
+  | `${string}::${string}`
+
+/** Hostname resolved periodically to its current A/AAAA addresses. */
+export type HostAddressSource = `host:${string}`
+
+/** IP, CIDR, or dynamically resolved hostname, in supported address filters. */
+export type AddressSource = CIDR | HostAddressSource
 
 /**
  * Port number
