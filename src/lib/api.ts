@@ -435,6 +435,13 @@ export interface DockerapiStopRequest {
   timeout?: number;
 }
 
+export type EntrypointExplainDecision =
+  | "allowed"
+  | "denied"
+  | "responded"
+  | "conditional"
+  | "not_found";
+
 export interface ErrorResponse {
   error?: string | null;
   message: string;
@@ -450,6 +457,26 @@ export interface Event {
 }
 
 export type EventsLevel = "debug" | "info" | "warn" | "error";
+
+export interface ExplainACL {
+  allowed: boolean;
+  reason: string;
+}
+
+export interface ExplainResult {
+  acl?: ExplainACL | null;
+  /** ClientIP is the client address after real IP middlewares. */
+  client_ip: string;
+  /** DecidedBy names the component or middleware step that stopped evaluation. */
+  decided_by?: string | null;
+  decision: EntrypointExplainDecision;
+  detail?: string | null;
+  entrypoint?: MiddlewareExplainStep[] | null;
+  /** Notes lists what the dry run did not cover. */
+  notes?: string[] | null;
+  route?: string | null;
+  route_middlewares?: MiddlewareExplainStep[] | null;
+}
 
 export type FileType = "config" | "provider" | "middleware";
 
@@ -752,6 +779,25 @@ export interface MemVirtualMemoryStat {
 }
 
 export type MetricsPeriod = "5m" | "15m" | "1h" | "1d" | "1mo";
+
+export type MiddlewareExplainResult =
+  | "passed"
+  | "denied"
+  | "responded"
+  | "bypassed"
+  | "skipped"
+  | "not_evaluated";
+
+export interface MiddlewareExplainStep {
+  /** ClientIP is set when this step changed the client IP (real IP middlewares). */
+  client_ip?: string | null;
+  detail?: string | null;
+  /** Middleware is the configured name, e.g. "entrypoint[2]" or "cidrWhitelist". */
+  middleware: string;
+  result: MiddlewareExplainResult;
+  /** Type is the middleware implementation, e.g. "cidrWhitelist". */
+  type: string;
+}
 
 export interface MockCookie {
   name: string;
@@ -2381,6 +2427,48 @@ export namespace Route {
     export type RequestBody = never;
     export type RequestHeaders = {};
     export type ResponseBody = RouteApiRoutesByProvider;
+  }
+
+  /**
+   * @description Dry-run a request through the ACL, the entrypoint middlewares and the route middlewares, without reaching the upstream. Unknown request middleware effects stop evaluation with a conditional decision. Response phases, route rules, load-balancer backends and TLS client certificate verification are not simulated.
+   * @tags route
+   * @name Explain
+   * @summary Explain access decision
+   * @request GET:/route/explain
+   * @response `200` `ExplainResult` OK
+   * @response `400` `ErrorResponse` Bad Request
+   * @response `401` `ErrorResponse` Unauthorized
+   * @response `403` `ErrorResponse` Forbidden
+   * @response `500` `ErrorResponse` Internal Server Error
+   */
+  export namespace Explain {
+    export type RequestParams = {};
+    export type RequestQuery = {
+      /** Request header as Name: value, repeatable */
+      header?: string[];
+      /** Host authority, optionally including listener port */
+      host: string;
+      /** Peer IP of the connection */
+      ip: string;
+      /**
+       * HTTP method
+       * @default "GET"
+       */
+      method?: string;
+      /**
+       * Request path and query
+       * @default "/"
+       */
+      path?: string;
+      /**
+       * Listener scheme
+       * @default "https"
+       */
+      scheme?: "http" | "https";
+    };
+    export type RequestBody = never;
+    export type RequestHeaders = {};
+    export type ResponseBody = ExplainResult;
   }
 
   /**
@@ -4154,6 +4242,53 @@ export class Api<
         path: `/route/by_provider`,
         method: "GET",
         type: "application/json",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * @description Dry-run a request through the ACL, the entrypoint middlewares and the route middlewares, without reaching the upstream. Unknown request middleware effects stop evaluation with a conditional decision. Response phases, route rules, load-balancer backends and TLS client certificate verification are not simulated.
+     *
+     * @tags route
+     * @name Explain
+     * @summary Explain access decision
+     * @request GET:/route/explain
+     * @response `200` `ExplainResult` OK
+     * @response `400` `ErrorResponse` Bad Request
+     * @response `401` `ErrorResponse` Unauthorized
+     * @response `403` `ErrorResponse` Forbidden
+     * @response `500` `ErrorResponse` Internal Server Error
+     */
+    explain: (
+      query: {
+        /** Request header as Name: value, repeatable */
+        header?: string[];
+        /** Host authority, optionally including listener port */
+        host: string;
+        /** Peer IP of the connection */
+        ip: string;
+        /**
+         * HTTP method
+         * @default "GET"
+         */
+        method?: string;
+        /**
+         * Request path and query
+         * @default "/"
+         */
+        path?: string;
+        /**
+         * Listener scheme
+         * @default "https"
+         */
+        scheme?: "http" | "https";
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<ExplainResult, ErrorResponse>({
+        path: `/route/explain`,
+        method: "GET",
+        query: query,
         format: "json",
         ...params,
       }),
