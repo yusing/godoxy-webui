@@ -8,6 +8,8 @@ export type EntrypointConfig = {
   proxy_protocol?: ProxyProtocolConfig
   /** Named inbound mTLS profile enforced for all HTTPS traffic on this entrypoint */
   inbound_mtls_profile?: string
+  /** Reject HTTPS requests without SNI or with Host and SNI selecting different routes */
+  strict_sni?: boolean
   /** Entrypoint middleware configuration */
   middlewares?: EntrypointMiddlewares
   /** Entrypoint access log configuration */
