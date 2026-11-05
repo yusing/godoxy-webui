@@ -98,6 +98,20 @@ export type CIDR =
   | `${string}::/${number}`
   | `${string}:${string}::/${number}`
 
+/** Hostname resolved periodically to its current A/AAAA addresses. */
+export type HostAddressSource = `host:${string}`
+
+/**
+ * Reference to a root address_sets definition.
+ * @type string
+ * @pattern ^set:[A-Za-z0-9_-]+$
+ * @examples ["set:family"]
+ */
+export type SetAddressSource = `set:${string}`
+
+/** IP, CIDR, hostname, or named address set, in supported address filters. */
+export type AddressSource = CIDR | HostAddressSource | SetAddressSource
+
 /**
  * Port number
  *
