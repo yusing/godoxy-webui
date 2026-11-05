@@ -94,7 +94,7 @@ export type RequestAccessLogFilter<T> = {
 
 export type RequestLogFilters = {
   /** Status code filter */
-  status_code?: RequestAccessLogFilter<StatusCodeRange>
+  status_codes?: RequestAccessLogFilter<StatusCodeRange>
   /** Method filter*/
   method?: RequestAccessLogFilter<HTTPMethod>
   /** Host filter*/
