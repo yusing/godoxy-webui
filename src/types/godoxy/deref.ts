@@ -11,7 +11,8 @@ const outputFile = inputFile.replace('.json', '.deref.json')
 
 try {
   const schema = await dereference(inputFile)
-  fs.write(outputFile, JSON.stringify(schema, null, 0))
+  await fs.write(outputFile, JSON.stringify(schema, null, 0))
 } catch (error) {
   console.error(error)
+  process.exitCode = 1
 }
