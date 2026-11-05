@@ -101,7 +101,7 @@ export type RequestLogFilters = {
   host?: RequestAccessLogFilter<Hostname>
   /** Header filter*/
   headers?: RequestAccessLogFilter<HTTPHeader>
-  /** CIDR filter*/
+  /** IP, CIDR, hostname, or named address set filter. */
   cidr?: RequestAccessLogFilter<AddressSource>
 }
 

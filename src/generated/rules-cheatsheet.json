@@ -286,23 +286,26 @@
           "id": "matcher-remote",
           "name": "remote",
           "kind": "matcher",
-          "summary": "Match remote client IP against an address or CIDR",
+          "summary": "Match remote client IP against an address, a CIDR, or a hostname",
           "description": [
-            "Match remote client IP against an address or CIDR",
-            "Bare IPv4 input is treated as /32 for an exact host match",
-            "Use /128 for an exact IPv6 host; bare IPv6 input expands to /32, and wider prefixes match the whole subnet"
+            "Match remote client IP against an address, a CIDR, or a hostname",
+            "A bare IP is an exact host match: /32 for IPv4, /128 for IPv6",
+            "host:<name> matches the name's current A/AAAA addresses, re-resolved every minute (e.g. a dynamic DNS name)",
+            "set:<name> matches any entry of the named set under the root config's address_sets"
           ],
-          "syntax": "remote <ip|cidr>",
+          "syntax": "remote <ip|cidr|host:<name>|set:<name>>",
           "examples": [
             "remote \"203.0.113.42\"",
             "remote \"192.168.0.0/16\"",
-            "remote \"2001:db8::1/128\"",
-            "remote \"2001:db8::/32\""
+            "remote \"2001:db8::1\"",
+            "remote \"2001:db8::/32\"",
+            "remote \"host:home.dyndns.example\"",
+            "remote \"set:family\""
           ],
           "args": [
             {
-              "name": "ip|cidr",
-              "description": "IPv4/IPv6 CIDR, or a bare IPv4 address for /32 exact match"
+              "name": "ip|cidr|host:<name>|set:<name>",
+              "description": "IPv4/IPv6 CIDR, a bare IPv4/IPv6 address for an exact host match, host:<name>, or set:<name>"
             }
           ],
           "tags": [
