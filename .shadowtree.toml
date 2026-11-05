@@ -11,6 +11,7 @@ schema_dir=$src_dir/types/godoxy
 help = "Generate one WebUI JSON schema."
 sandboxed = false
 cmd = '''
+set -e
 bunx --bun ts-json-schema-generator --minify --no-type-check -e export --no-ref-encode -f ./tsconfig.json -o "$schema_dir/{out}" -p "$schema_dir/{in}" -t "{class}"
 bun --bun "$schema_dir/deref.ts" "$schema_dir/{out}"
 '''
@@ -31,6 +32,7 @@ required = true
 help = "Generate all WebUI JSON schemas."
 sandboxed = false
 cmd = '''
+set -e
 @gen-schema-single in=config/config.ts class=Config out=config.schema.json
 @gen-schema-single in=config/autocert.ts class=AutocertConfigWithoutExtra out=autocert.schema.json
 @gen-schema-single in=providers/routes.ts class=Routes out=routes.schema.json
