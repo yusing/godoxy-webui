@@ -4,6 +4,7 @@ import {
   ArrowUp,
   ChevronDown,
   Cpu,
+  Gpu,
   HardDrive,
   Server,
   Thermometer,
@@ -11,7 +12,7 @@ import {
 import type { ElementType, ReactNode } from 'react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { useFragment } from '@/hooks/fragment'
-import type { DiskUsageStat } from '@/lib/api'
+import type { DiskUsageStat, GPUStat } from '@/lib/api'
 import { formatBytes, formatShortTime, formatTemperature } from '@/lib/format'
 import { cn } from '@/lib/utils'
 import { AddAgentDialogButton } from './NewAgentButton'
@@ -97,6 +98,7 @@ function ServerItem({ agent, isSelected }: { agent?: string; isSelected?: boolea
   const cpu = systemInfo.cpu_average.useCompute(value => formatPercent(value))
   const memory = systemInfo.memory.useCompute(value => formatMemory(value))
   const disk = systemInfo.disks.useCompute(value => formatTopDiskShort(value))
+  const gpu = systemInfo.gpus.useCompute(value => formatGPUBusy(value))
   const upload = systemInfo.network.upload_speed.useCompute(value =>
     value === undefined || value === null ? '—' : formatBytes(value, { precision: 0, unit: '/s' })
   )
@@ -189,6 +191,15 @@ function ServerItem({ agent, isSelected }: { agent?: string; isSelected?: boolea
               (cpuTempStatus === 'warning' || diskTempStatus === 'warning') && 'text-warning'
             )}
           />
+          {gpu !== null && (
+            <SidebarMetric
+              label="GPU"
+              value={gpu}
+              icon={Gpu}
+              iconTone="var(--ds-block-bg)"
+              valueClassName="text-foreground"
+            />
+          )}
         </div>
       </div>
     </a>
@@ -261,6 +272,12 @@ function formatPercent(n?: number | null): string {
   if (n === undefined || n === null || Number.isNaN(n)) return '—'
   const v = Math.max(0, Math.min(100, n))
   return `${v.toFixed(v < 10 ? 1 : 0)}%`
+}
+
+function formatGPUBusy(gpus: GPUStat[] | undefined): string | null {
+  if (!gpus || gpus.length === 0) return null
+  const busy = gpus.flatMap(g => Object.values(g.engines))
+  return formatPercent(busy.length > 0 ? Math.max(...busy) : 0)
 }
 
 function formatTopDiskShort(disks: Record<string, DiskUsageStat> | undefined): string {
