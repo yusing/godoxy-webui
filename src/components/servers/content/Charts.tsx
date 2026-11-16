@@ -71,6 +71,7 @@ export default function MetricChart({
   description,
   agent,
   yAxisFormatter,
+  hideWhenEmpty = false,
 }: {
   period: MetricsPeriod
   type: SystemInfoAggregateMode
@@ -78,10 +79,12 @@ export default function MetricChart({
   description: string
   agent: string
   yAxisFormatter: (value: number) => string
+  hideWhenEmpty?: boolean
 }) {
   const agg = store.use(`systemInfoGraphs.${agent}.${period}.${type}.data`) ?? []
 
   const hasData = agg && agg.length > 0
+  if (!hasData && hideWhenEmpty) return null
 
   return (
     <div className="rounded-2xl border border-border/60 bg-card supports-backdrop-filter:bg-card/45 p-4">
@@ -106,15 +109,14 @@ function ChartInner({
   yAxisFormatter: (value: number) => string
 }) {
   const keys = useMemo(
-    () => (data.length ? Object.keys(data[0]!).filter(k => k !== 'timestamp') : []),
+    () =>
+      [...new Set(data.flatMap(row => Object.keys(row)))].filter(k => k !== 'timestamp').toSorted(),
     [data]
   )
 
   const chartConfig: ChartConfig = useMemo(() => {
-    const entries: [string, { label: string; color: string }][] = keys.map(k => [
-      k,
-      { label: k, color: color(k) },
-    ])
+    // Areas provide their colors directly. Metric names are labels, not CSS identifiers.
+    const entries: [string, { label: string }][] = keys.map(k => [k, { label: k }])
     return Object.fromEntries(entries)
   }, [keys])
 

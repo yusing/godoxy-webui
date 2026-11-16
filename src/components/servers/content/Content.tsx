@@ -190,6 +190,15 @@ function SystemInfoGraphsPage() {
           yAxisFormatter={temperatureFormatter}
           agent={agent}
         />
+        <MetricChart
+          period={period}
+          type="gpu_usage"
+          label="GPU Usage"
+          description="GPU busy percentage by engine"
+          yAxisFormatter={percentageFormatter}
+          agent={agent}
+          hideWhenEmpty
+        />
       </div>
     </div>
   )
