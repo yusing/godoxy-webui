@@ -1,4 +1,6 @@
 import { Conditional, type FormStore } from 'juststore'
+import { useMemo } from 'react'
+import { StoreListInput } from '@/components/form/StoreListInput'
 import { StoreFormCheckboxField } from '@/components/store/Checkbox'
 import { StoreFormInputField } from '@/components/store/Input'
 import { FieldGroup } from '@/components/ui/field'
@@ -9,6 +11,15 @@ type RouteHealthcheckSectionProps = {
 }
 
 export function RouteHealthcheckSection({ form }: RouteHealthcheckSectionProps) {
+  const inheritSilence = useMemo(
+    () =>
+      form.healthcheck.silence.derived({
+        from: windows => windows === undefined,
+        to: inherit => (inherit ? undefined : []),
+      }),
+    [form]
+  )
+
   return (
     <FieldGroup className="gap-4">
       <StoreFormCheckboxField state={form.healthcheck.disable} title="Disable" />
@@ -29,6 +40,19 @@ export function RouteHealthcheckSection({ form }: RouteHealthcheckSectionProps) 
             placeholder="3"
           />
         </div>
+      </Conditional>
+      <StoreFormCheckboxField
+        state={inheritSilence}
+        title="Use default silence windows"
+        labelPlacement="right"
+      />
+      <Conditional state={inheritSilence} on={inherit => !inherit}>
+        <StoreListInput
+          label="Silence windows"
+          description="Daily local-time windows (HH:MM-HH:MM) without service down alerts. Leave empty to allow alerts at all times."
+          placeholder="02:00-04:30"
+          state={form.healthcheck.silence.ensureArray()}
+        />
       </Conditional>
     </FieldGroup>
   )
