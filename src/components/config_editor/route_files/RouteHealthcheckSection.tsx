@@ -1,5 +1,5 @@
 import { Conditional, type FormStore } from 'juststore'
-import { useEffect } from 'react'
+import { useMemo } from 'react'
 import { StoreListInput } from '@/components/form/StoreListInput'
 import { StoreFormCheckboxField } from '@/components/store/Checkbox'
 import { StoreFormInputField } from '@/components/store/Input'
@@ -11,12 +11,11 @@ type RouteHealthcheckSectionProps = {
 }
 
 export function RouteHealthcheckSection({ form }: RouteHealthcheckSectionProps) {
-  // An empty list would opt the route out of defaults.healthcheck.silence, so
-  // removing the last window drops the key instead.
-  useEffect(
+  const inheritSilence = useMemo(
     () =>
-      form.healthcheck.silence.subscribe(windows => {
-        if (windows?.length === 0) form.healthcheck.silence.reset()
+      form.healthcheck.silence.derived({
+        from: windows => windows === undefined,
+        to: inherit => (inherit ? undefined : []),
       }),
     [form]
   )
@@ -42,12 +41,19 @@ export function RouteHealthcheckSection({ form }: RouteHealthcheckSectionProps) 
           />
         </div>
       </Conditional>
-      <StoreListInput
-        label="Silence windows"
-        description="Daily local-time windows (HH:MM-HH:MM) without service down alerts; replaces the default windows when set"
-        placeholder="02:00-04:30"
-        state={form.healthcheck.silence.ensureArray()}
+      <StoreFormCheckboxField
+        state={inheritSilence}
+        title="Use default silence windows"
+        labelPlacement="right"
       />
+      <Conditional state={inheritSilence} on={inherit => !inherit}>
+        <StoreListInput
+          label="Silence windows"
+          description="Daily local-time windows (HH:MM-HH:MM) without service down alerts. Leave empty to allow alerts at all times."
+          placeholder="02:00-04:30"
+          state={form.healthcheck.silence.ensureArray()}
+        />
+      </Conditional>
     </FieldGroup>
   )
 }
