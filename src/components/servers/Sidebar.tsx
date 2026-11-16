@@ -274,7 +274,7 @@ function formatPercent(n?: number | null): string {
   return `${v.toFixed(v < 10 ? 1 : 0)}%`
 }
 
-function formatGPUBusy(gpus: GPUStat[] | undefined): string | null {
+function formatGPUBusy(gpus: GPUStat[] | null | undefined): string | null {
   if (!gpus || gpus.length === 0) return null
   const busy = gpus.flatMap(g => Object.values(g.engines))
   return formatPercent(busy.length > 0 ? Math.max(...busy) : 0)
