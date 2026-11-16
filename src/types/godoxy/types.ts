@@ -61,6 +61,14 @@ export type StatusCode = number | `${number}`
 export type StatusCodeRange = StatusCode | `${StatusCode}-${StatusCode}`
 
 /**
+ * Daily local-time window, may cross midnight
+ *
+ * @pattern ^([01]\d|2[0-3]):[0-5]\d-([01]\d|2[0-3]):[0-5]\d$
+ * @example 02:00-04:30
+ */
+export type SilenceWindow = string & {}
+
+/**
  * Domain name
  * @pattern ^(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-]{0,61}[a-z0-9]$
  */

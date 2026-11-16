@@ -1,4 +1,4 @@
-import type { Duration, URI } from '../types'
+import type { Duration, SilenceWindow, URI } from '../types'
 
 /**
  * @additionalProperties false
@@ -38,4 +38,11 @@ export type HealthcheckConfig = {
    * @default 3
    */
   retries?: number
+  /** Daily local-time windows without "service down" notifications
+   *
+   * Inherits `defaults.healthcheck.silence` when unset; `[]` opts out.
+   *
+   * @example ["02:00-04:30", "23:30-00:30"]
+   */
+  silence?: SilenceWindow[]
 }
