@@ -508,7 +508,7 @@ export interface HealthCheckConfig {
   /** <0: immediate, 0: default, >0: threshold */
   retries: number;
   /** daily local-time windows without down notifications; nil inherits defaults, empty disables */
-  silence: string[];
+  silence?: string[] | null;
   timeout: number;
   use_get: boolean;
 }
