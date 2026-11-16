@@ -1187,7 +1187,7 @@ export interface SystemInfo {
   disks: Record<string, DiskUsageStat>;
   /** disk IO by device */
   disks_io: Record<string, DiskIOCountersStat>;
-  gpus: GPUStat[];
+  gpus?: GPUStat[] | null;
   memory: MemVirtualMemoryStat;
   network: NetIOCountersStat;
   /** sensor temperature by key */
