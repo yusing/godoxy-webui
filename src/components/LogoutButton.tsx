@@ -1,36 +1,55 @@
 import { LogOut } from 'lucide-react'
-import { useState } from 'react'
-import { api } from '@/lib/api-client'
+import { useRef, useState } from 'react'
+import { getCSRFToken } from '@/lib/csrf'
 import { toastError } from '@/lib/toast'
 
 export default function LogoutButton({ className }: { className?: string }) {
   const [isLoggingOut, setIsLoggingOut] = useState(false)
-
-  const handleLogout = async () => {
-    if (isLoggingOut) {
-      return
-    }
-
-    setIsLoggingOut(true)
-    try {
-      await api.auth.logout()
-      window.location.assign('/')
-    } catch (error) {
-      setIsLoggingOut(false)
-      toastError(error)
-    }
-  }
+  const csrfInput = useRef<HTMLInputElement>(null)
 
   return (
-    <button
-      type="button"
-      className={className}
-      disabled={isLoggingOut}
-      title="Logout"
-      aria-label="Logout"
-      onClick={handleLogout}
+    <form
+      action="/api/v1/auth/logout"
+      method="post"
+      onSubmit={async event => {
+        event.preventDefault()
+        if (isLoggingOut) {
+          return
+        }
+
+        const form = event.currentTarget
+        setIsLoggingOut(true)
+        try {
+          // Prime the CSRF cookie even if the session has already expired.
+          const response = await fetch('/api/v1/auth/check', {
+            method: 'HEAD',
+            redirect: 'error',
+          })
+          const token = getCSRFToken()
+          const canSubmit = response.ok || response.status === 401
+          if (!canSubmit || !token || !csrfInput.current) {
+            throw new Error('Unable to prepare logout. Reload and try again.')
+          }
+
+          csrfInput.current.value = token
+          // Navigate the tab through the provider's logout redirect.
+          form.submit()
+        } catch (error) {
+          setIsLoggingOut(false)
+          toastError(error)
+        }
+      }}
     >
-      <LogOut className="size-4" />
-    </button>
+      <input ref={csrfInput} type="hidden" name="csrf_token" />
+      <button
+        type="submit"
+        className={className}
+        disabled={isLoggingOut}
+        title="Logout"
+        aria-label="Logout"
+      >
+        <LogOut className="size-4" />
+      </button>
+    </form>
   )
 }
