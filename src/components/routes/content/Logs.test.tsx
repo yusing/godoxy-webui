@@ -3,7 +3,7 @@ import { act } from 'react'
 import { createRoot } from 'react-dom/client'
 import { FitAddon } from '@xterm/addon-fit'
 import { WebFontsAddon } from '@xterm/addon-web-fonts'
-import * as colors from './logs.ts'
+import * as colors from './log_utils.ts'
 
 mock.module('@/components/ThemeProvider', () => ({ useTheme: () => ({ resolvedTheme: 'dark' }) }))
 mock.module('./LogProvider', () => ({ default: () => null }))

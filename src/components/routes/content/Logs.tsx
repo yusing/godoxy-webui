@@ -12,7 +12,7 @@ import '@xterm/xterm/css/xterm.css'
 
 import { type Atom, createAtom } from 'juststore'
 import LogProvider from './LogProvider'
-import { resolveForegroundColorAsync } from './logs.js'
+import { resolveForegroundColorAsync } from './log_utils'
 
 const fontFamily = 'Cascadia Code Variable'
 
